@@ -1,0 +1,445 @@
+---
+import DiagnosticButton from '../ui/DiagnosticButton.astro';
+
+export interface Props {
+  initialPanel?: string;
+  initialTier?: string;
+  initialHours?: number;
+  class?: string;
+}
+
+const { initialPanel = 'qd-oled-v2', initialTier = 'moderate', initialHours, class: className = '' } = Astro.props;
+---
+
+<div class:list={["bg-bg-surface border border-border-hairline rounded-xl p-6 font-mono shadow-specular-top text-text-primary", className]}>
+  <!-- Header Bar -->
+  <div class="flex items-center justify-between border-b border-border-hairline pb-4 mb-6">
+    <div class="flex items-center gap-3">
+      <span class="w-3 h-3 rounded-full bg-status-pass led-glow-pass"></span>
+      <h2 class="text-sm font-bold text-text-primary uppercase tracking-wider">OLED Burn-In & Image Retention Risk Analyzer</h2>
+    </div>
+    <span class="text-[11px] text-text-muted bg-bg-elevated px-2.5 py-1 rounded border border-border-hairline font-mono font-semibold">ISO 9241-307 METRIC</span>
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+    <!-- Left Column: Interactive Controls -->
+    <div class="space-y-5 bg-bg-canvas p-5 rounded-lg border border-border-hairline">
+      <!-- Panel Architecture Select -->
+      <div>
+        <label for="oled-panel-select" class="block text-xs font-bold text-text-secondary uppercase mb-2">Panel Architecture</label>
+        <select 
+          id="oled-panel-select" 
+          class="w-full bg-bg-surface border border-border-hairline text-text-primary text-xs rounded-lg p-2.5 outline-none focus:ring-2 focus:ring-status-pass focus:border-status-pass cursor-pointer transition-shadow"
+        >
+          <option value="qd-oled" selected={initialPanel === 'qd-oled'}>Samsung QD-OLED Gen 1 (2022)</option>
+          <option value="qd-oled-v2" selected={initialPanel === 'qd-oled-v2'}>Samsung QD-OLED Gen 2/3 (2023-2025)</option>
+          <option value="woled" selected={initialPanel === 'woled'}>Standard WOLED (2020-2022)</option>
+          <option value="woled-meta" selected={initialPanel === 'woled-meta'}>LG Display WOLED META / MLA (2023+)</option>
+          <option value="amoled" selected={initialPanel === 'amoled'}>AMOLED Mobile / Laptop Panel</option>
+        </select>
+      </div>
+
+      <!-- Usage Tier Selection Buttons -->
+      <div>
+        <label class="block text-xs font-bold text-text-secondary uppercase mb-2">Usage Profile Tier</label>
+        <div class="grid grid-cols-4 gap-1.5" id="tier-button-group">
+          <button 
+            type="button" 
+            data-tier="light"
+            class:list={[
+              "tier-btn text-[11px] font-semibold py-1.5 px-2 rounded border transition-all text-center focus:outline-none focus:ring-2 focus:ring-status-pass cursor-pointer",
+              initialTier === 'light' ? "bg-status-pass/20 border-status-pass text-status-pass" : "bg-bg-surface border-border-hairline text-text-secondary hover:text-text-primary"
+            ]}
+          >
+            Light
+          </button>
+          <button 
+            type="button" 
+            data-tier="moderate"
+            class:list={[
+              "tier-btn text-[11px] font-semibold py-1.5 px-2 rounded border transition-all text-center focus:outline-none focus:ring-2 focus:ring-status-pass cursor-pointer",
+              initialTier === 'moderate' ? "bg-status-pass/20 border-status-pass text-status-pass" : "bg-bg-surface border-border-hairline text-text-secondary hover:text-text-primary"
+            ]}
+          >
+            Moderate
+          </button>
+          <button 
+            type="button" 
+            data-tier="heavy"
+            class:list={[
+              "tier-btn text-[11px] font-semibold py-1.5 px-2 rounded border transition-all text-center focus:outline-none focus:ring-2 focus:ring-status-pass cursor-pointer",
+              initialTier === 'heavy' ? "bg-status-pass/20 border-status-pass text-status-pass" : "bg-bg-surface border-border-hairline text-text-secondary hover:text-text-primary"
+            ]}
+          >
+            Heavy
+          </button>
+          <button 
+            type="button" 
+            data-tier="extreme"
+            class:list={[
+              "tier-btn text-[11px] font-semibold py-1.5 px-2 rounded border transition-all text-center focus:outline-none focus:ring-2 focus:ring-status-pass cursor-pointer",
+              initialTier === 'extreme' ? "bg-status-pass/20 border-status-pass text-status-pass" : "bg-bg-surface border-border-hairline text-text-secondary hover:text-text-primary"
+            ]}
+          >
+            Extreme
+          </button>
+        </div>
+      </div>
+
+      <!-- Usage Hours Slider -->
+      <div>
+        <div class="flex justify-between text-xs mb-1.5">
+          <label for="hours-slider" class="text-text-secondary">Cumulative Usage Hours</label>
+          <span id="hours-display" class="text-status-pass font-bold font-mono">3,500 hrs</span>
+        </div>
+        <input 
+          type="range" 
+          id="hours-slider" 
+          min="100" 
+          max="20000" 
+          step="100" 
+          value={initialHours || 3500} 
+          class="w-full accent-status-pass cursor-pointer focus:outline-none focus:ring-2 focus:ring-status-pass rounded" 
+        />
+      </div>
+
+      <!-- Static Elements Per Day Slider -->
+      <div>
+        <div class="flex justify-between text-xs mb-1.5">
+          <label for="static-slider" class="text-text-secondary">Static Elements Exposure</label>
+          <span id="static-display" class="text-text-primary font-bold font-mono">5 hrs/day</span>
+        </div>
+        <input 
+          type="range" 
+          id="static-slider" 
+          min="0" 
+          max="16" 
+          step="1" 
+          value="5" 
+          class="w-full accent-status-pass cursor-pointer focus:outline-none focus:ring-2 focus:ring-status-pass rounded" 
+        />
+      </div>
+
+      <!-- Overlay Toggles Deck -->
+      <div>
+        <span class="block text-[11px] font-bold text-text-secondary uppercase mb-2">Simulated Static Overlays & Inspection</span>
+        <div class="grid grid-cols-2 gap-2">
+          <button 
+            type="button" 
+            id="btn-toggle-5pct" 
+            aria-pressed="false"
+            class="px-3 py-2 text-xs font-semibold rounded border border-border-hairline bg-bg-surface text-text-secondary hover:text-text-primary focus:outline-none focus:ring-2 focus:ring-status-pass cursor-pointer text-center transition-colors"
+          >
+            5% Near-Black Grid
+          </button>
+          <button 
+            type="button" 
+            id="btn-toggle-taskbar" 
+            aria-pressed="false"
+            class="px-3 py-2 text-xs font-semibold rounded border border-border-hairline bg-bg-surface text-text-secondary hover:text-text-primary focus:outline-none focus:ring-2 focus:ring-status-pass cursor-pointer text-center transition-colors"
+          >
+            Taskbar Overlay
+          </button>
+          <button 
+            type="button" 
+            id="btn-toggle-hud" 
+            aria-pressed="false"
+            class="px-3 py-2 text-xs font-semibold rounded border border-border-hairline bg-bg-surface text-text-secondary hover:text-text-primary focus:outline-none focus:ring-2 focus:ring-status-pass cursor-pointer text-center transition-colors"
+          >
+            HUD Map Overlay
+          </button>
+          <button 
+            type="button" 
+            id="btn-toggle-ticker" 
+            aria-pressed="false"
+            class="px-3 py-2 text-xs font-semibold rounded border border-border-hairline bg-bg-surface text-text-secondary hover:text-text-primary focus:outline-none focus:ring-2 focus:ring-status-pass cursor-pointer text-center transition-colors"
+          >
+            News Ticker Band
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Column: Canvas Viewport & Real-time Metrics Deck (Zero Layout Shift) -->
+    <div class="flex flex-col justify-between bg-bg-canvas p-5 rounded-lg border border-border-hairline h-full">
+      <div>
+        <div class="flex items-center justify-between mb-2">
+          <span class="text-xs font-bold text-text-muted uppercase tracking-wider">Uniformity Diagnostic Viewport</span>
+          <span id="canvas-status-tag" class="text-[10px] text-text-muted font-mono">Standard Gradient</span>
+        </div>
+        
+        <!-- Canvas Container with Fixed Height (Zero CLS) -->
+        <div id="uniformity-canvas-container" class="relative w-full h-52 bg-[#08080a] rounded-lg border border-border-hairline overflow-hidden flex items-center justify-center">
+          <canvas id="burnin-canvas" class="w-full h-full block"></canvas>
+          
+          <!-- Static Taskbar Overlay -->
+          <div id="overlay-taskbar" class="absolute bottom-0 inset-x-0 h-7 bg-zinc-900/90 border-t border-red-500/50 text-[10px] text-red-400 font-mono px-3 flex items-center justify-between opacity-0 transition-opacity duration-200 pointer-events-none">
+            <div class="flex items-center gap-2">
+              <span class="w-3 h-3 rounded-sm bg-red-500/30 border border-red-400/60 inline-block"></span>
+              <span class="text-[9px] uppercase tracking-wider font-bold">Static Taskbar Ghosting</span>
+            </div>
+            <span class="text-[9px] text-red-300 font-mono">11:59 PM</span>
+          </div>
+
+          <!-- Static Gaming HUD Overlay -->
+          <div id="overlay-hud" class="absolute top-2 right-2 w-20 h-20 rounded-md border border-red-500/50 bg-red-950/40 text-[9px] text-red-400 font-mono p-1.5 flex flex-col justify-between opacity-0 transition-opacity duration-200 pointer-events-none">
+            <div class="flex justify-between items-center text-[8px] text-red-300 border-b border-red-500/30 pb-0.5">
+              <span>HP 100</span>
+              <span>MAP</span>
+            </div>
+            <div class="w-8 h-8 rounded-full border border-red-400/40 self-center bg-red-500/10 flex items-center justify-center text-[8px]">N</div>
+            <div class="text-[7px] text-red-400 text-right">AMMO 30/90</div>
+          </div>
+
+          <!-- Static News Ticker Overlay -->
+          <div id="overlay-ticker" class="absolute bottom-7 inset-x-0 h-6 bg-red-950/90 border-t border-red-500/40 text-[9px] text-red-300 font-mono px-3 flex items-center justify-between opacity-0 transition-opacity duration-200 pointer-events-none">
+            <span class="font-bold text-red-400">BREAKING:</span>
+            <span class="truncate ml-2 text-[8.5px]">STATIC NEWS TICKER RETENTION PATTERN — HIGH NIT EXPOSURE BORDER</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Real-time Diagnostic Meter Cards (Zero Layout Shift) -->
+      <div class="mt-4 pt-4 border-t border-border-hairline grid grid-cols-2 gap-3 text-xs">
+        <div class="bg-bg-surface p-3.5 rounded-lg border border-border-hairline min-h-[90px] flex flex-col justify-between">
+          <span class="text-text-muted block text-[10px] uppercase font-bold tracking-wider">RISK SCORE</span>
+          <span id="risk-score-value" class="text-xl font-extrabold text-status-pass font-mono">18 / 100</span>
+          <span id="risk-category-badge" class="block text-[10px] text-status-pass font-bold uppercase mt-0.5">MINIMAL RISK</span>
+        </div>
+        
+        <div class="bg-bg-surface p-3.5 rounded-lg border border-border-hairline min-h-[90px] flex flex-col justify-between">
+          <span class="text-text-muted block text-[10px] uppercase font-bold tracking-wider">LUMINANCE RETENTION</span>
+          <span id="retention-value" class="text-xl font-extrabold text-text-primary font-mono">98.5%</span>
+          <span id="refresh-recommendation" class="block text-[10px] text-text-muted mt-0.5 font-mono">REFRESH EVERY 16h</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Hardware Guidance Callout -->
+  <div class="bg-bg-elevated/50 border border-border-hairline rounded-lg p-3.5 text-xs text-text-secondary flex items-start gap-3">
+    <span class="text-base shrink-0">💡</span>
+    <p class="leading-relaxed">
+      <strong class="text-text-primary font-semibold">ISO 9241-307 Engineering Mitigation:</strong> Modern QD-OLED and WOLED panels automatically initiate internal pixel-refresher routines in standby mode. Keep your monitor connected to power overnight to maintain degradation compensation tables.
+    </p>
+  </div>
+</div>
+
+<script>
+  import { calculateOledBurnInRisk, USAGE_TIER_CONFIG } from '../../engine/OledBurnInEngine';
+
+  function initBurnInAnalyzer() {
+    const panelSelect = document.getElementById('oled-panel-select') as HTMLSelectElement | null;
+    const hoursSlider = document.getElementById('hours-slider') as HTMLInputElement | null;
+    const hoursDisplay = document.getElementById('hours-display');
+    const staticSlider = document.getElementById('static-slider') as HTMLInputElement | null;
+    const staticDisplay = document.getElementById('static-display');
+    const riskScoreVal = document.getElementById('risk-score-value');
+    const riskCategoryBadge = document.getElementById('risk-category-badge');
+    const retentionVal = document.getElementById('retention-value');
+    const refreshRec = document.getElementById('refresh-recommendation');
+    const canvasStatusTag = document.getElementById('canvas-status-tag');
+    
+    const btnToggle5pct = document.getElementById('btn-toggle-5pct');
+    const btnToggleTaskbar = document.getElementById('btn-toggle-taskbar');
+    const btnToggleHud = document.getElementById('btn-toggle-hud');
+    const btnToggleTicker = document.getElementById('btn-toggle-ticker');
+
+    const overlayTaskbar = document.getElementById('overlay-taskbar');
+    const overlayHud = document.getElementById('overlay-hud');
+    const overlayTicker = document.getElementById('overlay-ticker');
+
+    const tierBtns = document.querySelectorAll('.tier-btn') as NodeListOf<HTMLButtonElement>;
+    const canvas = document.getElementById('burnin-canvas') as HTMLCanvasElement | null;
+
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    
+    let is5pctGray = false;
+    let isTaskbarVisible = false;
+    let isHudVisible = false;
+    let isTickerVisible = false;
+
+    function renderCanvas() {
+      if (!ctx || !canvas) return;
+      
+      const displayWidth = canvas.parentElement?.clientWidth || 400;
+      const displayHeight = canvas.parentElement?.clientHeight || 208;
+      const dpr = window.devicePixelRatio || 1;
+      const targetWidth = Math.floor(displayWidth * dpr);
+      const targetHeight = Math.floor(displayHeight * dpr);
+
+      if (canvas.width !== targetWidth || canvas.height !== targetHeight) {
+        canvas.width = targetWidth;
+        canvas.height = targetHeight;
+      }
+
+      ctx.save();
+      ctx.scale(dpr, dpr);
+
+      if (is5pctGray) {
+        // 5% Near-black uniformity background (#0d0d11)
+        ctx.fillStyle = '#0d0d11';
+        ctx.fillRect(0, 0, displayWidth, displayHeight);
+
+        // Simulated OLED vertical banding lines (subtle 5% test pattern artifacts)
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.03)';
+        ctx.lineWidth = 1;
+        for (let x = 0; x < displayWidth; x += 14) {
+          ctx.beginPath();
+          ctx.moveTo(x, 0);
+          ctx.lineTo(x, displayHeight);
+          ctx.stroke();
+        }
+      } else {
+        // Default diagnostic gradient
+        const grad = ctx.createLinearGradient(0, 0, displayWidth, displayHeight);
+        grad.addColorStop(0, '#121216');
+        grad.addColorStop(1, '#08080a');
+        ctx.fillStyle = grad;
+        ctx.fillRect(0, 0, displayWidth, displayHeight);
+      }
+
+      // Draw subtle simulated burn-in retention footprint if risk is elevated
+      const hours = parseInt(hoursSlider?.value || '3500', 10);
+      if (hours > 6000 || isTaskbarVisible || isHudVisible || isTickerVisible) {
+        ctx.fillStyle = 'rgba(239, 68, 68, 0.04)';
+        if (isTaskbarVisible || hours > 6000) {
+          ctx.fillRect(0, displayHeight - 28, displayWidth, 28);
+        }
+        if (isHudVisible || hours > 9000) {
+          ctx.fillRect(displayWidth - 88, 8, 80, 80);
+        }
+        if (isTickerVisible || hours > 12000) {
+          ctx.fillRect(0, displayHeight - 52, displayWidth, 24);
+        }
+      }
+
+      ctx.restore();
+    }
+
+    function updateRisk() {
+      const panel = panelSelect?.value || 'qd-oled-v2';
+      const hours = parseInt(hoursSlider?.value || '3500', 10);
+      const staticHrs = parseInt(staticSlider?.value || '5', 10);
+
+      if (hoursDisplay) hoursDisplay.textContent = `${hours.toLocaleString()} hrs`;
+      if (staticDisplay) staticDisplay.textContent = `${staticHrs} hrs/day`;
+
+      const result = calculateOledBurnInRisk({
+        panelType: panel,
+        usageHours: hours,
+        staticElementHoursPerDay: staticHrs,
+        averageNits: 200
+      });
+
+      if (riskScoreVal) riskScoreVal.textContent = `${result.riskScore} / 100`;
+      if (retentionVal) retentionVal.textContent = `${result.estimatedLuminanceRetentionPct}%`;
+      if (refreshRec) refreshRec.textContent = `REFRESH EVERY ${result.recommendedRefreshIntervalHours}h`;
+
+      if (riskCategoryBadge) {
+        const catText = result.riskCategory.replace('_', ' ');
+        riskCategoryBadge.textContent = `${catText} RISK`;
+
+        if (result.riskScore > 50) {
+          riskCategoryBadge.className = 'block text-[10px] text-status-fail font-bold uppercase mt-0.5';
+          if (riskScoreVal) riskScoreVal.className = 'text-xl font-extrabold text-status-fail font-mono';
+        } else if (result.riskScore > 25) {
+          riskCategoryBadge.className = 'block text-[10px] text-status-warn font-bold uppercase mt-0.5';
+          if (riskScoreVal) riskScoreVal.className = 'text-xl font-extrabold text-status-warn font-mono';
+        } else {
+          riskCategoryBadge.className = 'block text-[10px] text-status-pass font-bold uppercase mt-0.5';
+          if (riskScoreVal) riskScoreVal.className = 'text-xl font-extrabold text-status-pass font-mono';
+        }
+      }
+
+      renderCanvas();
+    }
+
+    function setTier(tier: string) {
+      const tierMap: Record<string, { hours: number; static: number }> = {
+        light: { hours: 1000, static: 2 },
+        moderate: { hours: 3500, static: 5 },
+        heavy: { hours: 7500, static: 8 },
+        extreme: { hours: 15000, static: 12 }
+      };
+
+      const data = tierMap[tier] || tierMap.moderate;
+      if (hoursSlider) hoursSlider.value = String(data.hours);
+      if (staticSlider) staticSlider.value = String(data.static);
+
+      tierBtns.forEach((btn) => {
+        const isCurrent = btn.getAttribute('data-tier') === tier;
+        if (isCurrent) {
+          btn.className = 'tier-btn text-[11px] font-semibold py-1.5 px-2 rounded border border-status-pass bg-status-pass/20 text-status-pass text-center transition-all focus:outline-none focus:ring-2 focus:ring-status-pass cursor-pointer';
+        } else {
+          btn.className = 'tier-btn text-[11px] font-semibold py-1.5 px-2 rounded border border-border-hairline bg-bg-surface text-text-secondary hover:text-text-primary text-center transition-all focus:outline-none focus:ring-2 focus:ring-status-pass cursor-pointer';
+        }
+      });
+
+      updateRisk();
+    }
+
+    tierBtns.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const tier = btn.getAttribute('data-tier') || 'moderate';
+        setTier(tier);
+      });
+    });
+
+    panelSelect?.addEventListener('change', updateRisk);
+    hoursSlider?.addEventListener('input', updateRisk);
+    staticSlider?.addEventListener('input', updateRisk);
+
+    btnToggle5pct?.addEventListener('click', () => {
+      is5pctGray = !is5pctGray;
+      btnToggle5pct.setAttribute('aria-pressed', String(is5pctGray));
+      if (is5pctGray) {
+        btnToggle5pct.className = 'px-3 py-2 text-xs font-semibold rounded border border-status-pass bg-status-pass/20 text-status-pass focus:outline-none focus:ring-2 focus:ring-status-pass cursor-pointer text-center transition-colors';
+        if (canvasStatusTag) canvasStatusTag.textContent = '5% Near-Black Uniformity';
+      } else {
+        btnToggle5pct.className = 'px-3 py-2 text-xs font-semibold rounded border border-border-hairline bg-bg-surface text-text-secondary hover:text-text-primary focus:outline-none focus:ring-2 focus:ring-status-pass cursor-pointer text-center transition-colors';
+        if (canvasStatusTag) canvasStatusTag.textContent = 'Standard Gradient';
+      }
+      renderCanvas();
+    });
+
+    btnToggleTaskbar?.addEventListener('click', () => {
+      isTaskbarVisible = !isTaskbarVisible;
+      btnToggleTaskbar.setAttribute('aria-pressed', String(isTaskbarVisible));
+      if (overlayTaskbar) overlayTaskbar.style.opacity = isTaskbarVisible ? '1' : '0';
+      btnToggleTaskbar.className = isTaskbarVisible
+        ? 'px-3 py-2 text-xs font-semibold rounded border border-status-fail bg-status-fail/20 text-status-fail focus:outline-none focus:ring-2 focus:ring-status-pass cursor-pointer text-center transition-colors'
+        : 'px-3 py-2 text-xs font-semibold rounded border border-border-hairline bg-bg-surface text-text-secondary hover:text-text-primary focus:outline-none focus:ring-2 focus:ring-status-pass cursor-pointer text-center transition-colors';
+      renderCanvas();
+    });
+
+    btnToggleHud?.addEventListener('click', () => {
+      isHudVisible = !isHudVisible;
+      btnToggleHud.setAttribute('aria-pressed', String(isHudVisible));
+      if (overlayHud) overlayHud.style.opacity = isHudVisible ? '1' : '0';
+      btnToggleHud.className = isHudVisible
+        ? 'px-3 py-2 text-xs font-semibold rounded border border-status-fail bg-status-fail/20 text-status-fail focus:outline-none focus:ring-2 focus:ring-status-pass cursor-pointer text-center transition-colors'
+        : 'px-3 py-2 text-xs font-semibold rounded border border-border-hairline bg-bg-surface text-text-secondary hover:text-text-primary focus:outline-none focus:ring-2 focus:ring-status-pass cursor-pointer text-center transition-colors';
+      renderCanvas();
+    });
+
+    btnToggleTicker?.addEventListener('click', () => {
+      isTickerVisible = !isTickerVisible;
+      btnToggleTicker.setAttribute('aria-pressed', String(isTickerVisible));
+      if (overlayTicker) overlayTicker.style.opacity = isTickerVisible ? '1' : '0';
+      btnToggleTicker.className = isTickerVisible
+        ? 'px-3 py-2 text-xs font-semibold rounded border border-status-fail bg-status-fail/20 text-status-fail focus:outline-none focus:ring-2 focus:ring-status-pass cursor-pointer text-center transition-colors'
+        : 'px-3 py-2 text-xs font-semibold rounded border border-border-hairline bg-bg-surface text-text-secondary hover:text-text-primary focus:outline-none focus:ring-2 focus:ring-status-pass cursor-pointer text-center transition-colors';
+      renderCanvas();
+    });
+
+    window.addEventListener('resize', renderCanvas);
+
+    // Initial update
+    updateRisk();
+  }
+
+  document.addEventListener('DOMContentLoaded', initBurnInAnalyzer);
+  document.addEventListener('astro:page-load', initBurnInAnalyzer);
+</script>

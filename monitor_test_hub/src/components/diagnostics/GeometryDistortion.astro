@@ -1,0 +1,113 @@
+---
+/**
+ * GeometryDistortion.astro
+ * Aspect Ratio & Geometry Distortion Validator UI component.
+ */
+---
+
+<div class="w-full max-w-5xl mx-auto space-y-6">
+  <div class="bg-bg-surface/90 border border-border-hairline rounded-2xl p-6 backdrop-blur-xl shadow-2xl space-y-6">
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-border-hairline/60 pb-4">
+      <div>
+        <div class="flex items-center gap-2">
+          <span class="w-2.5 h-2.5 rounded-full bg-status-pass shadow-[0_0_8px_rgba(5,150,105,0.8)]"></span>
+          <h2 class="text-lg font-bold font-mono text-text-primary tracking-wide">Aspect Ratio &amp; Geometry Distortion Validator</h2>
+        </div>
+        <p class="text-xs text-text-muted mt-1">Concentric calibration circles &amp; non-square pixel aspect ratio validation (EBU Tech 3325).</p>
+      </div>
+
+      <div class="flex items-center gap-3">
+        <label class="text-xs font-mono text-text-muted">Expected Aspect:</label>
+        <select id="aspect-select" class="bg-bg-canvas border border-border-subtle text-text-primary text-xs font-mono rounded-lg px-3 py-1.5 focus:border-status-pass">
+          <option value="16:9" selected>16:9 Widescreen</option>
+          <option value="16:10">16:10 Productivity</option>
+          <option value="21:9">21:9 Ultrawide</option>
+          <option value="32:9">32:9 Super Ultrawide</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Circle Geometry Grid Canvas -->
+    <div class="relative w-full h-72 rounded-xl bg-bg-canvas border border-border-subtle overflow-hidden flex items-center justify-center p-4">
+      <canvas id="geometry-canvas" class="w-full h-full block"></canvas>
+    </div>
+
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 pt-2">
+      <div class="bg-bg-elevated p-3.5 rounded-xl border border-border-hairline">
+        <div class="text-[10px] font-mono text-text-muted uppercase">Expected Aspect</div>
+        <div id="metric-expected-aspect" class="text-sm font-mono font-bold text-text-primary mt-1">16:9 (1.7778)</div>
+      </div>
+      <div class="bg-bg-elevated p-3.5 rounded-xl border border-border-hairline">
+        <div class="text-[10px] font-mono text-text-muted uppercase">Measured Aspect</div>
+        <div id="metric-measured-aspect" class="text-sm font-mono font-bold text-status-pass mt-1">1.7778</div>
+      </div>
+      <div class="bg-bg-elevated p-3.5 rounded-xl border border-border-hairline">
+        <div class="text-[10px] font-mono text-text-muted uppercase">Scaling Error %</div>
+        <div id="metric-scaling-error" class="text-sm font-mono font-bold text-text-primary mt-1">0.00%</div>
+      </div>
+      <div class="bg-bg-elevated p-3.5 rounded-xl border border-border-hairline">
+        <div class="text-[10px] font-mono text-text-muted uppercase">Pixel Geometry</div>
+        <div id="metric-pixel-geom" class="text-sm font-mono font-bold text-status-pass mt-1">SQUARE PIXELS</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  import { analyzeGeometryDistortion, getCalibrationCircleRadius, type AspectRatioType } from '../../engine/GeometryDistortionEngine';
+
+  const canvas = document.getElementById('geometry-canvas') as HTMLCanvasElement | null;
+  const aspectSelect = document.getElementById('aspect-select') as HTMLSelectElement | null;
+  const metricExp = document.getElementById('metric-expected-aspect');
+  const metricMeas = document.getElementById('metric-measured-aspect');
+  const metricErr = document.getElementById('metric-scaling-error');
+  const metricGeom = document.getElementById('metric-pixel-geom');
+
+  if (canvas) {
+    const ctx = canvas.getContext('2d');
+
+    function draw() {
+      if (!canvas || !ctx || !aspectSelect) return;
+      canvas.width = canvas.clientWidth;
+      canvas.height = canvas.clientHeight;
+
+      const targetAspect = aspectSelect.value as AspectRatioType;
+      const res = analyzeGeometryDistortion(canvas.width, canvas.height, targetAspect);
+
+      if (metricExp) metricExp.textContent = `${res.expectedAspectRatio} (${res.expectedRatioValue})`;
+      if (metricMeas) metricMeas.textContent = `${res.measuredRatioValue}`;
+      if (metricErr) metricErr.textContent = `${res.scalingErrorPercent}%`;
+      if (metricGeom) {
+        metricGeom.textContent = res.isSquarePixel ? 'SQUARE PIXELS' : 'DISTORTED PIXELS';
+        metricGeom.className = `text-sm font-mono font-bold mt-1 ${res.isSquarePixel ? 'text-status-pass' : 'text-status-fail'}`;
+      }
+
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      const radius = getCalibrationCircleRadius(canvas.width, canvas.height);
+
+      // Draw concentric calibration circles
+      ctx.strokeStyle = '#059669';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.arc(canvas.width / 2, canvas.height / 2, radius, 0, Math.PI * 2);
+      ctx.stroke();
+
+      ctx.beginPath();
+      ctx.arc(canvas.width / 2, canvas.height / 2, radius * 0.5, 0, Math.PI * 2);
+      ctx.stroke();
+
+      // Crosshair lines
+      ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+      ctx.beginPath();
+      ctx.moveTo(canvas.width / 2, 0);
+      ctx.lineTo(canvas.width / 2, canvas.height);
+      ctx.moveTo(0, canvas.height / 2);
+      ctx.lineTo(canvas.width, canvas.height / 2);
+      ctx.stroke();
+    }
+
+    aspectSelect?.addEventListener('change', draw);
+    window.addEventListener('resize', draw);
+    draw();
+  }
+</script>

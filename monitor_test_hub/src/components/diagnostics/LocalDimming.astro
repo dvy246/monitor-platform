@@ -1,0 +1,83 @@
+---
+/**
+ * LocalDimming.astro
+ * Mini-LED Local Dimming Blooming Evaluator UI component.
+ */
+---
+
+<div class="w-full max-w-5xl mx-auto space-y-6">
+  <div class="bg-bg-surface/90 border border-border-hairline rounded-2xl p-6 backdrop-blur-xl shadow-2xl space-y-6">
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-border-hairline/60 pb-4">
+      <div>
+        <div class="flex items-center gap-2">
+          <span class="w-2.5 h-2.5 rounded-full bg-status-pass shadow-[0_0_8px_rgba(5,150,105,0.8)]"></span>
+          <h2 class="text-lg font-bold font-mono text-text-primary tracking-wide">Mini-LED Local Dimming Blooming Evaluator</h2>
+        </div>
+        <p class="text-xs text-text-muted mt-1">Full-Array Local Dimming (FALD) zone count &amp; halo blooming ratio evaluator (VESA DisplayHDR 1400).</p>
+      </div>
+
+      <div class="flex items-center gap-3">
+        <label class="text-xs font-mono text-text-muted">Target Luminance:</label>
+        <select id="luminance-select" class="bg-bg-canvas border border-border-subtle text-text-primary text-xs font-mono rounded-lg px-3 py-1.5 focus:border-status-pass">
+          <option value="600">600 Nits (HDR 600)</option>
+          <option value="1000" selected>1000 Nits (HDR 1000)</option>
+          <option value="1400">1400 Nits (HDR 1400)</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Moving Starfield High-Contrast Dark Box -->
+    <div class="relative w-full h-72 rounded-xl bg-black border border-border-subtle overflow-hidden flex items-center justify-center cursor-pointer">
+      <div id="target-box" class="w-16 h-16 rounded-lg bg-white shadow-[0_0_40px_rgba(255,255,255,0.8)] border border-white flex items-center justify-center">
+        <span class="text-[9px] font-mono font-bold text-black">1000 NITS</span>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 pt-2">
+      <div class="bg-bg-elevated p-3.5 rounded-xl border border-border-hairline">
+        <div class="text-[10px] font-mono text-text-muted uppercase">Target Peak Nits</div>
+        <div id="metric-nits" class="text-sm font-mono font-bold text-text-primary mt-1">1,000 Nits</div>
+      </div>
+      <div class="bg-bg-elevated p-3.5 rounded-xl border border-border-hairline">
+        <div class="text-[10px] font-mono text-text-muted uppercase">Estimated FALD Zones</div>
+        <div id="metric-zones" class="text-sm font-mono font-bold text-status-pass mt-1">1,152 Zones</div>
+      </div>
+      <div class="bg-bg-elevated p-3.5 rounded-xl border border-border-hairline">
+        <div class="text-[10px] font-mono text-text-muted uppercase">Blooming Halo Ratio</div>
+        <div id="metric-blooming-ratio" class="text-sm font-mono font-bold text-text-primary mt-1">0.02 (R_bloom)</div>
+      </div>
+      <div class="bg-bg-elevated p-3.5 rounded-xl border border-border-hairline">
+        <div class="text-[10px] font-mono text-text-muted uppercase">Blooming Severity</div>
+        <div id="metric-blooming-sev" class="text-sm font-mono font-bold text-status-pass mt-1">NEGLIGIBLE</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  import { calculateHaloMetrics, calculateDimmingZones } from '../../engine/LocalDimmingEngine';
+
+  const lumSelect = document.getElementById('luminance-select') as HTMLSelectElement | null;
+  const metricNits = document.getElementById('metric-nits');
+  const metricZones = document.getElementById('metric-zones');
+  const metricRatio = document.getElementById('metric-blooming-ratio');
+  const metricSev = document.getElementById('metric-blooming-sev');
+
+  function update() {
+    if (!lumSelect) return;
+    const nits = parseInt(lumSelect.value, 10);
+    const metrics = calculateHaloMetrics(nits, 20, 30);
+    const zones = calculateDimmingZones(3840, 2160, 1152);
+
+    if (metricNits) metricNits.textContent = `${nits} Nits`;
+    if (metricZones) metricZones.textContent = `${zones.totalZones} Zones`;
+    if (metricRatio) metricRatio.textContent = `${metrics.bloomingRatio}`;
+    if (metricSev) {
+      metricSev.textContent = metrics.bloomingSeverity;
+      metricSev.className = `text-sm font-mono font-bold mt-1 ${metrics.bloomingSeverity === 'SEVERE' ? 'text-status-fail' : 'text-status-pass'}`;
+    }
+  }
+
+  lumSelect?.addEventListener('change', update);
+  update();
+</script>

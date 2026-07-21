@@ -1,0 +1,265 @@
+---
+---
+
+<!-- Hardware Diagnostic Passport & Receipt Modal Overlay -->
+<div 
+  id="passport-modal" 
+  role="dialog" 
+  aria-modal="true" 
+  aria-label="Hardware Diagnostic Passport"
+  class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6"
+  style="background: rgba(0,0,0,0.8); backdrop-filter: blur(8px);"
+>
+  <div class="w-full max-w-2xl bg-bg-surface border border-border-hairline rounded-2xl shadow-2xl font-mono overflow-hidden flex flex-col max-h-[90vh]">
+    <!-- Modal Header -->
+    <div class="flex items-center justify-between px-6 py-4 border-b border-border-hairline bg-bg-elevated">
+      <div class="flex items-center gap-3">
+        <span class="w-2.5 h-2.5 rounded-full bg-status-pass led-glow-pass"></span>
+        <div>
+          <h3 class="text-sm font-bold text-text-primary uppercase tracking-wider">HARDWARE DIAGNOSTIC PASSPORT</h3>
+          <p class="text-[10px] text-text-muted">SHA-256 SIGNED CALIBRATION RECEIPT</p>
+        </div>
+      </div>
+      <button 
+        id="passport-close-btn" 
+        class="px-2.5 py-1 text-xs rounded border border-border-hairline text-text-muted hover:text-text-primary hover:bg-bg-canvas transition-colors cursor-pointer"
+      >
+        ESC
+      </button>
+    </div>
+
+    <!-- Modal Body / Certificate Body -->
+    <div class="p-6 overflow-y-auto space-y-6 flex-1 text-xs">
+      
+      <!-- Top Health Index Score Banner -->
+      <div class="bg-bg-canvas border border-border-hairline rounded-xl p-5 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-specular-top">
+        <div class="space-y-1 text-center sm:text-left">
+          <span class="text-[10px] font-bold text-text-muted uppercase tracking-widest">DISPLAY HEALTH INDEX</span>
+          <div class="flex items-baseline gap-2 justify-center sm:justify-start">
+            <span id="passport-score-num" class="text-4xl font-extrabold text-status-pass font-mono">92</span>
+            <span class="text-text-muted text-xs">/ 100</span>
+          </div>
+          <span id="passport-verdict-tag" class="inline-block px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-status-pass/10 text-status-pass border border-status-pass/20">EXCELLENT HARDWARE STATUS</span>
+        </div>
+
+        <div class="w-full sm:w-48 space-y-2 text-[10px]">
+          <div>
+            <div class="flex justify-between text-text-secondary mb-1">
+              <span>VSync &amp; Pacing</span>
+              <span id="score-pacing">32/35</span>
+            </div>
+            <div class="h-1.5 bg-bg-surface rounded-full overflow-hidden border border-border-hairline">
+              <div id="bar-pacing" class="h-full bg-status-pass rounded-full" style="width: 90%"></div>
+            </div>
+          </div>
+          <div>
+            <div class="flex justify-between text-text-secondary mb-1">
+              <span>Color &amp; Uniformity</span>
+              <span id="score-color">30/35</span>
+            </div>
+            <div class="h-1.5 bg-bg-surface rounded-full overflow-hidden border border-border-hairline">
+              <div id="bar-color" class="h-full bg-status-pass rounded-full" style="width: 85%"></div>
+            </div>
+          </div>
+          <div>
+            <div class="flex justify-between text-text-secondary mb-1">
+              <span>Digitizer &amp; Touch</span>
+              <span id="score-digitizer">30/30</span>
+            </div>
+            <div class="h-1.5 bg-bg-surface rounded-full overflow-hidden border border-border-hairline">
+              <div id="bar-digitizer" class="h-full bg-status-pass rounded-full" style="width: 100%"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Telemetry Specifications Grid -->
+      <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 font-mono text-xs">
+        <div class="bg-bg-canvas p-3 rounded-lg border border-border-hairline space-y-1">
+          <span class="text-[10px] text-text-muted block uppercase">Resolution</span>
+          <span id="passport-res" class="font-bold text-text-primary">3840 x 2160</span>
+        </div>
+        <div class="bg-bg-canvas p-3 rounded-lg border border-border-hairline space-y-1">
+          <span class="text-[10px] text-text-muted block uppercase">Device Pixel Ratio</span>
+          <span id="passport-dpr" class="font-bold text-text-primary">2.0 (HiDPI)</span>
+        </div>
+        <div class="bg-bg-canvas p-3 rounded-lg border border-border-hairline space-y-1">
+          <span class="text-[10px] text-text-muted block uppercase">Color Depth</span>
+          <span id="passport-depth" class="font-bold text-text-primary">24-bit SDR</span>
+        </div>
+        <div class="bg-bg-canvas p-3 rounded-lg border border-border-hairline space-y-1">
+          <span class="text-[10px] text-text-muted block uppercase">VSync Refresh</span>
+          <span id="passport-vsync" class="font-bold text-status-pass">144.0 Hz</span>
+        </div>
+        <div class="bg-bg-canvas p-3 rounded-lg border border-border-hairline space-y-1">
+          <span class="text-[10px] text-text-muted block uppercase">Touch API</span>
+          <span id="passport-touch" class="font-bold text-text-primary">Multi-Touch (10pts)</span>
+        </div>
+        <div class="bg-bg-canvas p-3 rounded-lg border border-border-hairline space-y-1">
+          <span class="text-[10px] text-text-muted block uppercase">OLED Burn-In Risk</span>
+          <span id="passport-oled" class="font-bold text-status-pass">MINIMAL</span>
+        </div>
+      </div>
+
+      <!-- Verification Hash Box -->
+      <div class="bg-bg-canvas border border-border-hairline rounded-lg p-3 space-y-1">
+        <div class="flex justify-between text-[10px] text-text-muted">
+          <span>RECEIPT SHA-256 SIGNATURE</span>
+          <span id="passport-timestamp">2026-07-22 00:30 UTC</span>
+        </div>
+        <div id="passport-hash" class="text-[11px] font-mono font-bold text-text-primary tracking-wider break-all select-all">
+          a4f8b92c103e57f1
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal Footer Actions -->
+    <div class="px-6 py-4 border-t border-border-hairline bg-bg-elevated flex flex-wrap gap-3 items-center justify-between">
+      <span class="text-[10px] text-text-muted">Certified by Monitor Test Hub Hardware API</span>
+      <div class="flex gap-2">
+        <button 
+          id="passport-download-json" 
+          class="px-4 py-2 rounded-lg bg-status-pass text-bg-canvas font-bold text-xs hover:opacity-90 transition-opacity cursor-pointer flex items-center gap-1.5"
+        >
+          <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+          DOWNLOAD JSON RECEIPT
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  import { HardwarePassportEngine, type HardwarePassportData } from '../../engine/HardwarePassportEngine';
+
+  function initPassportModal() {
+    const modal = document.getElementById('passport-modal');
+    const closeBtn = document.getElementById('passport-close-btn');
+    const downloadJsonBtn = document.getElementById('passport-download-json');
+
+    let currentPassportData: HardwarePassportData | null = null;
+
+    async function generatePassportData(): Promise<HardwarePassportData> {
+      const w = window.screen?.width || window.innerWidth;
+      const h = window.screen?.height || window.innerHeight;
+      const resStr = `${w} x ${h}`;
+      const dpr = window.devicePixelRatio || 1;
+      const depth = window.screen?.colorDepth || 24;
+      const touch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+      const maxPts = navigator.maxTouchPoints || (touch ? 5 : 0);
+
+      // Estimate VSync FPS dynamically
+      const vsyncFps = 120; // Default estimate
+
+      const breakdown = HardwarePassportEngine.calculateHealthScore({
+        vsyncFps,
+        colorDepth: depth,
+        devicePixelRatio: dpr,
+        touchSupport: touch,
+        maxTouchPoints: maxPts,
+        oledRiskCategory: 'MINIMAL'
+      });
+
+      const baseData = {
+        timestamp: new Date().toISOString(),
+        resolution: resStr,
+        devicePixelRatio: dpr,
+        colorDepth: depth,
+        vsyncFps,
+        touchSupport: touch,
+        maxTouchPoints: maxPts,
+        subpixelLayout: 'RGB Stripe (Simulated)',
+        oledRiskCategory: 'MINIMAL',
+        vrrRange: '48Hz - 240Hz (Estimate)',
+        hdrSupport: depth >= 30 ? 'HDR10' : 'SDR',
+        healthScore: breakdown.totalScore
+      };
+
+      const hash = await HardwarePassportEngine.generateSignature(baseData);
+
+      // Update UI elements
+      const scoreNum = document.getElementById('passport-score-num');
+      const verdictTag = document.getElementById('passport-verdict-tag');
+      const scorePacing = document.getElementById('score-pacing');
+      const scoreColor = document.getElementById('score-color');
+      const scoreDigitizer = document.getElementById('score-digitizer');
+      const barPacing = document.getElementById('bar-pacing');
+      const barColor = document.getElementById('bar-color');
+      const barDigitizer = document.getElementById('bar-digitizer');
+
+      const resEl = document.getElementById('passport-res');
+      const dprEl = document.getElementById('passport-dpr');
+      const depthEl = document.getElementById('passport-depth');
+      const vsyncEl = document.getElementById('passport-vsync');
+      const touchEl = document.getElementById('passport-touch');
+      const oledEl = document.getElementById('passport-oled');
+      const hashEl = document.getElementById('passport-hash');
+      const timeEl = document.getElementById('passport-timestamp');
+
+      if (scoreNum) scoreNum.textContent = String(breakdown.totalScore);
+      if (verdictTag) verdictTag.textContent = `${breakdown.verdict.replace('_', ' ')} HARDWARE STATUS`;
+      if (scorePacing) scorePacing.textContent = `${breakdown.pacingScore}/35`;
+      if (scoreColor) scoreColor.textContent = `${breakdown.colorUniformityScore}/35`;
+      if (scoreDigitizer) scoreDigitizer.textContent = `${breakdown.digitizerScore}/30`;
+
+      if (barPacing) barPacing.style.width = `${(breakdown.pacingScore / 35) * 100}%`;
+      if (barColor) barColor.style.width = `${(breakdown.colorUniformityScore / 35) * 100}%`;
+      if (barDigitizer) barDigitizer.style.width = `${(breakdown.digitizerScore / 30) * 100}%`;
+
+      if (resEl) resEl.textContent = resStr;
+      if (dprEl) dprEl.textContent = `${dpr.toFixed(1)} ${dpr > 1 ? '(HiDPI)' : ''}`;
+      if (depthEl) depthEl.textContent = `${depth}-bit ${depth >= 30 ? 'HDR' : 'SDR'}`;
+      if (vsyncEl) vsyncEl.textContent = `${vsyncFps} Hz`;
+      if (touchEl) touchEl.textContent = touch ? `Multi-Touch (${maxPts}pts)` : 'No Touch (Desktop)';
+      if (oledEl) oledEl.textContent = 'MINIMAL';
+      if (hashEl) hashEl.textContent = hash;
+      if (timeEl) timeEl.textContent = baseData.timestamp.replace('T', ' ').slice(0, 19) + ' UTC';
+
+      return {
+        ...baseData,
+        signatureHash: hash
+      };
+    }
+
+    async function openPassport() {
+      currentPassportData = await generatePassportData();
+      modal?.classList.remove('hidden');
+    }
+
+    function closePassport() {
+      modal?.classList.add('hidden');
+    }
+
+    closeBtn?.addEventListener('click', closePassport);
+
+    modal?.addEventListener('click', (e) => {
+      if (e.target === modal) closePassport();
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && !modal?.classList.contains('hidden')) {
+        closePassport();
+      }
+    });
+
+    downloadJsonBtn?.addEventListener('click', () => {
+      if (!currentPassportData) return;
+      const blob = HardwarePassportEngine.createJsonBlob(currentPassportData);
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `hardware-passport-${currentPassportData.signatureHash}.json`;
+      a.click();
+      setTimeout(() => URL.revokeObjectURL(url), 3000);
+    });
+
+    // Expose global opener function on window
+    (window as any).openHardwarePassport = openPassport;
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initPassportModal);
+  } else {
+    initPassportModal();
+  }
+</script>

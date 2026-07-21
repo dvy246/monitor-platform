@@ -1,0 +1,61 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import MotionBlur from '../../components/diagnostics/MotionBlur.astro';
+
+const faqs = [
+  {
+    question: "What causes monitor ghosting?",
+    answer: "Ghosting occurs when liquid crystal pixels cannot change color fast enough to match the monitor's refresh rate, leaving a dark or blurry trailing ghost behind moving objects."
+  },
+  {
+    question: "What is inverse ghosting or overdrive overshoot?",
+    answer: "Inverse ghosting happens when a monitor's pixel overdrive setting applies excessive voltage to speed up transitions, causing pixels to overshoot their target color and leave bright white or colored halos behind moving elements."
+  },
+  {
+    question: "How do I eliminate motion blur on my display?",
+    answer: "Enable motion blur reduction (ULMB/DyAc/ELMB) if supported, adjust your monitor's overdrive setting to 'Medium' or 'Fast' (avoiding 'Extreme'), and ensure your frame rate matches your display refresh rate."
+  },
+  {
+    question: "What is MPRT versus GtG response time?",
+    answer: "Gray-to-Gray (GtG) measures how fast a pixel transitions between two gray shades, while Motion Picture Response Time (MPRT) measures how long a pixel remains visible on screen, dictating perceived motion blur."
+  }
+];
+---
+
+<Layout 
+  title="Motion Blur & Ghosting Test | Monitor Response Time Analyzer"
+  description="Check your gaming monitor for motion blur, ghosting, and overdrive overshoot trails. Free pursuit sweep tool for 60Hz to 540Hz displays."
+>
+  <main id="main-content" class="py-10 px-4 sm:px-6 lg:px-8 space-y-12">
+    <section class="max-w-4xl mx-auto text-center space-y-4">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-status-pass/10 border border-status-pass/30 text-xs font-mono text-status-pass font-bold">
+        <span>ISO 9241-305 MPRT SPECIFICATIONS</span>
+      </div>
+      <h1 class="text-3xl sm:text-4xl font-extrabold font-mono tracking-tight text-text-primary">
+        Motion Blur &amp; Overdrive Ghosting Analyzer
+      </h1>
+      <p class="text-sm sm:text-base text-text-muted leading-relaxed max-w-2xl mx-auto">
+        Benchmark your gaming monitor's pursuit velocity, sample-and-hold motion blur, and overdrive overshoot inverse ghosting trails across 60Hz to 540Hz refresh rates.
+      </p>
+    </section>
+
+    <MotionBlur />
+
+    <article class="max-w-4xl mx-auto space-y-8 bg-bg-surface/80 border border-border-hairline rounded-2xl p-6 sm:p-8 backdrop-blur-xl text-sm text-text-secondary leading-relaxed">
+      <h2 class="text-xl font-bold font-mono text-text-primary">Understanding Motion Blur &amp; Overdrive Overshoot</h2>
+      <p>
+        High-refresh-rate gaming monitors use pixel overdrive technology to accelerate liquid crystal response times. However, aggressive overdrive settings apply excess voltage that causes inverse ghosting coronas.
+      </p>
+
+      <h2 class="text-xl font-bold font-mono text-text-primary">Frequently Asked Questions</h2>
+      <div class="space-y-4">
+        {faqs.map(faq => (
+          <div class="border-b border-border-hairline pb-4 space-y-1">
+            <h3 class="font-bold text-text-primary font-mono">{faq.question}</h3>
+            <p class="text-xs text-text-muted">{faq.answer}</p>
+          </div>
+        ))}
+      </div>
+    </article>
+  </main>
+</Layout>

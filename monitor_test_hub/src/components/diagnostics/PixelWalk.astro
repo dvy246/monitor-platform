@@ -1,0 +1,98 @@
+---
+/**
+ * PixelWalk.astro
+ * Pixel Walk & LCD Inversion Pattern Tester UI component.
+ */
+---
+
+<div class="w-full max-w-5xl mx-auto space-y-6">
+  <div class="bg-bg-surface/90 border border-border-hairline rounded-2xl p-6 backdrop-blur-xl shadow-2xl space-y-6">
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-border-hairline/60 pb-4">
+      <div>
+        <div class="flex items-center gap-2">
+          <span class="w-2.5 h-2.5 rounded-full bg-status-pass shadow-[0_0_8px_rgba(5,150,105,0.8)]"></span>
+          <h2 class="text-lg font-bold font-mono text-text-primary tracking-wide">Pixel Walk &amp; LCD Inversion Pattern Tester</h2>
+        </div>
+        <p class="text-xs text-text-muted mt-1">Sub-pixel AC voltage polarity inversion Crosstalk &amp; 2x2/1x1 dither balance (VESA FPDM v2.0).</p>
+      </div>
+
+      <div class="flex items-center gap-3">
+        <label class="text-xs font-mono text-text-muted">Inversion Pattern:</label>
+        <select id="inversion-pattern-select" class="bg-bg-canvas border border-border-subtle text-text-primary text-xs font-mono rounded-lg px-3 py-1.5 focus:border-status-pass">
+          <option value="1x1_checkerboard">1x1 Fine Checkerboard</option>
+          <option value="2x2_checkerboard" selected>2x2 Grid Checkerboard</option>
+          <option value="vertical_lines">Vertical Stripe Inversion</option>
+          <option value="horizontal_lines">Horizontal Line Inversion</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Spatial Pattern Visual Canvas -->
+    <div class="relative w-full h-72 rounded-xl bg-bg-canvas border border-border-subtle overflow-hidden flex items-center justify-center p-4">
+      <canvas id="pixelwalk-canvas" class="w-full h-full block"></canvas>
+    </div>
+
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 pt-2">
+      <div class="bg-bg-elevated p-3.5 rounded-xl border border-border-hairline">
+        <div class="text-[10px] font-mono text-text-muted uppercase">Active Pattern</div>
+        <div id="metric-inversion-type" class="text-sm font-mono font-bold text-text-primary mt-1">2x2 Checkerboard</div>
+      </div>
+      <div class="bg-bg-elevated p-3.5 rounded-xl border border-border-hairline">
+        <div class="text-[10px] font-mono text-text-muted uppercase">Pattern Grid Step</div>
+        <div id="metric-grid-step" class="text-sm font-mono font-bold text-status-pass mt-1">2 Pixels</div>
+      </div>
+      <div class="bg-bg-elevated p-3.5 rounded-xl border border-border-hairline">
+        <div class="text-[10px] font-mono text-text-muted uppercase">Susceptibility Score</div>
+        <div id="metric-inversion-score" class="text-sm font-mono font-bold text-text-primary mt-1">10.0 / 100</div>
+      </div>
+      <div class="bg-bg-elevated p-3.5 rounded-xl border border-border-hairline">
+        <div class="text-[10px] font-mono text-text-muted uppercase">Voltage Bias Status</div>
+        <div id="metric-inversion-status" class="text-sm font-mono font-bold text-status-pass mt-1">BALANCED POLARITY</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  import { analyzePixelWalk, getPatternGridStep, type InversionPatternType } from '../../engine/PixelWalkEngine';
+
+  const canvas = document.getElementById('pixelwalk-canvas') as HTMLCanvasElement | null;
+  const patternSelect = document.getElementById('inversion-pattern-select') as HTMLSelectElement | null;
+  const metricType = document.getElementById('metric-inversion-type');
+  const metricStep = document.getElementById('metric-grid-step');
+  const metricScore = document.getElementById('metric-inversion-score');
+  const metricStatus = document.getElementById('metric-inversion-status');
+
+  if (canvas) {
+    const ctx = canvas.getContext('2d');
+
+    function draw() {
+      if (!canvas || !ctx || !patternSelect) return;
+      canvas.width = canvas.clientWidth;
+      canvas.height = canvas.clientHeight;
+
+      const patternType = patternSelect.value as InversionPatternType;
+      const step = getPatternGridStep(patternType);
+      const res = analyzePixelWalk(patternType, 1, false);
+
+      if (metricType) metricType.textContent = patternType.replace('_', ' ').toUpperCase();
+      if (metricStep) metricStep.textContent = `${step} Pixel${step > 1 ? 's' : ''}`;
+      if (metricScore) metricScore.textContent = `${res.susceptibilityScore} / 100`;
+      if (metricStatus) metricStatus.textContent = res.hasVoltageImbalance ? 'IMBALANCE DETECTED' : 'BALANCED POLARITY';
+
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = '#ffffff';
+
+      for (let y = 0; y < canvas.height; y += step * 2) {
+        for (let x = 0; x < canvas.width; x += step * 2) {
+          ctx.fillRect(x, y, step, step);
+          ctx.fillRect(x + step, y + step, step, step);
+        }
+      }
+    }
+
+    patternSelect?.addEventListener('change', draw);
+    window.addEventListener('resize', draw);
+    draw();
+  }
+</script>

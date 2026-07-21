@@ -1,0 +1,205 @@
+---
+// MultiTouchDetector.astro component
+---
+<div class="flex-grow flex flex-col items-center justify-center p-4">
+  <div class="w-full max-w-4xl bg-gray-900/50 border border-gray-800 rounded-xl p-6 shadow-2xl flex flex-col h-[75dvh]">
+    <div class="mb-4">
+      <h3 class="text-xl font-bold heading-brand text-diagnostic-matrixGreen mb-1">Multi-Touch Digitizer Diagnostics</h3>
+      <p class="text-gray-400 text-xs md:text-sm">
+        Touch the screen with multiple fingers to benchmark your digitizer's capabilities. Generates telemetry stats for coordinates, pressure, and concurrent tracking.
+      </p>
+    </div>
+
+    <!-- Active Telemetry -->
+    <div class="grid grid-cols-3 gap-4 mb-4">
+      <div class="bg-gray-950 p-3 rounded border border-gray-850">
+        <span class="text-gray-500 text-[10px] uppercase block">Active Touches</span>
+        <span id="mt-count" class="text-lg font-bold text-white font-mono">0</span>
+      </div>
+      <div class="bg-gray-950 p-3 rounded border border-gray-850">
+        <span class="text-gray-500 text-[10px] uppercase block">Max Touches</span>
+        <span id="mt-max" class="text-lg font-bold text-diagnostic-matrixGreen font-mono">0</span>
+      </div>
+      <div class="bg-gray-950 p-3 rounded border border-gray-850">
+        <span class="text-gray-500 text-[10px] uppercase block">Latest coordinates</span>
+        <span id="mt-coords" class="text-xs font-bold text-gray-300 font-mono truncate block">X: 0, Y: 0</span>
+      </div>
+    </div>
+
+    <!-- Active Touch Sandbox -->
+    <div class="flex-grow relative rounded-lg overflow-hidden bg-black border border-gray-800 touch-none">
+      <canvas id="multitouch-canvas" class="w-full h-full block select-none touch-none"></canvas>
+    </div>
+    <div id="mt-status" class="sr-only" aria-live="polite"></div>
+  </div>
+</div>
+
+<script>
+  import { setupTouchSandbox } from '../../utils/mobileSandbox';
+
+  const canvas = document.getElementById('multitouch-canvas') as HTMLCanvasElement;
+  const mtCountText = document.getElementById('mt-count');
+  const mtMaxText = document.getElementById('mt-max');
+  const mtCoordsText = document.getElementById('mt-coords');
+
+  let ctx: CanvasRenderingContext2D | null = null;
+  let activeTouches: Map<number, { x: number; y: number; pressure: number }> = new Map();
+  let maxTouches = 0;
+
+  const colorPalette = [
+    '#00ff88', // green
+    '#00e5ff', // cyan
+    '#ff3366', // red
+    '#ffff00', // yellow
+    '#ff00ff', // magenta
+    '#0088ff', // blue
+    '#ff9900', // orange
+    '#cc00ff', // purple
+    '#33ff33', // lime
+    '#ff3333'  // coral
+  ];
+
+  function initMultiTouch() {
+    if (!canvas || !mtCountText || !mtMaxText || !mtCoordsText) return;
+    ctx = canvas.getContext('2d');
+
+    // Setup viewport isolation sandbox (preventDefault)
+    setupTouchSandbox(canvas);
+
+    const resize = () => {
+      const rect = canvas.parentElement?.getBoundingClientRect();
+      canvas.width = (rect?.width || 800) * (window.devicePixelRatio || 1);
+      canvas.height = (rect?.height || 500) * (window.devicePixelRatio || 1);
+      draw();
+    };
+
+    window.addEventListener('resize', resize);
+    resize();
+
+    // Event listeners using PointerEvents API (handles both mouse and multi-touch seamlessly)
+    canvas.addEventListener('pointerdown', handlePointerDown);
+    canvas.addEventListener('pointermove', handlePointerMove);
+    canvas.addEventListener('pointerup', handlePointerUp);
+    canvas.addEventListener('pointercancel', handlePointerUp);
+  }
+
+  function getCanvasCoords(clientX: number, clientY: number) {
+    if (!canvas) return { x: 0, y: 0 };
+    const rect = canvas.getBoundingClientRect();
+    const x = (clientX - rect.left) * (canvas.width / rect.width);
+    const y = (clientY - rect.top) * (canvas.height / rect.height);
+    return { x, y };
+  }
+
+  function handlePointerDown(e: PointerEvent) {
+    const coords = getCanvasCoords(e.clientX, e.clientY);
+    activeTouches.set(e.pointerId, {
+      x: coords.x,
+      y: coords.y,
+      pressure: e.pressure || 0.5
+    });
+
+    updateStats(coords.x, coords.y);
+    draw();
+  }
+
+  function handlePointerMove(e: PointerEvent) {
+    if (!activeTouches.has(e.pointerId)) return;
+    const coords = getCanvasCoords(e.clientX, e.clientY);
+    const touch = activeTouches.get(e.pointerId);
+    if (touch) {
+      touch.x = coords.x;
+      touch.y = coords.y;
+      touch.pressure = e.pressure || 0.5;
+    }
+
+    updateStats(coords.x, coords.y);
+    draw();
+  }
+
+  function handlePointerUp(e: PointerEvent) {
+    activeTouches.delete(e.pointerId);
+    updateStats();
+    draw();
+  }
+
+  function updateStats(lastX = 0, lastY = 0) {
+    if (!mtCountText || !mtMaxText || !mtCoordsText) return;
+    const count = activeTouches.size;
+    if (count > maxTouches) {
+      maxTouches = count;
+    }
+
+    mtCountText.textContent = String(count);
+    mtMaxText.textContent = String(maxTouches);
+
+    if (count > 0) {
+      mtCoordsText.textContent = `X: ${Math.round(lastX)}, Y: ${Math.round(lastY)}`;
+    } else {
+      mtCoordsText.textContent = 'X: 0, Y: 0';
+    }
+  }
+
+  function draw() {
+    if (!ctx || !canvas) return;
+    const w = canvas.width;
+    const h = canvas.height;
+
+    // Redraw black viewport
+    ctx.clearRect(0, 0, w, h);
+    ctx.fillStyle = '#050608';
+    ctx.fillRect(0, 0, w, h);
+
+    // Draw diagnostic grid lines
+    ctx.strokeStyle = '#101318';
+    ctx.lineWidth = 1;
+    const gridSize = 40 * (window.devicePixelRatio || 1);
+    for (let x = 0; x < w; x += gridSize) {
+      ctx.beginPath();
+      ctx.moveTo(x, 0);
+      ctx.lineTo(x, h);
+      ctx.stroke();
+    }
+    for (let y = 0; y < h; y += gridSize) {
+      ctx.beginPath();
+      ctx.moveTo(0, y);
+      ctx.lineTo(w, y);
+      ctx.stroke();
+    }
+
+    // Draw active pointer halos
+    let colorIndex = 0;
+    activeTouches.forEach((touch, id) => {
+      const color = colorPalette[colorIndex % colorPalette.length];
+      colorIndex++;
+
+      const baseRadius = 50 * (window.devicePixelRatio || 1);
+      // Scale radius by pressure for rich physical feedback
+      const radius = baseRadius * (0.6 + touch.pressure * 0.8);
+
+      // Outer glowing halo
+      ctx.beginPath();
+      ctx.arc(touch.x, touch.y, radius, 0, Math.PI * 2);
+      ctx.fillStyle = `${color}15`; // 10% opacity
+      ctx.fill();
+      ctx.strokeStyle = color;
+      ctx.lineWidth = 3;
+      ctx.stroke();
+
+      // Inner contact point
+      ctx.beginPath();
+      ctx.arc(touch.x, touch.y, 8 * (window.devicePixelRatio || 1), 0, Math.PI * 2);
+      ctx.fillStyle = color;
+      ctx.fill();
+
+      // Text coordinates overlay next to pointer
+      ctx.fillStyle = '#ffffff';
+      ctx.font = `${10 * (window.devicePixelRatio || 1)}px monospace`;
+      ctx.fillText(`ID: ${id}`, touch.x + radius + 5, touch.y - 12);
+      ctx.fillText(`X: ${Math.round(touch.x)}, Y: ${Math.round(touch.y)}`, touch.x + radius + 5, touch.y + 2);
+      ctx.fillText(`P: ${Math.round(touch.pressure * 100)}%`, touch.x + radius + 5, touch.y + 16);
+    });
+  }
+
+  initMultiTouch();
+</script>

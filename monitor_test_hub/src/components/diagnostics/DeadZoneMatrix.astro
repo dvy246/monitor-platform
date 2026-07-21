@@ -1,0 +1,218 @@
+---
+// DeadZoneMatrix.astro component
+---
+<div class="flex-grow flex flex-col items-center justify-center p-4">
+  <div class="w-full max-w-4xl bg-diagnostic-gray5 border border-gray-850 rounded-2xl p-6 shadow-2xl flex flex-col h-[75dvh]">
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
+      <div>
+        <h2 class="text-xl font-bold heading-brand text-diagnostic-matrixGreen mb-1">Digitizer Dead-Zone Matrix Test</h2>
+        <p class="text-gray-400 text-xs md:text-sm">
+          Sweep your finger across the entire screen. Untested cells are Gray. Touched cells turn Green. Press Evaluate to expose untreated cells as Red dead zones.
+        </p>
+      </div>
+      <div class="flex gap-2">
+        <button id="dz-btn-eval" class="px-4 py-2 bg-diagnostic-matrixGreen text-black font-extrabold text-xs rounded-xl hover:bg-[#00e57a] transition-all cursor-pointer">
+          Evaluate
+        </button>
+        <button id="dz-btn-reset" class="px-4 py-2 bg-diagnostic-gray10 text-white font-bold text-xs rounded-xl hover:bg-gray-850 transition-all border border-gray-850 cursor-pointer">
+          Reset
+        </button>
+      </div>
+    </div>
+
+    <!-- Telemetry -->
+    <div class="grid grid-cols-2 gap-4 mb-4 font-mono text-xs">
+      <div class="bg-black p-3 rounded-xl border border-gray-850">
+        <span class="text-gray-400 text-[10px] uppercase block">Coverage Rating</span>
+        <span id="dz-coverage" class="text-lg font-bold text-white font-mono">0.0%</span>
+      </div>
+      <div class="bg-black p-3 rounded-xl border border-gray-850">
+        <span class="text-gray-400 text-[10px] uppercase block">Dead Cells Highlighted</span>
+        <span id="dz-dead-count" class="text-lg font-bold text-diagnostic-matrixGreen font-mono">0</span>
+      </div>
+    </div>
+
+    <!-- Active Touch Sandbox -->
+    <div class="flex-grow relative rounded-xl overflow-hidden bg-black border border-gray-850 touch-none focus:outline-none" tabindex="0" role="region" aria-label="Interactive Touch Digitizer Matrix Grid">
+      <canvas id="deadzone-canvas" class="w-full h-full block select-none touch-none"></canvas>
+    </div>
+    <div id="dz-status" class="sr-only" aria-live="polite"></div>
+  </div>
+</div>
+
+<script>
+  import { setupTouchSandbox, getNormalizedCoords } from '../../utils/mobileSandbox';
+
+  const canvas = document.getElementById('deadzone-canvas') as HTMLCanvasElement;
+  const coverageText = document.getElementById('dz-coverage');
+  const deadCountText = document.getElementById('dz-dead-count');
+  const statusEl = document.getElementById('dz-status');
+  const btnEval = document.getElementById('dz-btn-eval');
+  const btnReset = document.getElementById('dz-btn-reset');
+
+  let ctx: CanvasRenderingContext2D | null = null;
+
+  const COLS = 10;
+  const ROWS = 16;
+  
+  let gridState: number[][] = [];
+  let isTesting = false;
+
+  function initDeadZone() {
+    if (!canvas || !coverageText || !deadCountText || !btnEval || !btnReset) return;
+    ctx = canvas.getContext('2d');
+
+    setupTouchSandbox(canvas);
+
+    const resize = () => {
+      const rect = canvas.parentElement?.getBoundingClientRect();
+      canvas.width = (rect?.width || 800) * (window.devicePixelRatio || 1);
+      canvas.height = (rect?.height || 500) * (window.devicePixelRatio || 1);
+      draw();
+    };
+
+    window.addEventListener('resize', resize);
+    window.addEventListener('beforeunload', () => {
+      window.removeEventListener('resize', resize);
+    });
+
+    resetGrid();
+    resize();
+
+    canvas.addEventListener('pointerdown', startSweep);
+    canvas.addEventListener('pointermove', performSweep);
+    canvas.addEventListener('pointerup', endSweep);
+    canvas.addEventListener('pointercancel', endSweep);
+
+    // Keyboard Operability for Canvas Region
+    canvas.addEventListener('keydown', (e: KeyboardEvent) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        evaluateDeadZones();
+      } else if (e.key === 'Escape' || e.key === 'r') {
+        resetGrid();
+      }
+    });
+
+    btnEval.addEventListener('click', evaluateDeadZones);
+    btnReset.addEventListener('click', resetGrid);
+  }
+
+  function resetGrid() {
+    gridState = Array(COLS).fill(0).map(() => Array(ROWS).fill(0));
+    updateStats();
+    draw();
+    if (statusEl) {
+      statusEl.textContent = "Digitizer grid reset. Sweep screen to verify touch coverage.";
+    }
+  }
+
+  function startSweep(e: PointerEvent) {
+    isTesting = true;
+    updateCell(e.clientX, e.clientY);
+  }
+
+  function performSweep(e: PointerEvent) {
+    if (!isTesting) return;
+    updateCell(e.clientX, e.clientY);
+  }
+
+  function endSweep() {
+    isTesting = false;
+  }
+
+  function updateCell(clientX: number, clientY: number) {
+    if (!canvas) return;
+    const coords = getNormalizedCoords(clientX, clientY, canvas);
+    const cellW = canvas.width / COLS;
+    const cellH = canvas.height / ROWS;
+
+    const col = Math.floor(coords.x / cellW);
+    const row = Math.floor(coords.y / cellH);
+
+    if (col >= 0 && col < COLS && row >= 0 && row < ROWS) {
+      if (gridState[col][row] === 0 || gridState[col][row] === 2) {
+        gridState[col][row] = 1;
+        updateStats();
+        draw();
+      }
+    }
+  }
+
+  function evaluateDeadZones() {
+    let deadCount = 0;
+    for (let c = 0; c < COLS; c++) {
+      for (let r = 0; r < ROWS; r++) {
+        if (gridState[c][r] === 0) {
+          gridState[c][r] = 2;
+          deadCount++;
+        }
+      }
+    }
+
+    if (deadCountText) {
+      deadCountText.textContent = String(deadCount);
+      deadCountText.className = deadCount > 0 ? "text-lg font-bold text-diagnostic-deadRed font-mono" : "text-lg font-bold text-diagnostic-matrixGreen font-mono";
+    }
+
+    if (statusEl && coverageText) {
+      statusEl.textContent = `Evaluation complete. ${deadCount} dead cells highlighted. Total coverage: ${coverageText.textContent}.`;
+    }
+
+    draw();
+  }
+
+  function updateStats() {
+    if (!coverageText || !deadCountText) return;
+
+    let verified = 0;
+    let dead = 0;
+    for (let c = 0; c < COLS; c++) {
+      for (let r = 0; r < ROWS; r++) {
+        if (gridState[c][r] === 1) verified++;
+        if (gridState[c][r] === 2) dead++;
+      }
+    }
+
+    const pct = (verified / (COLS * ROWS)) * 100;
+    coverageText.textContent = `${pct.toFixed(1)}%`;
+    deadCountText.textContent = String(dead);
+    deadCountText.className = dead > 0 ? "text-lg font-bold text-diagnostic-deadRed font-mono" : "text-lg font-bold text-diagnostic-matrixGreen font-mono";
+  }
+
+  function draw() {
+    if (!ctx || !canvas) return;
+    const w = canvas.width;
+    const h = canvas.height;
+
+    ctx.clearRect(0, 0, w, h);
+
+    const cellW = w / COLS;
+    const cellH = h / ROWS;
+
+    for (let c = 0; c < COLS; c++) {
+      for (let r = 0; r < ROWS; r++) {
+        const x = c * cellW;
+        const y = r * cellH;
+
+        const state = gridState[c] ? gridState[c][r] : 0;
+        if (state === 1) {
+          ctx.fillStyle = 'rgba(0, 255, 136, 0.2)';
+          ctx.strokeStyle = '#00ff88';
+        } else if (state === 2) {
+          ctx.fillStyle = 'rgba(255, 51, 102, 0.2)';
+          ctx.strokeStyle = '#ff3366';
+        } else {
+          ctx.fillStyle = '#0a0d14';
+          ctx.strokeStyle = '#1a1d24';
+        }
+
+        ctx.fillRect(x + 1, y + 1, cellW - 2, cellH - 2);
+        ctx.lineWidth = 1;
+        ctx.strokeRect(x + 1, y + 1, cellW - 2, cellH - 2);
+      }
+    }
+  }
+
+  initDeadZone();
+</script>

@@ -1,0 +1,583 @@
+---
+import DiagnosticButton from '../ui/DiagnosticButton.astro';
+import {
+  getAllRefreshRates,
+  getAllPollingRates,
+  sanitizeRefreshRate,
+  sanitizePollingRate,
+  REFRESH_RATE_CONFIG,
+  POLLING_RATE_CONFIG
+} from '../../engine/InputLagEngine';
+
+export interface Props {
+  initialRefreshRate?: number | string;
+  initialPollingRate?: number | string;
+  targetMode?: 'flash-box' | 'reticle-sniper';
+  sampleSize?: number;
+  class?: string;
+}
+
+const {
+  initialRefreshRate = 240,
+  initialPollingRate = 1000,
+  targetMode = 'reticle-sniper',
+  sampleSize = 10,
+  class: className = ''
+} = Astro.props;
+
+const initialHzKey = sanitizeRefreshRate(initialRefreshRate);
+const initialPollKey = sanitizePollingRate(initialPollingRate);
+
+const initialHzNum = REFRESH_RATE_CONFIG[initialHzKey].hz;
+const initialPollNum = POLLING_RATE_CONFIG[initialPollKey].hz;
+---
+
+<div class:list={["bg-bg-surface border border-border-hairline rounded-xl p-4 sm:p-6 font-mono shadow-specular-top text-text-primary select-none", className]}>
+  <!-- Header & Status Bar -->
+  <div class="flex flex-col sm:flex-row sm:items-center justify-between border-b border-border-hairline pb-4 mb-6 gap-3">
+    <div class="flex items-center gap-3">
+      <span class="w-3 h-3 rounded-full bg-status-pass led-glow-pass shrink-0"></span>
+      <h2 class="text-sm sm:text-base font-bold text-text-primary uppercase tracking-wider">
+        High-Refresh Input Lag & Reflex Reaction Sniper
+      </h2>
+    </div>
+    <div class="flex items-center gap-2 flex-wrap">
+      <span id="quantization-badge" class="hidden text-[10px] text-status-warn bg-status-warn/10 border border-status-warn/30 px-2 py-0.5 rounded font-mono font-bold">
+        TIMER QUANTIZED
+      </span>
+      <span class="text-[11px] text-text-muted bg-bg-elevated px-2.5 py-1 rounded border border-border-hairline font-mono font-semibold">
+        Sub-ms performance.now() Precision
+      </span>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+    <!-- Left Column: Hardware Parameters & Calibration Deck -->
+    <div class="space-y-5 bg-bg-canvas p-5 rounded-lg border border-border-hairline flex flex-col justify-between">
+      <div class="space-y-4">
+        <h3 class="text-xs font-bold text-text-muted uppercase tracking-wider">Hardware Configuration</h3>
+        
+        <!-- Refresh Rate Select -->
+        <div>
+          <label for="sniper-hz-select" class="block text-xs font-bold text-text-secondary uppercase mb-1.5">
+            Display Refresh Rate
+          </label>
+          <select id="sniper-hz-select" class="w-full bg-bg-surface border border-border-hairline text-text-primary text-xs rounded-lg p-2.5 outline-none focus:ring-2 focus:ring-status-pass focus:border-status-pass cursor-pointer">
+            <option value="60" selected={initialHzNum === 60}>60 Hz (16.67ms frame period)</option>
+            <option value="120" selected={initialHzNum === 120}>120 Hz (8.33ms frame period)</option>
+            <option value="144" selected={initialHzNum === 144}>144 Hz (6.94ms frame period)</option>
+            <option value="240" selected={initialHzNum === 240}>240 Hz (4.17ms frame period)</option>
+            <option value="360" selected={initialHzNum === 360}>360 Hz (2.78ms frame period)</option>
+            <option value="540" selected={initialHzNum === 540}>540 Hz (1.85ms frame period)</option>
+          </select>
+        </div>
+
+        <!-- Polling Rate Select -->
+        <div>
+          <label for="sniper-poll-select" class="block text-xs font-bold text-text-secondary uppercase mb-1.5">
+            Mouse / Controller Polling Rate
+          </label>
+          <select id="sniper-poll-select" class="w-full bg-bg-surface border border-border-hairline text-text-primary text-xs rounded-lg p-2.5 outline-none focus:ring-2 focus:ring-status-pass focus:border-status-pass cursor-pointer">
+            <option value="125" selected={initialPollNum === 125}>125 Hz (8.00ms poll period)</option>
+            <option value="500" selected={initialPollNum === 500}>500 Hz (2.00ms poll period)</option>
+            <option value="1000" selected={initialPollNum === 1000}>1000 Hz (1.00ms poll period)</option>
+            <option value="2000" selected={initialPollNum === 2000}>2000 Hz (0.50ms poll period)</option>
+            <option value="4000" selected={initialPollNum === 4000}>4000 Hz (0.25ms poll period)</option>
+            <option value="8000" selected={initialPollNum === 8000}>8000 Hz (0.125ms poll period)</option>
+          </select>
+        </div>
+
+        <!-- Diagnostic Mode Toggle -->
+        <div>
+          <label class="block text-xs font-bold text-text-secondary uppercase mb-1.5">Diagnostic Target Mode</label>
+          <div class="grid grid-cols-2 gap-2" id="mode-toggle-group">
+            <button type="button" data-mode="reticle-sniper" class:list={["mode-btn text-xs font-semibold py-2 px-3 rounded border focus:outline-none focus:ring-2 focus:ring-status-pass cursor-pointer text-center transition-all", targetMode === 'reticle-sniper' ? "bg-status-pass/20 border-status-pass text-status-pass" : "bg-bg-surface border-border-hairline text-text-secondary hover:text-text-primary"]}>
+              Target Reticle
+            </button>
+            <button type="button" data-mode="flash-box" class:list={["mode-btn text-xs font-semibold py-2 px-3 rounded border focus:outline-none focus:ring-2 focus:ring-status-pass cursor-pointer text-center transition-all", targetMode === 'flash-box' ? "bg-status-pass/20 border-status-pass text-status-pass" : "bg-bg-surface border-border-hairline text-text-secondary hover:text-text-primary"]}>
+              Flash Screen Box
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Theoretical Latency Floor Box -->
+      <div class="bg-bg-surface border border-border-hairline rounded-lg p-3 space-y-2 text-xs font-mono">
+        <div class="flex justify-between">
+          <span class="text-text-muted">Frame Window:</span>
+          <span id="calc-frame-period" class="text-text-primary font-bold">4.17 ms</span>
+        </div>
+        <div class="flex justify-between">
+          <span class="text-text-muted">Poll Period:</span>
+          <span id="calc-poll-period" class="text-text-primary font-bold">1.00 ms</span>
+        </div>
+        <div class="flex justify-between border-t border-border-hairline pt-1.5">
+          <span class="text-text-muted">Theoretical Input Floor:</span>
+          <span id="calc-input-floor" class="text-status-pass font-bold">2.59 ms</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Center & Right Columns: Visual Target Sniper Viewport -->
+    <div class="lg:col-span-2 space-y-4">
+      <div 
+        id="sniper-viewport-container" 
+        tabindex="0"
+        role="button"
+        aria-label="Reflex target area. Click target or press Spacebar / Enter as fast as possible when target flashes green"
+        class="relative w-full h-80 bg-bg-canvas border border-border-hairline rounded-lg overflow-hidden cursor-crosshair select-none focus:outline-none focus:ring-2 focus:ring-status-pass focus:ring-offset-2 focus:ring-offset-bg-canvas"
+      >
+        <!-- Background Grid Layer -->
+        <div class="absolute inset-0 bg-precision-grid opacity-40 pointer-events-none"></div>
+
+        <!-- Target Canvas -->
+        <canvas id="sniper-canvas" class="absolute inset-0 w-full h-full block z-10"></canvas>
+
+        <!-- Dynamic Overlay Message -->
+        <div id="sniper-instruction-overlay" class="absolute inset-0 z-20 flex flex-col items-center justify-center bg-bg-canvas/85 backdrop-blur-xs transition-opacity duration-200 pointer-events-none p-4 text-center">
+          <span id="overlay-primary-text" class="text-sm sm:text-base font-bold text-text-primary mb-1">
+            CLICK TO INITIALIZE SNIPER ROUND
+          </span>
+          <span id="overlay-sub-text" class="text-xs text-text-muted">
+            Use Mouse Click, Touch Tap, or Spacebar / Enter key
+          </span>
+        </div>
+      </div>
+
+      <!-- Real-time Hardware Bottleneck Warning Banner -->
+      <div id="bottleneck-warning-banner" class="bg-bg-elevated border border-border-hairline rounded-lg p-3 flex items-center justify-between gap-3 text-xs font-mono">
+        <div class="flex items-center gap-2.5 overflow-hidden">
+          <span id="bottleneck-indicator-led" class="w-2.5 h-2.5 rounded-full bg-status-pass led-glow-pass shrink-0"></span>
+          <span id="bottleneck-text" class="text-text-primary font-bold truncate">
+            BALANCED HIGH-REFRESH SYSTEM (240Hz / 1000Hz)
+          </span>
+        </div>
+        <span id="bottleneck-tag" class="px-2 py-0.5 rounded text-[10px] font-bold bg-status-pass/20 text-status-pass border border-status-pass/30 uppercase shrink-0">
+          OPTIMAL
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Telemetry Readout Metrics Deck (Zero CLS) -->
+  <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6" aria-live="polite">
+    <div class="bg-bg-canvas p-4 rounded-lg border border-border-hairline min-h-[90px] flex flex-col justify-between">
+      <span class="text-text-muted text-[10px] uppercase font-bold tracking-wider">LAST LATENCY</span>
+      <span id="telemetry-last" class="text-xl sm:text-2xl font-extrabold text-text-primary font-mono-tech tabular-nums">— ms</span>
+      <span class="text-[10px] text-text-muted font-mono">DOM pointer event delta</span>
+    </div>
+
+    <div class="bg-bg-canvas p-4 rounded-lg border border-border-hairline min-h-[90px] flex flex-col justify-between">
+      <span class="text-text-muted text-[10px] uppercase font-bold tracking-wider">BEST REFLEX</span>
+      <span id="telemetry-best" class="text-xl sm:text-2xl font-extrabold text-status-pass font-mono-tech tabular-nums">— ms</span>
+      <span class="text-[10px] text-text-muted font-mono">Personal round record</span>
+    </div>
+
+    <div class="bg-bg-canvas p-4 rounded-lg border border-border-hairline min-h-[90px] flex flex-col justify-between">
+      <span class="text-text-muted text-[10px] uppercase font-bold tracking-wider">AVG LATENCY ({sampleSize} RUNS)</span>
+      <span id="telemetry-avg" class="text-xl sm:text-2xl font-extrabold text-status-info font-mono-tech tabular-nums">— ms</span>
+      <span id="telemetry-rating" class="text-[10px] text-text-muted font-mono">Rolling mean reflex</span>
+    </div>
+
+    <div class="bg-bg-canvas p-4 rounded-lg border border-border-hairline min-h-[90px] flex flex-col justify-between">
+      <span class="text-text-muted text-[10px] uppercase font-bold tracking-wider">EST. HARDWARE LAG</span>
+      <span id="telemetry-est-lag" class="text-xl sm:text-2xl font-extrabold text-text-primary font-mono-tech tabular-nums">— ms</span>
+      <span class="text-[10px] text-text-muted font-mono">Baseline delay floor</span>
+    </div>
+  </div>
+
+  <!-- Reflex Reaction Distribution Histogram Deck -->
+  <div class="bg-bg-canvas border border-border-hairline rounded-lg p-4 space-y-3">
+    <div class="flex items-center justify-between">
+      <span class="text-xs font-bold text-text-muted uppercase tracking-wider">Reflex Reaction Histogram Distribution</span>
+      <span id="histogram-sample-count" class="text-[10px] text-text-muted font-mono">0 / {sampleSize} Samples Completed</span>
+    </div>
+
+    <div id="sniper-histogram-container" class="w-full h-28 bg-bg-surface border border-border-hairline rounded-lg p-3 flex items-end gap-2 relative overflow-hidden">
+      <!-- Default Empty State -->
+      <div id="histogram-empty-msg" class="absolute inset-0 flex items-center justify-center text-xs text-text-muted italic">
+        Complete reaction targets to generate latency frequency histogram...
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  import {
+    analyzeBottleneck,
+    calculateReactionStats,
+    calculateHistogramBins,
+    sanitizeRefreshRate,
+    sanitizePollingRate,
+    getFrameIntervalMs,
+    getPollingIntervalMs,
+    calculateLatency
+  } from '../../engine/InputLagEngine';
+
+  let isRunning = false;
+  let targetActive = false;
+  let flashTimestamp = 0;
+  let timerId: number | null = null;
+  let currentMode: 'reticle-sniper' | 'flash-box' = 'reticle-sniper';
+
+  let targetX = 0;
+  let targetY = 0;
+  const targetRadius = 28;
+
+  const latencies: number[] = [];
+  const maxSamples = 10;
+
+  // DOM Elements
+  const container = document.getElementById('sniper-viewport-container') as HTMLDivElement | null;
+  const canvas = document.getElementById('sniper-canvas') as HTMLCanvasElement | null;
+  const overlay = document.getElementById('sniper-instruction-overlay');
+  const primaryOverlayText = document.getElementById('overlay-primary-text');
+  const subOverlayText = document.getElementById('overlay-sub-text');
+  const hzSelect = document.getElementById('sniper-hz-select') as HTMLSelectElement | null;
+  const pollSelect = document.getElementById('sniper-poll-select') as HTMLSelectElement | null;
+
+  const lastEl = document.getElementById('telemetry-last');
+  const bestEl = document.getElementById('telemetry-best');
+  const avgEl = document.getElementById('telemetry-avg');
+  const ratingEl = document.getElementById('telemetry-rating');
+  const estLagEl = document.getElementById('telemetry-est-lag');
+  const sampleCountEl = document.getElementById('histogram-sample-count');
+  const histogramContainer = document.getElementById('sniper-histogram-container');
+  const emptyHistogramMsg = document.getElementById('histogram-empty-msg');
+
+  const warningBanner = document.getElementById('bottleneck-warning-banner');
+  const warningText = document.getElementById('bottleneck-text');
+  const warningTag = document.getElementById('bottleneck-tag');
+  const warningLed = document.getElementById('bottleneck-indicator-led');
+
+  let ctx: CanvasRenderingContext2D | null = null;
+  let cachedRect: DOMRect | null = null;
+  let isVisible = true;
+  let animFrameId: number | null = null;
+
+  function initInputLagSniper() {
+    if (!canvas || !container) return;
+
+    ctx = canvas.getContext('2d', { desynchronized: true });
+
+    const updateCanvasBounds = () => {
+      if (!container || !canvas) return;
+      cachedRect = container.getBoundingClientRect();
+      const dpr = window.devicePixelRatio || 1;
+      canvas.width = cachedRect.width * dpr;
+      canvas.height = cachedRect.height * dpr;
+      render();
+    };
+
+    updateCanvasBounds();
+    window.addEventListener('resize', updateCanvasBounds);
+
+    if ('IntersectionObserver' in window) {
+      const observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            isVisible = entry.isIntersecting;
+            if (isVisible && targetActive && !animFrameId) {
+              animFrameId = requestAnimationFrame(renderLoop);
+            }
+          });
+        },
+        { threshold: 0.1 }
+      );
+      observer.observe(container);
+    }
+
+    container.addEventListener('pointerdown', (e) => {
+      handleTriggerInput(e);
+    });
+
+    container.addEventListener('keydown', (e) => {
+      if (e.key === ' ' || e.key === 'Enter') {
+        e.preventDefault();
+        handleTriggerInput(e);
+      }
+    });
+
+    hzSelect?.addEventListener('change', updateBottleneckAnalysis);
+    pollSelect?.addEventListener('change', updateBottleneckAnalysis);
+    updateBottleneckAnalysis();
+
+    const modeBtns = document.querySelectorAll<HTMLButtonElement>('.mode-btn');
+    modeBtns.forEach((btn) => {
+      btn.addEventListener('click', (e) => {
+        const mode = (e.currentTarget as HTMLElement).dataset.mode as any;
+        if (mode) {
+          currentMode = mode;
+          modeBtns.forEach((b) => {
+            b.classList.remove('bg-status-pass/20', 'border-status-pass', 'text-status-pass');
+            b.classList.add('bg-bg-surface', 'border-border-hairline', 'text-text-secondary');
+          });
+          btn.classList.remove('bg-bg-surface', 'border-border-hairline', 'text-text-secondary');
+          btn.classList.add('bg-status-pass/20', 'border-status-pass', 'text-status-pass');
+          resetRound();
+        }
+      });
+    });
+
+    window.addEventListener('themechange', () => {
+      render();
+    });
+
+    checkTimerQuantization();
+  }
+
+  function updateBottleneckAnalysis() {
+    const hzRaw = hzSelect?.value || '240';
+    const pollRaw = pollSelect?.value || '1000';
+
+    const bottleneck = analyzeBottleneck(hzRaw, pollRaw);
+
+    const frameEl = document.getElementById('calc-frame-period');
+    const pollEl = document.getElementById('calc-poll-period');
+    const floorEl = document.getElementById('calc-input-floor');
+
+    if (frameEl) frameEl.textContent = `${bottleneck.frameIntervalMs.toFixed(2)} ms`;
+    if (pollEl) pollEl.textContent = `${bottleneck.pollingIntervalMs.toFixed(3)} ms`;
+    if (floorEl) floorEl.textContent = `${bottleneck.totalBaselineHardwareDelayMs.toFixed(2)} ms`;
+
+    if (estLagEl) estLagEl.textContent = `${bottleneck.totalBaselineHardwareDelayMs.toFixed(2)} ms`;
+
+    if (!warningText || !warningTag || !warningLed) return;
+
+    if (bottleneck.bottleneckType === 'DISPLAY_LIMITED') {
+      warningText.textContent = `DISPLAY REFRESH BOTTLENECK (${bottleneck.refreshRateHz}Hz limits frame period to ${bottleneck.frameIntervalMs}ms)`;
+      warningTag.textContent = 'DISPLAY LIMIT';
+      warningTag.className =
+        'px-2 py-0.5 rounded text-[10px] font-bold bg-status-warn/20 text-status-warn border border-status-warn/30 uppercase shrink-0';
+      warningLed.className = 'w-2.5 h-2.5 rounded-full bg-status-warn led-glow-warn shrink-0';
+    } else if (bottleneck.bottleneckType === 'POLLING_LIMITED') {
+      warningText.textContent = `USB POLLING BOTTLENECK (${bottleneck.pollingRateHz}Hz polling interval is ${bottleneck.pollingIntervalMs}ms)`;
+      warningTag.textContent = 'POLLING LIMIT';
+      warningTag.className =
+        'px-2 py-0.5 rounded text-[10px] font-bold bg-status-fail/20 text-status-fail border border-status-fail/30 uppercase shrink-0';
+      warningLed.className = 'w-2.5 h-2.5 rounded-full bg-status-fail led-glow-fail shrink-0';
+    } else {
+      warningText.textContent = `BALANCED HIGH-REFRESH SYSTEM (${bottleneck.refreshRateHz}Hz Refresh / ${bottleneck.pollingRateHz}Hz Polling Rate)`;
+      warningTag.textContent = 'OPTIMAL';
+      warningTag.className =
+        'px-2 py-0.5 rounded text-[10px] font-bold bg-status-pass/20 text-status-pass border border-status-pass/30 uppercase shrink-0';
+      warningLed.className = 'w-2.5 h-2.5 rounded-full bg-status-pass led-glow-pass shrink-0';
+    }
+  }
+
+  function handleTriggerInput(e: Event) {
+    if (!isRunning) {
+      startRound();
+      return;
+    }
+
+    if (!targetActive) {
+      // False start penalty
+      if (timerId) clearTimeout(timerId);
+      if (overlay && primaryOverlayText && subOverlayText) {
+        overlay.style.opacity = '1';
+        primaryOverlayText.textContent = 'TOO EARLY! FALSE START PENALTY';
+        primaryOverlayText.className = 'text-sm sm:text-base font-bold text-status-fail mb-1';
+        subOverlayText.textContent = 'Click or press Spacebar to retry target round';
+      }
+      isRunning = false;
+      return;
+    }
+
+    const inputTime = (e as PointerEvent).timeStamp || performance.now();
+    const latency = calculateLatency(flashTimestamp, inputTime);
+    if (latency > 0) {
+      latencies.push(latency);
+    }
+
+    targetActive = false;
+    if (overlay && primaryOverlayText && subOverlayText) {
+      overlay.style.opacity = '1';
+      primaryOverlayText.textContent = `HIT! ${latency.toFixed(1)} ms`;
+      primaryOverlayText.className = 'text-sm sm:text-base font-bold text-status-pass mb-1';
+      subOverlayText.textContent = 'Click or press Spacebar for next target';
+    }
+
+    updateTelemetry();
+    render();
+  }
+
+  function startRound() {
+    isRunning = true;
+    targetActive = false;
+    if (overlay) overlay.style.opacity = '0';
+
+    render();
+
+    const delay = 1200 + Math.random() * 2000;
+    timerId = setTimeout(() => {
+      spawnTarget();
+    }, delay) as any;
+  }
+
+  function spawnTarget() {
+    if (!canvas) return;
+
+    const dpr = window.devicePixelRatio || 1;
+    const w = canvas.width;
+    const h = canvas.height;
+    const pad = targetRadius * 2 * dpr;
+
+    if (currentMode === 'reticle-sniper') {
+      targetX = pad + Math.random() * (w - pad * 2);
+      targetY = pad + Math.random() * (h - pad * 2);
+    }
+
+    targetActive = true;
+    flashTimestamp = performance.now();
+    render();
+  }
+
+  function resetRound() {
+    isRunning = false;
+    targetActive = false;
+    if (timerId) clearTimeout(timerId);
+    if (overlay && primaryOverlayText && subOverlayText) {
+      overlay.style.opacity = '1';
+      primaryOverlayText.textContent = 'CLICK TO INITIALIZE SNIPER ROUND';
+      primaryOverlayText.className = 'text-sm sm:text-base font-bold text-text-primary mb-1';
+      subOverlayText.textContent = 'Use Mouse Click, Touch Tap, or Spacebar / Enter key';
+    }
+    render();
+  }
+
+  function updateTelemetry() {
+    if (latencies.length === 0) return;
+
+    const last = latencies[latencies.length - 1];
+    const best = Math.min(...latencies);
+
+    const stats = calculateReactionStats(latencies);
+
+    if (lastEl) lastEl.textContent = `${last.toFixed(1)} ms`;
+    if (bestEl) bestEl.textContent = `${best.toFixed(1)} ms`;
+    if (avgEl) avgEl.textContent = `${stats.meanMs.toFixed(1)} ms`;
+    if (ratingEl) ratingEl.textContent = stats.ratingLabel;
+
+    if (sampleCountEl) {
+      sampleCountEl.textContent = `${latencies.length} / ${maxSamples} Samples Completed`;
+    }
+
+    renderHistogram();
+  }
+
+  function renderHistogram() {
+    if (!histogramContainer || latencies.length === 0) return;
+    if (emptyHistogramMsg) emptyHistogramMsg.style.display = 'none';
+
+    histogramContainer.innerHTML = '';
+
+    const histResult = calculateHistogramBins(latencies, { binCount: 8 });
+
+    histResult.bins.forEach((bin) => {
+      const barWrapper = document.createElement('div');
+      barWrapper.className = 'flex-1 flex flex-col items-center h-full justify-end group relative';
+
+      const bar = document.createElement('div');
+      const heightPct = Math.max(8, bin.percentage);
+
+      let bgClass = 'bg-status-pass';
+      if (bin.isPeak) {
+        bgClass = 'bg-status-info font-bold shadow-sm';
+      } else if (bin.minMs > 250) {
+        bgClass = 'bg-status-fail';
+      } else if (bin.minMs > 200) {
+        bgClass = 'bg-status-warn';
+      }
+
+      bar.className = `${bgClass} w-full rounded-t transition-all duration-300`;
+      bar.style.height = `${heightPct}%`;
+
+      // Tooltip on hover
+      const tooltip = document.createElement('div');
+      tooltip.className =
+        'absolute -top-8 bg-bg-elevated border border-border-hairline text-[10px] text-text-primary px-2 py-0.5 rounded shadow-md opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-30 font-mono';
+      tooltip.textContent = `${bin.rangeLabel}: ${bin.count} count (${bin.percentage}%)`;
+
+      barWrapper.appendChild(tooltip);
+      barWrapper.appendChild(bar);
+      histogramContainer.appendChild(barWrapper);
+    });
+  }
+
+  function checkTimerQuantization() {
+    const badge = document.getElementById('quantization-badge');
+    const t0 = performance.now();
+    let step = 0;
+    for (let i = 0; i < 100; i++) {
+      const t1 = performance.now();
+      if (t1 > t0) {
+        step = t1 - t0;
+        break;
+      }
+    }
+    if (step >= 1.9 && badge) {
+      badge.classList.remove('hidden');
+    }
+  }
+
+  function render() {
+    if (!ctx || !canvas) return;
+    const w = canvas.width;
+    const h = canvas.height;
+    const dpr = window.devicePixelRatio || 1;
+
+    const isLight = document.documentElement.classList.contains('light');
+    ctx.fillStyle = isLight ? '#f8fafc' : '#08080a';
+    ctx.fillRect(0, 0, w, h);
+
+    if (targetActive) {
+      if (currentMode === 'flash-box') {
+        ctx.fillStyle = isLight ? '#059669' : '#10b981';
+        ctx.fillRect(0, 0, w, h);
+      } else {
+        const r = targetRadius * dpr;
+
+        // Emitter glow
+        ctx.beginPath();
+        ctx.arc(targetX, targetY, r * 1.5, 0, Math.PI * 2);
+        ctx.fillStyle = isLight ? 'rgba(5, 150, 105, 0.2)' : 'rgba(16, 185, 129, 0.2)';
+        ctx.fill();
+
+        // Outer ring
+        ctx.beginPath();
+        ctx.arc(targetX, targetY, r, 0, Math.PI * 2);
+        ctx.strokeStyle = isLight ? '#059669' : '#10b981';
+        ctx.lineWidth = 3 * dpr;
+        ctx.stroke();
+
+        // Center reticle dot
+        ctx.beginPath();
+        ctx.arc(targetX, targetY, 4 * dpr, 0, Math.PI * 2);
+        ctx.fillStyle = isLight ? '#dc2626' : '#ef4444';
+        ctx.fill();
+
+        // Crosshairs
+        ctx.strokeStyle = isLight ? 'rgba(5, 150, 105, 0.6)' : 'rgba(16, 185, 129, 0.6)';
+        ctx.lineWidth = 1.5 * dpr;
+        ctx.beginPath();
+        ctx.moveTo(targetX - r - 12 * dpr, targetY);
+        ctx.lineTo(targetX + r + 12 * dpr, targetY);
+        ctx.moveTo(targetX, targetY - r - 12 * dpr);
+        ctx.lineTo(targetX, targetY + r + 12 * dpr);
+        ctx.stroke();
+      }
+    }
+  }
+
+  function renderLoop() {
+    if (isVisible && targetActive) {
+      render();
+      animFrameId = requestAnimationFrame(renderLoop);
+    } else {
+      animFrameId = null;
+    }
+  }
+
+  initInputLagSniper();
+</script>

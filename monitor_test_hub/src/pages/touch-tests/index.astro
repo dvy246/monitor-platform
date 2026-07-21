@@ -1,0 +1,103 @@
+---
+import Layout from '../../layouts/Layout.astro';
+---
+
+<Layout 
+  title="Touch Screen Diagnostics" 
+  description="Run responsive, mobile-first touch digitizer tests to map dead-zones, measure multi-touch count support, and check drawing jitter precision."
+>
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <div class="text-center max-w-3xl mx-auto mb-12">
+      <h1 class="heading-brand text-3xl md:text-5xl font-black tracking-tight text-text-primary mb-3">
+        TOUCH SCREEN DIAGNOSTICS
+      </h1>
+      <p class="text-text-secondary text-sm md:text-base leading-relaxed font-sans">
+        Verify digitizer responsiveness, multitouch handling, and gesture tracking metrics using browser-native Pointer Events APIs.
+      </p>
+    </div>
+
+    <!-- Diagnostic Cards -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
+      <!-- Touch Matrix Suite -->
+      <a href="/touch-matrix" class="bg-bg-surface hover:bg-bg-elevated border border-status-pass/40 hover:border-status-pass rounded-xl p-5 flex flex-col justify-between transition-all group shadow-specular-top hover:shadow-[0_0_15px_rgba(5,150,105,0.15)] font-mono">
+        <div class="space-y-4">
+          <div class="w-10 h-10 rounded-lg bg-status-pass/20 flex items-center justify-center text-status-pass border border-status-pass/40">
+            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6a2 2 0 012-2h12a2 2 0 012 2v12a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM9 4v16M15 4v16M4 9h16M4 15h16"/></svg>
+          </div>
+          <h3 class="heading-brand text-base font-bold text-text-primary group-hover:text-status-pass transition-colors font-mono">Touch Matrix Suite</h3>
+          <p class="text-text-secondary text-xs leading-relaxed font-sans">
+            Multi-touch digitizer dead-zone isolation, gesture velocity (px/ms), jitter variance, and trajectory drift.
+          </p>
+        </div>
+        <span class="text-status-pass text-xs font-bold flex items-center gap-1 mt-4">
+          Launch Suite &rarr;
+        </span>
+      </a>
+
+      <!-- Multi-Touch -->
+      <a href="/touch-tests/multi-touch" class="bg-bg-surface hover:bg-bg-elevated border border-border-hairline hover:border-status-pass/40 rounded-xl p-5 flex flex-col justify-between transition-all group shadow-specular-top hover:shadow-[0_0_15px_rgba(5,150,105,0.15)] font-mono">
+        <div class="space-y-4">
+          <div class="w-10 h-10 rounded-lg bg-status-pass/10 flex items-center justify-center text-status-pass border border-status-pass/20">
+            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v1m6 11h2m-6 0h-2v4m0-4V4m0 12h3m0 0l3-3m-3 3l-3-3"/></svg>
+          </div>
+          <h3 class="heading-brand text-base font-bold text-text-primary group-hover:text-status-pass transition-colors font-mono">Multi-Touch Tracker</h3>
+          <p class="text-text-secondary text-xs leading-relaxed font-sans">
+            Test maximum concurrent touch registration and trace contact coordinates.
+          </p>
+        </div>
+        <span class="text-status-pass text-xs font-bold flex items-center gap-1 mt-4">
+          Launch Test &rarr;
+        </span>
+      </a>
+
+      <!-- Dead-Zone Grid -->
+      <a href="/touch-tests/dead-zone" class="bg-bg-surface hover:bg-bg-elevated border border-border-hairline hover:border-status-pass/40 rounded-xl p-5 flex flex-col justify-between transition-all group shadow-specular-top hover:shadow-[0_0_15px_rgba(5,150,105,0.15)] font-mono">
+        <div class="space-y-4">
+          <div class="w-10 h-10 rounded-lg bg-status-info/10 flex items-center justify-center text-status-info border border-status-info/20">
+            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 5a1 1 0 011-1h14a1 1 0 011 1v14a1 1 0 01-1 1H5a1 1 0 01-1-1V5z"/></svg>
+          </div>
+          <h3 class="heading-brand text-base font-bold text-text-primary group-hover:text-status-pass transition-colors font-mono">Dead-Zone Matrix</h3>
+          <p class="text-text-secondary text-xs leading-relaxed font-sans">
+            Sweep to verify complete digitizer grid tracking and isolate unresponsive dead coordinates.
+          </p>
+        </div>
+        <span class="text-status-pass text-xs font-bold flex items-center gap-1 mt-4">
+          Launch Test &rarr;
+        </span>
+      </a>
+
+      <!-- Vector Precision -->
+      <a href="/touch-tests/vector-precision" class="bg-bg-surface hover:bg-bg-elevated border border-border-hairline hover:border-status-pass/40 rounded-xl p-5 flex flex-col justify-between transition-all group shadow-specular-top hover:shadow-[0_0_15px_rgba(5,150,105,0.15)] font-mono">
+        <div class="space-y-4">
+          <div class="w-10 h-10 rounded-lg bg-purple-500/10 flex items-center justify-center text-purple-400 border border-purple-500/20">
+            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+          </div>
+          <h3 class="heading-brand text-base font-bold text-text-primary group-hover:text-status-pass transition-colors font-mono">Vector Draw Jitter</h3>
+          <p class="text-text-secondary text-xs leading-relaxed font-sans">
+            Measure straight-line drawing precision and calculate RMS jitter values.
+          </p>
+        </div>
+        <span class="text-status-pass text-xs font-bold flex items-center gap-1 mt-4">
+          Launch Test &rarr;
+        </span>
+      </a>
+
+      <!-- Swipe Velocity -->
+      <a href="/touch-tests/swipe-velocity" class="bg-bg-surface hover:bg-bg-elevated border border-border-hairline hover:border-status-pass/40 rounded-xl p-5 flex flex-col justify-between transition-all group shadow-specular-top hover:shadow-[0_0_15px_rgba(5,150,105,0.15)] font-mono">
+        <div class="space-y-4">
+          <div class="w-10 h-10 rounded-lg bg-status-fail/10 flex items-center justify-center text-status-fail border border-status-fail/20">
+            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+          </div>
+          <h3 class="heading-brand text-base font-bold text-text-primary group-hover:text-status-pass transition-colors font-mono">Swipe Velocity</h3>
+          <p class="text-text-secondary text-xs leading-relaxed font-sans">
+            Determine swipe tracking speed rates (px/ms) and peak acceleration curves.
+          </p>
+        </div>
+        <span class="text-status-pass text-xs font-bold flex items-center gap-1 mt-4">
+          Launch Test &rarr;
+        </span>
+      </a>
+    </div>
+  </div>
+</Layout>
+

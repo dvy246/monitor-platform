@@ -1,0 +1,25 @@
+---
+import { getAllDeviceTypes, getAllGridDensities } from '../../../../engine/TouchMatrixEngine';
+
+export function getStaticPaths() {
+  const locales = ['es', 'de', 'fr'];
+  const deviceTypes = getAllDeviceTypes();
+  const gridDensities = getAllGridDensities();
+
+  return locales.flatMap((locale) =>
+    deviceTypes.flatMap((deviceType) =>
+      gridDensities.map((gridDensity) => ({
+        params: {
+          locale,
+          deviceType,
+          gridDensity
+        }
+      }))
+    )
+  );
+}
+
+import BasePage from '../../../touch-matrix/[deviceType]/[gridDensity].astro';
+---
+
+<BasePage />

@@ -1,0 +1,76 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import Breadcrumbs from '../../components/ui/Breadcrumbs.astro';
+import MultiTouchDetector from '../../components/diagnostics/MultiTouchDetector.astro';
+import ErgonomicsNotice from '../../components/disclaimers/ErgonomicsNotice.astro';
+import TestSwitcherBar from '../../components/ui/TestSwitcherBar.astro';
+
+const breadcrumbItems = [
+  { label: 'Touch Suite', href: '/touch-tests' },
+  { label: 'Multi-Touch Counter & Tracker' }
+];
+
+const touchTests = [
+  { id: 'dead-zone', label: 'Dead Zone Matrix', href: '/touch-tests/dead-zone' },
+  { id: 'multi-touch', label: 'Multi-Touch Counter', href: '/touch-tests/multi-touch', active: true },
+  { id: 'vector-precision', label: 'Vector Precision', href: '/touch-tests/vector-precision' },
+  { id: 'swipe-velocity', label: 'Swipe Velocity', href: '/touch-tests/swipe-velocity' },
+  { id: 'input-lag', label: 'Input Lag Test', href: '/touch-tests/input-lag' }
+];
+---
+
+<Layout 
+  title="Multi-Touch Counter & Point Tracker | Monitor Test Hub" 
+  description="Verify hardware digitizer capabilities by tracking up to 10+ concurrent touch contact points in real-time with sub-millisecond W3C PointerEvent precision."
+>
+  <main class="max-w-7xl mx-auto px-4 py-8 space-y-8">
+    <Breadcrumbs items={breadcrumbItems} />
+
+    <header class="space-y-3 border-b border-border-hairline pb-6">
+      <div class="flex items-center gap-2 text-status-pass text-xs font-mono font-bold uppercase tracking-wider">
+        <span class="w-2 h-2 rounded-full bg-status-pass led-glow-pass"></span>
+        W3C POINTEREVENTS MULTI-TOUCH CONTROLLER
+      </div>
+      <h1 class="text-3xl sm:text-4xl font-extrabold text-text-primary tracking-tight">Multi-Touch Counter &amp; Tracker</h1>
+      <p class="text-sm text-text-secondary max-w-3xl">
+        Place multiple fingers on your touchscreen or tablet surface to test hardware digitizer IC multi-touch decoding limits, measure contact point tracking latency, and verify 2-point to 10-point gesture registers.
+      </p>
+    </header>
+
+    <MultiTouchDetector />
+
+    <!-- Multi-Touch Analysis Article -->
+    <article class="bg-bg-surface border border-border-hairline rounded-2xl p-6 sm:p-8 space-y-6 shadow-specular-top font-sans text-sm text-text-secondary leading-relaxed">
+      <div class="border-b border-border-hairline pb-4">
+        <span class="font-mono text-[10px] font-bold text-status-pass uppercase tracking-widest block mb-1">POINTER EVENT API &amp; DIGITIZER MULTIPLEXING</span>
+        <h2 class="text-xl font-bold text-text-primary">Multi-Touch Scanning, Touch IC Multiplexing &amp; Spatial Resolution</h2>
+      </div>
+
+      <p>
+        Hardware touch screen controllers utilize high-speed analog-to-digital converters (ADCs) to scan the capacitive ITO matrix at rates up to 240Hz. Through <strong>mutual capacitance sensing</strong>, the touch IC measures charge transfers at every row-column intersection, resolving multiple independent coordinate pairs simultaneously without <em>ghosting</em> or axis confusion.
+      </p>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 font-mono text-xs my-4">
+        <div class="bg-bg-canvas p-4 rounded-xl border border-border-hairline space-y-1">
+          <span class="text-text-muted text-[10px] uppercase block">5-Point Multi-Touch</span>
+          <strong class="text-text-primary block text-sm">Basic Mobile Standard</strong>
+          <p class="font-sans text-[11px] text-text-secondary">Standard entry-level digitizer capable of tracking 5 simultaneous finger touch points.</p>
+        </div>
+        <div class="bg-bg-canvas p-4 rounded-xl border border-border-hairline space-y-1">
+          <span class="text-text-muted text-[10px] uppercase block">10-Point Multi-Touch</span>
+          <strong class="text-text-primary block text-sm">Pro Tablet &amp; Flagship Standard</strong>
+          <p class="font-sans text-[11px] text-text-secondary">High-bandwidth touch IC capable of processing all 10 fingers for complex gestures and digital audio workstation controls.</p>
+        </div>
+        <div class="bg-bg-canvas p-4 rounded-xl border border-border-hairline space-y-1">
+          <span class="text-text-muted text-[10px] uppercase block">Active Stylus Co-processor</span>
+          <strong class="text-text-primary block text-sm">Pressure &amp; Tilt Sensing</strong>
+          <p class="font-sans text-[11px] text-text-secondary">Integrates electro-magnetic resonance (EMR) or USI active protocols for sub-millimeter tip precision.</p>
+        </div>
+      </div>
+
+      <ErgonomicsNotice />
+    </article>
+
+    <TestSwitcherBar tests={touchTests} currentId="multi-touch" />
+  </main>
+</Layout>

@@ -1,0 +1,61 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import GamepadDrift from '../../components/diagnostics/GamepadDrift.astro';
+
+const faqs = [
+  {
+    question: "What causes controller stick drift?",
+    answer: "Traditional analog sticks use resistive potentiometers. Over time, mechanical friction wears down resistive graphite tracks or deposits dust, causing electrical signals to wander even when the stick is resting."
+  },
+  {
+    question: "What is stick circularity error?",
+    answer: "Circularity measures how perfectly an analog stick traces a 360° outer circle boundary. High circularity error (e.g. >10%) means diagonal movement speed will be slower or non-uniform in games."
+  },
+  {
+    question: "What are Hall Effect analog sticks?",
+    answer: "Hall Effect thumbsticks use contactless magnetic sensors rather than physical friction potentiometers to measure position, making them completely immune to mechanical stick drift over time."
+  },
+  {
+    question: "How do I connect my controller to run this web test?",
+    answer: "Connect your controller via USB cable or Bluetooth, press any button on the controller to wake the browser Gamepad API, and move the analog sticks to view live diagnostic telemetry."
+  }
+];
+---
+
+<Layout 
+  title="Gamepad & Controller Tester | Stick Drift & Axis Calibration"
+  description="Test your Xbox, PlayStation DualSense, or Switch controller for stick drift and button responsiveness. Free browser Gamepad API calibration tool under W3C standards."
+>
+  <main id="main-content" class="py-10 px-4 sm:px-6 lg:px-8 space-y-12">
+    <section class="max-w-4xl mx-auto text-center space-y-4">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-status-pass/10 border border-status-pass/30 text-xs font-mono text-status-pass font-bold">
+        <span>W3C GAMEPAD API POLAR COORDINATE METRICS</span>
+      </div>
+      <h1 class="text-3xl sm:text-4xl font-extrabold font-mono tracking-tight text-text-primary">
+        Gamepad Controller Stick Drift &amp; Axis Calibration
+      </h1>
+      <p class="text-sm sm:text-base text-text-muted leading-relaxed max-w-2xl mx-auto">
+        Test your PlayStation DualSense, Xbox Wireless, or Switch Pro controller for analog stick deadzone drift, 360° circularity error, and button axis travel.
+      </p>
+    </section>
+
+    <GamepadDrift />
+
+    <article class="max-w-4xl mx-auto space-y-8 bg-bg-surface/80 border border-border-hairline rounded-2xl p-6 sm:p-8 backdrop-blur-xl text-sm text-text-secondary leading-relaxed">
+      <h2 class="text-xl font-bold font-mono text-text-primary">Understanding Analog Stick Potentiometers &amp; Deadzones</h2>
+      <p>
+        Analog thumbsticks return 2D polar coordinates $(x, y)$ from -1.0 to +1.0. When potentiometer contacts wear down, resting deadzone values shift away from origin (0,0), triggering in-game camera drift.
+      </p>
+
+      <h2 class="text-xl font-bold font-mono text-text-primary">Frequently Asked Questions</h2>
+      <div class="space-y-4">
+        {faqs.map(faq => (
+          <div class="border-b border-border-hairline pb-4 space-y-1">
+            <h3 class="font-bold text-text-primary font-mono">{faq.question}</h3>
+            <p class="text-xs text-text-muted">{faq.answer}</p>
+          </div>
+        ))}
+      </div>
+    </article>
+  </main>
+</Layout>

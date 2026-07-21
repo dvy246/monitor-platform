@@ -1,0 +1,95 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Breadcrumbs from '../components/ui/Breadcrumbs.astro';
+
+const title = 'Terms & Conditions | Monitor Test Hub';
+const description = 'Read the terms and conditions for using Monitor Test Hub, a free browser-based hardware diagnostic tool.';
+---
+
+<Layout title={title} description={description}>
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-8">
+    <Breadcrumbs items={[{ label: 'Terms & Conditions' }]} />
+
+    <div class="bg-bg-surface border border-border-hairline rounded-2xl shadow-specular-top px-8 py-10">
+      <h1 class="font-mono text-3xl md:text-4xl font-extrabold text-text-primary tracking-tight uppercase mb-2">
+        Terms &amp; Conditions
+      </h1>
+      <p class="font-mono text-xs text-text-muted tracking-widest uppercase mb-2">Last updated: July 2025</p>
+      <div class="h-px bg-border-hairline mb-8" />
+
+      <div class="font-sans text-text-secondary leading-relaxed space-y-8 text-sm md:text-base">
+
+        <section>
+          <h2 class="font-mono text-base font-bold text-text-primary uppercase tracking-wider mb-2">1. Acceptance of Terms</h2>
+          <p>
+            By accessing or using Monitor Test Hub (the "Service"), you agree to be bound by these Terms and Conditions ("Terms"). If you do not agree to all of these Terms, do not access or use the Service. Your continued use of the Service following the posting of any changes constitutes acceptance of those changes.
+          </p>
+        </section>
+
+        <section>
+          <h2 class="font-mono text-base font-bold text-text-primary uppercase tracking-wider mb-2">2. Description of Service</h2>
+          <p>
+            Monitor Test Hub provides a free, browser-based suite of hardware diagnostic instruments for evaluating computer displays and touchscreen digitizers. The Service operates entirely client-side and requires no account registration. We reserve the right to modify, suspend, or discontinue any aspect of the Service at any time without notice or liability.
+          </p>
+        </section>
+
+        <section>
+          <h2 class="font-mono text-base font-bold text-text-primary uppercase tracking-wider mb-2">3. Disclaimer of Warranties</h2>
+          <p>
+            THE SERVICE IS PROVIDED "AS IS" AND "AS AVAILABLE" WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, AND NON-INFRINGEMENT. Monitor Test Hub does not warrant that the Service will be uninterrupted, error-free, or free of viruses or other harmful components. Diagnostic results are intended for informational and benchmarking purposes only and are not guaranteed to be accurate for all hardware configurations.
+          </p>
+        </section>
+
+        <section>
+          <h2 class="font-mono text-base font-bold text-text-primary uppercase tracking-wider mb-2">4. Non-Medical Disclaimer</h2>
+          <p>
+            Monitor Test Hub is a hardware engineering and calibration utility. None of the content, tools, scores, or outputs provided by the Service constitute medical advice, diagnosis, or treatment. Do not use any test results from this Service as the basis for medical or health decisions. If you have concerns about your vision or eye health, consult a qualified healthcare professional.
+          </p>
+        </section>
+
+        <section>
+          <h2 class="font-mono text-base font-bold text-text-primary uppercase tracking-wider mb-2">5. Limitation of Liability</h2>
+          <p>
+            TO THE MAXIMUM EXTENT PERMITTED BY APPLICABLE LAW, MONITOR TEST HUB AND ITS CONTRIBUTORS SHALL NOT BE LIABLE FOR ANY INDIRECT, INCIDENTAL, SPECIAL, CONSEQUENTIAL, OR PUNITIVE DAMAGES, INCLUDING BUT NOT LIMITED TO LOSS OF PROFITS, DATA, OR GOODWILL, ARISING OUT OF OR IN CONNECTION WITH YOUR USE OF THE SERVICE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGES. IN NO EVENT SHALL OUR TOTAL LIABILITY TO YOU EXCEED ONE HUNDRED DOLLARS (USD $100).
+          </p>
+        </section>
+
+        <section>
+          <h2 class="font-mono text-base font-bold text-text-primary uppercase tracking-wider mb-2">6. Intellectual Property</h2>
+          <p>
+            All source code, design assets, written content, and diagnostic algorithms comprising Monitor Test Hub are the intellectual property of their respective authors and are made available under the terms of our open-source license. You may not reproduce, distribute, or create derivative works of any proprietary elements of the Service without express written permission. Open-source components retain their original licenses.
+          </p>
+        </section>
+
+        <section>
+          <h2 class="font-mono text-base font-bold text-text-primary uppercase tracking-wider mb-2">7. Third-Party Links</h2>
+          <p>
+            The Service may contain links to third-party websites or resources. These links are provided for convenience only. Monitor Test Hub has no control over the content or practices of third-party sites and accepts no responsibility or liability for their content, privacy policies, or practices. We encourage you to review the terms and privacy policies of any third-party sites you visit.
+          </p>
+        </section>
+
+        <section>
+          <h2 class="font-mono text-base font-bold text-text-primary uppercase tracking-wider mb-2">8. Governing Law</h2>
+          <p>
+            These Terms shall be governed by and construed in accordance with applicable law, without regard to its conflict-of-law provisions. Any dispute arising from these Terms or your use of the Service shall be subject to binding arbitration or the exclusive jurisdiction of the competent courts in the applicable jurisdiction.
+          </p>
+        </section>
+
+        <section>
+          <h2 class="font-mono text-base font-bold text-text-primary uppercase tracking-wider mb-2">9. Changes to Terms</h2>
+          <p>
+            We reserve the right to update or replace these Terms at any time at our sole discretion. The "Last updated" date at the top of this page reflects when the Terms were last revised. We will make reasonable efforts to notify users of material changes. Your continued use of the Service after any revision constitutes your acceptance of the revised Terms.
+          </p>
+        </section>
+
+        <section>
+          <h2 class="font-mono text-base font-bold text-text-primary uppercase tracking-wider mb-2">10. Contact</h2>
+          <p>
+            If you have any questions about these Terms and Conditions, please contact us at <a href="mailto:team@monitortesthub.com" class="text-status-pass hover:underline font-mono">team@monitortesthub.com</a> or visit our <a href="/contact" class="text-status-pass hover:underline">Contact page</a>. We aim to respond to all inquiries within 48 business hours.
+          </p>
+        </section>
+
+      </div>
+    </div>
+  </div>
+</Layout>

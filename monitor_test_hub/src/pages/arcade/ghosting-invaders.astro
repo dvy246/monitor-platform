@@ -1,0 +1,18 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import GhostingInvaders from '../../components/arcade/GhostingInvaders.astro';
+import EpilepsyWarning from '../../components/disclaimers/EpilepsyWarning.astro';
+---
+
+<Layout 
+  title="Ghosting Invaders Game" 
+  description="Control a pursuit camera reticle to visually examine gray-to-gray transition ghosting trailing blur and overdrive coronas in our motion benchmark."
+>
+  <div class="py-4">
+    <GhostingInvaders />
+    
+    <div class="max-w-4xl mx-auto px-4">
+      <EpilepsyWarning />
+    </div>
+  </div>
+</Layout>

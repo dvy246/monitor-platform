@@ -1,0 +1,290 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import Breadcrumbs from '../../components/ui/Breadcrumbs.astro';
+import TestSwitcherBar from '../../components/ui/TestSwitcherBar.astro';
+
+
+const breadcrumbItems = [
+  { label: 'Display Suite', href: '/display-tests' },
+  { label: 'PPI & Pixel Density Calculator' }
+];
+
+const displayTests = [
+  { id: 'sub-pixel', label: 'Sub-Pixel Analyzer', href: '/display-tests/sub-pixel' },
+  { id: 'uniformity', label: 'OLED Uniformity', href: '/display-tests/uniformity' },
+  { id: 'vrr', label: 'VRR Sync Engine', href: '/display-tests/vrr' },
+  { id: 'oled-burn-in', label: 'OLED Burn-In Risk', href: '/display-tests/oled-burn-in' },
+  { id: 'hdr-test', label: 'HDR Brightness', href: '/display-tests/hdr-test' },
+  { id: 'ppi-calculator', label: 'PPI Calculator', href: '/display-tests/ppi-calculator', active: true }
+];
+
+// Prebuilt common monitor combos for structured data / SEO
+const popularDisplays = [
+  { name: '27" 4K (3840x2160)', w: 3840, h: 2160, diag: 27 },
+  { name: '27" 1440p (2560x1440)', w: 2560, h: 1440, diag: 27 },
+  { name: '32" 4K (3840x2160)', w: 3840, h: 2160, diag: 32 },
+  { name: '34" UWQHD (3440x1440)', w: 3440, h: 1440, diag: 34 },
+  { name: '24" 1080p (1920x1080)', w: 1920, h: 1080, diag: 24 },
+  { name: '49" 5120x1440 Super-UW', w: 5120, h: 1440, diag: 49 },
+];
+---
+
+<Layout 
+  title="Monitor PPI Calculator — Pixel Density & Retina Distance | Monitor Test Hub"
+  description="Calculate exact Pixels Per Inch (PPI), pixel pitch, retina viewing distance, and arcminute visual acuity for any monitor resolution and screen size."
+>
+  <main class="max-w-7xl mx-auto px-4 py-8 space-y-8">
+    <Breadcrumbs items={breadcrumbItems} />
+
+    <header class="space-y-3 border-b border-border-hairline pb-6">
+      <div class="flex items-center gap-2 text-status-pass text-xs font-mono font-bold uppercase tracking-wider">
+        <span class="w-2 h-2 rounded-full bg-status-pass led-glow-pass"></span>
+        ARCMINUTE VISUAL ACUITY — ISO ERGONOMICS
+      </div>
+      <h1 class="text-3xl sm:text-4xl font-extrabold text-text-primary tracking-tight">PPI & Pixel Density Calculator</h1>
+      <p class="text-sm text-text-secondary max-w-3xl">
+        Calculate exact Pixels Per Inch (PPI), pixel pitch, Retina viewing distance threshold (arcminute visual acuity limit), and SMPTE/THX ergonomic viewing distance for any monitor resolution and diagonal screen size.
+      </p>
+    </header>
+
+    <div class="bg-bg-surface border border-border-hairline rounded-xl p-6 font-mono shadow-specular-top">
+      <div class="flex items-center justify-between border-b border-border-hairline pb-4 mb-6">
+        <div class="flex items-center gap-3">
+          <span class="w-3 h-3 rounded-full bg-status-pass led-glow-pass"></span>
+          <h3 class="text-sm font-bold text-text-primary uppercase tracking-wider">PPI & Visual Acuity Engine</h3>
+        </div>
+        <span class="text-xs text-text-muted bg-bg-elevated px-2.5 py-1 rounded border border-border-hairline">ISO 9241 ERGONOMICS</span>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+        <!-- Inputs -->
+        <div class="space-y-4 bg-bg-canvas p-4 rounded-lg border border-border-hairline">
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label for="res-width" class="block text-xs font-bold text-text-secondary uppercase mb-2">Width (px)</label>
+              <input type="number" id="res-width" value="3840" min="320" max="15360" class="w-full bg-bg-surface border border-border-hairline text-text-primary text-xs rounded-lg p-2.5 focus:ring-2 focus:ring-status-pass outline-none" />
+            </div>
+            <div>
+              <label for="res-height" class="block text-xs font-bold text-text-secondary uppercase mb-2">Height (px)</label>
+              <input type="number" id="res-height" value="2160" min="200" max="8640" class="w-full bg-bg-surface border border-border-hairline text-text-primary text-xs rounded-lg p-2.5 focus:ring-2 focus:ring-status-pass outline-none" />
+            </div>
+          </div>
+          <div>
+            <div class="flex justify-between text-xs mb-1">
+              <span class="text-text-secondary">Diagonal Size (inches)</span>
+              <span id="diag-display" class="text-status-pass font-bold">27.0"</span>
+            </div>
+            <input type="range" id="diag-slider" min="13" max="65" step="0.5" value="27" class="w-full accent-status-pass cursor-pointer" />
+          </div>
+
+          <div>
+            <div class="flex justify-between text-xs mb-1">
+              <span class="text-text-secondary">Viewing Distance (cm)</span>
+              <span id="dist-display" class="text-status-pass font-bold">60 cm</span>
+            </div>
+            <input type="range" id="dist-slider" min="30" max="200" step="5" value="60" class="w-full accent-status-pass cursor-pointer" />
+          </div>
+
+          <div>
+            <label for="quick-pick" class="block text-xs font-bold text-text-secondary uppercase mb-2">Quick Pick — Popular Monitors</label>
+            <select id="quick-pick" class="w-full bg-bg-surface border border-border-hairline text-text-primary text-xs rounded-lg p-2.5 focus:ring-2 focus:ring-status-pass outline-none">
+              <option value="">— Select a monitor preset —</option>
+              {popularDisplays.map(d => (
+                <option value={`${d.w},${d.h},${d.diag}`}>{d.name}</option>
+              ))}
+            </select>
+          </div>
+        </div>
+
+        <!-- Results -->
+        <div class="space-y-3">
+          <div class="grid grid-cols-2 gap-3">
+            <div class="bg-bg-canvas border border-border-hairline rounded-lg p-3">
+              <span class="text-text-muted block text-[10px] uppercase">PPI (Pixel Density)</span>
+              <span id="ppi-result" class="text-2xl font-extrabold text-status-pass">163</span>
+              <span class="text-text-muted text-[10px] block">pixels/inch</span>
+            </div>
+            <div class="bg-bg-canvas border border-border-hairline rounded-lg p-3">
+              <span class="text-text-muted block text-[10px] uppercase">Pixel Pitch</span>
+              <span id="pitch-result" class="text-2xl font-extrabold text-text-primary">0.156</span>
+              <span class="text-text-muted text-[10px] block">mm / pixel</span>
+            </div>
+          </div>
+
+          <div class="bg-bg-canvas border border-border-hairline rounded-lg p-3">
+            <span class="text-text-muted block text-[10px] uppercase mb-1">Retina Distance Threshold (1 arcminute limit)</span>
+            <span id="retina-result" class="text-xl font-extrabold text-text-primary">53.4 cm</span>
+            <p id="retina-verdict" class="text-xs text-status-pass mt-1 font-semibold">✓ RETINA CLASS at your distance</p>
+          </div>
+
+          <div class="grid grid-cols-2 gap-3">
+            <div class="bg-bg-canvas border border-border-hairline rounded-lg p-3">
+              <span class="text-text-muted block text-[10px] uppercase">SMPTE Optimal Distance</span>
+              <span id="smpte-result" class="text-base font-bold text-text-primary">71 cm</span>
+              <span class="text-text-muted text-[10px] block">30° horizontal FOV</span>
+            </div>
+            <div class="bg-bg-canvas border border-border-hairline rounded-lg p-3">
+              <span class="text-text-muted block text-[10px] uppercase">THX Cinema Distance</span>
+              <span id="thx-result" class="text-base font-bold text-text-primary">52 cm</span>
+              <span class="text-text-muted text-[10px] block">40° horizontal FOV</span>
+            </div>
+          </div>
+
+          <div class="bg-bg-canvas border border-border-hairline rounded-lg p-3">
+            <span class="text-text-muted block text-[10px] uppercase mb-1">Visual Acuity Rating</span>
+            <div class="flex items-center gap-2">
+              <div class="flex-1 bg-bg-surface rounded-full h-2 overflow-hidden">
+                <div id="acuity-bar" class="h-2 bg-status-pass rounded-full transition-all duration-300" style="width:80%"></div>
+              </div>
+              <span id="acuity-label" class="text-xs font-bold text-status-pass whitespace-nowrap">RETINA</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Popular Presets SEO Table -->
+    <div class="bg-bg-surface border border-border-hairline rounded-xl overflow-hidden">
+      <div class="px-6 py-3 border-b border-border-hairline bg-bg-elevated text-xs text-text-muted uppercase tracking-wider font-bold font-mono">
+        Common Monitor PPI Reference Table
+      </div>
+      <div class="overflow-x-auto">
+        <table class="w-full text-xs font-mono text-text-secondary table-fixed">
+          <thead class="bg-bg-elevated/50 text-text-muted text-[10px] uppercase tracking-wider">
+            <tr>
+              <th class="px-4 py-2 text-left w-2/5">Monitor</th>
+              <th class="px-4 py-2 text-right w-1/5">PPI</th>
+              <th class="px-4 py-2 text-right w-1/5">Retina Dist.</th>
+              <th class="px-4 py-2 text-right w-1/5">Pixel Pitch</th>
+            </tr>
+          </thead>
+          <tbody>
+            {popularDisplays.map(d => {
+              const diag_px = Math.sqrt(d.w * d.w + d.h * d.h);
+              const ppi = Math.round(diag_px / d.diag);
+              const pitchMm = (25.4 / ppi).toFixed(3);
+              const retinaDistMm = 87321 / ppi;
+              const retinaDistCm = (retinaDistMm / 10).toFixed(1);
+              return (
+                <tr class="border-t border-border-hairline hover:bg-bg-elevated transition-colors">
+                  <td class="px-4 py-2.5 text-text-primary font-semibold">{d.name}</td>
+                  <td class="px-4 py-2.5 text-right text-status-pass font-bold">{ppi} PPI</td>
+                  <td class="px-4 py-2.5 text-right">{retinaDistCm} cm</td>
+                  <td class="px-4 py-2.5 text-right text-text-muted">{pitchMm} mm</td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Technical Analysis & Acuity Distance Article -->
+    <article class="bg-bg-surface border border-border-hairline rounded-2xl p-6 sm:p-8 space-y-6 shadow-specular-top font-sans text-sm text-text-secondary leading-relaxed">
+      <div class="border-b border-border-hairline pb-4">
+        <span class="font-mono text-[10px] font-bold text-status-pass uppercase tracking-widest block mb-1">ARCMINUTE VISUAL ACUITY MATHEMATICS</span>
+        <h2 class="text-xl font-bold text-text-primary">Pixel Density, Visual Acuity & Retina Threshold Mechanics</h2>
+      </div>
+
+      <p>
+        The human visual system's spatial resolution limit is defined by the angular resolution of foveal cone photoreceptors, typically benchmarked at <strong>1 arcminute (1/60th of a degree, or 0.01667°)</strong> for 20/20 Snellen acuity. When a monitor's pixel pitch is smaller than the spatial angle subtended by 1 arcminute at a given viewing distance, individual pixels resolve as a continuous, organic image — a threshold popularized as a "Retina Display".
+      </p>
+
+      <div class="bg-bg-canvas p-4 rounded-xl border border-border-hairline font-mono text-xs space-y-2 my-4">
+        <span class="text-text-muted text-[10px] uppercase block tracking-wider">MATHEMATICAL DERIVATION</span>
+        <div class="text-status-pass font-bold">
+          PPI = √(Width² + Height²) / Diagonal_Inches
+        </div>
+        <div class="text-text-primary">
+          Retina Distance (cm) = 3438 / PPI
+        </div>
+        <div class="text-text-secondary text-[11px] font-sans">
+          Where 3438 represents the radian multiplier derived from (180 × 60) / π arcminutes.
+        </div>
+      </div>
+
+      <h3 class="text-base font-bold text-text-primary font-mono uppercase tracking-wider">Ergonomic Viewing Angle Standards</h3>
+      <p>
+        Standard cinematic and desktop ergonomics guidelines define field-of-view (FOV) targets to optimize immersion without triggering ocular muscle fatigue:
+      </p>
+      <ul class="list-disc pl-5 space-y-2 text-text-secondary">
+        <li><strong>SMPTE (Society of Motion Picture and Television Engineers):</strong> Recommends a minimum 30° horizontal viewing angle for general computing and video playback.</li>
+        <li><strong>THX Cinematic Benchmark:</strong> Recommends a 40° horizontal viewing angle for immersive gaming and cinematic media playback.</li>
+        <li><strong>ISO 9241-307 Visual Acuity Standard:</strong> Defines comfortable desktop viewing distance between 50 cm and 75 cm for 100–140 PPI displays.</li>
+      </ul>
+    </article>
+
+    <TestSwitcherBar tests={displayTests} currentId="ppi-calculator" />
+  </main>
+</Layout>
+
+<script>
+  const widthIn = document.getElementById('res-width') as HTMLInputElement;
+  const heightIn = document.getElementById('res-height') as HTMLInputElement;
+  const diagSlider = document.getElementById('diag-slider') as HTMLInputElement;
+  const distSlider = document.getElementById('dist-slider') as HTMLInputElement;
+  const diagDisplay = document.getElementById('diag-display');
+  const distDisplay = document.getElementById('dist-display');
+  const quickPick = document.getElementById('quick-pick') as HTMLSelectElement;
+
+  function compute() {
+    const w = parseFloat(widthIn?.value || '3840');
+    const h = parseFloat(heightIn?.value || '2160');
+    const d = parseFloat(diagSlider?.value || '27');
+    const dist = parseFloat(distSlider?.value || '60') * 10; // cm to mm
+
+    if (diagDisplay) diagDisplay.textContent = `${d}"`;
+    if (distDisplay) distDisplay.textContent = `${Math.round(dist / 10)} cm`;
+
+    const diagPx = Math.sqrt(w * w + h * h);
+    const ppi = diagPx / d;
+    const pitchMm = 25.4 / ppi;
+    const retinaDistMm = 87321 / ppi;
+    const screenWidthMm = (w / diagPx) * d * 25.4;
+    const smpteDistMm = screenWidthMm * 1.866;
+    const thxDistMm = screenWidthMm * 1.373;
+
+    const ppiEl = document.getElementById('ppi-result');
+    const pitchEl = document.getElementById('pitch-result');
+    const retinaEl = document.getElementById('retina-result');
+    const retinaVerdict = document.getElementById('retina-verdict');
+    const smpteEl = document.getElementById('smpte-result');
+    const thxEl = document.getElementById('thx-result');
+    const acuityBar = document.getElementById('acuity-bar') as HTMLElement;
+    const acuityLabel = document.getElementById('acuity-label');
+
+    if (ppiEl) ppiEl.textContent = Math.round(ppi).toString();
+    if (pitchEl) pitchEl.textContent = pitchMm.toFixed(3);
+    if (retinaEl) retinaEl.textContent = `${(retinaDistMm / 10).toFixed(1)} cm`;
+    if (smpteEl) smpteEl.textContent = `${Math.round(smpteDistMm / 10)} cm`;
+    if (thxEl) thxEl.textContent = `${Math.round(thxDistMm / 10)} cm`;
+
+    const isRetina = dist <= retinaDistMm;
+    const acuityPct = Math.min(100, Math.round((ppi / 250) * 100));
+    if (acuityBar) {
+      acuityBar.style.width = `${acuityPct}%`;
+      acuityBar.style.background = isRetina ? '#059669' : '#d97706';
+    }
+    if (acuityLabel) { acuityLabel.textContent = isRetina ? 'RETINA' : 'VISIBLE'; acuityLabel.style.color = isRetina ? '#059669' : '#d97706'; }
+    if (retinaVerdict) {
+      retinaVerdict.textContent = isRetina ? '✓ RETINA CLASS at your distance' : '⚠ Pixels visible — move back or upgrade PPI';
+      retinaVerdict.style.color = isRetina ? '#059669' : '#d97706';
+    }
+  }
+
+  widthIn?.addEventListener('input', compute);
+  heightIn?.addEventListener('input', compute);
+  diagSlider?.addEventListener('input', compute);
+  distSlider?.addEventListener('input', compute);
+
+  quickPick?.addEventListener('change', () => {
+    const [w, h, d] = (quickPick.value || '').split(',').map(Number);
+    if (!w || !h || !d) return;
+    if (widthIn) widthIn.value = String(w);
+    if (heightIn) heightIn.value = String(h);
+    if (diagSlider) diagSlider.value = String(d);
+    compute();
+  });
+
+  compute();
+</script>

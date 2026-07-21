@@ -1,0 +1,62 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import BacklightBleed from '../../components/diagnostics/BacklightBleed.astro';
+
+const faqs = [
+  {
+    question: "What is the difference between backlight bleed and IPS glow?",
+    answer: "Backlight bleed is a hardware defect where light escapes around the edges of the display bezel and remains visible regardless of viewing angle. IPS glow is an inherent optical characteristic of In-Plane Switching panels that changes intensity and position as your viewing angle alters."
+  },
+  {
+    question: "Is backlight bleed grounds for returning a monitor?",
+    answer: "Severe backlight bleed visible during normal ambient lighting or letterboxed video playback is typically covered under manufacturer defect warranties. Minor glow only visible in pure darkness at maximum brightness is generally considered within panel tolerance."
+  },
+  {
+    question: "How should I set up my screen before running this test?",
+    answer: "Turn off all ambient room lights, clean your display panel, set screen brightness to your normal operating level (typically 120–150 nits), and allow the monitor to warm up for 15 minutes."
+  },
+  {
+    question: "Can backlight bleed be fixed with software?",
+    answer: "No, backlight bleed is a physical mechanical defect caused by frame pressure or panel sealing issues. However, loosening bezel screws slightly or reducing screen brightness can reduce visual impact."
+  }
+];
+---
+
+<Layout 
+  title="Backlight Bleed & IPS Glow Test | Online Monitor Leak Inspector"
+  description="Test your LCD or IPS monitor for backlight bleed and light leakage. Free dark-room inspection tool with luminance uniformity scoring under IEC 62341-6-2 standards."
+>
+  <main id="main-content" class="py-10 px-4 sm:px-6 lg:px-8 space-y-12">
+    <section class="max-w-4xl mx-auto text-center space-y-4">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-status-pass/10 border border-status-pass/30 text-xs font-mono text-status-pass font-bold">
+        <span>IEC 62341-6-2 STANDARDS COMPLIANT</span>
+      </div>
+      <h1 class="text-3xl sm:text-4xl font-extrabold font-mono tracking-tight text-text-primary">
+        Backlight Bleed &amp; IPS Glow Inspector
+      </h1>
+      <p class="text-sm sm:text-base text-text-muted leading-relaxed max-w-2xl mx-auto">
+        Inspect your new LCD monitor, laptop, or IPS screen for backlight bleed, corner light leaks, and off-axis IPS glow shifts under calibrated dark-room conditions.
+      </p>
+    </section>
+
+    <BacklightBleed />
+
+    <!-- Technical Guide Content Section -->
+    <article class="max-w-4xl mx-auto space-y-8 bg-bg-surface/80 border border-border-hairline rounded-2xl p-6 sm:p-8 backdrop-blur-xl text-sm text-text-secondary leading-relaxed">
+      <h2 class="text-xl font-bold font-mono text-text-primary">Understanding Display Light Leakage &amp; Bezel Pressure</h2>
+      <p>
+        Backlight bleed occurs when liquid crystal display panels suffer from uneven mechanical pressure from bezel frames, allowing LED backlights to bleed through pixel edges. Unlike OLED panels where every pixel emits its own light, LCD screens rely on high-intensity edge-lit or direct backlights that require tight physical seals.
+      </p>
+
+      <h2 class="text-xl font-bold font-mono text-text-primary">Frequently Asked Questions</h2>
+      <div class="space-y-4">
+        {faqs.map(faq => (
+          <div class="border-b border-border-hairline pb-4 space-y-1">
+            <h3 class="font-bold text-text-primary font-mono">{faq.question}</h3>
+            <p class="text-xs text-text-muted">{faq.answer}</p>
+          </div>
+        ))}
+      </div>
+    </article>
+  </main>
+</Layout>

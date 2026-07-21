@@ -1,0 +1,123 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+import Breadcrumbs from '../../../components/ui/Breadcrumbs.astro';
+import OledBurnInAnalyzer from '../../../components/diagnostics/OledBurnInAnalyzer.astro';
+import { calculateOledBurnInRisk, getPanelLabel, getTierLabel, getAllPanelTypes, getAllUsageTiers } from '../../../engine/OledBurnInEngine';
+
+export async function getStaticPaths() {
+  const panels = getAllPanelTypes();
+  const tiers = getAllUsageTiers();
+
+  return panels.flatMap((panelType) =>
+    tiers.map((usageTier) => ({
+      params: { panelType, usageTier }
+    }))
+  );
+}
+
+const { panelType: panelTypeParam, usageTier: usageTierParam } = Astro.params;
+const panelType = panelTypeParam || 'qd-oled-v2';
+const usageTier = usageTierParam || 'moderate';
+
+const panelLabel = getPanelLabel(panelType);
+const tierLabel = getTierLabel(usageTier);
+
+const riskResult = calculateOledBurnInRisk({
+  panelType,
+  usageTier
+});
+
+const pageTitle = `${panelLabel} ${tierLabel} Burn-In Risk Audit | Monitor Test Hub`;
+const metaDescription = `Hardware image retention & burn-in risk audit for ${panelLabel} displays operating under ${tierLabel}. Evaluates 5% near-black uniformity decay and ISO 9241-307 metrics.`;
+---
+
+<Layout title={pageTitle} description={metaDescription}>
+  <main class="max-w-7xl mx-auto px-4 py-8 space-y-8">
+    <Breadcrumbs items={[
+      { label: 'Display Suite', href: '/display-tests' },
+      { label: 'OLED Burn-In Risk', href: '/oled-burn-in-risk' },
+      { label: `${panelLabel} — ${usageTier.toUpperCase()}` }
+    ]} />
+
+    <!-- Page Header Deck -->
+    <header class="space-y-3 border-b border-border-hairline pb-6">
+      <div class="flex items-center gap-2 text-status-pass text-xs font-mono font-bold uppercase tracking-wider">
+        <span class="w-2.5 h-2.5 rounded-full bg-status-pass led-glow-pass"></span>
+        HARDWARE RISK PROFILE AUDIT
+      </div>
+      <h1 class="text-3xl sm:text-4xl font-extrabold text-text-primary tracking-tight font-mono">
+        {panelLabel} — {tierLabel} Profile
+      </h1>
+      <p class="text-sm text-text-secondary max-w-3xl leading-relaxed">
+        Standardized ISO 9241-307 image retention risk calculation and near-black luminance decay simulation for <strong class="text-text-primary">{panelLabel}</strong> operating under <strong class="text-text-primary">{tierLabel}</strong> ({riskResult.hoursEvaluated.toLocaleString()} hours).
+      </p>
+    </header>
+
+    <!-- Key Metrics Highlight Deck -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 font-mono">
+      <div class="bg-bg-surface border border-border-hairline rounded-lg p-4 shadow-specular-top">
+        <span class="text-[10px] text-text-muted uppercase font-bold tracking-wider block mb-1">PANEL ARCHITECTURE</span>
+        <span class="text-sm font-bold text-text-primary block truncate">{panelType.toUpperCase()}</span>
+        <span class="text-[10px] text-text-secondary mt-1 block">Mult: {panelType === 'qd-oled' ? '1.45x' : panelType === 'woled-meta' ? '0.95x' : '1.10x'}</span>
+      </div>
+
+      <div class="bg-bg-surface border border-border-hairline rounded-lg p-4 shadow-specular-top">
+        <span class="text-[10px] text-text-muted uppercase font-bold tracking-wider block mb-1">EVALUATED HOURS</span>
+        <span class="text-sm font-bold text-status-pass block">{riskResult.hoursEvaluated.toLocaleString()} hrs</span>
+        <span class="text-[10px] text-text-secondary mt-1 block">{riskResult.staticHoursPerDayEvaluated} hrs/day static</span>
+      </div>
+
+      <div class="bg-bg-surface border border-border-hairline rounded-lg p-4 shadow-specular-top">
+        <span class="text-[10px] text-text-muted uppercase font-bold tracking-wider block mb-1">ESTIMATED RISK SCORE</span>
+        <span class:list={["text-sm font-extrabold block", riskResult.riskScore > 50 ? "text-status-fail" : riskResult.riskScore > 25 ? "text-status-warn" : "text-status-pass"]}>
+          {riskResult.riskScore} / 100
+        </span>
+        <span class="text-[10px] text-text-secondary mt-1 block uppercase">{riskResult.riskCategory.replace('_', ' ')}</span>
+      </div>
+
+      <div class="bg-bg-surface border border-border-hairline rounded-lg p-4 shadow-specular-top">
+        <span class="text-[10px] text-text-muted uppercase font-bold tracking-wider block mb-1">LUMINANCE RETENTION</span>
+        <span class="text-sm font-bold text-text-primary block">{riskResult.estimatedLuminanceRetentionPct}%</span>
+        <span class="text-[10px] text-text-muted mt-1 block">Decay: {riskResult.retentionDecayRatePct}%</span>
+      </div>
+    </div>
+
+    <!-- Diagnostic Analyzer Component initialized with dynamic panel & tier -->
+    <OledBurnInAnalyzer initialPanel={panelType} initialTier={usageTier} initialHours={riskResult.hoursEvaluated} />
+
+    <!-- Specific Panel Technical Analysis Section -->
+    <section class="bg-bg-surface border border-border-hairline rounded-xl p-6 space-y-4 font-mono">
+      <h2 class="text-base font-bold text-text-primary uppercase tracking-wider border-b border-border-hairline pb-3">
+        Engineering Assessment: {panelLabel} under {tierLabel}
+      </h2>
+      <div class="space-y-3 text-xs text-text-secondary leading-relaxed">
+        <p>
+          Under <strong class="text-text-primary">{tierLabel}</strong> ({riskResult.hoursEvaluated.toLocaleString()} hours cumulative operation), <strong class="text-text-primary">{panelLabel}</strong> displays an estimated retention level of <strong class="text-text-primary">{riskResult.estimatedLuminanceRetentionPct}%</strong> with a risk category of <strong class="text-text-primary">{riskResult.riskCategory.replace('_', ' ')}</strong>.
+        </p>
+        <p>
+          Sub-pixels exposed to continuous static graphics (such as taskbars or HUD elements for {riskResult.staticHoursPerDayEvaluated} hours/day) experience accelerated organic emitter wear. To maintain peak uniformity, display controllers should trigger pixel refresh routines every <strong class="text-text-primary">{riskResult.recommendedRefreshIntervalHours} hours</strong>.
+        </p>
+      </div>
+
+      <!-- Cross Navigation to Other Panel Types -->
+      <div class="pt-4 border-t border-border-hairline">
+        <span class="text-xs font-bold text-text-muted uppercase tracking-wider block mb-3">Compare With Other Panel Architectures under {tierLabel}:</span>
+        <div class="flex flex-wrap gap-2 text-xs">
+          {getAllPanelTypes().map((p) => (
+            <a
+              href={`/oled-burn-in-risk/${p}/${usageTier}`}
+              class:list={[
+                "px-3 py-1.5 rounded border transition-colors focus:outline-none focus:ring-2 focus:ring-status-pass",
+                p === panelType 
+                  ? "bg-status-pass/20 border-status-pass text-status-pass font-bold" 
+                  : "bg-bg-canvas border-border-hairline text-text-secondary hover:text-text-primary"
+              ]}
+            >
+              {p.toUpperCase()}
+            </a>
+          ))}
+        </div>
+      </div>
+    </section>
+  </main>
+</Layout>

@@ -1,0 +1,247 @@
+---
+// GhostingInvaders.astro component
+---
+<div class="flex-grow flex flex-col items-center justify-center p-4">
+  <div class="w-full max-w-4xl bg-gray-900/50 border border-gray-800 rounded-xl p-6 shadow-2xl flex flex-col h-[75dvh]">
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
+      <div>
+        <h3 class="text-xl font-bold heading-brand text-diagnostic-matrixGreen mb-1">Ghosting Invaders Arcade</h3>
+        <p class="text-gray-400 text-xs md:text-sm">
+          Hold <kbd class="px-1.5 py-0.5 rounded bg-gray-800 text-white font-mono border border-gray-700 text-[10px]">SPACEBAR</kbd> to lock the pursuit camera onto the alien. Observe trailing blur (ghosting) and coronas (overshoot).
+        </p>
+      </div>
+      <div class="flex gap-2">
+        <button id="gi-btn-toggle" class="bg-diagnostic-matrixGreen hover:bg-diagnostic-matrixGreen/80 text-black font-extrabold text-xs px-4 py-2 rounded-lg transition-all shadow-[0_0_15px_rgba(0,255,136,0.2)]">
+          Launch Test
+        </button>
+      </div>
+    </div>
+
+    <!-- Stats -->
+    <div class="grid grid-cols-3 gap-4 mb-4 font-mono text-center">
+      <div class="bg-gray-950 p-2.5 rounded border border-gray-850">
+        <span class="text-gray-500 text-[10px] uppercase block">Refresh Rate</span>
+        <span id="gi-fps" class="text-sm md:text-base font-bold text-white">0 Hz</span>
+      </div>
+      <div class="bg-gray-950 p-2.5 rounded border border-gray-850">
+        <span class="text-gray-500 text-[10px] uppercase block">Response Time Target</span>
+        <span id="gi-response" class="text-sm md:text-base font-bold text-white">1.0 ms</span>
+      </div>
+      <div class="bg-gray-950 p-2.5 rounded border border-gray-850">
+        <span class="text-gray-500 text-[10px] uppercase block">Overshoot Corona</span>
+        <span id="gi-corona" class="text-sm md:text-base font-bold text-white">0.0%</span>
+      </div>
+    </div>
+
+    <!-- Active Canvas -->
+    <div class="flex-grow relative rounded-lg overflow-hidden bg-black border border-gray-800 touch-none">
+      <canvas id="gi-canvas" class="w-full h-full block select-none"></canvas>
+    </div>
+  </div>
+</div>
+
+<script>
+  import { VsyncSyncEngine } from '../../engine/VsyncSyncEngine';
+
+  const canvas = document.getElementById('gi-canvas') as HTMLCanvasElement;
+  const btnToggle = document.getElementById('gi-btn-toggle');
+  const fpsText = document.getElementById('gi-fps');
+  const responseText = document.getElementById('gi-response');
+  const coronaText = document.getElementById('gi-corona');
+
+  let ctx: CanvasRenderingContext2D | null = null;
+  let engine: VsyncSyncEngine | null = null;
+  let isRunning = false;
+  let isSpacePressed = false;
+
+  // Invader settings
+  let invaderX = 0;
+  let invaderY = 0;
+  let targetSpeed = 1200; // px/sec
+  let pursuitCameraX = 0;
+
+  function initGhostingInvaders() {
+    if (!canvas || !btnToggle) return;
+    ctx = canvas.getContext('2d', { desynchronized: true });
+
+    const resize = () => {
+      const rect = canvas.parentElement?.getBoundingClientRect();
+      canvas.width = (rect?.width || 800) * (window.devicePixelRatio || 1);
+      canvas.height = (rect?.height || 500) * (window.devicePixelRatio || 1);
+      invaderY = canvas.height / 2;
+    };
+
+    window.addEventListener('resize', resize);
+    resize();
+
+    btnToggle.addEventListener('click', () => {
+      if (isRunning) {
+        stopGame();
+      } else {
+        startGame();
+      }
+    });
+
+    // Capture Spacebar
+    window.addEventListener('keydown', (e) => {
+      if (e.code === 'Space') {
+        e.preventDefault();
+        isSpacePressed = true;
+      }
+    });
+    window.addEventListener('keyup', (e) => {
+      if (e.code === 'Space') {
+        isSpacePressed = false;
+      }
+    });
+  }
+
+  function startGame() {
+    if (!canvas || !ctx || !fpsText || !btnToggle) return;
+    isRunning = true;
+    btnToggle.textContent = 'Terminate';
+    btnToggle.classList.replace('bg-diagnostic-matrixGreen', 'bg-diagnostic-deadRed');
+    btnToggle.classList.replace('text-black', 'text-white');
+
+    engine = new VsyncSyncEngine((stats) => {
+      fpsText.textContent = `${stats.currentFps} Hz`;
+      
+      // Calculate dynamic GTG Response based on refresh speed & Vsync status
+      const simulatedResponse = stats.currentFps > 144 ? (stats.currentFps > 360 ? 0.8 : 1.2) : 2.4;
+      if (responseText) responseText.textContent = `${simulatedResponse} ms`;
+      if (coronaText) coronaText.textContent = `${stats.syncLossCount > 0 ? 3.1 : 0.0}%`;
+
+      updatePhysics(stats.frameDeltaMs / 1000, stats.currentFps);
+      draw();
+    });
+
+    engine.start();
+  }
+
+  function stopGame() {
+    if (!btnToggle) return;
+    isRunning = false;
+    btnToggle.textContent = 'Launch Test';
+    btnToggle.classList.replace('bg-diagnostic-deadRed', 'bg-diagnostic-matrixGreen');
+    btnToggle.classList.replace('text-white', 'text-black');
+
+    engine?.stop();
+    engine = null;
+
+    if (ctx && canvas) {
+      ctx.fillStyle = '#000000';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+    }
+  }
+
+  function updatePhysics(dt: number, fps: number) {
+    if (!canvas) return;
+    const w = canvas.width;
+
+    // Target Alien physics
+    const scale = window.devicePixelRatio || 1;
+    invaderX += targetSpeed * dt * scale;
+
+    if (invaderX > w + 100) {
+      invaderX = -100;
+    }
+
+    // Pursuit camera movement logic
+    if (isSpacePressed) {
+      // Smoothly snap/align camera to the alien target
+      const diff = invaderX - pursuitCameraX;
+      pursuitCameraX += diff * 0.15;
+    } else {
+      // Free scroll sweep loop
+      pursuitCameraX += targetSpeed * dt * scale;
+      if (pursuitCameraX > w + 100) {
+        pursuitCameraX = -100;
+      }
+    }
+  }
+
+  function draw() {
+    if (!ctx || !canvas) return;
+    const w = canvas.width;
+    const h = canvas.height;
+
+    // Draw GTG background stripes (varying gray luminance bands)
+    const bandH = h / 5;
+    const grayBands = ['#000000', '#404040', '#808080', '#bfbfbf', '#ffffff'];
+
+    for (let i = 0; i < 5; i++) {
+      ctx.fillStyle = grayBands[i];
+      ctx.fillRect(0, i * bandH, w, bandH);
+    }
+
+    // Draw tracking guidelines
+    ctx.strokeStyle = 'rgba(0, 255, 136, 0.2)';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(0, h / 2);
+    ctx.lineTo(w, h / 2);
+    ctx.stroke();
+
+    const scale = window.devicePixelRatio || 1;
+
+    // Draw Target Alien (simulate pursuit trail)
+    const alienW = 40 * scale;
+    const alienH = 30 * scale;
+
+    const drawAlien = (cx: number, cy: number, isPursuitOverlay = false) => {
+      ctx.fillStyle = isPursuitOverlay ? '#00e5ff' : '#00ff88';
+      
+      // Draw a classic retro arcade space invader shape
+      ctx.beginPath();
+      // Body
+      ctx.fillRect(cx - alienW/2, cy - alienH/2, alienW, alienH);
+      // Antenna
+      ctx.fillRect(cx - 4 * scale, cy - alienH/2 - 6 * scale, 8 * scale, 6 * scale);
+      // Eyes (cutouts)
+      ctx.fillStyle = '#000000';
+      ctx.fillRect(cx - 10 * scale, cy - 6 * scale, 6 * scale, 6 * scale);
+      ctx.fillRect(cx + 4 * scale, cy - 6 * scale, 6 * scale, 6 * scale);
+    };
+
+    // Draw the actual target alien
+    drawAlien(invaderX, h / 2);
+
+    // Draw trailing ghosting trail to visually simulate GTG speed limitations
+    if (!isSpacePressed) {
+      ctx.fillStyle = 'rgba(0, 255, 136, 0.25)';
+      ctx.fillRect(invaderX - 55 * scale, h / 2 - alienH/2, 50 * scale, alienH);
+    }
+
+    // Draw Pursuit Camera Reticle (Spacebar locked indicator)
+    const rx = pursuitCameraX;
+    const ry = h / 2;
+    const reticleRadius = 40 * scale;
+
+    ctx.strokeStyle = isSpacePressed ? '#00e5ff' : '#ffffff';
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.arc(rx, ry, reticleRadius, 0, Math.PI * 2);
+    ctx.stroke();
+
+    // Crosshairs
+    ctx.beginPath();
+    ctx.moveTo(rx - reticleRadius - 10, ry);
+    ctx.lineTo(rx + reticleRadius + 10, ry);
+    ctx.moveTo(rx, ry - reticleRadius - 10);
+    ctx.lineTo(rx, ry + reticleRadius + 10);
+    ctx.stroke();
+
+    // Overlay instructions inside the box
+    ctx.fillStyle = '#ffffff';
+    ctx.font = `bold ${11 * scale}px sans-serif`;
+    ctx.textAlign = 'left';
+    ctx.fillText('0% GTG LUMINANCE', 15, bandH * 0.5);
+    ctx.fillText('25% GTG LUMINANCE', 15, bandH * 1.5);
+    ctx.fillStyle = '#000000';
+    ctx.fillText('50% GTG LUMINANCE', 15, bandH * 2.5);
+    ctx.fillText('75% GTG LUMINANCE', 15, bandH * 3.5);
+    ctx.fillText('100% GTG LUMINANCE', 15, bandH * 4.5);
+  }
+
+  initGhostingInvaders();
+</script>

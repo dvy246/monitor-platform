@@ -1,0 +1,605 @@
+---
+export interface Props {
+  initialDeviceType?: string;
+  initialGridDensity?: string;
+  initialMode?: string;
+}
+
+const {
+  initialDeviceType = 'tablet',
+  initialGridDensity = 'medium',
+  initialMode = 'dead-zone'
+} = Astro.props;
+---
+
+<div class="w-full max-w-6xl mx-auto space-y-6 font-mono select-none">
+  <!-- Controls Bar Header Deck -->
+  <div class="bg-bg-surface border border-border-hairline rounded-2xl p-4 sm:p-6 shadow-specular-top space-y-4">
+    <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+      <div>
+        <h2 class="text-xl font-bold text-text-primary flex items-center gap-2">
+          <span class="w-3 h-3 rounded-full bg-status-pass led-glow-pass"></span>
+          Digitizer Precision & Dead-Zone Matrix
+        </h2>
+        <p class="text-xs text-text-secondary mt-1 font-sans leading-relaxed">
+          Interactive multi-touch digitizer diagnostic. Evaluate touch trace dead zones, multi-finger precision, timestamp jitter, and vector trajectory drift error.
+        </p>
+      </div>
+
+      <!-- Mode Selector Tabs -->
+      <div class="flex flex-wrap items-center gap-1.5 bg-bg-canvas p-1 rounded-xl border border-border-hairline" role="tablist" aria-label="Diagnostic Test Modes">
+        <button
+          id="tm-mode-deadzone"
+          role="tab"
+          aria-selected={initialMode === 'dead-zone' ? 'true' : 'false'}
+          aria-controls="touch-matrix-canvas"
+          class:list={[
+            "px-3 py-1.5 text-xs font-bold rounded-lg transition-all cursor-pointer focus:outline-none focus:ring-2 focus:ring-status-pass",
+            initialMode === 'dead-zone' ? "bg-status-pass text-text-on-accent shadow-sm" : "text-text-secondary hover:text-text-primary"
+          ]}
+        >
+          Dead Zone Grid
+        </button>
+        <button
+          id="tm-mode-multitouch"
+          role="tab"
+          aria-selected={initialMode === 'multi-touch' ? 'true' : 'false'}
+          aria-controls="touch-matrix-canvas"
+          class:list={[
+            "px-3 py-1.5 text-xs font-bold rounded-lg transition-all cursor-pointer focus:outline-none focus:ring-2 focus:ring-status-pass",
+            initialMode === 'multi-touch' ? "bg-status-pass text-text-on-accent shadow-sm" : "text-text-secondary hover:text-text-primary"
+          ]}
+        >
+          Multi-Touch Accuracy
+        </button>
+        <button
+          id="tm-mode-trajectory"
+          role="tab"
+          aria-selected={initialMode === 'trajectory' ? 'true' : 'false'}
+          aria-controls="touch-matrix-canvas"
+          class:list={[
+            "px-3 py-1.5 text-xs font-bold rounded-lg transition-all cursor-pointer focus:outline-none focus:ring-2 focus:ring-status-pass",
+            initialMode === 'trajectory' ? "bg-status-pass text-text-on-accent shadow-sm" : "text-text-secondary hover:text-text-primary"
+          ]}
+        >
+          Trajectory Drift
+        </button>
+      </div>
+    </div>
+
+    <!-- Sub-Controls Row: Presets & Action Buttons -->
+    <div class="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-border-hairline text-xs">
+      <div class="flex flex-wrap items-center gap-3">
+        <!-- Device Preset Selector -->
+        <div class="flex items-center gap-2">
+          <label for="tm-select-device" class="text-text-muted text-[11px] font-bold uppercase">Device Preset:</label>
+          <select
+            id="tm-select-device"
+            aria-label="Device Type Preset"
+            class="bg-bg-canvas border border-border-hairline text-text-primary rounded-lg px-2.5 py-1.5 text-xs font-bold focus:outline-none focus:ring-2 focus:ring-status-pass cursor-pointer shadow-sm"
+          >
+            <option value="smartphone" selected={initialDeviceType === 'smartphone'}>Smartphone</option>
+            <option value="tablet" selected={initialDeviceType === 'tablet'}>Tablet</option>
+            <option value="kiosk" selected={initialDeviceType === 'kiosk'}>Commercial Kiosk</option>
+            <option value="touch-laptop" selected={initialDeviceType === 'touch-laptop'}>Touch Laptop</option>
+          </select>
+        </div>
+
+        <!-- Grid Density Selector -->
+        <div class="flex items-center gap-2">
+          <label for="tm-select-density" class="text-text-muted text-[11px] font-bold uppercase">Grid Density:</label>
+          <select
+            id="tm-select-density"
+            aria-label="Grid Density Selector"
+            class="bg-bg-canvas border border-border-hairline text-text-primary rounded-lg px-2.5 py-1.5 text-xs font-bold focus:outline-none focus:ring-2 focus:ring-status-pass cursor-pointer shadow-sm"
+          >
+            <option value="low" selected={initialGridDensity === 'low'}>Low (8x12)</option>
+            <option value="medium" selected={initialGridDensity === 'medium'}>Medium (10x16)</option>
+            <option value="high" selected={initialGridDensity === 'high'}>High (16x24)</option>
+            <option value="ultra-dense" selected={initialGridDensity === 'ultra-dense'}>Ultra-Dense (24x36)</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="flex items-center gap-2">
+        <button
+          id="tm-btn-eval"
+          type="button"
+          aria-label="Evaluate Dead Zones"
+          class="px-4 py-1.5 bg-status-pass hover:bg-emerald-400 text-text-on-accent font-extrabold text-xs rounded-lg transition-colors cursor-pointer focus:outline-none focus:ring-2 focus:ring-status-pass shadow-sm"
+        >
+          Isolate Dead Zones
+        </button>
+        <button
+          id="tm-btn-reset"
+          type="button"
+          aria-label="Reset Matrix Grid"
+          class="px-4 py-1.5 bg-bg-canvas hover:bg-bg-subtle text-text-secondary hover:text-text-primary border border-border-hairline font-bold text-xs rounded-lg transition-colors cursor-pointer focus:outline-none focus:ring-2 focus:ring-status-pass shadow-sm"
+        >
+          Reset / Clear
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Real-Time Telemetry HUD (Fixed heights for CLS = 0.000 compliance) -->
+  <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3 font-mono text-xs">
+    <div class="bg-bg-surface border border-border-hairline rounded-xl p-3 shadow-specular-top min-h-[72px] flex flex-col justify-between">
+      <span class="text-[10px] text-text-muted font-bold uppercase tracking-wider">ACTIVE TOUCHES</span>
+      <div class="flex items-baseline justify-between">
+        <span id="tm-hud-touches" class="text-xl font-extrabold text-text-primary">0</span>
+        <span class="text-[10px] text-text-secondary">points</span>
+      </div>
+    </div>
+
+    <div class="bg-bg-surface border border-border-hairline rounded-xl p-3 shadow-specular-top min-h-[72px] flex flex-col justify-between">
+      <span class="text-[10px] text-text-muted font-bold uppercase tracking-wider">GESTURE VELOCITY</span>
+      <div class="flex items-baseline justify-between">
+        <span id="tm-hud-velocity" class="text-xl font-extrabold text-status-pass font-mono">0.00</span>
+        <span class="text-[10px] text-text-secondary">px/ms</span>
+      </div>
+    </div>
+
+    <div class="bg-bg-surface border border-border-hairline rounded-xl p-3 shadow-specular-top min-h-[72px] flex flex-col justify-between">
+      <span class="text-[10px] text-text-muted font-bold uppercase tracking-wider">JITTER VARIANCE</span>
+      <div class="flex items-baseline justify-between">
+        <span id="tm-hud-jitter" class="text-xl font-extrabold text-text-primary font-mono">0.00</span>
+        <span class="text-[10px] text-text-secondary">ms</span>
+      </div>
+    </div>
+
+    <div class="bg-bg-surface border border-border-hairline rounded-xl p-3 shadow-specular-top min-h-[72px] flex flex-col justify-between">
+      <span class="text-[10px] text-text-muted font-bold uppercase tracking-wider">TRAJECTORY DRIFT</span>
+      <div class="flex items-baseline justify-between">
+        <span id="tm-hud-drift" class="text-xl font-extrabold text-status-pass font-mono">0.00%</span>
+        <span class="text-[10px] text-text-secondary">RMS</span>
+      </div>
+    </div>
+
+    <div class="col-span-2 sm:col-span-1 bg-bg-surface border border-border-hairline rounded-xl p-3 shadow-specular-top min-h-[72px] flex flex-col justify-between">
+      <span class="text-[10px] text-text-muted font-bold uppercase tracking-wider">DEAD ZONE RATIO</span>
+      <div class="flex items-baseline justify-between">
+        <span id="tm-hud-deadzone" class="text-xl font-extrabold text-status-pass font-mono">0.0%</span>
+        <span id="tm-hud-coverage" class="text-[10px] text-text-secondary">0.0% cov</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Interactive Touch Canvas Surface Container (Fixed min-height for CLS = 0.000) -->
+  <div class="relative min-h-[480px] md:min-h-[560px] h-[60dvh] rounded-2xl border border-border-hairline overflow-hidden bg-[#08080a] light:bg-[#f8fafc] shadow-2xl transition-colors">
+    <canvas
+      id="touch-matrix-canvas"
+      class="w-full h-full block select-none touch-none focus:outline-none focus:ring-2 focus:ring-status-pass"
+      tabindex="0"
+      role="region"
+      aria-label="Interactive Multi-Touch Matrix Digitizer Surface"
+    ></canvas>
+    
+    <!-- Visual Overlay Mode Indicator Badge -->
+    <div class="absolute top-3 left-3 bg-bg-surface/90 backdrop-blur-sm border border-border-hairline px-3 py-1 rounded-md text-[10px] font-mono text-text-secondary shadow-specular-top pointer-events-none">
+      MODE: <strong id="tm-badge-mode" class="text-status-pass uppercase">DEAD ZONE GRID</strong> |
+      GRID: <strong id="tm-badge-grid" class="text-text-primary uppercase">10x16</strong>
+    </div>
+  </div>
+
+  <!-- ARIA Live Status Announcement Region -->
+  <div id="tm-aria-status" class="sr-only" aria-live="polite" role="status"></div>
+</div>
+
+<script>
+  import {
+    getGridDimensions,
+    calculateGestureVelocity,
+    calculateJitterVariance,
+    calculateCellIndex,
+    evaluateMatrixCoverage,
+    isolateDeadZones,
+    calculateTrajectoryDrift,
+    type TouchPoint,
+    type GridDensity,
+    type DeviceType
+  } from '../../engine/TouchMatrixEngine';
+  import { setupTouchSandbox, getNormalizedCoords } from '../../utils/mobileSandbox';
+
+  // DOM Elements
+  const canvas = document.getElementById('touch-matrix-canvas') as HTMLCanvasElement | null;
+  const selectDevice = document.getElementById('tm-select-device') as HTMLSelectElement | null;
+  const selectDensity = document.getElementById('tm-select-density') as HTMLSelectElement | null;
+  
+  const modeBtnDeadZone = document.getElementById('tm-mode-deadzone');
+  const modeBtnMultiTouch = document.getElementById('tm-mode-multitouch');
+  const modeBtnTrajectory = document.getElementById('tm-mode-trajectory');
+
+  const btnEval = document.getElementById('tm-btn-eval');
+  const btnReset = document.getElementById('tm-btn-reset');
+
+  const hudTouches = document.getElementById('tm-hud-touches');
+  const hudVelocity = document.getElementById('tm-hud-velocity');
+  const hudJitter = document.getElementById('tm-hud-jitter');
+  const hudDrift = document.getElementById('tm-hud-drift');
+  const hudDeadZone = document.getElementById('tm-hud-deadzone');
+  const hudCoverage = document.getElementById('tm-hud-coverage');
+
+  const badgeMode = document.getElementById('tm-badge-mode');
+  const badgeGrid = document.getElementById('tm-badge-grid');
+  const ariaStatus = document.getElementById('tm-aria-status');
+
+  // Diagnostic State
+  let currentMode: 'dead-zone' | 'multi-touch' | 'trajectory' = 'dead-zone';
+  let currentDensity: GridDensity = 'medium';
+  let currentDevice: DeviceType = 'tablet';
+
+  let ctx: CanvasRenderingContext2D | null = null;
+  let cols = 10;
+  let rows = 16;
+  let gridState: number[][] = []; // 0 = untested, 1 = touched, 2 = isolated dead zone
+
+  // Touch tracking maps & histories
+  const activePointers = new Map<number, TouchPoint[]>();
+  let timestampHistory: number[] = [];
+  let recordedTrajectory: TouchPoint[] = [];
+
+  function initComponent() {
+    if (!canvas) return;
+    ctx = canvas.getContext('2d');
+    setupTouchSandbox(canvas);
+
+    // Initial parameters from selects
+    if (selectDensity) currentDensity = selectDensity.value as GridDensity;
+    if (selectDevice) currentDevice = selectDevice.value as DeviceType;
+
+    updateGridDimensions();
+    resetMatrixState();
+    handleResize();
+
+    // Event Listeners
+    window.addEventListener('resize', handleResize);
+    window.addEventListener('themechange', draw);
+
+    canvas.addEventListener('pointerdown', handlePointerDown);
+    canvas.addEventListener('pointermove', handlePointerMove);
+    canvas.addEventListener('pointerup', handlePointerUp);
+    canvas.addEventListener('pointercancel', handlePointerUp);
+
+    // Keyboard support for accessibility
+    canvas.addEventListener('keydown', (e: KeyboardEvent) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        evaluateDeadZones();
+      } else if (e.key === 'Escape' || e.key === 'r') {
+        resetMatrixState();
+      }
+    });
+
+    if (selectDensity) {
+      selectDensity.addEventListener('change', () => {
+        currentDensity = selectDensity.value as GridDensity;
+        updateGridDimensions();
+        resetMatrixState();
+        updateDynamicRouteUrl();
+      });
+    }
+
+    if (selectDevice) {
+      selectDevice.addEventListener('change', () => {
+        currentDevice = selectDevice.value as DeviceType;
+        updateDynamicRouteUrl();
+      });
+    }
+
+    modeBtnDeadZone?.addEventListener('click', () => setMode('dead-zone'));
+    modeBtnMultiTouch?.addEventListener('click', () => setMode('multi-touch'));
+    modeBtnTrajectory?.addEventListener('click', () => setMode('trajectory'));
+
+    btnEval?.addEventListener('click', evaluateDeadZones);
+    btnReset?.addEventListener('click', resetMatrixState);
+  }
+
+  function updateDynamicRouteUrl() {
+    // Optionally update window URL without full reload if on dynamic route
+    const path = window.location.pathname;
+    const parts = path.split('/').filter(Boolean);
+    const supportedLocales = ['es', 'de', 'fr'];
+    let localePrefix = '';
+
+    if (supportedLocales.includes(parts[0])) {
+      localePrefix = '/' + parts.shift();
+    }
+
+    if (parts[0] === 'touch-matrix') {
+      const newUrl = `${localePrefix}/touch-matrix/${currentDevice}/${currentDensity}`;
+      if (window.location.pathname !== newUrl) {
+        window.history.replaceState({}, '', newUrl);
+      }
+    }
+  }
+
+  function setMode(mode: 'dead-zone' | 'multi-touch' | 'trajectory') {
+    currentMode = mode;
+    [modeBtnDeadZone, modeBtnMultiTouch, modeBtnTrajectory].forEach((btn) => {
+      if (!btn) return;
+      const isSelected = btn.id === `tm-mode-${mode.replace('-', '')}`;
+      btn.setAttribute('aria-selected', String(isSelected));
+      if (isSelected) {
+        btn.className = "px-3 py-1.5 text-xs font-bold rounded-lg transition-all cursor-pointer focus:outline-none focus:ring-2 focus:ring-status-pass bg-status-pass text-text-on-accent shadow-sm";
+      } else {
+        btn.className = "px-3 py-1.5 text-xs font-bold rounded-lg transition-all cursor-pointer focus:outline-none focus:ring-2 focus:ring-status-pass text-text-secondary hover:text-text-primary";
+      }
+    });
+
+    if (badgeMode) {
+      badgeMode.textContent = mode.toUpperCase().replace('-', ' ');
+    }
+
+    if (ariaStatus) {
+      ariaStatus.textContent = `Test mode changed to ${mode.replace('-', ' ')}.`;
+    }
+
+    draw();
+  }
+
+  function updateGridDimensions() {
+    const dim = getGridDimensions(currentDensity);
+    cols = dim.cols;
+    rows = dim.rows;
+    if (badgeGrid) {
+      badgeGrid.textContent = `${cols}x${rows}`;
+    }
+  }
+
+  function resetMatrixState() {
+    gridState = Array(cols).fill(0).map(() => Array(rows).fill(0));
+    activePointers.clear();
+    timestampHistory = [];
+    recordedTrajectory = [];
+
+    updateTelemetryHUD();
+    draw();
+
+    if (ariaStatus) {
+      ariaStatus.textContent = "Touch matrix reset. Grid cleared.";
+    }
+  }
+
+  function handleResize() {
+    if (!canvas || !canvas.parentElement) return;
+    const rect = canvas.parentElement.getBoundingClientRect();
+    const dpr = window.devicePixelRatio || 1;
+    canvas.width = (rect.width || 800) * dpr;
+    canvas.height = (rect.height || 600) * dpr;
+    draw();
+  }
+
+  function handlePointerDown(e: PointerEvent) {
+    if (!canvas) return;
+    canvas.setPointerCapture(e.pointerId);
+    const coords = getNormalizedCoords(e.clientX, e.clientY, canvas);
+    const now = performance.now();
+    const pt: TouchPoint = { x: coords.x, y: coords.y, timestamp: now, id: e.pointerId };
+
+    activePointers.set(e.pointerId, [pt]);
+    timestampHistory.push(now);
+
+    if (currentMode === 'trajectory') {
+      recordedTrajectory = [pt];
+    }
+
+    processTouchCoordinate(coords.x, coords.y);
+    updateTelemetryHUD();
+    draw();
+  }
+
+  function handlePointerMove(e: PointerEvent) {
+    if (!canvas || !activePointers.has(e.pointerId)) return;
+    const coords = getNormalizedCoords(e.clientX, e.clientY, canvas);
+    const now = performance.now();
+    const pt: TouchPoint = { x: coords.x, y: coords.y, timestamp: now, id: e.pointerId };
+
+    const trail = activePointers.get(e.pointerId);
+    if (trail) {
+      trail.push(pt);
+      if (trail.length > 50) trail.shift();
+    }
+
+    timestampHistory.push(now);
+    if (timestampHistory.length > 100) timestampHistory.shift();
+
+    if (currentMode === 'trajectory') {
+      recordedTrajectory.push(pt);
+    }
+
+    processTouchCoordinate(coords.x, coords.y);
+    updateTelemetryHUD();
+    draw();
+  }
+
+  function handlePointerUp(e: PointerEvent) {
+    if (activePointers.has(e.pointerId)) {
+      activePointers.delete(e.pointerId);
+      updateTelemetryHUD();
+      draw();
+    }
+  }
+
+  function processTouchCoordinate(x: number, y: number) {
+    if (!canvas) return;
+    const cell = calculateCellIndex(x, y, canvas.width, canvas.height, cols, rows);
+    if (cell) {
+      if (gridState[cell.col][cell.row] !== 1) {
+        gridState[cell.col][cell.row] = 1;
+      }
+    }
+  }
+
+  function evaluateDeadZones() {
+    gridState = isolateDeadZones(gridState, cols, rows);
+    const evalRes = evaluateMatrixCoverage(gridState, cols, rows);
+    updateTelemetryHUD();
+    draw();
+
+    if (hudDeadZone) {
+      hudDeadZone.className = evalRes.deadCells > 0
+        ? "text-xl font-extrabold text-status-fail font-mono"
+        : "text-xl font-extrabold text-status-pass font-mono";
+    }
+
+    if (ariaStatus) {
+      ariaStatus.textContent = `Dead zone evaluation complete. ${evalRes.deadCells} dead cells found. Dead zone ratio: ${evalRes.deadZonePct}%. Coverage: ${evalRes.coveragePct}%.`;
+    }
+  }
+
+  function updateTelemetryHUD() {
+    // 1. Active Touches
+    const activeCount = activePointers.size;
+    if (hudTouches) hudTouches.textContent = String(activeCount);
+
+    // 2. Gesture Velocity
+    let currentVelPxPerMs = 0;
+    const allRecentPoints: TouchPoint[] = [];
+    activePointers.forEach((trail) => {
+      allRecentPoints.push(...trail);
+    });
+    if (allRecentPoints.length >= 2) {
+      const velRes = calculateGestureVelocity(allRecentPoints);
+      currentVelPxPerMs = velRes.velocityPxPerMs;
+    }
+    if (hudVelocity) hudVelocity.textContent = currentVelPxPerMs.toFixed(2);
+
+    // 3. Jitter Variance
+    const jitterRes = calculateJitterVariance(timestampHistory);
+    if (hudJitter) hudJitter.textContent = jitterRes.stdDevMs.toFixed(2);
+
+    // 4. Trajectory Drift
+    let driftRes = { rmsDriftPx: 0, driftErrorPct: 0 };
+    if (recordedTrajectory.length >= 2) {
+      driftRes = calculateTrajectoryDrift(recordedTrajectory);
+    }
+    if (hudDrift) hudDrift.textContent = `${driftRes.driftErrorPct.toFixed(2)}%`;
+
+    // 5. Dead Zone & Coverage Stats
+    const coverageRes = evaluateMatrixCoverage(gridState, cols, rows);
+    if (hudDeadZone) hudDeadZone.textContent = `${coverageRes.deadZonePct.toFixed(1)}%`;
+    if (hudCoverage) hudCoverage.textContent = `${coverageRes.coveragePct.toFixed(1)}% cov`;
+  }
+
+  function draw() {
+    if (!ctx || !canvas) return;
+    const w = canvas.width;
+    const h = canvas.height;
+
+    const isLight = document.documentElement.classList.contains('light');
+
+    // Canvas Background
+    ctx.fillStyle = isLight ? '#f8fafc' : '#08080a';
+    ctx.fillRect(0, 0, w, h);
+
+    const cellW = w / cols;
+    const cellH = h / rows;
+
+    // Draw Matrix Cells
+    for (let c = 0; c < cols; c++) {
+      for (let r = 0; r < rows; r++) {
+        const x = c * cellW;
+        const y = r * cellH;
+        const state = gridState[c] ? gridState[c][r] : 0;
+
+        if (state === 1) {
+          // Touched cell
+          ctx.fillStyle = isLight ? 'rgba(16, 185, 129, 0.22)' : 'rgba(0, 255, 136, 0.22)';
+          ctx.strokeStyle = isLight ? '#10b981' : '#00ff88';
+          ctx.lineWidth = 1.5;
+        } else if (state === 2) {
+          // Isolated Dead Zone
+          ctx.fillStyle = isLight ? 'rgba(239, 68, 68, 0.28)' : 'rgba(255, 51, 102, 0.28)';
+          ctx.strokeStyle = isLight ? '#ef4444' : '#ff3366';
+          ctx.lineWidth = 2;
+        } else {
+          // Untested cell grid lines
+          ctx.fillStyle = 'transparent';
+          ctx.strokeStyle = isLight ? '#e2e8f0' : '#1a1d24';
+          ctx.lineWidth = 1;
+        }
+
+        ctx.fillRect(x + 1, y + 1, cellW - 2, cellH - 2);
+        ctx.strokeRect(x + 1, y + 1, cellW - 2, cellH - 2);
+      }
+    }
+
+    // Mode Specific Visual Enhancements
+    if (currentMode === 'multi-touch') {
+      const colors = ['#00ff88', '#3b82f6', '#ec4899', '#f59e0b', '#8b5cf6', '#06b6d4'];
+      let colorIdx = 0;
+
+      activePointers.forEach((trail, ptrId) => {
+        if (trail.length === 0) return;
+        const color = colors[colorIdx % colors.length];
+        colorIdx++;
+
+        // Draw motion trail
+        ctx.beginPath();
+        ctx.strokeStyle = color;
+        ctx.lineWidth = 3;
+        for (let i = 0; i < trail.length; i++) {
+          if (i === 0) ctx.moveTo(trail[i].x, trail[i].y);
+          else ctx.lineTo(trail[i].x, trail[i].y);
+        }
+        ctx.stroke();
+
+        // Draw active point concentric target ring
+        const head = trail[trail.length - 1];
+        ctx.beginPath();
+        ctx.arc(head.x, head.y, 24, 0, Math.PI * 2);
+        ctx.strokeStyle = color;
+        ctx.lineWidth = 2;
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.arc(head.x, head.y, 8, 0, Math.PI * 2);
+        ctx.fillStyle = color;
+        ctx.fill();
+
+        // Draw pointer ID badge
+        ctx.font = 'bold 12px monospace';
+        ctx.fillStyle = isLight ? '#0f172a' : '#ffffff';
+        ctx.fillText(`P#${ptrId} (${Math.round(head.x)}, ${Math.round(head.y)})`, head.x + 16, head.y - 16);
+      });
+    } else if (currentMode === 'trajectory') {
+      if (recordedTrajectory.length >= 2) {
+        const pStart = recordedTrajectory[0];
+        const pEnd = recordedTrajectory[recordedTrajectory.length - 1];
+
+        // Draw ideal vector line (dashed neon cyan)
+        ctx.beginPath();
+        ctx.setLineDash([8, 6]);
+        ctx.strokeStyle = isLight ? '#0284c7' : '#38bdf8';
+        ctx.lineWidth = 2;
+        ctx.moveTo(pStart.x, pStart.y);
+        ctx.lineTo(pEnd.x, pEnd.y);
+        ctx.stroke();
+        ctx.setLineDash([]);
+
+        // Draw actual recorded touch trajectory line (solid bright green)
+        ctx.beginPath();
+        ctx.strokeStyle = isLight ? '#059669' : '#00ff88';
+        ctx.lineWidth = 3;
+        for (let i = 0; i < recordedTrajectory.length; i++) {
+          if (i === 0) ctx.moveTo(recordedTrajectory[i].x, recordedTrajectory[i].y);
+          else ctx.lineTo(recordedTrajectory[i].x, recordedTrajectory[i].y);
+        }
+        ctx.stroke();
+
+        // Draw endpoints
+        [pStart, pEnd].forEach((pt) => {
+          ctx.beginPath();
+          ctx.arc(pt.x, pt.y, 6, 0, Math.PI * 2);
+          ctx.fillStyle = isLight ? '#0284c7' : '#38bdf8';
+          ctx.fill();
+        });
+      }
+    }
+  }
+
+  // Initialize on script load
+  initComponent();
+</script>

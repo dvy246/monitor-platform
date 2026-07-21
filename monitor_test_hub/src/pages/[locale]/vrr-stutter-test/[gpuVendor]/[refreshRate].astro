@@ -1,0 +1,25 @@
+---
+import { getAllGpuVendors, getAllRefreshRates } from '../../../../engine/VrrSweepEngine';
+
+export function getStaticPaths() {
+  const locales = ['es', 'de', 'fr'];
+  const vendors = getAllGpuVendors();
+  const rates = getAllRefreshRates();
+
+  return locales.flatMap((locale) =>
+    vendors.flatMap((gpuVendor) =>
+      rates.map((refreshRate) => ({
+        params: {
+          locale,
+          gpuVendor,
+          refreshRate
+        }
+      }))
+    )
+  );
+}
+
+import BasePage from '../../../vrr-stutter-test/[gpuVendor]/[refreshRate].astro';
+---
+
+<BasePage />

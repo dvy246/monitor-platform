@@ -1,0 +1,42 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import Breadcrumbs from '../../components/ui/Breadcrumbs.astro';
+import TestSwitcherBar from '../../components/ui/TestSwitcherBar.astro';
+import OledBurnInAnalyzer from '../../components/diagnostics/OledBurnInAnalyzer.astro';
+
+const breadcrumbItems = [
+  { label: 'Display Suite', href: '/display-tests' },
+  { label: 'OLED Burn-In Risk Analyzer' }
+];
+
+const displayTests = [
+  { id: 'sub-pixel', label: 'Sub-Pixel Analyzer', href: '/display-tests/sub-pixel' },
+  { id: 'uniformity', label: 'OLED Uniformity', href: '/display-tests/uniformity' },
+  { id: 'vrr', label: 'VRR Sync Engine', href: '/display-tests/vrr' },
+  { id: 'oled-burn-in', label: 'OLED Burn-In Risk', href: '/display-tests/oled-burn-in', active: true }
+];
+---
+
+<Layout 
+  title="OLED Burn-In & Image Retention Risk Analyzer | Monitor Test Hub"
+  description="Client-side OLED burn-in risk calculator and 5% near-black uniformity inspector for QD-OLED, WOLED, and AMOLED displays. Estimate panel lifespan and retention."
+>
+  <main class="max-w-7xl mx-auto px-4 py-8 space-y-8">
+    <Breadcrumbs items={breadcrumbItems} />
+
+    <header class="space-y-3 border-b border-border-hairline pb-6">
+      <div class="flex items-center gap-2 text-status-pass text-xs font-mono font-bold uppercase tracking-wider">
+        <span class="w-2 h-2 rounded-full bg-status-pass led-glow-pass"></span>
+        HARDWARE LIFESPAN METRIC
+      </div>
+      <h1 class="text-3xl sm:text-4xl font-extrabold text-text-primary tracking-tight">OLED Burn-In Risk Analyzer</h1>
+      <p class="text-sm text-text-secondary max-w-3xl">
+        Inspect 5% near-black uniformity, calculate cumulative image retention risk, and evaluate luminance degradation across QD-OLED, WOLED, and AMOLED panels under ISO 9241-307 standards.
+      </p>
+    </header>
+
+    <OledBurnInAnalyzer />
+
+    <TestSwitcherBar tests={displayTests} currentId="oled-burn-in" />
+  </main>
+</Layout>

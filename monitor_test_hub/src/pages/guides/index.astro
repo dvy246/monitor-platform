@@ -1,0 +1,77 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import Breadcrumbs from '../../components/ui/Breadcrumbs.astro';
+import { guidesData } from '../../utils/guidesData';
+
+const title = 'Hardware Diagnostic & Calibration Guides | Monitor Test Hub';
+const description = 'Explore 22+ professional display engineering, OLED burn-in prevention, 540Hz VRR, HDR tone mapping, and mobile touch digitizer learning guides.';
+
+const categories = [
+  'All',
+  'Display Technology',
+  'OLED & Panel Health',
+  'Gaming & Latency',
+  'Touch & Mobile',
+  'Color & Calibration',
+  'Standards & Buyers Guide'
+];
+---
+
+<Layout title={title} description={description}>
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-8">
+    <Breadcrumbs items={[{ label: 'Learning Guides' }]} />
+
+    <!-- Hero Header -->
+    <div class="bg-bg-surface border border-border-hairline rounded-2xl p-8 sm:p-10 shadow-specular-top relative overflow-hidden">
+      <div class="max-w-3xl space-y-4 relative z-10">
+        <div class="font-mono text-xs text-status-pass font-bold tracking-widest uppercase flex items-center gap-2">
+          <span class="w-2 h-2 rounded-full bg-status-pass led-glow-pass animate-pulse"></span>
+          <span>[ KNOWLEDGE BASE &amp; ENGINEERING GUIDES ]</span>
+        </div>
+        <h1 class="text-3xl sm:text-4xl lg:text-5xl font-mono font-extrabold text-text-primary uppercase tracking-tight">
+          Display Diagnostics &amp; Calibration Library
+        </h1>
+        <p class="text-sm sm:text-base text-text-secondary font-sans leading-relaxed">
+          Comprehensive, engineering-grade tutorials on sub-pixel geometry, OLED burn-in mechanics, 540Hz+ VRR frame pacing, HDR tone curves, and mobile digitizer touch matrix testing.
+        </p>
+      </div>
+    </div>
+
+    <!-- Guides Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {guidesData.map((guide) => (
+        <article class="bg-bg-surface border border-border-hairline hover:border-status-pass/40 rounded-xl p-6 flex flex-col justify-between transition-all duration-200 hover:shadow-[0_0_20px_rgba(5,150,105,0.15)] group font-mono">
+          <div class="space-y-4">
+            <div class="flex items-center justify-between text-[10px] text-text-muted">
+              <span class="px-2 py-0.5 rounded bg-bg-canvas border border-border-hairline text-status-pass font-bold uppercase">
+                {guide.category}
+              </span>
+              <span>{guide.readTime}</span>
+            </div>
+
+            <h2 class="text-base font-bold text-text-primary group-hover:text-status-pass transition-colors leading-snug font-sans">
+              <a href={`/guides/${guide.slug}`}>
+                {guide.title}
+              </a>
+            </h2>
+
+            <p class="text-xs text-text-secondary font-sans leading-relaxed line-clamp-3">
+              {guide.description}
+            </p>
+          </div>
+
+          <div class="pt-6 border-t border-border-hairline mt-6 flex items-center justify-between text-xs">
+            <span class="text-[11px] text-text-muted">{guide.date}</span>
+            <a 
+              href={`/guides/${guide.slug}`}
+              class="inline-flex items-center gap-1.5 text-status-pass font-bold hover:underline group-hover:translate-x-0.5 transition-transform"
+            >
+              <span>Read Guide</span>
+              <span>&rarr;</span>
+            </a>
+          </div>
+        </article>
+      ))}
+    </div>
+  </div>
+</Layout>

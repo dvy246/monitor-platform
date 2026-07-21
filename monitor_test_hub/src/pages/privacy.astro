@@ -1,0 +1,54 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Breadcrumbs from '../components/ui/Breadcrumbs.astro';
+
+const title = 'Privacy Policy | Monitor Test Hub';
+const description = 'Comprehensive privacy policy, cookie policy, client-side data protection terms, and zero-ad disclosures for Monitor Test Hub.';
+---
+
+<Layout title={title} description={description}>
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-8">
+    <Breadcrumbs items={[{ label: 'Privacy Policy' }]} />
+
+    <article class="bg-bg-surface border border-border-hairline rounded-2xl p-6 sm:p-10 space-y-6 shadow-specular-top font-sans text-sm text-text-secondary leading-relaxed">
+      <header class="border-b border-border-hairline pb-6 space-y-2">
+        <span class="font-mono text-[10px] font-bold text-status-pass uppercase tracking-widest block">LEGAL &amp; PRIVACY COMPLIANCE</span>
+        <h1 class="text-2xl sm:text-4xl font-extrabold text-text-primary tracking-tight">PRIVACY POLICY</h1>
+        <p class="font-mono text-xs text-text-muted">Effective Date: July 22, 2026 | Version 2.5</p>
+      </header>
+
+      <p>
+        At <strong>Monitor Test Hub</strong>, accessible from monitortesthub.com, one of our main priorities is the privacy of our visitors. This Privacy Policy document contains types of information that is collected and recorded by Monitor Test Hub and how we use it. If you have additional questions or require more information about our Privacy Policy, do not hesitate to contact us at <code>team@monitortesthub.com</code>.
+      </p>
+
+      <h2 class="text-lg font-bold text-text-primary font-mono uppercase tracking-wider pt-4 border-t border-border-hairline">1. Log Files &amp; Client-Side Architecture</h2>
+      <p>
+        Monitor Test Hub follows a standard procedure of using log files. These files log visitors when they visit websites. All major hosting companies do this as part of hosting services' analytics. The information collected by log files includes internet protocol (IP) addresses, browser type, Internet Service Provider (ISP), date and time stamp, referring/exit pages, and possibly the number of clicks. These are not linked to any information that is personally identifiable. The purpose of the information is for analyzing trends, administering the site, tracking users' movement on the website, and gathering demographic information.
+      </p>
+      <p>
+        All hardware diagnostic algorithms, WebGL subpixel reticle rendering, VSync frame pacing calculations, touch digitizer matrix tracking, and SHA-256 certificate generation operate <strong>100% client-side</strong> inside your browser engine. No diagnostic telemetry data or personal metrics are stored on or transmitted to external servers.
+      </p>
+
+      <h2 class="text-lg font-bold text-text-primary font-mono uppercase tracking-wider pt-4 border-t border-border-hairline">2. Zero Third-Party Advertising &amp; Zero Tracking Cookies</h2>
+      <p>
+        Monitor Test Hub is a 100% ad-free, high-precision engineering platform. We do not host third-party advertisement networks, tracking beacons, or ad-target profiling cookies. Your diagnostic sessions remain strictly private and unmonitored.
+      </p>
+
+      <h2 class="text-lg font-bold text-text-primary font-mono uppercase tracking-wider pt-4 border-t border-border-hairline">3. GDPR Data Protection Rights</h2>
+      <p>
+        We would like to make sure you are fully aware of all of your data protection rights under the General Data Protection Regulation (GDPR). Every user is entitled to the following:
+      </p>
+      <ul class="list-disc pl-5 space-y-2">
+        <li><strong>The right to access:</strong> You have the right to request copies of your personal data.</li>
+        <li><strong>The right to rectification:</strong> You have the right to request that we correct any information you believe is inaccurate.</li>
+        <li><strong>The right to erasure:</strong> You have the right to request that we erase your personal data, under certain conditions.</li>
+        <li><strong>The right to restrict processing:</strong> You have the right to request that we restrict the processing of your personal data.</li>
+      </ul>
+
+      <h2 class="text-lg font-bold text-text-primary font-mono uppercase tracking-wider pt-4 border-t border-border-hairline">4. CCPA Privacy Rights (Do Not Sell My Personal Information)</h2>
+      <p>
+        Under the CCPA, among other rights, California consumers have the right to request that a business that collects a consumer's personal data disclose the categories and specific pieces of personal data that a business has collected, and request that a business delete any personal data about the consumer that a business has collected. Monitor Test Hub does not sell personal information.
+      </p>
+    </article>
+  </div>
+</Layout>

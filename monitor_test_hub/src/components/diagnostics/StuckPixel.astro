@@ -1,0 +1,98 @@
+---
+/**
+ * StuckPixel.astro
+ * Stuck Pixel Stimulator & Healer UI component.
+ */
+---
+
+<div class="w-full max-w-5xl mx-auto space-y-6">
+  <div class="bg-bg-surface/90 border border-border-hairline rounded-2xl p-6 backdrop-blur-xl shadow-2xl space-y-6">
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-border-hairline/60 pb-4">
+      <div>
+        <div class="flex items-center gap-2">
+          <span class="w-2.5 h-2.5 rounded-full bg-status-pass shadow-[0_0_8px_rgba(5,150,105,0.8)]"></span>
+          <h2 class="text-lg font-bold font-mono text-text-primary tracking-wide">Stuck Pixel Stimulator &amp; Healer Engine</h2>
+        </div>
+        <p class="text-xs text-text-muted mt-1">High-frequency sub-pixel color stimulation for liquid crystal state relaxation (ISO 9241-307).</p>
+      </div>
+
+      <div class="flex items-center gap-3">
+        <button id="toggle-healer-btn" class="px-4 py-2 text-xs font-mono font-semibold rounded-lg bg-status-pass/10 text-status-pass border border-status-pass/30 hover:bg-status-pass/20 cursor-pointer">
+          Start Stimulation Box
+        </button>
+      </div>
+    </div>
+
+    <!-- Interactive Draggable Stimulation Box Playground -->
+    <div id="healer-playground" class="relative w-full h-72 rounded-xl bg-black border border-border-subtle overflow-hidden flex items-center justify-center cursor-move">
+      <!-- Stimulation Box -->
+      <div id="stimulation-box" class="w-24 h-24 rounded border border-white shadow-2xl flex items-center justify-center transition-colors">
+        <span class="text-[9px] font-mono font-bold text-black bg-white/80 px-1 rounded">DRAG OVER PIXEL</span>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 pt-2">
+      <div class="bg-bg-elevated p-3.5 rounded-xl border border-border-hairline">
+        <div class="text-[10px] font-mono text-text-muted uppercase">Stimulation Frequency</div>
+        <div id="metric-stuck-hz" class="text-sm font-mono font-bold text-status-pass mt-1">30 Hz (Default)</div>
+      </div>
+      <div class="bg-bg-elevated p-3.5 rounded-xl border border-border-hairline">
+        <div class="text-[10px] font-mono text-text-muted uppercase">Elapsed Time</div>
+        <div id="metric-stuck-elapsed" class="text-sm font-mono font-bold text-text-primary mt-1">00:00</div>
+      </div>
+      <div class="bg-bg-elevated p-3.5 rounded-xl border border-border-hairline">
+        <div class="text-[10px] font-mono text-text-muted uppercase">Target Coordinates</div>
+        <div id="metric-stuck-coords" class="text-sm font-mono font-bold text-text-primary mt-1">X: 100 | Y: 100</div>
+      </div>
+      <div class="bg-bg-elevated p-3.5 rounded-xl border border-border-hairline">
+        <div class="text-[10px] font-mono text-text-muted uppercase">Stimulator Status</div>
+        <div id="metric-stuck-status" class="text-sm font-mono font-bold text-status-pass mt-1">READY</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  import { getStimulationFrame } from '../../engine/StuckPixelEngine';
+
+  const toggleBtn = document.getElementById('toggle-healer-btn');
+  const box = document.getElementById('stimulation-box');
+  const playground = document.getElementById('healer-playground');
+  const metricHz = document.getElementById('metric-stuck-hz');
+  const metricElapsed = document.getElementById('metric-stuck-elapsed');
+  const metricCoords = document.getElementById('metric-stuck-coords');
+  const metricStatus = document.getElementById('metric-stuck-status');
+
+  let isActive = false;
+  let startTime = 0;
+  let animId: number | null = null;
+
+  toggleBtn?.addEventListener('click', () => {
+    isActive = !isActive;
+    if (isActive) {
+      startTime = performance.now();
+      if (toggleBtn) toggleBtn.textContent = 'Stop Stimulation';
+      if (metricStatus) metricStatus.textContent = 'STIMULATING...';
+      runStimulation();
+    } else {
+      if (animId) cancelAnimationFrame(animId);
+      if (toggleBtn) toggleBtn.textContent = 'Start Stimulation Box';
+      if (metricStatus) metricStatus.textContent = 'PAUSED';
+    }
+  });
+
+  function runStimulation() {
+    const elapsed = performance.now() - startTime;
+    const color = getStimulationFrame(elapsed, 30);
+    if (box) box.style.backgroundColor = `rgb(${color[0]}, ${color[1]}, ${color[2]})`;
+
+    const sec = Math.floor(elapsed / 1000);
+    const m = Math.floor(sec / 60).toString().padStart(2, '0');
+    const s = (sec % 60).toString().padStart(2, '0');
+    if (metricElapsed) metricElapsed.textContent = `${m}:${s}`;
+
+    if (isActive) {
+      animId = requestAnimationFrame(runStimulation);
+    }
+  }
+</script>

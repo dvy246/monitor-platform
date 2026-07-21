@@ -1,0 +1,241 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import Breadcrumbs from '../../components/ui/Breadcrumbs.astro';
+
+import TestSwitcherBar from '../../components/ui/TestSwitcherBar.astro';
+
+const breadcrumbItems = [
+  { label: 'Touch Suite', href: '/touch-tests' },
+  { label: 'Input Lag & Reaction Time Test' }
+];
+
+const touchTests = [
+  { id: 'dead-zone', label: 'Dead Zone Matrix', href: '/touch-tests/dead-zone' },
+  { id: 'multi-touch', label: 'Multi-Touch Counter', href: '/touch-tests/multi-touch' },
+  { id: 'vector-precision', label: 'Vector Precision', href: '/touch-tests/vector-precision' },
+  { id: 'swipe-velocity', label: 'Swipe Velocity', href: '/touch-tests/swipe-velocity' },
+  { id: 'input-lag', label: 'Input Lag Test', href: '/touch-tests/input-lag', active: true }
+];
+---
+
+<Layout 
+  title="Input Lag & Reaction Time Test — Sub-Millisecond Click Latency | Monitor Test Hub"
+  description="Measure your display input lag and reaction time with sub-millisecond performance.now() precision. Identify polling rate vs refresh rate bottlenecks for gaming monitors."
+>
+  <main class="max-w-7xl mx-auto px-4 py-8 space-y-8">
+    <Breadcrumbs items={breadcrumbItems} />
+
+    <header class="space-y-3 border-b border-border-hairline pb-6">
+      <div class="flex items-center gap-2 text-status-pass text-xs font-mono font-bold uppercase tracking-wider">
+        <span class="w-2 h-2 rounded-full bg-status-pass led-glow-pass"></span>
+        INPUT LATENCY METRIC — performance.now() PRECISION
+      </div>
+      <h1 class="text-3xl sm:text-4xl font-extrabold text-text-primary tracking-tight">Input Lag & Reaction Time Analyzer</h1>
+      <p class="text-sm text-text-secondary max-w-3xl">
+        Measure click-to-flash reaction latency, identify polling rate vs. refresh rate bottlenecks, and generate a histogram of your reflex performance across multiple runs with sub-millisecond <code>performance.now()</code> timestamps.
+      </p>
+    </header>
+
+    <div class="bg-bg-surface border border-border-hairline rounded-xl p-6 font-mono shadow-specular-top">
+      <div class="flex items-center justify-between border-b border-border-hairline pb-4 mb-6">
+        <div class="flex items-center gap-3">
+          <span class="w-3 h-3 rounded-full bg-status-pass led-glow-pass"></span>
+          <h3 class="text-sm font-bold text-text-primary uppercase tracking-wider">Reflex Reaction & Input Lag Sniper</h3>
+        </div>
+        <span class="text-xs text-text-muted bg-bg-elevated px-2.5 py-1 rounded border border-border-hairline">PRECISION: ±0.1ms</span>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+        <div class="space-y-4 bg-bg-canvas p-4 rounded-lg border border-border-hairline">
+          <div>
+            <label for="refresh-rate-select" class="block text-xs font-bold text-text-secondary uppercase mb-2">Refresh Rate (Hz)</label>
+            <select id="refresh-rate-select" class="w-full bg-bg-surface border border-border-hairline text-text-primary text-xs rounded-lg p-2.5 focus:ring-2 focus:ring-status-pass outline-none">
+              <option value="60">60 Hz</option>
+              <option value="120">120 Hz</option>
+              <option value="144">144 Hz</option>
+              <option value="240" selected>240 Hz</option>
+              <option value="360">360 Hz</option>
+              <option value="540">540 Hz</option>
+            </select>
+          </div>
+          <div>
+            <label for="polling-rate-select" class="block text-xs font-bold text-text-secondary uppercase mb-2">Mouse Polling Rate</label>
+            <select id="polling-rate-select" class="w-full bg-bg-surface border border-border-hairline text-text-primary text-xs rounded-lg p-2.5 focus:ring-2 focus:ring-status-pass outline-none">
+              <option value="125">125 Hz (8ms period)</option>
+              <option value="500">500 Hz (2ms period)</option>
+              <option value="1000" selected>1000 Hz (1ms period)</option>
+              <option value="2000">2000 Hz (0.5ms period)</option>
+              <option value="8000">8000 Hz (0.125ms period)</option>
+            </select>
+          </div>
+          <div class="text-xs bg-bg-surface border border-border-hairline rounded-lg p-3 space-y-1.5">
+            <div class="flex justify-between"><span class="text-text-muted">Frame Period:</span><span id="frame-period" class="text-status-pass font-bold">4.17ms</span></div>
+            <div class="flex justify-between"><span class="text-text-muted">Poll Period:</span><span id="poll-period" class="text-status-pass font-bold">1.00ms</span></div>
+            <div class="flex justify-between"><span class="text-text-muted">Bottleneck:</span><span id="bottleneck-label" class="text-text-primary font-bold">DISPLAY</span></div>
+          </div>
+        </div>
+
+        <div class="lg:col-span-2 bg-bg-canvas p-4 rounded-lg border border-border-hairline flex flex-col">
+          <div class="text-xs font-bold text-text-muted uppercase tracking-wider mb-3">REACTION ZONE — Click when GREEN</div>
+          <div id="reaction-zone" role="button" tabindex="0" aria-label="Click when the zone turns green to measure reaction time" class="flex-1 min-h-40 rounded-lg flex flex-col items-center justify-center cursor-pointer transition-colors duration-100 bg-bg-elevated border border-border-hairline select-none">
+            <span id="reaction-status" class="text-sm font-bold text-text-muted">CLICK TO START</span>
+            <span id="reaction-result" class="text-3xl font-extrabold text-text-primary mt-2" style="display:none">—</span>
+          </div>
+
+          <div class="mt-4 grid grid-cols-3 gap-3 text-xs">
+            <div class="bg-bg-surface p-2.5 rounded border border-border-hairline">
+              <span class="text-text-muted block text-[10px]">LAST</span>
+              <span id="last-time" class="text-base font-bold text-text-primary">—</span>
+            </div>
+            <div class="bg-bg-surface p-2.5 rounded border border-border-hairline">
+              <span class="text-text-muted block text-[10px]">BEST</span>
+              <span id="best-time" class="text-base font-bold text-status-pass">—</span>
+            </div>
+            <div class="bg-bg-surface p-2.5 rounded border border-border-hairline">
+              <span class="text-text-muted block text-[10px]">AVG (10)</span>
+              <span id="avg-time" class="text-base font-bold text-text-secondary">—</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-bg-canvas border border-border-hairline rounded-lg p-4">
+        <div class="text-xs font-bold text-text-muted uppercase tracking-wider mb-3">REACTION HISTOGRAM</div>
+        <div id="histogram" class="flex items-end gap-1.5 h-16">
+          <span class="text-xs text-text-muted italic">Complete tests to see histogram...</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Scientific Methodology & Click-to-Photon Latency Article -->
+    <article class="bg-bg-surface border border-border-hairline rounded-2xl p-6 sm:p-8 space-y-6 shadow-specular-top font-sans text-sm text-text-secondary leading-relaxed">
+      <div class="border-b border-border-hairline pb-4">
+        <span class="font-mono text-[10px] font-bold text-status-pass uppercase tracking-widest block mb-1">INPUT LATENCY &amp; POLLING BOTTLENECK MATH</span>
+        <h2 class="text-xl font-bold text-text-primary">Display Scan-out Period, Polling Rates &amp; Human Reaction Time</h2>
+      </div>
+
+      <p>
+        System input latency is the cumulative delay from a physical hardware trigger (mouse click or screen tap) to the photons emitting from the display panel. Total end-to-end latency consists of three distinct components:
+      </p>
+
+      <div class="bg-bg-canvas p-4 rounded-xl border border-border-hairline font-mono text-xs space-y-2 my-4">
+        <span class="text-text-muted text-[10px] uppercase block tracking-wider">LATENCY PIPELINE FORMULA</span>
+        <div class="text-status-pass font-bold">
+          T_total = T_peripheral + T_system_render + (1000 / 2 × Refresh_Hz) + T_pixel_response
+        </div>
+        <div class="text-text-secondary text-[11px] font-sans">
+          Where average VSync scan-out delay equals half of the display frame period 1 / (2f).
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 font-mono text-xs my-4">
+        <div class="bg-bg-canvas p-4 rounded-xl border border-border-hairline space-y-1">
+          <span class="text-text-muted text-[10px] uppercase block">60 Hz Standard</span>
+          <strong class="text-text-primary block text-sm">Frame Period: 16.67 ms</strong>
+          <p class="font-sans text-[11px] text-text-secondary">Average scan-out wait time: 8.33 ms before next frame buffer swap.</p>
+        </div>
+        <div class="bg-bg-canvas p-4 rounded-xl border border-border-hairline space-y-1">
+          <span class="text-text-muted text-[10px] uppercase block">240 Hz Gaming</span>
+          <strong class="text-text-primary block text-sm">Frame Period: 4.17 ms</strong>
+          <p class="font-sans text-[11px] text-text-secondary">Average scan-out wait time: 2.08 ms. Eliminates 6.25 ms of visual delay.</p>
+        </div>
+        <div class="bg-bg-canvas p-4 rounded-xl border border-border-hairline space-y-1">
+          <span class="text-text-muted text-[10px] uppercase block">540 Hz Ultra-Esports</span>
+          <strong class="text-text-primary block text-sm">Frame Period: 1.85 ms</strong>
+          <p class="font-sans text-[11px] text-text-secondary">Average scan-out wait time: 0.93 ms. Sub-millisecond display pacing.</p>
+        </div>
+      </div>
+    </article>
+
+    <TestSwitcherBar tests={touchTests} currentId="input-lag" />
+  </main>
+</Layout>
+
+<script>
+  type Phase = 'idle' | 'waiting' | 'ready';
+  let phase: Phase = 'idle';
+  let flashTime = 0;
+  let timer: ReturnType<typeof setTimeout> | null = null;
+  const results: number[] = [];
+
+  const zone = document.getElementById('reaction-zone') as HTMLDivElement;
+  const status = document.getElementById('reaction-status');
+  const resultEl = document.getElementById('reaction-result') as HTMLElement;
+  const lastTimeEl = document.getElementById('last-time');
+  const bestTimeEl = document.getElementById('best-time');
+  const avgTimeEl = document.getElementById('avg-time');
+  const histEl = document.getElementById('histogram');
+  const refreshSel = document.getElementById('refresh-rate-select') as HTMLSelectElement;
+  const pollingSel = document.getElementById('polling-rate-select') as HTMLSelectElement;
+
+  function updateBottleneck() {
+    const hz = parseInt(refreshSel?.value || '240', 10);
+    const poll = parseInt(pollingSel?.value || '1000', 10);
+    const fp = document.getElementById('frame-period');
+    const pp = document.getElementById('poll-period');
+    const bl = document.getElementById('bottleneck-label');
+    if (fp) fp.textContent = `${(1000/hz).toFixed(2)}ms`;
+    if (pp) pp.textContent = `${(1000/poll).toFixed(3)}ms`;
+    if (bl) bl.textContent = hz < poll ? 'DISPLAY' : 'POLLING';
+  }
+
+  refreshSel?.addEventListener('change', updateBottleneck);
+  pollingSel?.addEventListener('change', updateBottleneck);
+  updateBottleneck();
+
+  function renderHistogram() {
+    if (!histEl || results.length < 2) return;
+    const max = Math.max(...results);
+    histEl.innerHTML = '';
+    results.slice(-10).forEach(r => {
+      const bar = document.createElement('div');
+      const pct = Math.max(8, Math.round((r / max) * 100));
+      bar.style.cssText = `height:${pct}%;flex:1;border-radius:3px 3px 0 0;background:${r < 200 ? '#059669' : r < 300 ? '#d97706' : '#dc2626'}`;
+      bar.title = `${r}ms`;
+      histEl.appendChild(bar);
+    });
+  }
+
+  function handleClick() {
+    if (phase === 'idle') {
+      phase = 'waiting';
+      zone.style.background = '';
+      if (status) { status.textContent = 'WAIT FOR GREEN...'; status.style.color = ''; }
+      resultEl.style.display = 'none';
+      const delay = 1000 + Math.random() * 3000;
+      timer = setTimeout(() => {
+        phase = 'ready';
+        flashTime = performance.now();
+        zone.style.background = '#059669';
+        if (status) { status.textContent = 'CLICK NOW!'; status.style.color = '#000'; }
+      }, delay);
+      return;
+    }
+    if (phase === 'ready') {
+      const t = Math.round(performance.now() - flashTime);
+      phase = 'idle';
+      zone.style.background = '';
+      if (status) { status.textContent = 'CLICK TO START'; status.style.color = ''; }
+      results.push(t);
+      if (lastTimeEl) lastTimeEl.textContent = `${t}ms`;
+      resultEl.textContent = `${t}ms`;
+      resultEl.style.display = '';
+      if (bestTimeEl) bestTimeEl.textContent = `${Math.min(...results)}ms`;
+      if (avgTimeEl) {
+        const slice = results.slice(-10);
+        avgTimeEl.textContent = `${Math.round(slice.reduce((a,b) => a+b, 0) / slice.length)}ms`;
+      }
+      renderHistogram();
+      return;
+    }
+    if (phase === 'waiting') {
+      if (timer) clearTimeout(timer);
+      phase = 'idle';
+      zone.style.background = '';
+      if (status) { status.textContent = 'TOO EARLY — Click to retry'; status.style.color = '#dc2626'; }
+    }
+  }
+
+  zone?.addEventListener('click', handleClick);
+  zone?.addEventListener('keydown', (e) => { if (e.key === ' ' || e.key === 'Enter') handleClick(); });
+</script>

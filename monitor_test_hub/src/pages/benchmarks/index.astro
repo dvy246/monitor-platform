@@ -1,0 +1,88 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import Breadcrumbs from '../../components/ui/Breadcrumbs.astro';
+import HardwareLedgerDeck from '../../components/diagnostics/HardwareLedgerDeck.astro';
+import HardwarePassportModal from '../../components/diagnostics/HardwarePassportModal.astro';
+import HardwareLimitationNotice from '../../components/disclaimers/HardwareLimitationNotice.astro';
+
+const breadcrumbItems = [
+  { label: 'Display Suite', href: '/display-tests' },
+  { label: 'Crowdsourced Telemetry Ledger & Hardware Benchmarks' }
+];
+
+const benchmarkDatasetSchema = {
+  "@context": "https://schema.org",
+  "@type": "Dataset",
+  "name": "Monitor Test Hub Crowdsourced SHA-256 Display Performance Ledger",
+  "description": "Empirical crowdsourced hardware benchmarks for monitor input latency, VSync frame pacing jitter, pixel density, OLED health index, and digitizer touch matrix precision.",
+  "url": "https://monitortesthub.com/benchmarks",
+  "creator": {
+    "@type": "Organization",
+    "name": "Monitor Test Hub Engineering Team",
+    "url": "https://monitortesthub.com"
+  },
+  "license": "https://creativecommons.org/licenses/by/4.0/",
+  "keywords": ["display benchmarks", "input lag database", "vsync jitter", "oled health score", "sha256 hardware receipt"]
+};
+---
+
+<Layout 
+  title="Global Display Telemetry Ledger & Hardware Benchmarks | Monitor Test Hub" 
+  description="Explore real-time crowdsourced hardware benchmarks signed with SHA-256 Web Crypto receipts. Compare VSync frame pacing jitter, input latency distributions, and OLED health indices."
+>
+  <script type="application/ld+json" set:html={JSON.stringify(benchmarkDatasetSchema)} />
+
+  <main class="max-w-7xl mx-auto px-4 py-8 space-y-8">
+    <Breadcrumbs items={breadcrumbItems} />
+
+    <header class="space-y-3 border-b border-border-hairline pb-6">
+      <div class="flex items-center gap-2 text-status-pass text-xs font-mono font-bold uppercase tracking-wider">
+        <span class="w-2 h-2 rounded-full bg-status-pass led-glow-pass"></span>
+        CROWDSOURCED DISPLAY TELEMETRY LEDGER — ISO 9241-307 &amp; VESA DISPLAYHDR
+      </div>
+      <h1 class="text-3xl sm:text-4xl font-extrabold text-text-primary tracking-tight font-mono">
+        Crowdsourced Display Telemetry &amp; Hardware Ledger
+      </h1>
+      <p class="text-sm text-text-secondary max-w-3xl">
+        Verifiable hardware calibration receipts and global panel benchmarks signed with client-side SHA-256 cryptographic signatures. Compare panel pacing jitter, refresh rate stability, digitizer touch precision, and display health scores.
+      </p>
+    </header>
+
+    <HardwareLedgerDeck />
+
+    <!-- Benchmark Documentation -->
+    <article class="bg-bg-surface border border-border-hairline rounded-2xl p-6 sm:p-8 space-y-6 shadow-specular-top font-sans text-sm text-text-secondary leading-relaxed">
+      <div class="border-b border-border-hairline pb-4">
+        <span class="font-mono text-[10px] font-bold text-status-pass uppercase tracking-widest block mb-1">EMPIRICAL HARDWARE BENCHMARKING METHODOLOGY</span>
+        <h2 class="text-xl font-bold text-text-primary">SHA-256 Verification Receipts &amp; Real-World Panel Telemetry</h2>
+      </div>
+
+      <p>
+        Traditional display reviews depend on static single-unit laboratory samples that fail to reflect <strong>panel lottery variance</strong>, operating system GPU scheduler updates, or long-term sub-pixel degradation. The <strong>Monitor Test Hub Hardware Passport Engine</strong> isolates client-side display parameters (frame delivery interval \(\Delta t\), device pixel ratio, color depth, and touch digitizer sampling noise) to calculate an empirical <strong>Display &amp; Touch Health Index (0–100)</strong>.
+      </p>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 font-mono text-xs my-4">
+        <div class="bg-bg-canvas p-4 rounded-xl border border-border-hairline space-y-1">
+          <span class="text-text-muted text-[10px] uppercase block">SHA-256 Signature</span>
+          <strong class="text-text-primary block text-sm">Cryptographic Receipt</strong>
+          <p class="font-sans text-[11px] text-text-secondary">Generates an immutable 16-character SHA-256 hash using native Web Crypto API for receipt verification.</p>
+        </div>
+        <div class="bg-bg-canvas p-4 rounded-xl border border-border-hairline space-y-1">
+          <span class="text-text-muted text-[10px] uppercase block">VSync Frame Pacing</span>
+          <strong class="text-text-primary block text-sm">Sub-ms Timing Jitter</strong>
+          <p class="font-sans text-[11px] text-text-secondary">Measures microsecond frame delivery interval deltas across high-refresh rates (60Hz to 540Hz+).</p>
+        </div>
+        <div class="bg-bg-canvas p-4 rounded-xl border border-border-hairline space-y-1">
+          <span class="text-text-muted text-[10px] uppercase block">Panel Lottery Variance</span>
+          <strong class="text-text-primary block text-sm">Crowdsourced Ledger</strong>
+          <p class="font-sans text-[11px] text-text-secondary">Aggregates real-world user receipts to establish empirical performance percentiles per panel category.</p>
+        </div>
+      </div>
+
+      <HardwareLimitationNotice />
+    </article>
+
+    <!-- Hardware Passport Modal -->
+    <HardwarePassportModal />
+  </main>
+</Layout>

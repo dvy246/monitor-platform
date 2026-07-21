@@ -1,0 +1,13 @@
+---
+export function getStaticPaths() {
+  return [
+    { params: { locale: 'es' } },
+    { params: { locale: 'de' } },
+    { params: { locale: 'fr' } }
+  ];
+}
+
+import BasePage from '../../input-lag-test/index.astro';
+---
+
+<BasePage />

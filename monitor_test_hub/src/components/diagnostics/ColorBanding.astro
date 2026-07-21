@@ -1,0 +1,83 @@
+---
+/**
+ * ColorBanding.astro
+ * Color Banding & 10-Bit Gradient Step Inspector UI component.
+ */
+---
+
+<div class="w-full max-w-5xl mx-auto space-y-6">
+  <div class="bg-bg-surface/90 border border-border-hairline rounded-2xl p-6 backdrop-blur-xl shadow-2xl space-y-6">
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-border-hairline/60 pb-4">
+      <div>
+        <div class="flex items-center gap-2">
+          <span class="w-2.5 h-2.5 rounded-full bg-status-pass shadow-[0_0_8px_rgba(5,150,105,0.8)]"></span>
+          <h2 class="text-lg font-bold font-mono text-text-primary tracking-wide">Color Banding &amp; 10-Bit Gradient Inspector</h2>
+        </div>
+        <p class="text-xs text-text-muted mt-1">Quantization step evaluation across 8-bit (256 levels) and 10-bit (1024 levels) color space gradients.</p>
+      </div>
+
+      <div class="flex items-center gap-3">
+        <label class="text-xs font-mono text-text-muted">Bit Depth:</label>
+        <select id="bitdepth-select" class="bg-bg-canvas border border-border-subtle text-text-primary text-xs font-mono rounded-lg px-3 py-1.5 focus:border-status-pass">
+          <option value="8">8-Bit (256 Shades)</option>
+          <option value="10" selected>10-Bit (1024 Shades)</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Gradient Rendering Area -->
+    <div class="space-y-4">
+      <div class="text-xs font-mono text-text-muted">RGB Grayscale Gradient:</div>
+      <div class="w-full h-16 rounded-xl border border-border-subtle overflow-hidden bg-gradient-to-r from-black via-gray-500 to-white shadow-inner"></div>
+
+      <div class="text-xs font-mono text-text-muted">RGB Red/Green/Blue Multi-Gradient:</div>
+      <div class="w-full h-16 rounded-xl border border-border-subtle overflow-hidden bg-gradient-to-r from-red-600 via-green-600 to-blue-600 shadow-inner"></div>
+    </div>
+
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 pt-2">
+      <div class="bg-bg-elevated p-3.5 rounded-xl border border-border-hairline">
+        <div class="text-[10px] font-mono text-text-muted uppercase">Active Bit Depth</div>
+        <div id="metric-bitdepth" class="text-sm font-mono font-bold text-text-primary mt-1">10-Bit Native</div>
+      </div>
+      <div class="bg-bg-elevated p-3.5 rounded-xl border border-border-hairline">
+        <div class="text-[10px] font-mono text-text-muted uppercase">Total Gradient Steps</div>
+        <div id="metric-steps" class="text-sm font-mono font-bold text-status-pass mt-1">1,024 Steps</div>
+      </div>
+      <div class="bg-bg-elevated p-3.5 rounded-xl border border-border-hairline">
+        <div class="text-[10px] font-mono text-text-muted uppercase">Max Step Delta E</div>
+        <div id="metric-deltae" class="text-sm font-mono font-bold text-text-primary mt-1">0.32 L*</div>
+      </div>
+      <div class="bg-bg-elevated p-3.5 rounded-xl border border-border-hairline">
+        <div class="text-[10px] font-mono text-text-muted uppercase">Banding Artifacts</div>
+        <div id="metric-banding-status" class="text-sm font-mono font-bold text-status-pass mt-1">SMOOTH (NO BANDING)</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  import { analyzeGradientBanding } from '../../engine/ColorBandingEngine';
+
+  const bitSelect = document.getElementById('bitdepth-select') as HTMLSelectElement | null;
+  const metricDepth = document.getElementById('metric-bitdepth');
+  const metricSteps = document.getElementById('metric-steps');
+  const metricDelta = document.getElementById('metric-deltae');
+  const metricStatus = document.getElementById('metric-banding-status');
+
+  function update() {
+    if (!bitSelect) return;
+    const depth = parseInt(bitSelect.value, 10) as 8 | 10;
+    const report = analyzeGradientBanding(depth);
+
+    if (metricDepth) metricDepth.textContent = `${depth}-Bit`;
+    if (metricSteps) metricSteps.textContent = `${report.totalSteps} Steps`;
+    if (metricDelta) metricDelta.textContent = `${report.maxDeltaE} L*`;
+    if (metricStatus) {
+      metricStatus.textContent = report.hasBandingArtifacts ? 'BANDING DETECTED' : 'SMOOTH (NO BANDING)';
+      metricStatus.className = `text-sm font-mono font-bold mt-1 ${report.hasBandingArtifacts ? 'text-status-fail' : 'text-status-pass'}`;
+    }
+  }
+
+  bitSelect?.addEventListener('change', update);
+  update();
+</script>

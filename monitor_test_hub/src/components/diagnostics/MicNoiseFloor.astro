@@ -1,0 +1,111 @@
+---
+/**
+ * MicNoiseFloor.astro
+ * Microphone Noise Floor & Signal-to-Noise Ratio (SNR) Tester UI component.
+ */
+---
+
+<div class="w-full max-w-5xl mx-auto space-y-6">
+  <div class="bg-bg-surface/90 border border-border-hairline rounded-2xl p-6 backdrop-blur-xl shadow-2xl space-y-6">
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-border-hairline/60 pb-4">
+      <div>
+        <div class="flex items-center gap-2">
+          <span class="w-2.5 h-2.5 rounded-full bg-status-pass shadow-[0_0_8px_rgba(5,150,105,0.8)]"></span>
+          <h2 class="text-lg font-bold font-mono text-text-primary tracking-wide">Microphone Noise Floor &amp; SNR Analyzer</h2>
+        </div>
+        <p class="text-xs text-text-muted mt-1">Web Audio API real-time noise floor (dBFS), peak clipping, and voice SNR decibel evaluation.</p>
+      </div>
+
+      <div class="flex items-center gap-3">
+        <button id="start-mic-btn" class="px-4 py-2 text-xs font-mono font-semibold rounded-lg bg-status-pass/10 text-status-pass border border-status-pass/30 hover:bg-status-pass/20 transition-all cursor-pointer">
+          Start Mic Test
+        </button>
+      </div>
+    </div>
+
+    <!-- Live Audio Meter Visualizer Box -->
+    <div class="relative w-full h-40 rounded-xl bg-bg-canvas border border-border-subtle overflow-hidden flex flex-col justify-center p-6 space-y-4">
+      <div class="flex justify-between text-xs font-mono text-text-muted">
+        <span>Audio Input Level (dBFS):</span>
+        <span id="live-dbfs" class="font-bold text-status-pass">-60.0 dBFS</span>
+      </div>
+
+      <!-- Meter Bar -->
+      <div class="w-full h-6 rounded-full bg-bg-surface border border-border-hairline p-1 overflow-hidden">
+        <div id="meter-bar" class="h-full rounded-full bg-status-pass transition-all duration-75" style="width: 0%;"></div>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 pt-2">
+      <div class="bg-bg-elevated p-3.5 rounded-xl border border-border-hairline">
+        <div class="text-[10px] font-mono text-text-muted uppercase">Noise Floor Baseline</div>
+        <div id="metric-noise-floor" class="text-sm font-mono font-bold text-text-primary mt-1">-60.0 dBFS</div>
+      </div>
+      <div class="bg-bg-elevated p-3.5 rounded-xl border border-border-hairline">
+        <div class="text-[10px] font-mono text-text-muted uppercase">Voice Peak Signal</div>
+        <div id="metric-peak-signal" class="text-sm font-mono font-bold text-text-primary mt-1">-12.0 dBFS</div>
+      </div>
+      <div class="bg-bg-elevated p-3.5 rounded-xl border border-border-hairline">
+        <div class="text-[10px] font-mono text-text-muted uppercase">Signal-to-Noise (SNR)</div>
+        <div id="metric-snr" class="text-sm font-mono font-bold text-status-pass mt-1">48.0 dB</div>
+      </div>
+      <div class="bg-bg-elevated p-3.5 rounded-xl border border-border-hairline">
+        <div class="text-[10px] font-mono text-text-muted uppercase">Audio Clarity Rating</div>
+        <div id="metric-clarity" class="text-sm font-mono font-bold text-status-pass mt-1">EXCELLENT</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  import { calculateDbfsFromSamples, evaluateMicSnr } from '../../engine/MicNoiseFloorEngine';
+
+  const startBtn = document.getElementById('start-mic-btn');
+  const liveDbfs = document.getElementById('live-dbfs');
+  const meterBar = document.getElementById('meter-bar');
+  const metricNoise = document.getElementById('metric-noise-floor');
+  const metricPeak = document.getElementById('metric-peak-signal');
+  const metricSnr = document.getElementById('metric-snr');
+  const metricClarity = document.getElementById('metric-clarity');
+
+  let audioCtx: AudioContext | null = null;
+  let isTesting = false;
+
+  startBtn?.addEventListener('click', async () => {
+    if (isTesting) return;
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      audioCtx = new AudioContext();
+      const source = audioCtx.createMediaStreamSource(stream);
+      const analyser = audioCtx.createAnalyser();
+      analyser.fftSize = 512;
+      source.connect(analyser);
+
+      isTesting = true;
+      if (startBtn) startBtn.textContent = 'Mic Active';
+
+      const pcm = new Float32Array(analyser.fftSize);
+
+      function pollAudio() {
+        if (!isTesting) return;
+        analyser.getFloatTimeDomainData(pcm);
+        const dbfs = calculateDbfsFromSamples(pcm);
+
+        const meterPct = Math.max(0, Math.min(100, (dbfs + 60) * 1.66));
+        if (liveDbfs) liveDbfs.textContent = `${dbfs} dBFS`;
+        if (meterBar) meterBar.style.width = `${meterPct}%`;
+
+        const res = evaluateMicSnr(-60, dbfs);
+        if (metricNoise) metricNoise.textContent = `${res.noiseFloorDbfs} dBFS`;
+        if (metricPeak) metricPeak.textContent = `${res.peakSignalDbfs} dBFS`;
+        if (metricSnr) metricSnr.textContent = `${res.snrDb} dB`;
+        if (metricClarity) metricClarity.textContent = res.clarityRating;
+
+        requestAnimationFrame(pollAudio);
+      }
+      pollAudio();
+    } catch (err) {
+      alert('Microphone access permission required to run audio noise floor test.');
+    }
+  });
+</script>

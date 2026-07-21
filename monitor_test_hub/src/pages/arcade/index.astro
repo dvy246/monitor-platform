@@ -1,0 +1,87 @@
+---
+import Layout from '../../layouts/Layout.astro';
+---
+
+<Layout 
+  title="Monitor & Touch Arcade Suite" 
+  description="Examine monitor motion blur, color differences, click latency, and touch accuracy using interactive gamified hardware tests."
+>
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <div class="text-center max-w-3xl mx-auto mb-12">
+      <h1 class="heading-brand text-3xl md:text-5xl font-black tracking-tight text-text-primary mb-3">
+        MONITOR &amp; TOUCH ARCADE SUITE
+      </h1>
+      <p class="text-text-secondary text-sm md:text-base leading-relaxed font-sans">
+        Test your display and pointer inputs in a series of custom interactive micro-games. If your hardware passes, it is certified safe and fully calibrated!
+      </p>
+    </div>
+
+    <!-- Game Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+      <!-- Ghosting Invaders -->
+      <a href="/arcade/ghosting-invaders" class="bg-bg-surface hover:bg-bg-elevated border border-border-hairline hover:border-status-pass/40 rounded-xl p-6 flex flex-col justify-between transition-all group shadow-specular-top hover:shadow-[0_0_15px_rgba(5,150,105,0.15)] font-mono">
+        <div class="space-y-4">
+          <div class="w-10 h-10 rounded-lg bg-status-pass/10 flex items-center justify-center text-status-pass border border-status-pass/20">
+            <span class="font-extrabold text-sm heading-brand">G1</span>
+          </div>
+          <h3 class="heading-brand text-lg font-bold text-text-primary group-hover:text-status-pass transition-colors font-mono">Ghosting Invaders</h3>
+          <p class="text-text-secondary text-xs md:text-sm leading-relaxed font-sans">
+            Pursuit tracking camera simulator. Hold spacebar to match eye velocity and analyze G-to-G trailing ghost blur and overshoot overdrive coronas.
+          </p>
+        </div>
+        <span class="text-status-pass text-xs font-bold flex items-center gap-1 mt-6">
+          Insert Coin &amp; Play &rarr;
+        </span>
+      </a>
+
+      <!-- Color Match Alchemist -->
+      <a href="/arcade/color-match-alchemist" class="bg-bg-surface hover:bg-bg-elevated border border-border-hairline hover:border-status-pass/40 rounded-xl p-6 flex flex-col justify-between transition-all group shadow-specular-top hover:shadow-[0_0_15px_rgba(5,150,105,0.15)] font-mono">
+        <div class="space-y-4">
+          <div class="w-10 h-10 rounded-lg bg-status-info/10 flex items-center justify-center text-status-info border border-status-info/20">
+            <span class="font-extrabold text-sm heading-brand">G2</span>
+          </div>
+          <h3 class="heading-brand text-lg font-bold text-text-primary group-hover:text-status-pass transition-colors font-mono">Color Match Alchemist</h3>
+          <p class="text-text-secondary text-xs md:text-sm leading-relaxed font-sans">
+            Perceptual color-matching puzzle. Select matching candidates as the Delta-E threshold ($\Delta E_{00}$) dynamically decreases, testing color depth calibration.
+          </p>
+        </div>
+        <span class="text-status-pass text-xs font-bold flex items-center gap-1 mt-6">
+          Insert Coin &amp; Play &rarr;
+        </span>
+      </a>
+
+      <!-- Lag Reflex Sniper -->
+      <a href="/arcade/lag-reflex-sniper" class="bg-bg-surface hover:bg-bg-elevated border border-border-hairline hover:border-status-pass/40 rounded-xl p-6 flex flex-col justify-between transition-all group shadow-specular-top hover:shadow-[0_0_15px_rgba(5,150,105,0.15)] font-mono">
+        <div class="space-y-4">
+          <div class="w-10 h-10 rounded-lg bg-purple-500/10 flex items-center justify-center text-purple-400 border border-purple-500/20">
+            <span class="font-extrabold text-sm heading-brand">G3</span>
+          </div>
+          <h3 class="heading-brand text-lg font-bold text-text-primary group-hover:text-status-pass transition-colors font-mono">Lag Reflex Sniper</h3>
+          <p class="text-text-secondary text-xs md:text-sm leading-relaxed font-sans">
+            Target shooting latency test. Uses high-resolution performance timers to measure click latency and calculate USB HID polling rates.
+          </p>
+        </div>
+        <span class="text-status-pass text-xs font-bold flex items-center gap-1 mt-6">
+          Insert Coin &amp; Play &rarr;
+        </span>
+      </a>
+
+      <!-- Touch Matrix Defusal -->
+      <a href="/arcade/touch-matrix-defusal" class="bg-bg-surface hover:bg-bg-elevated border border-border-hairline hover:border-status-pass/40 rounded-xl p-6 flex flex-col justify-between transition-all group shadow-specular-top hover:shadow-[0_0_15px_rgba(5,150,105,0.15)] font-mono">
+        <div class="space-y-4">
+          <div class="w-10 h-10 rounded-lg bg-status-fail/10 flex items-center justify-center text-status-fail border border-status-fail/20">
+            <span class="font-extrabold text-sm heading-brand">G4</span>
+          </div>
+          <h3 class="heading-brand text-lg font-bold text-text-primary group-hover:text-status-pass transition-colors font-mono">Touch Matrix Defusal</h3>
+          <p class="text-text-secondary text-xs md:text-sm leading-relaxed font-sans">
+            Hold and drag energy orbs in screen quadrants to map multi-touch stability and evaluate digitizer continuity.
+          </p>
+        </div>
+        <span class="text-status-pass text-xs font-bold flex items-center gap-1 mt-6">
+          Insert Coin &amp; Play &rarr;
+        </span>
+      </a>
+    </div>
+  </div>
+</Layout>
+

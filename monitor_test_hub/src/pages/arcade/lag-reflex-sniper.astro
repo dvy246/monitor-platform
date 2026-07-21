@@ -1,0 +1,18 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import LagReflexSniper from '../../components/arcade/LagReflexSniper.astro';
+import HardwareLimitationNotice from '../../components/disclaimers/HardwareLimitationNotice.astro';
+---
+
+<Layout 
+  title="Lag Reflex Sniper Game" 
+  description="Click target indicators at high speeds to calculate browser DOM input latency and estimate USB HID polling rates."
+>
+  <div class="py-4">
+    <LagReflexSniper />
+    
+    <div class="max-w-4xl mx-auto px-4">
+      <HardwareLimitationNotice />
+    </div>
+  </div>
+</Layout>

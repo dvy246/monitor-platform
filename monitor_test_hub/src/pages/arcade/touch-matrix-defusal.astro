@@ -1,0 +1,18 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import TouchMatrixDefusal from '../../components/arcade/TouchMatrixDefusal.astro';
+import ErgonomicsNotice from '../../components/disclaimers/ErgonomicsNotice.astro';
+---
+
+<Layout 
+  title="Touch Matrix Defusal Game" 
+  description="Touch and hold quadrant energy targets to test multi-touch stability parameters on high-performance digitizers."
+>
+  <div class="py-4">
+    <TouchMatrixDefusal />
+    
+    <div class="max-w-4xl mx-auto px-4">
+      <ErgonomicsNotice />
+    </div>
+  </div>
+</Layout>

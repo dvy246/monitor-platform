@@ -1,0 +1,24 @@
+---
+import { getAllPanelTypes, getAllUsageTiers } from '../../../../engine/OledBurnInEngine';
+
+export function getStaticPaths() {
+  const locales = ['es', 'de', 'fr'];
+  const panels = getAllPanelTypes();
+  const tiers = getAllUsageTiers();
+
+  return locales.flatMap((locale) =>
+    panels.flatMap((panelType) =>
+      tiers.map((usageTier) => ({
+        params: {
+          locale,
+          panelType,
+          usageTier
+        }
+      }))
+    )
+  );
+}
+
+import BasePage from '../../../oled-burn-in-risk/[panelType]/[usageTier].astro';
+---
+<BasePage />

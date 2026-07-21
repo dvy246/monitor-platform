@@ -1,0 +1,25 @@
+---
+import { getAllPeakNits, getAllToneMappings } from '../../../../engine/HdrTestEngine';
+
+export function getStaticPaths() {
+  const locales = ['es', 'de', 'fr'];
+  const nitsList = getAllPeakNits();
+  const mappingList = getAllToneMappings();
+
+  return locales.flatMap((locale) =>
+    nitsList.flatMap((peakNits) =>
+      mappingList.map((toneMapping) => ({
+        params: {
+          locale,
+          peakNits,
+          toneMapping
+        }
+      }))
+    )
+  );
+}
+
+import BasePage from '../../../hdr-test/[peakNits]/[toneMapping].astro';
+---
+
+<BasePage />

@@ -1,0 +1,61 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import PwmFlicker from '../../components/diagnostics/PwmFlicker.astro';
+
+const faqs = [
+  {
+    question: "What is Pulse-Width Modulation (PWM) in displays?",
+    answer: "PWM is a method used by monitor manufacturers to control screen brightness by cycling the backlight on and off at high frequencies. Low PWM frequencies can cause headache and eye fatigue."
+  },
+  {
+    question: "What is DC Dimming and why is it better than PWM?",
+    answer: "DC (Direct Current) Dimming adjusts screen brightness by regulating power current directly rather than flashing the backlight on and off, eliminating screen flicker entirely."
+  },
+  {
+    question: "How can I detect PWM flicker using a smartphone camera?",
+    answer: "Set your smartphone camera shutter speed to high (1/1000s or faster) and point it at the display at 20% brightness. If thick dark bands scroll down the camera screen, PWM is present."
+  },
+  {
+    question: "What PWM frequency is considered safe for sensitive eyes?",
+    answer: "IEEE 1789 standards indicate that PWM frequencies above 3,000 Hz present zero health risk to humans, whereas frequencies below 240 Hz pose significant risk of visual discomfort."
+  }
+];
+---
+
+<Layout 
+  title="PWM Screen Flicker Test | Monitor Pulse-Width Modulation Checker"
+  description="Test your monitor or smartphone for PWM screen flicker and backlight stroboscopic artifacts. Evaluate eye strain risk with IEEE 1789 standards."
+>
+  <main id="main-content" class="py-10 px-4 sm:px-6 lg:px-8 space-y-12">
+    <section class="max-w-4xl mx-auto text-center space-y-4">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-status-pass/10 border border-status-pass/30 text-xs font-mono text-status-pass font-bold">
+        <span>IEEE STD 1789-2015 FLICKER HEALTH METRICS</span>
+      </div>
+      <h1 class="text-3xl sm:text-4xl font-extrabold font-mono tracking-tight text-text-primary">
+        PWM Screen Flicker &amp; Eye Strain Detector
+      </h1>
+      <p class="text-sm sm:text-base text-text-muted leading-relaxed max-w-2xl mx-auto">
+        Test your display for Pulse-Width Modulation (PWM) backlight flicker and evaluate eye strain health risks under IEEE 1789 guidelines.
+      </p>
+    </section>
+
+    <PwmFlicker />
+
+    <article class="max-w-4xl mx-auto space-y-8 bg-bg-surface/80 border border-border-hairline rounded-2xl p-6 sm:p-8 backdrop-blur-xl text-sm text-text-secondary leading-relaxed">
+      <h2 class="text-xl font-bold font-mono text-text-primary">Understanding Backlight Modulation &amp; Visual Fatigue</h2>
+      <p>
+        Low-frequency Pulse-Width Modulation causes invisible rapid pulsing of display backlights, triggering eye fatigue and migraines in sensitive users. Flicker-free DC dimming panels eliminate temporal light modulation.
+      </p>
+
+      <h2 class="text-xl font-bold font-mono text-text-primary">Frequently Asked Questions</h2>
+      <div class="space-y-4">
+        {faqs.map(faq => (
+          <div class="border-b border-border-hairline pb-4 space-y-1">
+            <h3 class="font-bold text-text-primary font-mono">{faq.question}</h3>
+            <p class="text-xs text-text-muted">{faq.answer}</p>
+          </div>
+        ))}
+      </div>
+    </article>
+  </main>
+</Layout>

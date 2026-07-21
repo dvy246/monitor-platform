@@ -1,0 +1,61 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import PixelWalk from '../../components/diagnostics/PixelWalk.astro';
+
+const faqs = [
+  {
+    question: "What is LCD sub-pixel inversion (pixel walk)?",
+    answer: "LCD pixels require alternating voltage polarity (positive and negative) on every frame to prevent liquid crystal degradation. If voltage is slightly imbalanced, the screen exhibits visible pixel walk flickering or fine lines."
+  },
+  {
+    question: "Why does pixel walk cause fine vertical lines or flickering?",
+    answer: "When rendering specific high-frequency patterns (like dot-grid backgrounds in web design or games), mismatched positive/negative voltages cause half the sub-pixels to dim, producing visible shimmer."
+  },
+  {
+    question: "Can pixel walk damage my display?",
+    answer: "No, inversion is a normal operating mechanism of LCD panels. However, severe pixel walk indicates poor factory panel calibration or low-quality display T-CON timing controller hardware."
+  },
+  {
+    question: "Does pixel walk affect OLED screens?",
+    answer: "No. OLED displays do not use liquid crystals or AC voltage inversion; every OLED sub-pixel is an independent light-emitting diode."
+  }
+];
+---
+
+<Layout 
+  title="LCD Inversion & Pixel Walk Test | Screen Crosstalk Inspector"
+  description="Inspect your LCD monitor for pixel walk flicker and sub-pixel voltage inversion artifacts. Test 2x2 and 1x1 spatial dither pattern balance under VESA FPDM v2.0 standards."
+>
+  <main id="main-content" class="py-10 px-4 sm:px-6 lg:px-8 space-y-12">
+    <section class="max-w-4xl mx-auto text-center space-y-4">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-status-pass/10 border border-status-pass/30 text-xs font-mono text-status-pass font-bold">
+        <span>VESA FPDM V2.0 SPATIAL INVERSION METRICS</span>
+      </div>
+      <h1 class="text-3xl sm:text-4xl font-extrabold font-mono tracking-tight text-text-primary">
+        Pixel Walk &amp; LCD Inversion Pattern Tester
+      </h1>
+      <p class="text-sm sm:text-base text-text-muted leading-relaxed max-w-2xl mx-auto">
+        Inspect your LCD panel for sub-pixel AC voltage polarity inversion imbalance, crosstalk line artifacts, and spatial 2x2/1x1 dither flicker.
+      </p>
+    </section>
+
+    <PixelWalk />
+
+    <article class="max-w-4xl mx-auto space-y-8 bg-bg-surface/80 border border-border-hairline rounded-2xl p-6 sm:p-8 backdrop-blur-xl text-sm text-text-secondary leading-relaxed">
+      <h2 class="text-xl font-bold font-mono text-text-primary">Understanding Sub-Pixel Voltage Inversion</h2>
+      <p>
+        LCD displays alternate electrical polarity across adjacent sub-pixels to maintain liquid crystal molecular health. Proper factory calibration ensures positive and negative frame voltages match exactly.
+      </p>
+
+      <h2 class="text-xl font-bold font-mono text-text-primary">Frequently Asked Questions</h2>
+      <div class="space-y-4">
+        {faqs.map(faq => (
+          <div class="border-b border-border-hairline pb-4 space-y-1">
+            <h3 class="font-bold text-text-primary font-mono">{faq.question}</h3>
+            <p class="text-xs text-text-muted">{faq.answer}</p>
+          </div>
+        ))}
+      </div>
+    </article>
+  </main>
+</Layout>

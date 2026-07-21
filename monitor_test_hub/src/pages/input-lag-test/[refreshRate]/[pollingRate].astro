@@ -1,0 +1,193 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+import Breadcrumbs from '../../../components/ui/Breadcrumbs.astro';
+import InputLagSniper from '../../../components/diagnostics/InputLagSniper.astro';
+import HardwareLimitationNotice from '../../../components/disclaimers/HardwareLimitationNotice.astro';
+import {
+  getAllRefreshRates,
+  getAllPollingRates,
+  sanitizeRefreshRate,
+  sanitizePollingRate,
+  REFRESH_RATE_CONFIG,
+  POLLING_RATE_CONFIG,
+  analyzeBottleneck
+} from '../../../engine/InputLagEngine';
+
+export async function getStaticPaths() {
+  const refreshRates = getAllRefreshRates();
+  const pollingRates = getAllPollingRates();
+
+  return refreshRates.flatMap((refreshRate) =>
+    pollingRates.map((pollingRate) => ({
+      params: { refreshRate, pollingRate }
+    }))
+  );
+}
+
+const { refreshRate: rawRefresh, pollingRate: rawPolling } = Astro.params;
+
+const refreshRateKey = sanitizeRefreshRate(rawRefresh);
+const pollingRateKey = sanitizePollingRate(rawPolling);
+
+const refreshInfo = REFRESH_RATE_CONFIG[refreshRateKey];
+const pollingInfo = POLLING_RATE_CONFIG[pollingRateKey];
+const bottleneck = analyzeBottleneck(refreshRateKey, pollingRateKey);
+
+const pageTitle = `${refreshInfo.hz}Hz Monitor + ${pollingInfo.hz}Hz Mouse Input Lag & Latency Test`;
+const metaDescription = `Input lag, click latency, and frame delay audit for a ${refreshInfo.hz}Hz display (${refreshInfo.framePeriodMs}ms frame period) with a ${pollingInfo.hz}Hz mouse (${pollingInfo.pollPeriodMs}ms polling interval). Evaluates display vs polling rate bottlenecks and sub-millisecond reflex reaction times.`;
+
+const canonicalUrl = `${Astro.url.origin}/input-lag-test/${refreshRateKey}/${pollingRateKey}`;
+
+// JSON-LD Structured Data Schema Graph
+const schemaGraph = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebApplication",
+      "@id": `${canonicalUrl}#webapp`,
+      "name": pageTitle,
+      "url": canonicalUrl,
+      "applicationCategory": "DeveloperApplication",
+      "operatingSystem": "All (Windows, macOS, Linux, ChromeOS, Android, iOS)",
+      "browserRequirements": "Requires HTML5 high-resolution performance.now() timer, PointerEvents, and WebGL/Canvas frame sync",
+      "featureList": [
+        `Sub-millisecond click latency measurement for ${refreshInfo.hz}Hz refresh rate`,
+        `Mouse polling latency calculation for ${pollingInfo.hz}Hz polling rate`,
+        "Reflex reaction sniper target trigger with visual latency indicator",
+        "Reaction time histogram with standard deviation & variance metrics"
+      ],
+      "about": [
+        { "@type": "Thing", "name": "Input Lag", "sameAs": "https://en.wikipedia.org/wiki/Input_lag" },
+        { "@type": "Thing", "name": "Refresh Rate", "sameAs": "https://en.wikipedia.org/wiki/Refresh_rate" },
+        { "@type": "Thing", "name": "Mouse Polling Rate", "sameAs": "https://en.wikipedia.org/wiki/Computer_mouse#Polling_rate" }
+      ]
+    },
+    {
+      "@type": "TechArticle",
+      "@id": `${canonicalUrl}#article`,
+      "headline": pageTitle,
+      "description": metaDescription,
+      "inLanguage": "en",
+      "mainEntityOfPage": canonicalUrl,
+      "dependencies": "HTML5 performance.now(), requestAnimationFrame, PointerEvents",
+      "about": [
+        { "@type": "Thing", "name": "Click-to-Photon Latency", "sameAs": "https://en.wikipedia.org/wiki/Input_lag" },
+        { "@type": "Thing", "name": "Reflex Reaction Time", "sameAs": "https://en.wikipedia.org/wiki/Mental_chronometry" }
+      ],
+      "medicalAudience": {
+        "@type": "MedicalAudience",
+        "audienceType": "None - Non-Medical Hardware Diagnostic Tool"
+      }
+    }
+  ]
+};
+---
+
+<Layout title={pageTitle} description={metaDescription}>
+  <script type="application/ld+json" set:html={JSON.stringify(schemaGraph)} />
+
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+    <Breadcrumbs items={[
+      { label: 'Input Lag Diagnostics', href: '/input-lag-test' },
+      { label: `${refreshInfo.hz}Hz Monitor` },
+      { label: `${pollingInfo.hz}Hz Mouse` }
+    ]} />
+
+    <!-- Page Header Deck -->
+    <header class="space-y-3 border-b border-border-hairline pb-6">
+      <div class="flex items-center gap-2 text-status-pass text-xs font-mono font-bold uppercase tracking-wider">
+        <span class="w-2.5 h-2.5 rounded-full bg-status-pass led-glow-pass"></span>
+        HIGH-REFRESH LATENCY &amp; REFLX BENCHMARK
+      </div>
+      <h1 class="text-3xl sm:text-4xl font-extrabold text-text-primary tracking-tight font-mono">
+        {refreshInfo.hz}Hz Display + {pollingInfo.hz}Hz Mouse Input Lag Test
+      </h1>
+      <p class="text-sm text-text-secondary max-w-3xl leading-relaxed">
+        Sub-millisecond click-to-render response analysis for <strong class="text-text-primary">{refreshInfo.hz} Hz</strong> displays paired with <strong class="text-text-primary">{pollingInfo.hz} Hz</strong> mouse polling rates. Evaluates latency bottlenecks and frame cycle delays.
+      </p>
+    </header>
+
+    <!-- Key Metrics Highlight Deck -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 font-mono">
+      <div class="bg-bg-surface border border-border-hairline rounded-lg p-4 shadow-specular-top">
+        <span class="text-[10px] text-text-muted uppercase font-bold tracking-wider block mb-1">TARGET REFRESH RATE</span>
+        <span class="text-sm font-bold text-status-pass block">{refreshInfo.hz} Hz</span>
+        <span class="text-[10px] text-text-secondary mt-1 block">{refreshInfo.framePeriodMs} ms frame interval</span>
+      </div>
+
+      <div class="bg-bg-surface border border-border-hairline rounded-lg p-4 shadow-specular-top">
+        <span class="text-[10px] text-text-muted uppercase font-bold tracking-wider block mb-1">MOUSE POLLING RATE</span>
+        <span class="text-sm font-bold text-text-primary block">{pollingInfo.hz} Hz</span>
+        <span class="text-[10px] text-text-secondary mt-1 block">{pollingInfo.pollPeriodMs} ms polling interval</span>
+      </div>
+
+      <div class="bg-bg-surface border border-border-hairline rounded-lg p-4 shadow-specular-top">
+        <span class="text-[10px] text-text-muted uppercase font-bold tracking-wider block mb-1">BASELINE HARDWARE DELAY</span>
+        <span class="text-sm font-bold text-text-primary block">{bottleneck.totalBaselineHardwareDelayMs.toFixed(2)} ms</span>
+        <span class="text-[10px] text-text-secondary mt-1 block">Frame + Poll Delay Floor</span>
+      </div>
+
+      <div class="bg-bg-surface border border-border-hairline rounded-lg p-4 shadow-specular-top">
+        <span class="text-[10px] text-text-muted uppercase font-bold tracking-wider block mb-1">PRIMARY BOTTLENECK</span>
+        <span class="text-sm font-bold text-status-warn block">{bottleneck.bottleneckLabel}</span>
+        <span class="text-[10px] text-text-secondary mt-1 block">Dominant Latency Constraint</span>
+      </div>
+    </div>
+
+    <!-- Diagnostic Interactive Component -->
+    <section aria-label="Input Lag & Reflex Reaction Sniper Diagnostic Test">
+      <InputLagSniper initialRefreshRate={refreshInfo.hz} initialPollingRate={pollingInfo.hz} />
+    </section>
+
+    <!-- Cross-Navigation Matrix Selection Deck -->
+    <section class="bg-bg-surface border border-border-hairline rounded-xl p-6 space-y-6 font-mono">
+      <h2 class="text-base font-bold text-text-primary uppercase tracking-wider border-b border-border-hairline pb-3">
+        Cross-Navigation Matrix: {refreshInfo.hz}Hz + {pollingInfo.hz}Hz
+      </h2>
+
+      <!-- Target Refresh Rate Options for current Polling Rate -->
+      <div class="space-y-3">
+        <span class="text-xs font-bold text-text-muted uppercase tracking-wider block">Compare Refresh Rates (at {pollingInfo.hz}Hz Polling):</span>
+        <div class="flex flex-wrap gap-2 text-xs">
+          {getAllRefreshRates().map((r) => (
+            <a
+              href={`/input-lag-test/${r}/${pollingRateKey}`}
+              class:list={[
+                "px-3 py-1.5 rounded border transition-colors focus:outline-none focus:ring-2 focus:ring-status-pass",
+                r === refreshRateKey
+                  ? "bg-status-pass/20 border-status-pass text-status-pass font-bold"
+                  : "bg-bg-canvas border-border-hairline text-text-secondary hover:text-text-primary"
+              ]}
+            >
+              {REFRESH_RATE_CONFIG[r].hz} Hz
+            </a>
+          ))}
+        </div>
+      </div>
+
+      <!-- Target Polling Rate Options for current Refresh Rate -->
+      <div class="pt-4 border-t border-border-hairline space-y-3">
+        <span class="text-xs font-bold text-text-muted uppercase tracking-wider block">Compare Polling Rates (at {refreshInfo.hz}Hz Display):</span>
+        <div class="flex flex-wrap gap-2 text-xs">
+          {getAllPollingRates().map((p) => (
+            <a
+              href={`/input-lag-test/${refreshRateKey}/${p}`}
+              class:list={[
+                "px-3 py-1.5 rounded border transition-colors focus:outline-none focus:ring-2 focus:ring-status-pass",
+                p === pollingRateKey
+                  ? "bg-status-pass/20 border-status-pass text-status-pass font-bold"
+                  : "bg-bg-canvas border-border-hairline text-text-secondary hover:text-text-primary"
+              ]}
+            >
+              {POLLING_RATE_CONFIG[p].hz} Hz
+            </a>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <div class="max-w-4xl mx-auto">
+      <HardwareLimitationNotice />
+    </div>
+  </main>
+</Layout>

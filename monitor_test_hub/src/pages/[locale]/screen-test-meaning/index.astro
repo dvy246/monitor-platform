@@ -1,0 +1,11 @@
+---
+export function getStaticPaths() {
+  return [
+    { params: { locale: 'es' } },
+    { params: { locale: 'de' } },
+    { params: { locale: 'fr' } }
+  ];
+}
+import BasePage from '../../screen-test-meaning/index.astro';
+---
+<BasePage />

@@ -1,0 +1,133 @@
+---
+/**
+ * GamepadDrift.astro
+ * Gamepad Controller Stick Drift & Latency Tester UI component.
+ */
+---
+
+<div class="w-full max-w-5xl mx-auto space-y-6">
+  <div class="bg-bg-surface/90 border border-border-hairline rounded-2xl p-6 backdrop-blur-xl shadow-2xl space-y-6">
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-border-hairline/60 pb-4">
+      <div>
+        <div class="flex items-center gap-2">
+          <span class="w-2.5 h-2.5 rounded-full bg-status-pass shadow-[0_0_8px_rgba(5,150,105,0.8)]"></span>
+          <h2 class="text-lg font-bold font-mono text-text-primary tracking-wide">Gamepad Stick Drift &amp; Axis Calibration</h2>
+        </div>
+        <p class="text-xs text-text-muted mt-1">W3C Gamepad API resting deadzone offset, 360° circularity error, and button mapping profiler.</p>
+      </div>
+
+      <div class="flex items-center gap-3">
+        <span id="gamepad-connection-badge" class="px-3 py-1 text-[10px] font-mono font-bold rounded-full bg-status-fail/10 text-status-fail border border-status-fail/30">
+          DISCONNECTED
+        </span>
+      </div>
+    </div>
+
+    <!-- Analog Stick 2D Polar Visualization -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div class="flex flex-col items-center justify-center p-6 bg-bg-canvas border border-border-subtle rounded-xl space-y-3">
+        <span class="text-xs font-mono font-bold text-text-primary">LEFT ANALOG STICK</span>
+        <div class="relative w-44 h-44 rounded-full border border-border-subtle bg-bg-surface flex items-center justify-center">
+          <div class="absolute w-full h-px bg-border-hairline"></div>
+          <div class="absolute h-full w-px bg-border-hairline"></div>
+          <!-- Target deadzone circle -->
+          <div class="w-6 h-6 rounded-full border border-status-pass/40 bg-status-pass/5"></div>
+          <!-- Live stick dot -->
+          <div id="left-stick-dot" class="absolute w-4 h-4 rounded-full bg-status-pass shadow-[0_0_10px_rgba(5,150,105,0.8)] transition-all duration-75" style="left: 80px; top: 80px;"></div>
+        </div>
+        <div id="left-stick-coords" class="text-xs font-mono text-text-muted">X: 0.00 | Y: 0.00</div>
+      </div>
+
+      <div class="flex flex-col items-center justify-center p-6 bg-bg-canvas border border-border-subtle rounded-xl space-y-3">
+        <span class="text-xs font-mono font-bold text-text-primary">RIGHT ANALOG STICK</span>
+        <div class="relative w-44 h-44 rounded-full border border-border-subtle bg-bg-surface flex items-center justify-center">
+          <div class="absolute w-full h-px bg-border-hairline"></div>
+          <div class="absolute h-full w-px bg-border-hairline"></div>
+          <div class="w-6 h-6 rounded-full border border-status-pass/40 bg-status-pass/5"></div>
+          <div id="right-stick-dot" class="absolute w-4 h-4 rounded-full bg-status-pass shadow-[0_0_10px_rgba(5,150,105,0.8)] transition-all duration-75" style="left: 80px; top: 80px;"></div>
+        </div>
+        <div id="right-stick-coords" class="text-xs font-mono text-text-muted">X: 0.00 | Y: 0.00</div>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 pt-2">
+      <div class="bg-bg-elevated p-3.5 rounded-xl border border-border-hairline">
+        <div class="text-[10px] font-mono text-text-muted uppercase">Gamepad Name</div>
+        <div id="metric-gp-name" class="text-xs font-mono font-bold text-text-primary truncate mt-1">Press any button</div>
+      </div>
+      <div class="bg-bg-elevated p-3.5 rounded-xl border border-border-hairline">
+        <div class="text-[10px] font-mono text-text-muted uppercase">Left Resting Offset</div>
+        <div id="metric-left-offset" class="text-sm font-mono font-bold text-status-pass mt-1">0.00 (0.0%)</div>
+      </div>
+      <div class="bg-bg-elevated p-3.5 rounded-xl border border-border-hairline">
+        <div class="text-[10px] font-mono text-text-muted uppercase">Right Resting Offset</div>
+        <div id="metric-right-offset" class="text-sm font-mono font-bold text-status-pass mt-1">0.00 (0.0%)</div>
+      </div>
+      <div class="bg-bg-elevated p-3.5 rounded-xl border border-border-hairline">
+        <div class="text-[10px] font-mono text-text-muted uppercase">Stick Drift Status</div>
+        <div id="metric-drift-status" class="text-sm font-mono font-bold text-status-pass mt-1">NO DRIFT</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  import { calculateStickMetrics } from '../../engine/GamepadDriftEngine';
+
+  const badge = document.getElementById('gamepad-connection-badge');
+  const gpName = document.getElementById('metric-gp-name');
+  const leftDot = document.getElementById('left-stick-dot');
+  const rightDot = document.getElementById('right-stick-dot');
+  const leftCoords = document.getElementById('left-stick-coords');
+  const rightCoords = document.getElementById('right-stick-coords');
+  const leftOffset = document.getElementById('metric-left-offset');
+  const rightOffset = document.getElementById('metric-right-offset');
+  const driftStatus = document.getElementById('metric-drift-status');
+
+  function pollGamepad() {
+    const gamepads = navigator.getGamepads ? navigator.getGamepads() : [];
+    const gp = gamepads[0] || gamepads[1] || gamepads[2] || gamepads[3];
+
+    if (gp) {
+      if (badge) {
+        badge.textContent = 'CONNECTED';
+        badge.className = 'px-3 py-1 text-[10px] font-mono font-bold rounded-full bg-status-pass/10 text-status-pass border border-status-pass/30';
+      }
+      if (gpName) gpName.textContent = gp.id;
+
+      const lx = gp.axes[0] || 0;
+      const ly = gp.axes[1] || 0;
+      const rx = gp.axes[2] || 0;
+      const ry = gp.axes[3] || 0;
+
+      const leftMetrics = calculateStickMetrics(lx, ly);
+      const rightMetrics = calculateStickMetrics(rx, ry);
+
+      if (leftDot) {
+        leftDot.style.left = `${Math.round(80 + lx * 70)}px`;
+        leftDot.style.top = `${Math.round(80 + ly * 70)}px`;
+      }
+      if (rightDot) {
+        rightDot.style.left = `${Math.round(80 + rx * 70)}px`;
+        rightDot.style.top = `${Math.round(80 + ry * 70)}px`;
+      }
+
+      if (leftCoords) leftCoords.textContent = `X: ${lx.toFixed(2)} | Y: ${ly.toFixed(2)}`;
+      if (rightCoords) rightCoords.textContent = `X: ${rx.toFixed(2)} | Y: ${ry.toFixed(2)}`;
+
+      if (leftOffset) leftOffset.textContent = `${leftMetrics.restingOffsetDistance.toFixed(2)}`;
+      if (rightOffset) rightOffset.textContent = `${rightMetrics.restingOffsetDistance.toFixed(2)}`;
+
+      const hasDrift = leftMetrics.hasStickDrift || rightMetrics.hasStickDrift;
+      if (driftStatus) {
+        driftStatus.textContent = hasDrift ? 'DRIFT DETECTED' : 'NO DRIFT';
+        driftStatus.className = `text-sm font-mono font-bold mt-1 ${hasDrift ? 'text-status-fail' : 'text-status-pass'}`;
+      }
+    }
+
+    requestAnimationFrame(pollGamepad);
+  }
+
+  window.addEventListener('gamepadconnected', () => pollGamepad());
+  requestAnimationFrame(pollGamepad);
+</script>

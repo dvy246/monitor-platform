@@ -1,0 +1,98 @@
+---
+/**
+ * ViewingAngle.astro
+ * Viewing Angle Color & Contrast Shift Inspector UI component.
+ */
+---
+
+<div class="w-full max-w-5xl mx-auto space-y-6">
+  <div class="bg-bg-surface/90 border border-border-hairline rounded-2xl p-6 backdrop-blur-xl shadow-2xl space-y-6">
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-border-hairline/60 pb-4">
+      <div>
+        <div class="flex items-center gap-2">
+          <span class="w-2.5 h-2.5 rounded-full bg-status-pass shadow-[0_0_8px_rgba(5,150,105,0.8)]"></span>
+          <h2 class="text-lg font-bold font-mono text-text-primary tracking-wide">Viewing Angle Color &amp; Contrast Shift Inspector</h2>
+        </div>
+        <p class="text-xs text-text-muted mt-1">Off-axis contrast degradation, VA gamma shift, and OLED chromaticity tint evaluator (ISO 9241-307).</p>
+      </div>
+
+      <div class="flex items-center gap-3">
+        <label class="text-xs font-mono text-text-muted">Panel Type:</label>
+        <select id="panel-type-select" class="bg-bg-canvas border border-border-subtle text-text-primary text-xs font-mono rounded-lg px-3 py-1.5 focus:border-status-pass">
+          <option value="OLED">OLED (True Black)</option>
+          <option value="IPS" selected>IPS (In-Plane Switching)</option>
+          <option value="VA">VA (Vertical Alignment)</option>
+          <option value="TN">TN (Twisted Nematic)</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Visual Target Grid -->
+    <div class="grid grid-cols-3 gap-4">
+      <div class="h-40 rounded-xl bg-gradient-to-br from-red-600 to-purple-800 border border-border-subtle flex items-center justify-center font-mono text-xs font-bold text-white shadow-lg">RED/PURPLE SHIFT</div>
+      <div class="h-40 rounded-xl bg-gradient-to-br from-green-600 to-teal-800 border border-border-subtle flex items-center justify-center font-mono text-xs font-bold text-white shadow-lg">GREEN/TEAL SHIFT</div>
+      <div class="h-40 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-800 border border-border-subtle flex items-center justify-center font-mono text-xs font-bold text-white shadow-lg">BLUE/INDIGO SHIFT</div>
+    </div>
+
+    <!-- Viewing Angle Slider -->
+    <div class="space-y-4 pt-2">
+      <div class="flex items-center justify-between text-xs font-mono">
+        <span class="text-text-muted">Simulated Viewing Angle Offset:</span>
+        <span id="angle-val" class="font-bold text-status-pass">45°</span>
+      </div>
+      <input id="angle-slider" type="range" min="0" max="85" step="5" value="45" class="w-full accent-status-pass cursor-pointer" />
+    </div>
+
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 pt-2">
+      <div class="bg-bg-elevated p-3.5 rounded-xl border border-border-hairline">
+        <div class="text-[10px] font-mono text-text-muted uppercase">Angle Offset</div>
+        <div id="metric-angle" class="text-sm font-mono font-bold text-text-primary mt-1">45° Off-Axis</div>
+      </div>
+      <div class="bg-bg-elevated p-3.5 rounded-xl border border-border-hairline">
+        <div class="text-[10px] font-mono text-text-muted uppercase">Contrast Ratio</div>
+        <div id="metric-view-cr" class="text-sm font-mono font-bold text-status-pass mt-1">687.3 : 1</div>
+      </div>
+      <div class="bg-bg-elevated p-3.5 rounded-xl border border-border-hairline">
+        <div class="text-[10px] font-mono text-text-muted uppercase">VA Gamma Shift</div>
+        <div id="metric-view-gamma" class="text-sm font-mono font-bold text-text-primary mt-1">0.05 Delta</div>
+      </div>
+      <div class="bg-bg-elevated p-3.5 rounded-xl border border-border-hairline">
+        <div class="text-[10px] font-mono text-text-muted uppercase">Compliance Status</div>
+        <div id="metric-view-status" class="text-sm font-mono font-bold text-status-pass mt-1">COMPLIANT (&gt;=10:1)</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  import { calculateViewingAngleMetrics } from '../../engine/ViewingAngleEngine';
+
+  const panelSelect = document.getElementById('panel-type-select') as HTMLSelectElement | null;
+  const slider = document.getElementById('angle-slider') as HTMLInputElement | null;
+  const angleVal = document.getElementById('angle-val');
+  const metricAngle = document.getElementById('metric-angle');
+  const metricCr = document.getElementById('metric-view-cr');
+  const metricGamma = document.getElementById('metric-view-gamma');
+  const metricStatus = document.getElementById('metric-view-status');
+
+  function update() {
+    if (!panelSelect || !slider) return;
+    const panel = panelSelect.value as 'IPS' | 'VA' | 'OLED' | 'TN';
+    const angle = parseInt(slider.value, 10);
+
+    if (angleVal) angleVal.textContent = `${angle}°`;
+    const res = calculateViewingAngleMetrics(angle, panel);
+
+    if (metricAngle) metricAngle.textContent = `${angle}° Off-Axis`;
+    if (metricCr) metricCr.textContent = `${res.contrastRatio} : 1`;
+    if (metricGamma) metricGamma.textContent = `${res.gammaShiftDelta} Delta`;
+    if (metricStatus) {
+      metricStatus.textContent = res.isCompliant ? 'COMPLIANT (>=10:1)' : 'NON-COMPLIANT (<10:1)';
+      metricStatus.className = `text-sm font-mono font-bold mt-1 ${res.isCompliant ? 'text-status-pass' : 'text-status-fail'}`;
+    }
+  }
+
+  panelSelect?.addEventListener('change', update);
+  slider?.addEventListener('input', update);
+  update();
+</script>

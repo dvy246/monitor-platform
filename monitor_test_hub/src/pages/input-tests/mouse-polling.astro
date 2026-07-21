@@ -1,0 +1,61 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import MousePolling from '../../components/diagnostics/MousePolling.astro';
+
+const faqs = [
+  {
+    question: "What is mouse polling rate and why does it matter for gaming?",
+    answer: "Polling rate (measured in Hz) specifies how frequently your mouse reports its physical position to your computer. A 1000Hz mouse sends updates every 1ms, reducing cursor input latency compared to a standard 125Hz mouse (8ms)."
+  },
+  {
+    question: "Is an 8000Hz polling rate mouse worth it?",
+    answer: "8000Hz reduces polling interval down to 0.125ms, delivering smoother cursor movement on 240Hz+ high refresh rate monitors. However, it requires a powerful CPU to process 8,000 updates per second without frame drops."
+  },
+  {
+    question: "Why does my mouse polling rate fluctuate during testing?",
+    answer: "Mouse sensors only dispatch polling events when physical movement occurs. Move your mouse rapidly in continuous circles to reach peak advertised polling rates during testing."
+  },
+  {
+    question: "Why does browser testing cap at 1000Hz on some operating systems?",
+    answer: "Certain browser implementations throttle pointer events to match display refresh rate or OS event queue limits unless raw input dispatch features are active."
+  }
+];
+---
+
+<Layout 
+  title="Mouse Polling Rate Test | Hz & Jitter Stability Benchmark"
+  description="Measure your gaming mouse polling rate in Hz and test inter-report timestamp jitter. Real-time USB HID benchmark for 125Hz to 8000Hz mice."
+>
+  <main id="main-content" class="py-10 px-4 sm:px-6 lg:px-8 space-y-12">
+    <section class="max-w-4xl mx-auto text-center space-y-4">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-status-pass/10 border border-status-pass/30 text-xs font-mono text-status-pass font-bold">
+        <span>USB HID CLASS SPEC 1.11 COMPLIANT</span>
+      </div>
+      <h1 class="text-3xl sm:text-4xl font-extrabold font-mono tracking-tight text-text-primary">
+        Mouse Polling Rate &amp; Jitter Benchmark
+      </h1>
+      <p class="text-sm sm:text-base text-text-muted leading-relaxed max-w-2xl mx-auto">
+        Benchmark your gaming mouse USB polling rate frequency in Hz, inter-report interval deltas, and timestamp jitter standard deviation.
+      </p>
+    </section>
+
+    <MousePolling />
+
+    <article class="max-w-4xl mx-auto space-y-8 bg-bg-surface/80 border border-border-hairline rounded-2xl p-6 sm:p-8 backdrop-blur-xl text-sm text-text-secondary leading-relaxed">
+      <h2 class="text-xl font-bold font-mono text-text-primary">Understanding Mouse Polling &amp; Input Jitter</h2>
+      <p>
+        USB HID mice report movement data in packets. A stable polling interval ensures smooth cursor tracking without micro-stuttering during competitive gaming.
+      </p>
+
+      <h2 class="text-xl font-bold font-mono text-text-primary">Frequently Asked Questions</h2>
+      <div class="space-y-4">
+        {faqs.map(faq => (
+          <div class="border-b border-border-hairline pb-4 space-y-1">
+            <h3 class="font-bold text-text-primary font-mono">{faq.question}</h3>
+            <p class="text-xs text-text-muted">{faq.answer}</p>
+          </div>
+        ))}
+      </div>
+    </article>
+  </main>
+</Layout>

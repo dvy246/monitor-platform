@@ -1,0 +1,117 @@
+---
+/**
+ * StylusPressure.astro
+ * Stylus Pen Pressure & Tilt Sensitivity Matrix UI component.
+ */
+---
+
+<div class="w-full max-w-5xl mx-auto space-y-6">
+  <div class="bg-bg-surface/90 border border-border-hairline rounded-2xl p-6 backdrop-blur-xl shadow-2xl space-y-6">
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-border-hairline/60 pb-4">
+      <div>
+        <div class="flex items-center gap-2">
+          <span class="w-2.5 h-2.5 rounded-full bg-status-pass shadow-[0_0_8px_rgba(5,150,105,0.8)]"></span>
+          <h2 class="text-lg font-bold font-mono text-text-primary tracking-wide">Stylus Pen Pressure &amp; Tilt Matrix</h2>
+        </div>
+        <p class="text-xs text-text-muted mt-1">W3C Pointer Events Level 3 stylus pressure sensitivity levels &amp; tilt angle vectors.</p>
+      </div>
+
+      <div class="flex items-center gap-3">
+        <button id="clear-stylus-canvas" class="px-4 py-2 text-xs font-mono font-semibold rounded-lg bg-bg-canvas border border-border-subtle hover:bg-bg-elevated transition-all cursor-pointer">
+          Clear Canvas
+        </button>
+      </div>
+    </div>
+
+    <!-- Interactive Pen Drawing Canvas -->
+    <div class="relative w-full h-72 rounded-xl bg-bg-canvas border border-border-subtle overflow-hidden cursor-crosshair">
+      <canvas id="stylus-canvas" class="w-full h-full block touch-none"></canvas>
+    </div>
+
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 pt-2">
+      <div class="bg-bg-elevated p-3.5 rounded-xl border border-border-hairline">
+        <div class="text-[10px] font-mono text-text-muted uppercase">Active Pressure</div>
+        <div id="metric-pressure" class="text-sm font-mono font-bold text-status-pass mt-1">0.00 (0%)</div>
+      </div>
+      <div class="bg-bg-elevated p-3.5 rounded-xl border border-border-hairline">
+        <div class="text-[10px] font-mono text-text-muted uppercase">Max Pressure Step</div>
+        <div id="metric-resolution" class="text-sm font-mono font-bold text-text-primary mt-1">4096 Levels</div>
+      </div>
+      <div class="bg-bg-elevated p-3.5 rounded-xl border border-border-hairline">
+        <div class="text-[10px] font-mono text-text-muted uppercase">Tilt Angle (X/Y)</div>
+        <div id="metric-tilt" class="text-sm font-mono font-bold text-text-primary mt-1">0° / 0°</div>
+      </div>
+      <div class="bg-bg-elevated p-3.5 rounded-xl border border-border-hairline">
+        <div class="text-[10px] font-mono text-text-muted uppercase">Stylus Type</div>
+        <div id="metric-stylus-type" class="text-sm font-mono font-bold text-status-pass mt-1">ACTIVE PEN</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  import { analyzeStylusStroke, type IStylusPoint } from '../../engine/StylusPressureEngine';
+
+  const canvas = document.getElementById('stylus-canvas') as HTMLCanvasElement | null;
+  const clearBtn = document.getElementById('clear-stylus-canvas');
+  const metricPressure = document.getElementById('metric-pressure');
+  const metricRes = document.getElementById('metric-resolution');
+  const metricTilt = document.getElementById('metric-tilt');
+  const metricType = document.getElementById('metric-stylus-type');
+
+  if (canvas) {
+    const ctx = canvas.getContext('2d');
+    let points: IStylusPoint[] = [];
+    let isDrawing = false;
+
+    function resize() {
+      if (!canvas) return;
+      canvas.width = canvas.clientWidth;
+      canvas.height = canvas.clientHeight;
+    }
+    window.addEventListener('resize', resize);
+    resize();
+
+    canvas.addEventListener('pointerdown', (e) => {
+      isDrawing = true;
+      handlePointer(e);
+    });
+
+    canvas.addEventListener('pointermove', (e) => {
+      if (isDrawing) handlePointer(e);
+    });
+
+    window.addEventListener('pointerup', () => { isDrawing = false; });
+
+    function handlePointer(e: PointerEvent) {
+      if (!ctx || !canvas) return;
+      const rect = canvas.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+
+      const pressure = e.pressure !== undefined ? e.pressure : 0.5;
+      const tiltX = e.tiltX || 0;
+      const tiltY = e.tiltY || 0;
+
+      points.push({ pressure, tiltX, tiltY });
+
+      // Draw dynamic pressure circle
+      const radius = Math.max(2, pressure * 24);
+      ctx.fillStyle = '#059669';
+      ctx.beginPath();
+      ctx.arc(x, y, radius, 0, Math.PI * 2);
+      ctx.fill();
+
+      const analysis = analyzeStylusStroke(points);
+      if (metricPressure) metricPressure.textContent = `${pressure.toFixed(2)} (${Math.round(pressure * 100)}%)`;
+      if (metricRes) metricRes.textContent = `${analysis.pressureStepResolution} Levels`;
+      if (metricTilt) metricTilt.textContent = `${tiltX}° / ${tiltY}°`;
+      if (metricType) metricType.textContent = e.pointerType === 'pen' ? 'ACTIVE STYLUS' : 'TOUCH / MOUSE';
+    }
+
+    clearBtn?.addEventListener('click', () => {
+      ctx?.clearRect(0, 0, canvas.width, canvas.height);
+      points = [];
+    });
+  }
+</script>

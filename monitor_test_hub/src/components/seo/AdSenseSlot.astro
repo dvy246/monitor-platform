@@ -1,0 +1,36 @@
+---
+export interface Props {
+  slotId?: string;
+  format?: 'auto' | 'horizontal' | 'rectangle' | 'vertical';
+  clientAdClient?: string;
+}
+
+const { 
+  slotId = 'default-slot',
+  format = 'auto',
+  clientAdClient = 'ca-pub-0000000000000000'
+} = Astro.props;
+---
+
+<div class="adsense-slot-container my-6 flex flex-col items-center justify-center">
+  <div class="text-[10px] font-mono text-text-muted uppercase tracking-widest mb-1.5 opacity-60">
+    ADVERTISEMENT
+  </div>
+  <div 
+    class="w-full min-h-[90px] sm:min-h-[100px] bg-bg-surface/50 border border-border-hairline rounded-xl flex items-center justify-center p-2 text-[11px] font-mono text-text-muted transition-all"
+    data-adsense-slot={slotId}
+    data-adsense-format={format}
+  >
+    <ins 
+      class="adsbygoogle w-full block"
+      style="display:block"
+      data-ad-client={clientAdClient}
+      data-ad-slot={slotId}
+      data-ad-format={format}
+      data-full-width-responsive="true"
+    ></ins>
+    <span class="text-text-muted/40 text-[10px] tracking-wider font-mono uppercase text-center">
+      AdSense Reserved Unit ({format})
+    </span>
+  </div>
+</div>

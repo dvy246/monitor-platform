@@ -1,0 +1,61 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import StylusPressure from '../../components/diagnostics/StylusPressure.astro';
+
+const faqs = [
+  {
+    question: "How does this test measure stylus pressure sensitivity?",
+    answer: "Modern tablet digitizers (iPad, Surface, Wacom) send normalized pressure values (0.0 to 1.0) via W3C Pointer Events. The test tracks the discrete step resolution and linearity of your pen stroke."
+  },
+  {
+    question: "What is the difference between active and passive styluses?",
+    answer: "Active styluses (Apple Pencil, Surface Pen, Wacom EMR) communicate electronic pressure, tilt angle, and button data directly to the digitizer screen. Passive styluses are simple conductive rubber tips with zero pressure sensing."
+  },
+  {
+    question: "Why is stylus tilt sensitivity important for digital art?",
+    answer: "Tilt sensitivity measures the angle of the pen relative to the glass, allowing digital painting apps to simulate pencil shading, brush angle orientation, and stroke width variations."
+  },
+  {
+    question: "What browser supports full stylus pressure testing?",
+    answer: "Safari on iPadOS, Chrome on Windows/Android, and Edge fully support W3C Pointer Events Level 3 pressure and tilt APIs."
+  }
+];
+---
+
+<Layout 
+  title="Stylus Pen Pressure & Tilt Test | Digital Pen Digitizer Inspector"
+  description="Test your Apple Pencil, Wacom pen, or stylus for pressure sensitivity levels and tilt angle vectors. Free browser digitizer diagnostic tool under W3C Pointer Events specs."
+>
+  <main id="main-content" class="py-10 px-4 sm:px-6 lg:px-8 space-y-12">
+    <section class="max-w-4xl mx-auto text-center space-y-4">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-status-pass/10 border border-status-pass/30 text-xs font-mono text-status-pass font-bold">
+        <span>W3C POINTER EVENTS LEVEL 3 DIGITIZER METRICS</span>
+      </div>
+      <h1 class="text-3xl sm:text-4xl font-extrabold font-mono tracking-tight text-text-primary">
+        Stylus Pen Pressure &amp; Tilt Sensitivity Matrix
+      </h1>
+      <p class="text-sm sm:text-base text-text-muted leading-relaxed max-w-2xl mx-auto">
+        Benchmark your digital stylus pen pressure levels (2048 to 8192 levels), stroke linearity, and tilt angle vectors ($X/Y$).
+      </p>
+    </section>
+
+    <StylusPressure />
+
+    <article class="max-w-4xl mx-auto space-y-8 bg-bg-surface/80 border border-border-hairline rounded-2xl p-6 sm:p-8 backdrop-blur-xl text-sm text-text-secondary leading-relaxed">
+      <h2 class="text-xl font-bold font-mono text-text-primary">Understanding Active Pen Digitizers &amp; Pressure Resolution</h2>
+      <p>
+        Digital stylus pens use electrostatic or electromagnetic resonance (EMR) digitizer grids embedded behind display glass to measure tip force pressure levels and pen tilt orientation.
+      </p>
+
+      <h2 class="text-xl font-bold font-mono text-text-primary">Frequently Asked Questions</h2>
+      <div class="space-y-4">
+        {faqs.map(faq => (
+          <div class="border-b border-border-hairline pb-4 space-y-1">
+            <h3 class="font-bold text-text-primary font-mono">{faq.question}</h3>
+            <p class="text-xs text-text-muted">{faq.answer}</p>
+          </div>
+        ))}
+      </div>
+    </article>
+  </main>
+</Layout>

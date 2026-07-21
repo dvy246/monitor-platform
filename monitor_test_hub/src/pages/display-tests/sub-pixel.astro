@@ -1,0 +1,79 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import Breadcrumbs from '../../components/ui/Breadcrumbs.astro';
+import SubPixelAnalyzer from '../../components/diagnostics/SubPixelAnalyzer.astro';
+import HardwareLimitationNotice from '../../components/disclaimers/HardwareLimitationNotice.astro';
+import TestSwitcherBar from '../../components/ui/TestSwitcherBar.astro';
+
+const breadcrumbItems = [
+  { label: 'Display Suite', href: '/display-tests' },
+  { label: 'Sub-Pixel Layout Analyzer' }
+];
+
+const displayTests = [
+  { id: 'dead-pixel', label: 'Dead Pixel Test', href: '/display-tests/dead-pixel' },
+  { id: 'sub-pixel', label: 'Sub-Pixel Analyzer', href: '/display-tests/sub-pixel', active: true },
+  { id: 'uniformity', label: 'OLED Uniformity', href: '/display-tests/uniformity' },
+  { id: 'vrr', label: 'VRR Sync Engine', href: '/display-tests/vrr' },
+  { id: 'oled-burn-in', label: 'OLED Burn-In Risk', href: '/display-tests/oled-burn-in' },
+  { id: 'hdr-test', label: 'HDR Brightness', href: '/display-tests/hdr-test' },
+  { id: 'ppi-calculator', label: 'PPI Calculator', href: '/display-tests/ppi-calculator' },
+  { id: 'color-gamut', label: 'Color Gamut & ICC', href: '/display-tests/color-gamut' }
+];
+---
+
+<Layout 
+  title="Sub-Pixel Layout Analyzer (RGB, BGR, QD-OLED, WOLED) | Monitor Test Hub" 
+  description="Inspect sub-pixel stripe layouts, evaluate ClearType and FreeType font subpixel antialiasing fringing, and analyze QD-OLED triangular and WOLED RWBG subpixel arrangements."
+>
+  <main class="max-w-7xl mx-auto px-4 py-8 space-y-8">
+    <Breadcrumbs items={breadcrumbItems} />
+
+    <header class="space-y-3 border-b border-border-hairline pb-6">
+      <div class="flex items-center gap-2 text-status-pass text-xs font-mono font-bold uppercase tracking-wider">
+        <span class="w-2 h-2 rounded-full bg-status-pass led-glow-pass"></span>
+        WEBGL SUBPIXEL RETICLE — CLEARTYPE FONT CLARITY
+      </div>
+      <h1 class="text-3xl sm:text-4xl font-extrabold text-text-primary tracking-tight">Sub-Pixel Layout Analyzer</h1>
+      <p class="text-sm text-text-secondary max-w-3xl">
+        Examine sub-pixel geometry structures (standard RGB Stripe, inverted BGR, Gen-1/Gen-2 QD-OLED triangular layout, and LG WOLED RWBG white subpixel) to diagnose text fringing and OS font smoothing compatibility.
+      </p>
+    </header>
+
+    <SubPixelAnalyzer />
+
+    <!-- Scientific Methodology & Subpixel Geometry Article -->
+    <article class="bg-bg-surface border border-border-hairline rounded-2xl p-6 sm:p-8 space-y-6 shadow-specular-top font-sans text-sm text-text-secondary leading-relaxed">
+      <div class="border-b border-border-hairline pb-4">
+        <span class="font-mono text-[10px] font-bold text-status-pass uppercase tracking-widest block mb-1">CLEARTYPE &amp; FREETYPE ANTIALIASING MATHEMATICS</span>
+        <h2 class="text-xl font-bold text-text-primary">Sub-Pixel Geometry, Font Smoothing &amp; Chromatic Fringing Physics</h2>
+      </div>
+
+      <p>
+        Operating system font rendering engines—such as Microsoft Windows <strong>ClearType</strong> and Linux <strong>FreeType</strong>—exploit the physical horizontal arrangement of Red, Green, and Blue sub-pixels to triple effective horizontal font resolution. By individually modulating sub-pixel luminance, font glyph edges achieve sub-pixel spatial accuracy.
+      </p>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 font-mono text-xs my-4">
+        <div class="bg-bg-canvas p-4 rounded-xl border border-border-hairline space-y-1">
+          <span class="text-text-muted text-[10px] uppercase block">Standard RGB Stripe</span>
+          <strong class="text-text-primary block text-sm">IPS &amp; VA Benchmark</strong>
+          <p class="font-sans text-[11px] text-text-secondary">Red-Green-Blue left-to-right order. Native compatibility with Windows ClearType and macOS font smoothing.</p>
+        </div>
+        <div class="bg-bg-canvas p-4 rounded-xl border border-border-hairline space-y-1">
+          <span class="text-text-muted text-[10px] uppercase block">Inverted BGR Layout</span>
+          <strong class="text-text-primary block text-sm">Specialty Desktop Displays</strong>
+          <p class="font-sans text-[11px] text-text-secondary">Blue-Green-Red order. Triggers magenta/cyan text fringing unless OS subpixel direction is reconfigured.</p>
+        </div>
+        <div class="bg-bg-canvas p-4 rounded-xl border border-border-hairline space-y-1">
+          <span class="text-text-muted text-[10px] uppercase block">QD-OLED Triangular</span>
+          <strong class="text-text-primary block text-sm">Gen 1/2 Quantum Dot OLED</strong>
+          <p class="font-sans text-[11px] text-text-secondary">Top-Green, Bottom-Red/Blue arrangement causing slight green top haloing on high-contrast text edges.</p>
+        </div>
+      </div>
+
+      <HardwareLimitationNotice />
+    </article>
+
+    <TestSwitcherBar tests={displayTests} currentId="sub-pixel" />
+  </main>
+</Layout>

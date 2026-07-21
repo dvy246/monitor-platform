@@ -1,0 +1,27 @@
+---
+import { guidesData, type Guide } from '../../../utils/guidesData';
+import BasePage from '../../guides/[slug].astro';
+
+export function getStaticPaths() {
+  const locales = ['es', 'de', 'fr'];
+  const paths = [];
+
+  for (const locale of locales) {
+    for (const guide of guidesData) {
+      paths.push({
+        params: { locale, slug: guide.slug },
+        props: { guide }
+      });
+    }
+  }
+
+  return paths;
+}
+
+export interface Props {
+  guide: Guide;
+}
+
+const { guide } = Astro.props;
+---
+<BasePage guide={guide} />

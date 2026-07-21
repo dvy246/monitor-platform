@@ -1,0 +1,61 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import LocalDimming from '../../components/diagnostics/LocalDimming.astro';
+
+const faqs = [
+  {
+    question: "What is local dimming blooming or haloing?",
+    answer: "Blooming occurs on Mini-LED and FALD displays when bright backlight zones illuminate black pixels surrounding a bright object, creating a faint white halo effect."
+  },
+  {
+    question: "Why does local dimming look worse in web browsers than in games?",
+    answer: "Monitors often disable or downgrade local dimming algorithms in SDR desktop mode to prevent cursor flickering, reserving aggressive zone control for HDR video and gaming signals."
+  },
+  {
+    question: "How many dimming zones are needed to eliminate visible blooming?",
+    answer: "Displays with 1,152 to 2,304 Mini-LED zones significantly minimize blooming. Only pixel-emissive displays like OLED (8+ million individual pixels) completely eliminate haloing."
+  },
+  {
+    question: "How should I configure local dimming settings for testing?",
+    answer: "Set local dimming to 'High' or 'Medium' in your monitor's OSD, enable HDR mode in Windows/macOS settings, and view the test in a dimmed room."
+  }
+];
+---
+
+<Layout 
+  title="Mini-LED Local Dimming Test | Blooming & Halo Evaluator"
+  description="Test your Mini-LED monitor or FALD TV for local dimming blooming, haloing, and black level bleed. Interactive moving starfield diagnostic under VESA DisplayHDR 1400 standards."
+>
+  <main id="main-content" class="py-10 px-4 sm:px-6 lg:px-8 space-y-12">
+    <section class="max-w-4xl mx-auto text-center space-y-4">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-status-pass/10 border border-status-pass/30 text-xs font-mono text-status-pass font-bold">
+        <span>VESA DISPLAYHDR 1400 HALO STANDARDS</span>
+      </div>
+      <h1 class="text-3xl sm:text-4xl font-extrabold font-mono tracking-tight text-text-primary">
+        Mini-LED Local Dimming Blooming Evaluator
+      </h1>
+      <p class="text-sm sm:text-base text-text-muted leading-relaxed max-w-2xl mx-auto">
+        Test your Mini-LED display or Full-Array Local Dimming (FALD) TV for halo blooming artifacts, zone transition latency, and black level retention.
+      </p>
+    </section>
+
+    <LocalDimming />
+
+    <article class="max-w-4xl mx-auto space-y-8 bg-bg-surface/80 border border-border-hairline rounded-2xl p-6 sm:p-8 backdrop-blur-xl text-sm text-text-secondary leading-relaxed">
+      <h2 class="text-xl font-bold font-mono text-text-primary">Understanding Full-Array Local Dimming &amp; Halo Blooming</h2>
+      <p>
+        Mini-LED displays partition backlights into hundreds or thousands of independently controlled dimming zones to achieve deep contrast. Halo blooming occurs when bright targets cross zone boundaries.
+      </p>
+
+      <h2 class="text-xl font-bold font-mono text-text-primary">Frequently Asked Questions</h2>
+      <div class="space-y-4">
+        {faqs.map(faq => (
+          <div class="border-b border-border-hairline pb-4 space-y-1">
+            <h3 class="font-bold text-text-primary font-mono">{faq.question}</h3>
+            <p class="text-xs text-text-muted">{faq.answer}</p>
+          </div>
+        ))}
+      </div>
+    </article>
+  </main>
+</Layout>

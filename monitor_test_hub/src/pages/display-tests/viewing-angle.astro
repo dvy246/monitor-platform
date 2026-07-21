@@ -1,0 +1,61 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import ViewingAngle from '../../components/diagnostics/ViewingAngle.astro';
+
+const faqs = [
+  {
+    question: "How do viewing angles differ between IPS, VA, and OLED panels?",
+    answer: "OLED panels offer near-perfect 178° viewing angles with minimal contrast loss. IPS panels maintain excellent color accuracy off-axis but exhibit IPS glow. VA panels experience noticeable gamma shift and color fading when viewed from the side."
+  },
+  {
+    question: "What is VA gamma shift?",
+    answer: "VA gamma shift is a characteristic where dark shadow details that appear crushed when looking straight at a VA panel suddenly become visible when viewed from a side angle."
+  },
+  {
+    question: "Why does my curved monitor have viewing angle distortion at the edges?",
+    answer: "Curved monitors are designed for a specific central seating distance. Sitting too close or far alters the angle at which light enters your eyes, causing subtle brightness shifts near the bezel."
+  },
+  {
+    question: "What is viewing angle color tinting?",
+    answer: "Color tinting occurs when white backgrounds shift toward a subtle blue, green, or pink hue when viewed off-axis, common on certain OLED sub-pixel layouts."
+  }
+];
+---
+
+<Layout 
+  title="Viewing Angle Test | Monitor Color & Contrast Shift Inspector"
+  description="Inspect off-axis viewing performance on IPS, VA, and OLED monitors. Check for gamma shift, color tinting, and contrast loss under ISO 9241-307 standards."
+>
+  <main id="main-content" class="py-10 px-4 sm:px-6 lg:px-8 space-y-12">
+    <section class="max-w-4xl mx-auto text-center space-y-4">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-status-pass/10 border border-status-pass/30 text-xs font-mono text-status-pass font-bold">
+        <span>ISO 9241-307 CONTRAST THRESHOLD METRICS</span>
+      </div>
+      <h1 class="text-3xl sm:text-4xl font-extrabold font-mono tracking-tight text-text-primary">
+        Viewing Angle Color &amp; Contrast Shift Inspector
+      </h1>
+      <p class="text-sm sm:text-base text-text-muted leading-relaxed max-w-2xl mx-auto">
+        Inspect off-axis viewing stability across IPS, VA, and OLED display panels to evaluate contrast loss and gamma shift.
+      </p>
+    </section>
+
+    <ViewingAngle />
+
+    <article class="max-w-4xl mx-auto space-y-8 bg-bg-surface/80 border border-border-hairline rounded-2xl p-6 sm:p-8 backdrop-blur-xl text-sm text-text-secondary leading-relaxed">
+      <h2 class="text-xl font-bold font-mono text-text-primary">Understanding Off-Axis Visual Performance</h2>
+      <p>
+        Viewing angle compliance requires displays to maintain at least a 10:1 contrast ratio across angular viewing offsets. Liquid crystal alignment dictates how light passes through off-axis angles.
+      </p>
+
+      <h2 class="text-xl font-bold font-mono text-text-primary">Frequently Asked Questions</h2>
+      <div class="space-y-4">
+        {faqs.map(faq => (
+          <div class="border-b border-border-hairline pb-4 space-y-1">
+            <h3 class="font-bold text-text-primary font-mono">{faq.question}</h3>
+            <p class="text-xs text-text-muted">{faq.answer}</p>
+          </div>
+        ))}
+      </div>
+    </article>
+  </main>
+</Layout>

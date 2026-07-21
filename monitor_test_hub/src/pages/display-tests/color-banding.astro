@@ -1,0 +1,61 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import ColorBanding from '../../components/diagnostics/ColorBanding.astro';
+
+const faqs = [
+  {
+    question: "What causes color banding on a monitor?",
+    answer: "Color banding occurs when a display or graphics card lacks sufficient bit depth to render smooth color transitions, forcing subtle shades into distinct visible stripes or bands."
+  },
+  {
+    question: "What is 8-bit + FRC versus native 10-bit?",
+    answer: "Native 10-bit panels display 1.07 billion hardware colors. 8-bit + FRC (Frame Rate Control) panels rapidly flicker adjacent 8-bit shades to simulate 10-bit color, providing near-identical visual smoothness at lower cost."
+  },
+  {
+    question: "How can I fix color banding in Windows or GPU settings?",
+    answer: "Open your GPU control panel (NVIDIA/AMD), change Output Color Depth from 8 bpc to 10 bpc, ensure Full RGB Dynamic Range is selected, and enable GPU dithering if supported."
+  },
+  {
+    question: "Why does a gradient look banded in web browsers but smooth in Photoshop?",
+    answer: "Photoshop renders gradients in 16-bit space with internal dithering, whereas standard web browsers use 8-bit sRGB color spaces unless WebGL 10-bit color buffers are explicitly enabled."
+  }
+];
+---
+
+<Layout 
+  title="Color Banding Test | 8-Bit vs 10-Bit Gradient Inspector"
+  description="Check your monitor for color banding and gradient step artifacts. Test 8-bit, 10-bit, and FRC panel rendering with smooth RGB gradients under sRGB specs."
+>
+  <main id="main-content" class="py-10 px-4 sm:px-6 lg:px-8 space-y-12">
+    <section class="max-w-4xl mx-auto text-center space-y-4">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-status-pass/10 border border-status-pass/30 text-xs font-mono text-status-pass font-bold">
+        <span>sRGB IEC 61966-2-1 QUANTIZATION METRICS</span>
+      </div>
+      <h1 class="text-3xl sm:text-4xl font-extrabold font-mono tracking-tight text-text-primary">
+        Color Banding &amp; 10-Bit Gradient Inspector
+      </h1>
+      <p class="text-sm sm:text-base text-text-muted leading-relaxed max-w-2xl mx-auto">
+        Inspect your display panel for color bit-depth quantization clipping, color banding stripes, and GPU temporal dithering errors across 8-bit and 10-bit color gradients.
+      </p>
+    </section>
+
+    <ColorBanding />
+
+    <article class="max-w-4xl mx-auto space-y-8 bg-bg-surface/80 border border-border-hairline rounded-2xl p-6 sm:p-8 backdrop-blur-xl text-sm text-text-secondary leading-relaxed">
+      <h2 class="text-xl font-bold font-mono text-text-primary">Understanding Bit-Depth &amp; Color Quantization</h2>
+      <p>
+        Standard 8-bit displays render 256 discrete luminance levels per color channel (16.7 million total colors). 10-bit panels render 1,024 levels per channel (1.07 billion colors), eliminating perceptible step boundaries.
+      </p>
+
+      <h2 class="text-xl font-bold font-mono text-text-primary">Frequently Asked Questions</h2>
+      <div class="space-y-4">
+        {faqs.map(faq => (
+          <div class="border-b border-border-hairline pb-4 space-y-1">
+            <h3 class="font-bold text-text-primary font-mono">{faq.question}</h3>
+            <p class="text-xs text-text-muted">{faq.answer}</p>
+          </div>
+        ))}
+      </div>
+    </article>
+  </main>
+</Layout>

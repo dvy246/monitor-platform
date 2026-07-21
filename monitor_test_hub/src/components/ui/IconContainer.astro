@@ -1,0 +1,26 @@
+---
+export interface Props {
+  size?: 'sm' | 'md' | 'lg';
+  variant?: 'default' | 'pass' | 'info' | 'warn';
+  class?: string;
+}
+
+const { size = 'md', variant = 'default', class: className = '' } = Astro.props;
+
+const sizeClasses = {
+  sm: 'w-6 h-6 text-xs',
+  md: 'w-8 h-8 text-sm',
+  lg: 'w-10 h-10 text-base'
+};
+
+const variantClasses = {
+  default: 'bg-bg-surface border-border-subtle text-text-primary',
+  pass: 'bg-status-pass/10 border-status-pass/30 text-status-pass',
+  info: 'bg-status-info/10 border-status-info/30 text-status-info',
+  warn: 'bg-status-warn/10 border-status-warn/30 text-status-warn'
+};
+---
+
+<div class:list={["rounded-md border flex items-center justify-center font-mono shadow-xs", sizeClasses[size], variantClasses[variant], className]}>
+  <slot />
+</div>

@@ -1,0 +1,61 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import FrameSkipping from '../../components/diagnostics/FrameSkipping.astro';
+
+const faqs = [
+  {
+    question: "What is frame skipping on a monitor?",
+    answer: "Frame skipping occurs when a display accepts a high refresh rate signal (e.g. 144Hz) from the GPU but fails to display every frame, dropping frames and causing stuttering motion."
+  },
+  {
+    question: "How do I test for frame skipping using a camera?",
+    answer: "Take a photo of the moving block pattern using a smartphone camera with a 1/10th second shutter speed. If all displayed blocks form a solid unbroken line, no frames are being skipped."
+  },
+  {
+    question: "Why is my 144Hz monitor running at 60Hz?",
+    answer: "Windows often defaults new monitors to 60Hz. Open Display Settings -> Advanced Display Properties -> Refresh Rate, and select your monitor's maximum supported frequency."
+  },
+  {
+    question: "Does browser hardware acceleration affect refresh rate tests?",
+    answer: "Yes. Hardware acceleration must be enabled in browser settings for canvas animations to synchronize with your display's native refresh rate VSync signal."
+  }
+];
+---
+
+<Layout 
+  title="Refresh Rate & Frame Skipping Test | Real Hz Monitor Checker"
+  description="Verify your monitor's true refresh rate and test for dropped or skipped frames. High-precision 60Hz to 540Hz browser diagnostic tool with camera shutter grid verification."
+>
+  <main id="main-content" class="py-10 px-4 sm:px-6 lg:px-8 space-y-12">
+    <section class="max-w-4xl mx-auto text-center space-y-4">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-status-pass/10 border border-status-pass/30 text-xs font-mono text-status-pass font-bold">
+        <span>HIGH RESOLUTION TIME API VSYNC BENCHMARK</span>
+      </div>
+      <h1 class="text-3xl sm:text-4xl font-extrabold font-mono tracking-tight text-text-primary">
+        Refresh Rate &amp; Frame Skipping Checker
+      </h1>
+      <p class="text-sm sm:text-base text-text-muted leading-relaxed max-w-2xl mx-auto">
+        Verify your gaming monitor's true refresh rate in Hz and test for dropped or skipped frames during monitor overclocking.
+      </p>
+    </section>
+
+    <FrameSkipping />
+
+    <article class="max-w-4xl mx-auto space-y-8 bg-bg-surface/80 border border-border-hairline rounded-2xl p-6 sm:p-8 backdrop-blur-xl text-sm text-text-secondary leading-relaxed">
+      <h2 class="text-xl font-bold font-mono text-text-primary">Understanding Display Frame Skipping &amp; Overclocking Stability</h2>
+      <p>
+        When overclocking a monitor beyond factory limits, the scalar or T-CON board may accept high frequency signals (e.g. 165Hz) but drop intermediate frames to prevent hardware overheating.
+      </p>
+
+      <h2 class="text-xl font-bold font-mono text-text-primary">Frequently Asked Questions</h2>
+      <div class="space-y-4">
+        {faqs.map(faq => (
+          <div class="border-b border-border-hairline pb-4 space-y-1">
+            <h3 class="font-bold text-text-primary font-mono">{faq.question}</h3>
+            <p class="text-xs text-text-muted">{faq.answer}</p>
+          </div>
+        ))}
+      </div>
+    </article>
+  </main>
+</Layout>

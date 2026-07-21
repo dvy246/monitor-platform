@@ -1,0 +1,61 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import ColorblindSimulator from '../../components/diagnostics/ColorblindSimulator.astro';
+
+const faqs = [
+  {
+    question: "What are the main types of color vision deficiency simulated?",
+    answer: "Protanopia (red-blindness, lacking L-cones), Deuteranopia (green-blindness, lacking M-cones), and Tritanopia (blue-blindness, lacking S-cones)."
+  },
+  {
+    question: "How does LMS color space simulation work?",
+    answer: "The algorithm converts standard RGB color values into long, medium, and short wavelength (LMS) cone responses, projects missing cone signals onto a reduced plane, and converts back to RGB space."
+  },
+  {
+    question: "Why is testing colorblind accessibility important for displays?",
+    answer: "Displays used for UI design, data visualization, or medical imaging must maintain legible brightness and luminance contrast even when color hues become indistinguishable."
+  },
+  {
+    question: "Can display settings help colorblind users?",
+    answer: "Yes, enabling OS-level color filters (Windows/macOS Accessibility) or increasing display contrast helps differentiate subtle shades."
+  }
+];
+---
+
+<Layout 
+  title="Colorblind Screen Test | Visual Vision Deficiency Simulator"
+  description="Simulate Protanopia, Deuteranopia, and Tritanopia colorblind vision on your display. Test visual contrast and display color accessibility online under Brettel 1997 standards."
+>
+  <main id="main-content" class="py-10 px-4 sm:px-6 lg:px-8 space-y-12">
+    <section class="max-w-4xl mx-auto text-center space-y-4">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-status-pass/10 border border-status-pass/30 text-xs font-mono text-status-pass font-bold">
+        <span>BRETTEL LMS CONE PROJECTION MATRICES</span>
+      </div>
+      <h1 class="text-3xl sm:text-4xl font-extrabold font-mono tracking-tight text-text-primary">
+        Color Vision Deficiency Visual Simulator
+      </h1>
+      <p class="text-sm sm:text-base text-text-muted leading-relaxed max-w-2xl mx-auto">
+        Simulate Protanopia, Deuteranopia, and Tritanopia color vision deficiencies on your display to test visual contrast and color accessibility.
+      </p>
+    </section>
+
+    <ColorblindSimulator />
+
+    <article class="max-w-4xl mx-auto space-y-8 bg-bg-surface/80 border border-border-hairline rounded-2xl p-6 sm:p-8 backdrop-blur-xl text-sm text-text-secondary leading-relaxed">
+      <h2 class="text-xl font-bold font-mono text-text-primary">Understanding Color Vision Deficiencies &amp; Display Ergonomics</h2>
+      <p>
+        Human color vision relies on L (Red), M (Green), and S (Blue) cone photoreceptors. Brettel LMS matrix transformations project 3D RGB color spaces onto 2D dichromatic dichromat planes.
+      </p>
+
+      <h2 class="text-xl font-bold font-mono text-text-primary">Frequently Asked Questions</h2>
+      <div class="space-y-4">
+        {faqs.map(faq => (
+          <div class="border-b border-border-hairline pb-4 space-y-1">
+            <h3 class="font-bold text-text-primary font-mono">{faq.question}</h3>
+            <p class="text-xs text-text-muted">{faq.answer}</p>
+          </div>
+        ))}
+      </div>
+    </article>
+  </main>
+</Layout>

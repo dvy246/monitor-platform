@@ -1,0 +1,61 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import KeyboardRollover from '../../components/diagnostics/KeyboardRollover.astro';
+
+const faqs = [
+  {
+    question: "What is keyboard ghosting?",
+    answer: "Keyboard ghosting occurs when pressing certain combinations of three or more keys causes an unpressed key to register (a 'ghost' key) due to shared wiring pathways in standard membrane matrix grids."
+  },
+  {
+    question: "What is the difference between 6KRO and NKRO?",
+    answer: "6KRO (6-Key Rollover) allows a maximum of 6 simultaneous letter key presses (plus modifier keys). NKRO (N-Key Rollover) allows unlimited simultaneous key presses across the entire keyboard layout."
+  },
+  {
+    question: "Why does my keyboard block certain 3-key gaming combinations?",
+    answer: "Budget membrane keyboards use cheap matrix columns. If WASD keys share internal electrical traces with Jump (Space) or Crouch (Ctrl), key blocking prevents the third key from signaling."
+  },
+  {
+    question: "How do mechanical keyboards achieve full NKRO?",
+    answer: "Mechanical keyboards place a dedicated electrical diode on every individual key switch, preventing current backflow and isolating every key matrix signal independently."
+  }
+];
+---
+
+<Layout 
+  title="Keyboard Ghosting & NKRO Test | Simultaneous Key Rollover Checker"
+  description="Test your keyboard for key ghosting, N-Key Rollover (NKRO), and key blocking. Visual matrix tool for gaming and mechanical keyboards under USB HID specs."
+>
+  <main id="main-content" class="py-10 px-4 sm:px-6 lg:px-8 space-y-12">
+    <section class="max-w-4xl mx-auto text-center space-y-4">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-status-pass/10 border border-status-pass/30 text-xs font-mono text-status-pass font-bold">
+        <span>USB HID REPORT PROTOCOL NKRO MATRIX</span>
+      </div>
+      <h1 class="text-3xl sm:text-4xl font-extrabold font-mono tracking-tight text-text-primary">
+        Keyboard Ghosting &amp; NKRO Rollover Matrix
+      </h1>
+      <p class="text-sm sm:text-base text-text-muted leading-relaxed max-w-2xl mx-auto">
+        Test your mechanical or membrane keyboard for key ghosting, N-Key Rollover (NKRO) limits, and key blocking path boundaries.
+      </p>
+    </section>
+
+    <KeyboardRollover />
+
+    <article class="max-w-4xl mx-auto space-y-8 bg-bg-surface/80 border border-border-hairline rounded-2xl p-6 sm:p-8 backdrop-blur-xl text-sm text-text-secondary leading-relaxed">
+      <h2 class="text-xl font-bold font-mono text-text-primary">Understanding N-Key Rollover &amp; Anti-Ghosting Diodes</h2>
+      <p>
+        Keyboards organize key switches into a grid of rows and columns. When multiple keys are pressed, current can flow backward through adjacent intersections, registering false 'ghost' key presses unless anti-ghosting diodes are present.
+      </p>
+
+      <h2 class="text-xl font-bold font-mono text-text-primary">Frequently Asked Questions</h2>
+      <div class="space-y-4">
+        {faqs.map(faq => (
+          <div class="border-b border-border-hairline pb-4 space-y-1">
+            <h3 class="font-bold text-text-primary font-mono">{faq.question}</h3>
+            <p class="text-xs text-text-muted">{faq.answer}</p>
+          </div>
+        ))}
+      </div>
+    </article>
+  </main>
+</Layout>

@@ -1,0 +1,88 @@
+---
+/**
+ * PwmFlicker.astro
+ * Screen Flicker & PWM Frequency Detector UI component.
+ */
+---
+
+<div class="w-full max-w-5xl mx-auto space-y-6">
+  <div class="bg-bg-surface/90 border border-border-hairline rounded-2xl p-6 backdrop-blur-xl shadow-2xl space-y-6">
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-border-hairline/60 pb-4">
+      <div>
+        <div class="flex items-center gap-2">
+          <span class="w-2.5 h-2.5 rounded-full bg-status-pass shadow-[0_0_8px_rgba(5,150,105,0.8)]"></span>
+          <h2 class="text-lg font-bold font-mono text-text-primary tracking-wide">Screen Flicker &amp; PWM Frequency Detector</h2>
+        </div>
+        <p class="text-xs text-text-muted mt-1">Pulse-Width Modulation (PWM) eye strain risk evaluator (IEEE Std 1789-2015).</p>
+      </div>
+
+      <div class="flex items-center gap-3">
+        <label class="text-xs font-mono text-text-muted">Simulated PWM Freq:</label>
+        <select id="pwm-freq-select" class="bg-bg-canvas border border-border-subtle text-text-primary text-xs font-mono rounded-lg px-3 py-1.5 focus:border-status-pass">
+          <option value="0">DC Dimming (Flicker Free)</option>
+          <option value="180">180 Hz (High Risk PWM)</option>
+          <option value="480" selected>480 Hz (Low Risk PWM)</option>
+          <option value="3000">3000 Hz (Safe High-Freq)</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Stroboscopic Oscillation Bar Box -->
+    <div class="relative w-full h-64 rounded-xl bg-black border border-border-subtle overflow-hidden flex items-center justify-center">
+      <div id="strobe-bar-box" class="w-full h-full bg-gradient-to-r from-white via-black to-white opacity-80 transition-opacity"></div>
+      <div class="absolute inset-0 flex flex-col items-center justify-center p-4 bg-black/50 backdrop-blur-sm pointer-events-none">
+        <span class="text-xs font-mono font-bold text-white uppercase tracking-widest">Camera Shutter Verification Mode</span>
+        <p class="text-[11px] text-gray-400 mt-1">Point smartphone camera at high shutter speed (1/1000s) to detect rolling shutter bands.</p>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 pt-2">
+      <div class="bg-bg-elevated p-3.5 rounded-xl border border-border-hairline">
+        <div class="text-[10px] font-mono text-text-muted uppercase">PWM Frequency</div>
+        <div id="metric-pwm-freq" class="text-sm font-mono font-bold text-text-primary mt-1">480 Hz</div>
+      </div>
+      <div class="bg-bg-elevated p-3.5 rounded-xl border border-border-hairline">
+        <div class="text-[10px] font-mono text-text-muted uppercase">Percent Flicker</div>
+        <div id="metric-pwm-pct" class="text-sm font-mono font-bold text-text-primary mt-1">100.0%</div>
+      </div>
+      <div class="bg-bg-elevated p-3.5 rounded-xl border border-border-hairline">
+        <div class="text-[10px] font-mono text-text-muted uppercase">Dimming Mechanism</div>
+        <div id="metric-pwm-type" class="text-sm font-mono font-bold text-text-primary mt-1">PWM DIMMING</div>
+      </div>
+      <div class="bg-bg-elevated p-3.5 rounded-xl border border-border-hairline">
+        <div class="text-[10px] font-mono text-text-muted uppercase">IEEE 1789 Risk Category</div>
+        <div id="metric-pwm-risk" class="text-sm font-mono font-bold text-status-pass mt-1">LOW RISK</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  import { calculatePwmMetrics } from '../../engine/PwmFlickerEngine';
+
+  const freqSelect = document.getElementById('pwm-freq-select') as HTMLSelectElement | null;
+  const metricFreq = document.getElementById('metric-pwm-freq');
+  const metricPct = document.getElementById('metric-pwm-pct');
+  const metricType = document.getElementById('metric-pwm-type');
+  const metricRisk = document.getElementById('metric-pwm-risk');
+
+  function update() {
+    if (!freqSelect) return;
+    const freq = parseInt(freqSelect.value, 10);
+    const maxL = freq === 0 ? 100 : 100;
+    const minL = freq === 0 ? 99 : 0;
+    
+    const res = calculatePwmMetrics(maxL, minL, freq);
+
+    if (metricFreq) metricFreq.textContent = freq === 0 ? 'DC Dimming' : `${freq} Hz`;
+    if (metricPct) metricPct.textContent = `${res.percentFlicker}%`;
+    if (metricType) metricType.textContent = res.isDcDimming ? 'FLICKER FREE (DC)' : 'PWM PULSED';
+    if (metricRisk) {
+      metricRisk.textContent = res.ieeeRiskCategory;
+      metricRisk.className = `text-sm font-mono font-bold mt-1 ${res.ieeeRiskCategory === 'HIGH_RISK' ? 'text-status-fail' : 'text-status-pass'}`;
+    }
+  }
+
+  freqSelect?.addEventListener('change', update);
+  update();
+</script>

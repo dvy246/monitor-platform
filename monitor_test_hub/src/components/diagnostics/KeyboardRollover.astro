@@ -1,0 +1,104 @@
+---
+/**
+ * KeyboardRollover.astro
+ * Keyboard Rollover (NKRO) & Anti-Ghosting Matrix UI component.
+ */
+---
+
+<div class="w-full max-w-5xl mx-auto space-y-6">
+  <div class="bg-bg-surface/90 border border-border-hairline rounded-2xl p-6 backdrop-blur-xl shadow-2xl space-y-6">
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-border-hairline/60 pb-4">
+      <div>
+        <div class="flex items-center gap-2">
+          <span class="w-2.5 h-2.5 rounded-full bg-status-pass shadow-[0_0_8px_rgba(5,150,105,0.8)]"></span>
+          <h2 class="text-lg font-bold font-mono text-text-primary tracking-wide">Keyboard Rollover (NKRO) &amp; Anti-Ghosting Matrix</h2>
+        </div>
+        <p class="text-xs text-text-muted mt-1">Simultaneous key press rollover limits (NKRO vs 6KRO) and key blocking matrix paths.</p>
+      </div>
+
+      <div class="flex items-center gap-3">
+        <button id="reset-keyboard-btn" class="px-4 py-2 text-xs font-mono font-semibold rounded-lg bg-bg-canvas border border-border-subtle hover:bg-bg-elevated transition-all cursor-pointer">
+          Reset Matrix
+        </button>
+      </div>
+    </div>
+
+    <!-- Active Key Display Grid -->
+    <div class="relative w-full p-6 rounded-xl bg-bg-canvas border border-border-subtle flex flex-col items-center justify-center space-y-4">
+      <div id="key-display-box" class="flex flex-wrap items-center justify-center gap-2 min-h-24 max-w-3xl">
+        <span class="text-xs font-mono text-text-muted">PRESS KEYS SIMULTANEOUSLY ON YOUR KEYBOARD</span>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 pt-2">
+      <div class="bg-bg-elevated p-3.5 rounded-xl border border-border-hairline">
+        <div class="text-[10px] font-mono text-text-muted uppercase">Active Pressed Keys</div>
+        <div id="metric-active-keys" class="text-sm font-mono font-bold text-text-primary mt-1">0 Keys</div>
+      </div>
+      <div class="bg-bg-elevated p-3.5 rounded-xl border border-border-hairline">
+        <div class="text-[10px] font-mono text-text-muted uppercase">Peak Simultaneous Keys</div>
+        <div id="metric-peak-keys" class="text-sm font-mono font-bold text-status-pass mt-1">0 Keys</div>
+      </div>
+      <div class="bg-bg-elevated p-3.5 rounded-xl border border-border-hairline">
+        <div class="text-[10px] font-mono text-text-muted uppercase">Rollover Protocol</div>
+        <div id="metric-rollover-mode" class="text-sm font-mono font-bold text-text-primary mt-1">6KRO / NKRO</div>
+      </div>
+      <div class="bg-bg-elevated p-3.5 rounded-xl border border-border-hairline">
+        <div class="text-[10px] font-mono text-text-muted uppercase">NKRO Compliance</div>
+        <div id="metric-nkro-status" class="text-sm font-mono font-bold text-status-pass mt-1">READY</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  import { analyzeKeyboardRollover } from '../../engine/KeyboardRolloverEngine';
+
+  const activeSet = new Set<string>();
+  let peakCount = 0;
+
+  const keyDisplayBox = document.getElementById('key-display-box');
+  const resetBtn = document.getElementById('reset-keyboard-btn');
+  const metricActive = document.getElementById('metric-active-keys');
+  const metricPeak = document.getElementById('metric-peak-keys');
+  const metricMode = document.getElementById('metric-rollover-mode');
+  const metricStatus = document.getElementById('metric-nkro-status');
+
+  function update() {
+    const report = analyzeKeyboardRollover(activeSet, peakCount);
+    peakCount = report.peakSimultaneousKeys;
+
+    if (metricActive) metricActive.textContent = `${report.activeKeysCount} Keys`;
+    if (metricPeak) metricPeak.textContent = `${report.peakSimultaneousKeys} Keys`;
+    if (metricMode) metricMode.textContent = report.peakSimultaneousKeys >= 7 ? 'Full NKRO' : '6KRO Standard';
+    if (metricStatus) metricStatus.textContent = report.isNkroCompliant ? 'NKRO VERIFIED' : 'TESTING...';
+
+    if (keyDisplayBox) {
+      if (activeSet.size === 0) {
+        keyDisplayBox.innerHTML = `<span class="text-xs font-mono text-text-muted">PRESS KEYS SIMULTANEOUSLY ON YOUR KEYBOARD</span>`;
+      } else {
+        keyDisplayBox.innerHTML = Array.from(activeSet)
+          .map((code) => `<span class="px-3 py-1.5 rounded-lg bg-status-pass/20 border border-status-pass/50 text-status-pass font-mono font-bold text-xs shadow-[0_0_8px_rgba(5,150,105,0.4)]">${code}</span>`)
+          .join('');
+      }
+    }
+  }
+
+  window.addEventListener('keydown', (e) => {
+    e.preventDefault();
+    activeSet.add(e.code);
+    update();
+  });
+
+  window.addEventListener('keyup', (e) => {
+    e.preventDefault();
+    activeSet.delete(e.code);
+    update();
+  });
+
+  resetBtn?.addEventListener('click', () => {
+    activeSet.clear();
+    peakCount = 0;
+    update();
+  });
+</script>

@@ -1,0 +1,517 @@
+---
+import Layout from '../layouts/Layout.astro';
+import HeroDiagnosticScope from '../components/diagnostics/HeroDiagnosticScope.astro';
+import { useTranslations, localizeLink } from '../utils/i18n';
+
+const { t, lang } = useTranslations(Astro.url.pathname);
+
+const homepageFaqs = [
+  {
+    q: 'How do I test my screen for dead or stuck pixels?',
+    a: 'To test for dead or stuck pixels, launch our online Display Test Suite. It cycles your display through full-screen solid primary colors (Red, Green, Blue, Black, White). Inspect your screen closely at native resolution: dead pixels remain dark, while stuck sub-pixels display a fixed color.'
+  },
+  {
+    q: 'Can an online test detect OLED burn-in and sub-pixel wear?',
+    a: 'Yes. Monitor Test Hub includes specialized 5% and 10% near-black gray uniformity patterns alongside a dynamic OLED Burn-In Risk Analyzer to reveal subtle sub-pixel luminance degradation and static image retention.'
+  },
+  {
+    q: 'How do I verify if VRR (FreeSync / G-Sync) is stuttering?',
+    a: 'Our VRR Stutter & Tearing Sweep drives vertical tear-bars oscillating across custom FPS curves (from 48Hz up to 540Hz+). When VRR is functioning properly, the vertical bar moves smoothly without horizontal tearing or micro-stutter.'
+  },
+  {
+    q: 'How do I test touchscreen digitizer dead-zones on mobile phones?',
+    a: 'Open our Mobile Touch Matrix Suite on your phone or tablet. It sandboxes your viewport within 100dvh to prevent Safari or Chrome address bar overlap. Drag across the grid to illuminate touch cells, track multi-touch limits, and measure draw precision.'
+  },
+  {
+    q: 'Is Monitor Test Hub 100% free and private?',
+    a: 'Yes. Monitor Test Hub is completely free with zero ads, subscriptions, downloads, or sign-ups required. All diagnostic calculations run 100% client-side in your browser.'
+  },
+  {
+    q: 'How can I export a hardware calibration receipt or ICC profile?',
+    a: 'Click PASSPORT RECEIPT in the top header to generate a cryptographically signed SHA-256 PNG audit receipt. Our Color Gamut Tool utilizes a WebAssembly LittleCMS engine to compile and export binary ICC v4.3 color profiles.'
+  }
+];
+
+const homepageFaqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": homepageFaqs.map(({ q, a }) => ({
+    "@type": "Question",
+    "name": q,
+    "acceptedAnswer": {
+      "@type": "Answer",
+      "text": a
+    }
+  }))
+};
+---
+
+
+<Layout 
+  title="Free Online Screen Test — Dead Pixels, OLED Burn-In & Touch Diagnostics | Monitor Test Hub" 
+  description="Run free online screen tests for dead pixels, OLED burn-in risk, refresh rate stutter (Hz), HDR peak brightness, and touchscreen responsiveness. 100% browser-based & private."
+>
+  <!-- Hero Experience: Hardware Calibration Control Deck -->
+  <section aria-labelledby="hero-title" class="relative border-b border-border-hairline bg-bg-canvas bg-precision-grid bg-grid-mask overflow-hidden py-12 md:py-20">
+    <!-- Ambient Sub-Surface Spotlight -->
+    <div class="pointer-events-none absolute -top-40 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-radial from-white/[0.04] to-transparent blur-3xl"></div>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+        
+        <!-- Left Column: Headline & Tactical Action Deck -->
+        <div class="lg:col-span-7 space-y-6">
+          
+          <!-- Tagline Badge -->
+          <div class="font-mono text-[11px] uppercase tracking-widest text-text-secondary flex items-center gap-2.5">
+            <span class="px-2 py-0.5 rounded-sm bg-bg-surface border border-border-subtle text-status-pass font-bold shadow-specular-top">⚡ INSTANT &amp; 100% FREE</span>
+            <span class="w-1.5 h-1.5 rounded-full bg-status-pass led-glow-pass animate-pulse"></span>
+            <span class="text-status-pass font-semibold">NO DOWNLOADS REQUIRED</span>
+          </div>
+
+          <!-- Ultra-Short, Ultra-Prominent Hero Headline (8 Words) -->
+          <h1 id="hero-title" class="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.1] text-text-primary heading-brand">
+            Find Dead Pixels &amp; Screen Defects in Seconds
+          </h1>
+
+          <!-- Ultra-Concise Subheadline -->
+          <p class="text-base sm:text-lg text-text-secondary leading-relaxed font-sans max-w-lg">
+            Free online display and touchscreen tests for any monitor, phone, TV, or laptop. Private, fast, and browser-based.
+          </p>
+
+
+
+          <!-- Action Deck (CTAs) -->
+          <div class="flex flex-wrap gap-3 items-center pt-2">
+            <a id="smart-hero-cta" href={localizeLink("/display-tests", lang)} aria-label="Run Free Display Diagnostics" class="inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-text-primary text-bg-canvas font-bold text-xs md:text-sm shadow-specular-top hover:opacity-90 active:scale-[0.98] transition-all duration-150 ease-[cubic-bezier(0.16,1,0.3,1)] cursor-pointer font-mono">
+              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/></svg>
+              <span id="cta-label" class="tabular-nums">START DISPLAY TEST</span>
+              <kbd class="hidden sm:inline-flex items-center px-1.5 py-0.5 ml-1 text-[10px] font-mono font-medium rounded bg-bg-canvas/20 border border-bg-canvas/30 text-bg-canvas">↵</kbd>
+            </a>
+
+            <a href={localizeLink("/touch-tests", lang)} class="inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-bg-surface text-text-primary border border-border-hairline shadow-specular-top hover:border-border-interactive active:scale-[0.98] transition-all duration-150 ease-[cubic-bezier(0.16,1,0.3,1)] cursor-pointer text-xs md:text-sm font-mono group">
+              <span>TEST TOUCHSCREEN</span>
+              <span class="text-text-muted group-hover:translate-x-0.5 transition-transform duration-150">&rarr;</span>
+            </a>
+          </div>
+        </div>
+
+
+        <!-- Right Column: Real-Time Interactive Scope Canvas -->
+        <div class="lg:col-span-5 relative">
+          <div class="rounded-xl border border-border-hairline bg-bg-surface p-2 shadow-specular-top">
+            <HeroDiagnosticScope />
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- Live Telemetry Inspector & System Specs Table -->
+  <section aria-labelledby="telemetry-title" class="py-12 border-b border-border-hairline bg-bg-surface">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="border border-border-hairline rounded-xl bg-bg-canvas overflow-hidden font-mono text-xs shadow-specular-top">
+        <div class="px-4 py-3 bg-bg-elevated border-b border-border-hairline flex items-center justify-between">
+          <div class="flex items-center gap-2 text-text-primary font-bold tracking-wider text-[11px] uppercase">
+            <span class="w-2 h-2 rounded-full bg-status-pass led-glow-pass animate-pulse"></span>
+            <span id="telemetry-title">TELEMETRY INSPECTOR (REAL-TIME)</span>
+          </div>
+          <span class="text-[10px] text-text-muted">HARDWARE POLLING @ 1000HZ</span>
+        </div>
+
+        <table class="w-full text-left border-collapse table-fixed" aria-label="Real-Time System Hardware Telemetry">
+          <caption class="sr-only">Display and GPU hardware telemetry readouts</caption>
+          <thead>
+            <tr class="border-b border-border-hairline text-[10px] text-text-muted uppercase tracking-wider bg-bg-surface">
+              <th scope="col" class="w-2/5 sm:w-1/3 px-4 py-2.5 font-medium">Metric</th>
+              <th scope="col" class="w-2/5 sm:w-1/3 px-4 py-2.5 font-medium">Acquired Value</th>
+              <th scope="col" class="hidden sm:table-cell sm:w-1/4 px-4 py-2.5 font-medium">Standard Target</th>
+              <th scope="col" class="w-1/5 sm:w-1/12 px-4 py-2.5 font-medium text-right">Status</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-border-hairline font-mono-tech text-xs">
+            <tr class="hover:bg-bg-subtle transition-colors duration-150">
+              <td class="px-4 py-3 text-text-secondary">{t.resLabel}</td>
+              <td class="px-4 py-3 font-bold text-text-primary min-w-[120px] tabular-nums" id="tel-res">{t.detecting}</td>
+              <td class="px-4 py-3 text-text-muted hidden sm:table-cell">ISO 9241-307</td>
+              <td class="px-4 py-3 text-right"><span class="px-2 py-0.5 rounded-sm text-[9px] font-mono font-bold bg-status-pass/10 text-status-pass border border-status-pass/20">OK</span></td>
+            </tr>
+            <tr class="hover:bg-bg-subtle transition-colors duration-150">
+              <td class="px-4 py-3 text-text-secondary">{t.dprLabel}</td>
+              <td class="px-4 py-3 font-bold text-text-primary min-w-[80px] tabular-nums" id="tel-dpr">{t.detecting}</td>
+              <td class="px-4 py-3 text-text-muted hidden sm:table-cell">HiDPI Retina</td>
+              <td class="px-4 py-3 text-right"><span class="px-2 py-0.5 rounded-sm text-[9px] font-mono font-bold bg-status-info/10 text-status-info border border-status-info/20">SCALED</span></td>
+            </tr>
+            <tr class="hover:bg-bg-subtle transition-colors duration-150">
+              <td class="px-4 py-3 text-text-secondary">{t.vsyncLabel}</td>
+              <td class="px-4 py-3 font-bold text-status-pass min-w-[100px] tabular-nums" id="tel-fps">{t.measuring}</td>
+              <td class="px-4 py-3 text-text-muted hidden sm:table-cell">IEC 62341 Sync</td>
+              <td class="px-4 py-3 text-right"><span class="px-2 py-0.5 rounded-sm text-[9px] font-mono font-bold bg-status-pass/10 text-status-pass border border-status-pass/20">ACTIVE</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- Google UX: Find Your Test by Issue (Symptom-Driven Navigation) -->
+  <section aria-labelledby="symptom-title" class="py-12 border-b border-border-hairline bg-bg-canvas">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
+      <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
+        <div>
+          <h2 id="symptom-title" class="text-xs font-bold font-mono tracking-widest text-text-muted uppercase">Symptom Selector</h2>
+          <p class="text-xl font-bold text-text-primary font-sans mt-1">Find Your Test by Screen Issue</p>
+        </div>
+        <span class="text-xs font-mono text-text-secondary">Click or press hotkeys [1-6] to launch</span>
+      </div>
+
+      <!-- Symptom Buttons Grid -->
+      <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 font-mono text-xs">
+        <a id="symptom-card-1" href={localizeLink("/display-tests/sub-pixel", lang)} class="p-4 rounded-lg bg-bg-surface border border-border-hairline shadow-specular-top hover:border-status-pass/50 hover:bg-bg-elevated transition-all duration-150 ease-[cubic-bezier(0.16,1,0.3,1)] group flex flex-col justify-between h-24">
+          <div class="flex items-center justify-between text-text-muted text-[10px]">
+            <span>[ 01 ]</span>
+            <kbd class="px-1.5 py-0.5 text-[9px] font-mono rounded bg-bg-canvas border border-border-subtle group-hover:border-status-pass/40 group-hover:text-status-pass transition-colors">1</kbd>
+          </div>
+          <span class="font-bold text-text-primary group-hover:text-status-pass transition-colors">Blurry Text</span>
+        </a>
+        <a id="symptom-card-2" href={localizeLink("/display-tests/vrr", lang)} class="p-4 rounded-lg bg-bg-surface border border-border-hairline shadow-specular-top hover:border-status-pass/50 hover:bg-bg-elevated transition-all duration-150 ease-[cubic-bezier(0.16,1,0.3,1)] group flex flex-col justify-between h-24">
+          <div class="flex items-center justify-between text-text-muted text-[10px]">
+            <span>[ 02 ]</span>
+            <kbd class="px-1.5 py-0.5 text-[9px] font-mono rounded bg-bg-canvas border border-border-subtle group-hover:border-status-pass/40 group-hover:text-status-pass transition-colors">2</kbd>
+          </div>
+          <span class="font-bold text-text-primary group-hover:text-status-pass transition-colors">Screen Stutter</span>
+        </a>
+        <a id="symptom-card-3" href={localizeLink("/display-tests/sub-pixel", lang)} class="p-4 rounded-lg bg-bg-surface border border-border-hairline shadow-specular-top hover:border-status-pass/50 hover:bg-bg-elevated transition-all duration-150 ease-[cubic-bezier(0.16,1,0.3,1)] group flex flex-col justify-between h-24">
+          <div class="flex items-center justify-between text-text-muted text-[10px]">
+            <span>[ 03 ]</span>
+            <kbd class="px-1.5 py-0.5 text-[9px] font-mono rounded bg-bg-canvas border border-border-subtle group-hover:border-status-pass/40 group-hover:text-status-pass transition-colors">3</kbd>
+          </div>
+          <span class="font-bold text-text-primary group-hover:text-status-pass transition-colors">Stuck Pixel</span>
+        </a>
+        <a id="symptom-card-4" href={localizeLink("/display-tests/uniformity", lang)} class="p-4 rounded-lg bg-bg-surface border border-border-hairline shadow-specular-top hover:border-status-pass/50 hover:bg-bg-elevated transition-all duration-150 ease-[cubic-bezier(0.16,1,0.3,1)] group flex flex-col justify-between h-24">
+          <div class="flex items-center justify-between text-text-muted text-[10px]">
+            <span>[ 04 ]</span>
+            <kbd class="px-1.5 py-0.5 text-[9px] font-mono rounded bg-bg-canvas border border-border-subtle group-hover:border-status-pass/40 group-hover:text-status-pass transition-colors">4</kbd>
+          </div>
+          <span class="font-bold text-text-primary group-hover:text-status-pass transition-colors">OLED Lines</span>
+        </a>
+        <a id="symptom-card-5" href={localizeLink("/touch-tests", lang)} class="p-4 rounded-lg bg-bg-surface border border-border-hairline shadow-specular-top hover:border-status-info/50 hover:bg-bg-elevated transition-all duration-150 ease-[cubic-bezier(0.16,1,0.3,1)] group flex flex-col justify-between h-24">
+          <div class="flex items-center justify-between text-text-muted text-[10px]">
+            <span>[ 05 ]</span>
+            <kbd class="px-1.5 py-0.5 text-[9px] font-mono rounded bg-bg-canvas border border-border-subtle group-hover:border-status-info/40 group-hover:text-status-info transition-colors">5</kbd>
+          </div>
+          <span class="font-bold text-text-primary group-hover:text-status-info transition-colors">Touch Dead Zone</span>
+        </a>
+        <a id="symptom-card-6" href={localizeLink("/touch-tests", lang)} class="p-4 rounded-lg bg-bg-surface border border-border-hairline shadow-specular-top hover:border-status-info/50 hover:bg-bg-elevated transition-all duration-150 ease-[cubic-bezier(0.16,1,0.3,1)] group flex flex-col justify-between h-24">
+          <div class="flex items-center justify-between text-text-muted text-[10px]">
+            <span>[ 06 ]</span>
+            <kbd class="px-1.5 py-0.5 text-[9px] font-mono rounded bg-bg-canvas border border-border-subtle group-hover:border-status-info/40 group-hover:text-status-info transition-colors">6</kbd>
+          </div>
+          <span class="font-bold text-text-primary group-hover:text-status-info transition-colors">Stylus Jitter</span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Tactical Instrument Suite Panels (3-Column Layout) -->
+  <section aria-labelledby="panels-title" class="py-12 md:py-16 border-b border-border-hairline bg-bg-surface">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
+      <div class="flex items-center justify-between border-b border-border-hairline pb-4 font-mono">
+        <h2 id="panels-title" class="text-xs font-bold tracking-widest text-text-muted uppercase">Diagnostic Instrument Panels</h2>
+        <span class="text-xs text-text-secondary">3 CORE DOMAINS</span>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        
+        <!-- Panel 1: Display Diagnostics -->
+        <div class="rounded-xl border border-border-hairline bg-bg-canvas p-6 flex flex-col justify-between space-y-6 shadow-specular-top hover:border-border-interactive transition-all duration-200 group">
+          <div class="space-y-4">
+            <div class="font-mono text-xs text-text-muted uppercase tracking-wider flex justify-between">
+              <span>[ 01 / DISPLAY ]</span>
+              <span class="px-2 py-0.5 rounded-sm text-[10px] font-mono font-bold bg-bg-elevated border border-border-hairline text-status-pass">12 TESTS</span>
+            </div>
+            <h3 class="text-lg font-bold text-text-primary group-hover:text-status-pass transition-colors font-sans">
+              Display & Panel Uniformity
+            </h3>
+            <p class="text-xs text-text-secondary leading-relaxed font-sans">
+              Evaluate sub-pixel geometry (RGB/BGR/OLED), Gray-to-Gray luminance uniformity, backlight bleed, and stuck sub-pixel defects.
+            </p>
+          </div>
+          <a href={localizeLink("/display-tests", lang)} class="pt-4 border-t border-border-hairline font-mono text-xs text-text-primary font-bold flex items-center justify-between hover:text-status-pass transition-colors">
+            <span>LAUNCH DISPLAY SUITE</span>
+            <span class="group-hover:translate-x-1 transition-transform duration-200">&rarr;</span>
+          </a>
+        </div>
+
+        <!-- Panel 2: Touch Digitizer -->
+        <div class="rounded-xl border border-border-hairline bg-bg-canvas p-6 flex flex-col justify-between space-y-6 shadow-specular-top hover:border-border-interactive transition-all duration-200 group">
+          <div class="space-y-4">
+            <div class="font-mono text-xs text-text-muted uppercase tracking-wider flex justify-between">
+              <span>[ 02 / TOUCH ]</span>
+              <span class="px-2 py-0.5 rounded-sm text-[10px] font-mono font-bold bg-bg-elevated border border-border-hairline text-status-info">6 TESTS</span>
+            </div>
+            <h3 class="text-lg font-bold text-text-primary group-hover:text-status-info transition-colors font-sans">
+              Touch Digitizer & Latency
+            </h3>
+            <p class="text-xs text-text-secondary leading-relaxed font-sans">
+              Measure multi-touch point limits, dead-zone coordinate mapping, swipe vector line jitter (RMS deviation), and touch response latency.
+            </p>
+          </div>
+          <a href={localizeLink("/touch-tests", lang)} class="pt-4 border-t border-border-hairline font-mono text-xs text-text-primary font-bold flex items-center justify-between hover:text-status-info transition-colors">
+            <span>LAUNCH TOUCH SUITE</span>
+            <span class="group-hover:translate-x-1 transition-transform duration-200">&rarr;</span>
+          </a>
+        </div>
+
+        <!-- Panel 3: Benchmarks & Arcade -->
+        <div class="rounded-xl border border-border-hairline bg-bg-canvas p-6 flex flex-col justify-between space-y-6 shadow-specular-top hover:border-border-interactive transition-all duration-200 group">
+          <div class="space-y-4">
+            <div class="font-mono text-xs text-text-muted uppercase tracking-wider flex justify-between">
+              <span>[ 03 / BENCHMARKS ]</span>
+              <span class="px-2 py-0.5 rounded-sm text-[10px] font-mono font-bold bg-bg-elevated border border-border-hairline text-text-primary">ARCADE</span>
+            </div>
+            <h3 class="text-lg font-bold text-text-primary group-hover:text-text-primary transition-colors font-sans">
+              Interactive Stress & Motion
+            </h3>
+            <p class="text-xs text-text-secondary leading-relaxed font-sans">
+              Interactive precision tests: VSync frame rate stress tester, reaction time latency benchmark, and high-frequency motion tracking.
+            </p>
+          </div>
+          <a href={localizeLink("/arcade", lang)} class="pt-4 border-t border-border-hairline font-mono text-xs text-text-primary font-bold flex items-center justify-between hover:text-text-primary transition-colors">
+            <span>LAUNCH ARCADE SUITE</span>
+            <span class="group-hover:translate-x-1 transition-transform duration-200">&rarr;</span>
+          </a>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- Stripe Spec Sheet: Engineering Standard Compliance Grid -->
+  <section aria-labelledby="standards-title" class="py-12 border-b border-border-hairline bg-bg-canvas font-mono">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
+      <div class="flex items-center justify-between">
+        <h2 id="standards-title" class="text-xs font-bold tracking-widest text-text-muted uppercase">Engineering Standards Compliance Spec Grid</h2>
+        <span class="text-[10px] text-text-secondary">CLIENT-SIDE VERIFIED</span>
+      </div>
+
+      <div class="border border-border-hairline rounded-xl bg-bg-surface overflow-hidden divide-y divide-border-hairline text-xs shadow-specular-top">
+        
+        <div class="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 hover:bg-bg-subtle/80 hover:border-l-2 hover:border-l-status-pass transition-all duration-150">
+          <div>
+            <div class="text-text-primary font-bold text-xs flex items-center gap-2">
+              ISO 9241-307:2008
+              <span class="px-1.5 py-0.5 rounded-sm bg-status-pass/10 text-status-pass text-[9px] border border-status-pass/20 leading-none">Class 0-II</span>
+            </div>
+            <p class="text-text-secondary text-[11px] font-sans mt-1 leading-relaxed">International standard for pixel defect classification and visual ergonomics.</p>
+          </div>
+          <span class="text-text-muted text-[10px] shrink-0 font-mono">[ SUB-PIXEL LOUPE ENGINE ]</span>
+        </div>
+
+        <div class="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 hover:bg-bg-subtle/80 hover:border-l-2 hover:border-l-status-info transition-all duration-150">
+          <div>
+            <div class="text-text-primary font-bold text-xs flex items-center gap-2">
+              VESA DisplayHDR 1.2
+              <span class="px-1.5 py-0.5 rounded-sm bg-status-info/10 text-status-info text-[9px] border border-status-info/20 leading-none">EOTF / Nit Range</span>
+            </div>
+            <p class="text-text-secondary text-[11px] font-sans mt-1 leading-relaxed">Luminance response profiling and wide color gamut dynamic range evaluation.</p>
+          </div>
+          <span class="text-text-muted text-[10px] shrink-0 font-mono">[ 240HZ FRAME SAMPLER ]</span>
+        </div>
+
+        <div class="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 hover:bg-bg-subtle/80 hover:border-l-2 hover:border-l-status-pass transition-all duration-150">
+          <div>
+            <div class="text-text-primary font-bold text-xs flex items-center gap-2">
+              IEC 62341-6-2
+              <span class="px-1.5 py-0.5 rounded-sm bg-status-pass/10 text-status-pass text-[9px] border border-status-pass/20 leading-none">OLED Decay</span>
+            </div>
+            <p class="text-text-secondary text-[11px] font-sans mt-1 leading-relaxed">OLED dynamic contrast and sub-pixel luminance decay measurement.</p>
+          </div>
+          <span class="text-text-muted text-[10px] shrink-0 font-mono">[ UNIFORMITY MATRIX ]</span>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ Section with Schema.org Integration for Peak SEO -->
+  <section aria-labelledby="homepage-faq-title" class="py-16 border-b border-border-hairline bg-bg-canvas">
+    <script type="application/ld+json" set:html={JSON.stringify(homepageFaqSchema)} />
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
+      <div class="text-center space-y-2">
+        <div class="font-mono text-[11px] uppercase tracking-widest text-status-pass font-bold">
+          [ FREQUENTLY ASKED QUESTIONS ]
+        </div>
+        <h2 id="homepage-faq-title" class="text-2xl sm:text-3xl font-extrabold text-text-primary tracking-tight font-mono uppercase">
+          Display Diagnostics &amp; Screen Testing FAQ
+        </h2>
+        <p class="text-xs sm:text-sm text-text-secondary max-w-xl mx-auto font-sans">
+          Everything you need to know about testing dead pixels, OLED burn-in risk, refresh rate stutter, and mobile touchscreens online.
+        </p>
+      </div>
+
+      <div class="space-y-3 font-mono text-xs">
+        <details class="border border-border-hairline rounded-lg bg-bg-surface group overflow-hidden shadow-specular-top">
+          <summary class="cursor-pointer py-4 px-5 font-bold text-text-primary flex items-center justify-between gap-3 select-none list-none hover:bg-bg-elevated transition-colors">
+            <span class="flex items-center gap-3">
+              <span class="text-status-pass font-mono text-[10px]">01</span>
+              <span class="text-sm">How do I test my screen for dead or stuck pixels?</span>
+            </span>
+            <span class="shrink-0 text-text-muted text-xs group-open:rotate-180 transition-transform duration-200">▼</span>
+          </summary>
+          <div class="px-5 py-4 text-text-secondary border-t border-border-hairline bg-bg-canvas leading-relaxed font-sans text-xs sm:text-sm space-y-2">
+            <p>
+              To test for dead or stuck pixels, launch our online <a href="/display-tests" class="text-status-pass underline hover:text-text-primary">Display Test Suite</a>. It cycles your display through full-screen solid primary colors (Red, Green, Blue, Black, White). Inspect your screen closely at native resolution:
+            </p>
+            <ul class="list-disc list-inside space-y-1 text-text-secondary pl-2">
+              <li><strong class="text-text-primary">Dead Pixel:</strong> Appears as a permanently dark/black dot on bright backgrounds.</li>
+              <li><strong class="text-text-primary">Stuck Sub-Pixel:</strong> Displays a fixed color (red, green, or blue) regardless of background.</li>
+              <li><strong class="text-text-primary">ISO Standard:</strong> Defect classification maps directly to ISO 9241-307 Class I–IV benchmarks.</li>
+            </ul>
+          </div>
+        </details>
+
+        <details class="border border-border-hairline rounded-lg bg-bg-surface group overflow-hidden shadow-specular-top">
+          <summary class="cursor-pointer py-4 px-5 font-bold text-text-primary flex items-center justify-between gap-3 select-none list-none hover:bg-bg-elevated transition-colors">
+            <span class="flex items-center gap-3">
+              <span class="text-status-pass font-mono text-[10px]">02</span>
+              <span class="text-sm">Can an online test detect OLED burn-in and sub-pixel wear?</span>
+            </span>
+            <span class="shrink-0 text-text-muted text-xs group-open:rotate-180 transition-transform duration-200">▼</span>
+          </summary>
+          <div class="px-5 py-4 text-text-secondary border-t border-border-hairline bg-bg-canvas leading-relaxed font-sans text-xs sm:text-sm">
+            <p>
+              Yes. Monitor Test Hub includes specialized <strong>5% and 10% near-black gray uniformity patterns</strong> alongside a dynamic <a href="/display-tests/oled-burn-in" class="text-status-pass underline hover:text-text-primary">OLED Burn-In Risk Analyzer</a>. Near-black gray tests reveal subtle sub-pixel luminance degradation and static image retention (from taskbars, HUDs, or logos) before they become visible during normal video playback.
+            </p>
+          </div>
+        </details>
+
+        <details class="border border-border-hairline rounded-lg bg-bg-surface group overflow-hidden shadow-specular-top">
+          <summary class="cursor-pointer py-4 px-5 font-bold text-text-primary flex items-center justify-between gap-3 select-none list-none hover:bg-bg-elevated transition-colors">
+            <span class="flex items-center gap-3">
+              <span class="text-status-pass font-mono text-[10px]">03</span>
+              <span class="text-sm">How do I verify if VRR (FreeSync / G-Sync) is stuttering?</span>
+            </span>
+            <span class="shrink-0 text-text-muted text-xs group-open:rotate-180 transition-transform duration-200">▼</span>
+          </summary>
+          <div class="px-5 py-4 text-text-secondary border-t border-border-hairline bg-bg-canvas leading-relaxed font-sans text-xs sm:text-sm">
+            <p>
+              Our <a href="/display-tests/vrr" class="text-status-pass underline hover:text-text-primary">VRR Stutter &amp; Tearing Sweep</a> drives vertical tear-bars oscillating across custom FPS curves (from 48Hz up to 540Hz+). When Variable Refresh Rate is functioning properly, the vertical bar moves smoothly without horizontal tearing lines or micro-stutter frame drops.
+            </p>
+          </div>
+        </details>
+
+        <details class="border border-border-hairline rounded-lg bg-bg-surface group overflow-hidden shadow-specular-top">
+          <summary class="cursor-pointer py-4 px-5 font-bold text-text-primary flex items-center justify-between gap-3 select-none list-none hover:bg-bg-elevated transition-colors">
+            <span class="flex items-center gap-3">
+              <span class="text-status-pass font-mono text-[10px]">04</span>
+              <span class="text-sm">How do I test touchscreen digitizer dead-zones on mobile phones?</span>
+            </span>
+            <span class="shrink-0 text-text-muted text-xs group-open:rotate-180 transition-transform duration-200">▼</span>
+          </summary>
+          <div class="px-5 py-4 text-text-secondary border-t border-border-hairline bg-bg-canvas leading-relaxed font-sans text-xs sm:text-sm">
+            <p>
+              Open our <a href="/touch-matrix" class="text-status-pass underline hover:text-text-primary">Mobile Touch Matrix Suite</a> on your phone or tablet. It sandboxes your viewport within <code class="bg-bg-surface px-1 py-0.5 rounded border border-border-hairline">100dvh</code> to prevent Safari or Chrome address bar overlap. Drag across the grid to illuminate touch cells, track multi-touch gesture limits, and measure vector drawing precision.
+            </p>
+          </div>
+        </details>
+
+        <details class="border border-border-hairline rounded-lg bg-bg-surface group overflow-hidden shadow-specular-top">
+          <summary class="cursor-pointer py-4 px-5 font-bold text-text-primary flex items-center justify-between gap-3 select-none list-none hover:bg-bg-elevated transition-colors">
+            <span class="flex items-center gap-3">
+              <span class="text-status-pass font-mono text-[10px]">05</span>
+              <span class="text-sm">Is Monitor Test Hub 100% free and private?</span>
+            </span>
+            <span class="shrink-0 text-text-muted text-xs group-open:rotate-180 transition-transform duration-200">▼</span>
+          </summary>
+          <div class="px-5 py-4 text-text-secondary border-t border-border-hairline bg-bg-canvas leading-relaxed font-sans text-xs sm:text-sm">
+            <p>
+              Yes. Monitor Test Hub is completely free with zero ads, subscriptions, downloads, or sign-ups required. All diagnostic calculations, WebGL shaders, and latency measurements run 100% client-side in your browser. We operate zero tracking servers and transmit zero data externally.
+            </p>
+          </div>
+        </details>
+
+        <details class="border border-border-hairline rounded-lg bg-bg-surface group overflow-hidden shadow-specular-top">
+          <summary class="cursor-pointer py-4 px-5 font-bold text-text-primary flex items-center justify-between gap-3 select-none list-none hover:bg-bg-elevated transition-colors">
+            <span class="flex items-center gap-3">
+              <span class="text-status-pass font-mono text-[10px]">06</span>
+              <span class="text-sm">How can I export a hardware calibration receipt or ICC profile?</span>
+            </span>
+            <span class="shrink-0 text-text-muted text-xs group-open:rotate-180 transition-transform duration-200">▼</span>
+          </summary>
+          <div class="px-5 py-4 text-text-secondary border-t border-border-hairline bg-bg-canvas leading-relaxed font-sans text-xs sm:text-sm">
+            <p>
+              Click <strong>PASSPORT RECEIPT</strong> in the top header to generate a cryptographically signed SHA-256 PNG audit receipt certifying your display telemetry. Additionally, our <a href="/display-tests/color-gamut" class="text-status-pass underline hover:text-text-primary">Color Gamut Tool</a> utilizes a WebAssembly LittleCMS engine to compile and export binary ICC v4.3 color profiles directly to your device.
+            </p>
+          </div>
+        </details>
+      </div>
+    </div>
+  </section>
+</Layout>
+
+<!-- Client Telemetry & Hotkey Acquisition Engine -->
+<script>
+  import { VsyncSyncEngine } from '../engine/VsyncSyncEngine';
+
+  function startTelemetry() {
+    const resEl = document.getElementById('tel-res');
+    const dprEl = document.getElementById('tel-dpr');
+    const fpsEl = document.getElementById('tel-fps');
+    const ctaLabel = document.getElementById('cta-label');
+
+    if (resEl) {
+      resEl.textContent = `${window.screen.width * window.devicePixelRatio} x ${window.screen.height * window.devicePixelRatio}`;
+    }
+    if (dprEl) {
+      dprEl.textContent = `${window.devicePixelRatio.toFixed(2)}x`;
+    }
+
+    let lastUpdate = 0;
+    const engine = new VsyncSyncEngine((stats) => {
+      const now = performance.now();
+      if (now - lastUpdate >= 250) { // 4Hz DOM update throttle
+        if (fpsEl) {
+          fpsEl.textContent = `${stats.currentFps.toFixed(1)} Hz`;
+        }
+        if (ctaLabel) {
+          ctaLabel.textContent = `RUN DIAGNOSTIC RUN (${stats.currentFps.toFixed(0)}Hz DETECTED)`;
+        }
+        lastUpdate = now;
+      }
+    });
+
+    engine.start();
+
+    // Device route optimization
+    const smartCta = document.getElementById('smart-hero-cta') as HTMLAnchorElement;
+    if (smartCta && ('ontouchstart' in window || navigator.maxTouchPoints > 0) && window.innerWidth < 768) {
+      smartCta.href = '/touch-tests';
+      if (ctaLabel) ctaLabel.textContent = 'RUN DIGITIZER CALIBRATION';
+    }
+
+    // Global Keycap Hotkeys [1-6] for Symptom Cards
+    document.addEventListener('keydown', (e: KeyboardEvent) => {
+      if (['INPUT', 'TEXTAREA', 'SELECT'].includes((e.target as HTMLElement)?.tagName)) return;
+      const keyMap: Record<string, string> = {
+        '1': 'symptom-card-1',
+        '2': 'symptom-card-2',
+        '3': 'symptom-card-3',
+        '4': 'symptom-card-4',
+        '5': 'symptom-card-5',
+        '6': 'symptom-card-6'
+      };
+      if (keyMap[e.key]) {
+        const card = document.getElementById(keyMap[e.key]) as HTMLAnchorElement;
+        if (card) card.click();
+      }
+    });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', startTelemetry);
+  } else {
+    startTelemetry();
+  }
+</script>

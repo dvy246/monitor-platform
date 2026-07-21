@@ -1,0 +1,147 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+import Breadcrumbs from '../../../components/ui/Breadcrumbs.astro';
+import TouchMatrixTester from '../../../components/diagnostics/TouchMatrixTester.astro';
+import ErgonomicsNotice from '../../../components/disclaimers/ErgonomicsNotice.astro';
+import {
+  getAllDeviceTypes,
+  getAllGridDensities,
+  getDeviceLabel,
+  getDensityLabel,
+  getGridDimensions
+} from '../../../engine/TouchMatrixEngine';
+
+export async function getStaticPaths() {
+  const deviceTypes = getAllDeviceTypes();
+  const gridDensities = getAllGridDensities();
+
+  return deviceTypes.flatMap((deviceType) =>
+    gridDensities.map((gridDensity) => ({
+      params: { deviceType, gridDensity }
+    }))
+  );
+}
+
+const { deviceType: deviceTypeParam, gridDensity: gridDensityParam } = Astro.params;
+const deviceType = deviceTypeParam || 'tablet';
+const gridDensity = gridDensityParam || 'medium';
+
+const deviceLabel = getDeviceLabel(deviceType);
+const densityLabel = getDensityLabel(gridDensity);
+const dimensions = getGridDimensions(gridDensity);
+
+const pageTitle = `${deviceLabel} ${densityLabel} Touch Digitizer Audit | Monitor Test Hub`;
+const metaDescription = `Hardware touch digitizer dead-zone and multi-touch precision matrix test for ${deviceLabel} using ${densityLabel} (${dimensions.cols}x${dimensions.rows} grid). Measures velocity, jitter, and trajectory drift.`;
+---
+
+<Layout title={pageTitle} description={metaDescription}>
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+    <Breadcrumbs items={[
+      { label: 'Touch Suite', href: '/touch-tests' },
+      { label: 'Touch Matrix', href: '/touch-matrix' },
+      { label: `${deviceLabel} — ${gridDensity.toUpperCase()}` }
+    ]} />
+
+    <!-- Page Header Deck -->
+    <header class="space-y-3 border-b border-border-hairline pb-6 font-mono">
+      <div class="flex items-center gap-2 text-status-pass text-xs font-bold uppercase tracking-wider">
+        <span class="w-2.5 h-2.5 rounded-full bg-status-pass led-glow-pass"></span>
+        HARDWARE DIGITIZER PROFILE AUDIT
+      </div>
+      <h1 class="text-3xl sm:text-4xl font-extrabold text-text-primary tracking-tight">
+        {deviceLabel} — {densityLabel} Matrix Profile
+      </h1>
+      <p class="text-sm text-text-secondary max-w-3xl leading-relaxed font-sans">
+        Hardware-level digitizer testing profile calibrated for <strong class="text-text-primary">{deviceLabel}</strong> with a <strong class="text-text-primary">{dimensions.cols} &times; {dimensions.rows}</strong> grid matrix ({dimensions.cols * dimensions.rows} total cells).
+      </p>
+    </header>
+
+    <!-- Key Metrics Highlight Deck -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 font-mono">
+      <div class="bg-bg-surface border border-border-hairline rounded-lg p-4 shadow-specular-top">
+        <span class="text-[10px] text-text-muted uppercase font-bold tracking-wider block mb-1">DEVICE PRESET</span>
+        <span class="text-sm font-bold text-text-primary block truncate">{deviceLabel}</span>
+        <span class="text-[10px] text-text-secondary mt-1 block uppercase">{deviceType}</span>
+      </div>
+
+      <div class="bg-bg-surface border border-border-hairline rounded-lg p-4 shadow-specular-top">
+        <span class="text-[10px] text-text-muted uppercase font-bold tracking-wider block mb-1">GRID RESOLUTION</span>
+        <span class="text-sm font-bold text-status-pass block">{dimensions.cols} &times; {dimensions.rows}</span>
+        <span class="text-[10px] text-text-secondary mt-1 block">{dimensions.cols * dimensions.rows} Total Cells</span>
+      </div>
+
+      <div class="bg-bg-surface border border-border-hairline rounded-lg p-4 shadow-specular-top">
+        <span class="text-[10px] text-text-muted uppercase font-bold tracking-wider block mb-1">DENSITY TIER</span>
+        <span class="text-sm font-bold text-text-primary block truncate">{gridDensity.toUpperCase()}</span>
+        <span class="text-[10px] text-text-secondary mt-1 block">{densityLabel}</span>
+      </div>
+
+      <div class="bg-bg-surface border border-border-hairline rounded-lg p-4 shadow-specular-top">
+        <span class="text-[10px] text-text-muted uppercase font-bold tracking-wider block mb-1">POINTER API</span>
+        <span class="text-sm font-bold text-text-primary block">PointerEvents</span>
+        <span class="text-[10px] text-text-secondary mt-1 block">Hardware Un-buffered</span>
+      </div>
+    </div>
+
+    <!-- Diagnostic Analyzer Component initialized with dynamic preset & density -->
+    <TouchMatrixTester initialDeviceType={deviceType} initialGridDensity={gridDensity} initialMode="dead-zone" />
+
+    <!-- Technical Analysis & Cross Navigation Section -->
+    <section class="bg-bg-surface border border-border-hairline rounded-2xl p-6 space-y-4 font-mono">
+      <h2 class="text-base font-bold text-text-primary uppercase tracking-wider border-b border-border-hairline pb-3">
+        Engineering Assessment: {deviceLabel} under {densityLabel} Grid
+      </h2>
+      <div class="space-y-3 text-xs text-text-secondary leading-relaxed font-sans">
+        <p>
+          Testing <strong class="text-text-primary">{deviceLabel}</strong> on a <strong class="text-text-primary">{densityLabel}</strong> grid provides high spatial resolution ({dimensions.cols * dimensions.rows} individual trace sensor cells) to expose hairline dead-zone defects in digitizer hardware arrays.
+        </p>
+      </div>
+
+      <!-- Cross Navigation to Other Densities for this Device -->
+      <div class="pt-4 border-t border-border-hairline">
+        <span class="text-xs font-bold text-text-muted uppercase tracking-wider block mb-3">
+          Compare Grid Densities for {deviceLabel}:
+        </span>
+        <div class="flex flex-wrap gap-2 text-xs">
+          {getAllGridDensities().map((d) => (
+            <a
+              href={`/touch-matrix/${deviceType}/${d}`}
+              class:list={[
+                "px-3 py-1.5 rounded border transition-colors focus:outline-none focus:ring-2 focus:ring-status-pass font-mono",
+                d === gridDensity
+                  ? "bg-status-pass/20 border-status-pass text-status-pass font-bold"
+                  : "bg-bg-canvas border-border-hairline text-text-secondary hover:text-text-primary"
+              ]}
+            >
+              {getDensityLabel(d)}
+            </a>
+          ))}
+        </div>
+      </div>
+
+      <!-- Cross Navigation to Other Device Presets -->
+      <div class="pt-4 border-t border-border-hairline">
+        <span class="text-xs font-bold text-text-muted uppercase tracking-wider block mb-3">
+          Switch Device Profile ({densityLabel}):
+        </span>
+        <div class="flex flex-wrap gap-2 text-xs">
+          {getAllDeviceTypes().map((dev) => (
+            <a
+              href={`/touch-matrix/${dev}/${gridDensity}`}
+              class:list={[
+                "px-3 py-1.5 rounded border transition-colors focus:outline-none focus:ring-2 focus:ring-status-pass font-mono",
+                dev === deviceType
+                  ? "bg-status-pass/20 border-status-pass text-status-pass font-bold"
+                  : "bg-bg-canvas border-border-hairline text-text-secondary hover:text-text-primary"
+              ]}
+            >
+              {getDeviceLabel(dev).toUpperCase()}
+            </a>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <ErgonomicsNotice />
+  </main>
+</Layout>

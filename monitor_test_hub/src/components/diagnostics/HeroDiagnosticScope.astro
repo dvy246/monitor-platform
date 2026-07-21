@@ -1,0 +1,236 @@
+---
+---
+
+<div id="hero-scope-container" class="relative w-full aspect-square max-w-md mx-auto bg-bg-canvas border border-border-hairline rounded-xl p-4 overflow-hidden shadow-specular-top group select-none transition-colors duration-200 hover:border-status-pass/50">
+  
+  <!-- Technical Precision Grid Layer -->
+  <div class="absolute inset-0 bg-precision-grid bg-grid-mask opacity-60"></div>
+
+  <!-- Interactive Live Scope Canvas -->
+  <canvas id="hero-scope-canvas" role="img" aria-label="Interactive VSync frame rate and sub-pixel optical scope preview" class="absolute inset-0 w-full h-full cursor-crosshair z-10"></canvas>
+
+  <!-- Live Status & Telemetry HUD Overlay -->
+  <div class="absolute top-3 left-3 z-20 flex items-center gap-2 pointer-events-none">
+    <span class="w-2 h-2 rounded-full bg-status-pass led-glow-pass animate-pulse"></span>
+    <span class="font-mono text-[10px] font-bold text-status-pass tracking-widest uppercase bg-bg-canvas/80 px-2 py-0.5 rounded-sm border border-status-pass/20 shadow-xs">
+      LIVE SCOPE v2.4
+    </span>
+  </div>
+
+  <div class="absolute top-3 right-3 z-20 font-mono text-[10px] font-bold text-status-info bg-bg-canvas/80 px-2 py-0.5 rounded-sm border border-status-info/20 pointer-events-none shadow-xs font-mono-tech">
+    <span id="hero-fps-display" class="tabular-nums">VSYNC: -- Hz</span>
+  </div>
+
+  <!-- Sub-Pixel Magnifier Loupe Tool Card -->
+  <div class="absolute bottom-4 left-4 z-20 bg-bg-surface/90 backdrop-blur border border-border-hairline p-2.5 rounded-lg font-mono text-[10px] text-text-secondary space-y-1 max-w-[160px] shadow-specular-top pointer-events-none">
+    <div class="flex justify-between items-center text-status-pass font-bold uppercase tracking-wider">
+      <span>Sub-Pixel Grid</span>
+      <span id="loupe-type">RGB</span>
+    </div>
+    <div class="grid grid-cols-3 gap-1 h-6 w-full bg-bg-canvas border border-border-subtle p-0.5 rounded-sm">
+      <div class="bg-red-500 rounded-xs"></div>
+      <div class="bg-green-500 rounded-xs"></div>
+      <div class="bg-blue-500 rounded-xs"></div>
+    </div>
+    <div class="text-[9px] text-text-muted flex justify-between font-mono-tech">
+      <span>DPR: <span id="hero-dpr-val" class="tabular-nums">1.0x</span></span>
+      <span>PITCH: 0.18mm</span>
+    </div>
+  </div>
+
+  <div class="absolute bottom-4 right-4 z-20 font-mono text-[9px] text-text-muted pointer-events-none select-none">
+    MOVE CURSOR TO INSPECT
+  </div>
+</div>
+
+<script>
+  import { VsyncSyncEngine } from '../../engine/VsyncSyncEngine';
+
+  function initHeroScope() {
+    const container = document.getElementById('hero-scope-container');
+    const canvas = document.getElementById('hero-scope-canvas') as HTMLCanvasElement;
+    const fpsEl = document.getElementById('hero-fps-display');
+    const dprEl = document.getElementById('hero-dpr-val');
+
+    if (!container || !canvas) return;
+
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    let dpr = window.devicePixelRatio || 1;
+    if (dprEl) dprEl.textContent = `${dpr.toFixed(1)}x`;
+
+    let cachedRect = container.getBoundingClientRect();
+
+    function resize() {
+      if (!canvas || !container) return;
+      cachedRect = container.getBoundingClientRect();
+      canvas.width = cachedRect.width * dpr;
+      canvas.height = cachedRect.height * dpr;
+    }
+
+    resize();
+    window.addEventListener('resize', resize);
+
+    // Mouse & Touch Tracking for Scope Crosshair (Using cached rect to eliminate synchronous layout reflows)
+    let targetX = canvas.width / 2;
+    let targetY = canvas.height / 2;
+    let currX = targetX;
+    let currY = targetY;
+    let isHovered = false;
+
+    container.addEventListener('mouseenter', () => {
+      cachedRect = container.getBoundingClientRect();
+      isHovered = true;
+    });
+
+    container.addEventListener('mouseleave', () => {
+      isHovered = false;
+    });
+
+    canvas.addEventListener('mousemove', (e) => {
+      targetX = (e.clientX - cachedRect.left) * dpr;
+      targetY = (e.clientY - cachedRect.top) * dpr;
+      isHovered = true;
+    });
+
+    // Passive Touch Support for Mobile
+    canvas.addEventListener('touchstart', (e) => {
+      cachedRect = container.getBoundingClientRect();
+      if (e.touches.length > 0) {
+        targetX = (e.touches[0].clientX - cachedRect.left) * dpr;
+        targetY = (e.touches[0].clientY - cachedRect.top) * dpr;
+        isHovered = true;
+      }
+    }, { passive: true });
+
+    canvas.addEventListener('touchmove', (e) => {
+      if (e.touches.length > 0) {
+        targetX = (e.touches[0].clientX - cachedRect.left) * dpr;
+        targetY = (e.touches[0].clientY - cachedRect.top) * dpr;
+      }
+    }, { passive: true });
+
+    canvas.addEventListener('touchend', () => {
+      isHovered = false;
+    }, { passive: true });
+
+    // 4Hz Throttled VSync FPS Engine
+    if (fpsEl) {
+      let lastFpsUpdate = 0;
+      const sampler = new VsyncSyncEngine((stats) => {
+        const now = performance.now();
+        if (now - lastFpsUpdate >= 250) { // 4Hz DOM throttle
+          fpsEl.textContent = `VSYNC: ${stats.currentFps.toFixed(1)} Hz`;
+          lastFpsUpdate = now;
+        }
+      });
+      sampler.start();
+    }
+
+    // Theme color accuracy listener
+    let isLightMode = document.documentElement.classList.contains('light');
+    window.addEventListener('themechange', (e: any) => {
+      isLightMode = e.detail?.theme === 'light';
+    });
+
+    // IntersectionObserver to pause rAF render loop when scrolled off-screen
+    let isVisible = true;
+    let animId: number;
+
+    if ('IntersectionObserver' in window) {
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          isVisible = entry.isIntersecting;
+          if (isVisible && !animId) {
+            lastFrameTime = performance.now();
+            animId = requestAnimationFrame(render);
+          }
+        });
+      }, { threshold: 0.1 });
+      observer.observe(container);
+    }
+
+    // Delta-Time Animation Loop & Fluid Reticle Lerp Physics
+    let angle = 0;
+    let lastFrameTime = performance.now();
+
+    function render(now = performance.now()) {
+      if (!isVisible) {
+        animId = 0;
+        return;
+      }
+
+      const dt = Math.min((now - lastFrameTime) / 1000, 0.1);
+      lastFrameTime = now;
+
+      const width = canvas.width;
+      const height = canvas.height;
+
+      ctx.clearRect(0, 0, width, height);
+
+      // Mode-specific color accuracy tokens
+      const reticleColor = isLightMode ? 'rgba(5, 150, 105, 0.25)' : 'rgba(16, 185, 129, 0.2)';
+      const circleColor = isLightMode ? 'rgba(5, 150, 105, 0.6)' : 'rgba(16, 185, 129, 0.4)';
+      const waveColor = isLightMode ? 'rgba(8, 145, 178, 0.7)' : 'rgba(6, 182, 212, 0.5)';
+
+      // Fluid Exponential Reticle Lerp Tracking
+      const goalX = isHovered ? targetX : width / 2;
+      const goalY = isHovered ? targetY : height / 2;
+      currX += (goalX - currX) * (1 - Math.exp(-18 * dt));
+      currY += (goalY - currY) * (1 - Math.exp(-18 * dt));
+
+      // 1. Draw Target Reticle Grid Lines
+      ctx.strokeStyle = reticleColor;
+      ctx.lineWidth = 1 * dpr;
+
+      ctx.beginPath();
+      ctx.moveTo(currX, 0);
+      ctx.lineTo(currX, height);
+      ctx.moveTo(0, currY);
+      ctx.lineTo(width, currY);
+      ctx.stroke();
+
+      // 2. Animated Radar Sweep Circle
+      angle += 1.2 * dt;
+      ctx.save();
+      ctx.translate(currX, currY);
+      
+      ctx.beginPath();
+      ctx.arc(0, 0, 45 * dpr, 0, Math.PI * 2);
+      ctx.strokeStyle = circleColor;
+      ctx.lineWidth = 1.5 * dpr;
+      ctx.stroke();
+
+      ctx.beginPath();
+      ctx.arc(0, 0, 65 * dpr, angle, angle + Math.PI * 0.5);
+      ctx.strokeStyle = isLightMode ? '#0891b2' : '#06b6d4';
+      ctx.lineWidth = 2 * dpr;
+      ctx.stroke();
+
+      ctx.restore();
+
+      // 3. Live Oscilloscope Waveform at bottom of scope
+      ctx.beginPath();
+      ctx.strokeStyle = waveColor;
+      ctx.lineWidth = 1.5 * dpr;
+      const waveY = height * 0.75;
+      for (let x = 0; x < width; x += 4 * dpr) {
+        const y = waveY + Math.sin((x + angle * 80) * 0.03) * (12 * dpr);
+        if (x === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      }
+      ctx.stroke();
+
+      animId = requestAnimationFrame(render);
+    }
+
+    animId = requestAnimationFrame(render);
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initHeroScope);
+  } else {
+    initHeroScope();
+  }
+</script>

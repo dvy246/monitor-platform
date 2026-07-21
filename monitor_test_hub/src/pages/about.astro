@@ -1,0 +1,157 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Breadcrumbs from '../components/ui/Breadcrumbs.astro';
+
+const title = 'About Monitor Test Hub | Browser-Based Hardware Diagnostic Engineering';
+const description = 'Monitor Test Hub is a free, open-source browser-based engineering utility for display and touchscreen diagnostics. Built on ISO 9241-307, VESA DisplayHDR, and CIE 1931 colorimetry standards.';
+
+const orgSchema = {
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": "Monitor Test Hub",
+  "url": "https://monitortesthub.com",
+  "description": description,
+  "contactPoint": {
+    "@type": "ContactPoint",
+    "email": "team@monitortesthub.com",
+    "contactType": "customer support"
+  },
+  "sameAs": ["https://github.com"]
+};
+---
+
+<Layout title={title} description={description}>
+  <Fragment slot="head">
+    <script type="application/ld+json" set:html={JSON.stringify(orgSchema)} />
+  </Fragment>
+
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-10">
+    <!-- Breadcrumbs -->
+    <Breadcrumbs items={[{ label: 'About Us' }]} />
+
+    <!-- Hero -->
+    <div class="bg-bg-surface border border-border-hairline rounded-2xl shadow-specular-top px-8 py-10">
+      <h1 class="font-mono text-3xl md:text-4xl font-extrabold text-text-primary tracking-tight uppercase mb-2">
+        About Monitor Test Hub
+      </h1>
+      <p class="font-mono text-xs text-text-secondary tracking-widest uppercase mb-6">
+        Browser-Based Hardware Diagnostic Engineering
+      </p>
+      <div class="h-px bg-border-hairline mb-8" />
+
+      <!-- Article -->
+      <article class="font-sans text-text-secondary leading-relaxed space-y-8 text-sm md:text-base">
+
+        <!-- Introduction -->
+        <section>
+          <h2 class="font-mono text-lg font-bold text-text-primary uppercase tracking-wider mb-3">
+            What Is Monitor Test Hub?
+          </h2>
+          <p>
+            Monitor Test Hub is a free, open-source, browser-based engineering utility designed for the rigorous evaluation, calibration, and benchmarking of computer displays, mobile screens, and touchscreen digitizers. Running entirely inside your web browser without any installation, it gives engineers, hardware reviewers, QA professionals, and display enthusiasts direct access to precision diagnostic instruments — from sub-pixel analysis and OLED uniformity inspection to HDR luminance measurement and multi-touch gesture profiling. Every test is powered by modern Web APIs, executing on your local hardware with zero server communication, zero data transmission, and zero compromise on privacy.
+          </p>
+        </section>
+
+        <!-- Mission -->
+        <section>
+          <h2 class="font-mono text-lg font-bold text-text-primary uppercase tracking-wider mb-3">
+            Our Mission
+          </h2>
+          <p>
+            Our mission is to democratize professional-grade display diagnostics. We believe every engineer, developer, and power user should have access to the same calibration-grade tooling used by panel manufacturers and display labs — without paywalls, proprietary software, or hardware dongles. Open, free, and standards-compliant.
+          </p>
+        </section>
+
+        <!-- Features -->
+        <section>
+          <h2 class="font-mono text-lg font-bold text-text-primary uppercase tracking-wider mb-3">
+            Diagnostic Instrument Suite
+          </h2>
+          <p class="mb-4">Monitor Test Hub ships twelve precision instruments across display diagnostics, touch analysis, and interactive latency benchmarking:</p>
+          <ul class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+            {[
+              'Sub-Pixel Analyzer',
+              'OLED Uniformity Inspector',
+              'VRR Sync Engine',
+              'OLED Burn-In Risk',
+              'HDR Brightness Test',
+              'PPI Calculator',
+              'Color Gamut & ICC Exporter',
+              'Dead Zone Matrix',
+              'Multi-Touch Counter',
+              'Swipe Velocity',
+              'Vector Precision',
+              'Arcade Micro-Games',
+            ].map((feature) => (
+              <li class="flex items-center gap-2 bg-bg-canvas border border-border-hairline rounded-lg px-4 py-2 text-sm font-mono">
+                <span class="text-status-pass font-bold">✓</span>
+                <span class="text-text-primary">{feature}</span>
+              </li>
+            ))}
+          </ul>
+        </section>
+
+        <!-- Engineering Standards -->
+        <section>
+          <h2 class="font-mono text-lg font-bold text-text-primary uppercase tracking-wider mb-3">
+            Engineering Standards Compliance
+          </h2>
+          <p>
+            Every instrument in Monitor Test Hub is designed in alignment with published international standards for display measurement and ergonomics. Our sub-pixel and pixel defect classifications follow <strong class="text-text-primary">ISO 9241-307</strong> (ergonomics of human-system interaction — optical laboratory methods for display quality). Luminance and HDR tier tests conform to <strong class="text-text-primary">VESA DisplayHDR 600, 1000, and 1400</strong> certification thresholds, ensuring your HDR results map directly to industry-recognized performance brackets. Color gamut measurements reference the <strong class="text-text-primary">CIE 1931 xy chromaticity</strong> diagram, the globally accepted model for quantifying color space coverage. Touchscreen ergonomics and dead-zone assessments align with <strong class="text-text-primary">ANSI/NIST ergonomics</strong> guidelines for human-device interaction tolerances.
+          </p>
+        </section>
+
+        <!-- Technology Stack -->
+        <section>
+          <h2 class="font-mono text-lg font-bold text-text-primary uppercase tracking-wider mb-3">
+            Technology Stack
+          </h2>
+          <p>
+            Monitor Test Hub is built on a modern, performance-first web stack chosen for accuracy and portability. The site framework is <strong class="text-text-primary">Astro.js v7</strong> with static output, delivering zero-JavaScript HTML shells for maximum rendering performance. Styling is powered by <strong class="text-text-primary">Tailwind CSS v4</strong> using CSS custom properties for the full design-token system. Graphics-intensive tests — including the Sub-Pixel Analyzer, OLED Uniformity Inspector, and Color Gamut visualizer — are rendered via <strong class="text-text-primary">WebGL GLSL ES 3.0</strong> shaders, enabling GPU-accelerated pixel-perfect output. Simpler 2D tests use the native <strong class="text-text-primary">Canvas 2D</strong> API. Latency benchmarks use <strong class="text-text-primary">performance.now()</strong> sub-millisecond timestamps for high-resolution timing. The ICC profile export pipeline uses the <strong class="text-text-primary">Web Crypto API SHA-256</strong> digest to compute profile checksums conforming to the ICC profile specification.
+          </p>
+        </section>
+
+        <!-- Privacy -->
+        <section>
+          <h2 class="font-mono text-lg font-bold text-text-primary uppercase tracking-wider mb-3">
+            Privacy by Design
+          </h2>
+          <p>
+            All diagnostic processing in Monitor Test Hub happens 100% client-side, entirely within your browser. We operate zero telemetry servers, store zero diagnostic data, and transmit zero measurement results to any external endpoint. Your display calibration parameters, touch coordinates, gesture metrics, HDR luminance readings, and ICC profile data never leave your device. The only browser storage we use is <code class="font-mono text-status-pass bg-bg-canvas px-1 rounded">localStorage</code> to persist your local theme preference.
+          </p>
+        </section>
+
+        <!-- CTA -->
+        <section class="bg-bg-elevated border border-border-hairline rounded-xl p-6 text-center">
+          <h2 class="font-mono text-base font-bold text-text-primary uppercase tracking-wider mb-2">
+            Ready to Test Your Display?
+          </h2>
+          <p class="text-text-secondary text-sm mb-4">
+            Launch any instrument from the diagnostic suite and start measuring in seconds — no signup, no download, no friction.
+          </p>
+          <div class="flex flex-wrap justify-center gap-3">
+            <a
+              href="/display-tests"
+              class="inline-flex items-center gap-2 bg-bg-surface border border-border-hairline text-text-primary font-mono text-xs font-bold uppercase tracking-widest px-5 py-2.5 rounded-lg hover:bg-bg-elevated transition-colors shadow-specular-top"
+            >
+              Display Tests
+            </a>
+            <a
+              href="/touch-tests"
+              class="inline-flex items-center gap-2 bg-bg-surface border border-border-hairline text-text-primary font-mono text-xs font-bold uppercase tracking-widest px-5 py-2.5 rounded-lg hover:bg-bg-elevated transition-colors shadow-specular-top"
+            >
+              Touch Tests
+            </a>
+            <a
+              href="/arcade"
+              class="inline-flex items-center gap-2 bg-bg-surface border border-border-hairline text-status-pass font-mono text-xs font-bold uppercase tracking-widest px-5 py-2.5 rounded-lg hover:bg-bg-elevated transition-colors shadow-specular-top"
+            >
+              Arcade Suite
+            </a>
+          </div>
+        </section>
+
+      </article>
+    </div>
+  </div>
+</Layout>

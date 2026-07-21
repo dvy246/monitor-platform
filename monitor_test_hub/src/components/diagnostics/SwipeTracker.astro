@@ -1,0 +1,186 @@
+---
+// SwipeTracker.astro component
+---
+<div class="flex-grow flex flex-col items-center justify-center p-4">
+  <div class="w-full max-w-4xl bg-gray-900/50 border border-gray-800 rounded-xl p-6 shadow-2xl flex flex-col h-[75dvh]">
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
+      <div>
+        <h3 class="text-xl font-bold heading-brand text-diagnostic-matrixGreen mb-1">Swipe Velocity & Acceleration Benchmark</h3>
+        <p class="text-gray-400 text-xs md:text-sm">
+          Swipe quickly across the canvas area. Tracks swipe velocity (pixels per millisecond) and peak acceleration values.
+        </p>
+      </div>
+      <div>
+        <button id="st-btn-clear" class="bg-gray-800 hover:bg-gray-700 text-gray-200 font-bold text-xs px-4 py-2 rounded-lg border border-gray-700 transition-all">
+          Clear Data
+        </button>
+      </div>
+    </div>
+
+    <!-- Stats -->
+    <div class="grid grid-cols-3 gap-4 mb-4 font-mono">
+      <div class="bg-gray-950 p-3 rounded border border-gray-850">
+        <span class="text-gray-500 text-[10px] uppercase block">Instant Speed</span>
+        <span id="st-speed" class="text-base md:text-lg font-bold text-white">0.0 px/ms</span>
+      </div>
+      <div class="bg-gray-950 p-3 rounded border border-gray-850">
+        <span class="text-gray-500 text-[10px] uppercase block">Peak Speed</span>
+        <span id="st-peak-speed" class="text-base md:text-lg font-bold text-diagnostic-matrixGreen">0.0 px/ms</span>
+      </div>
+      <div class="bg-gray-950 p-3 rounded border border-gray-850">
+        <span class="text-gray-500 text-[10px] uppercase block">Peak Acceleration</span>
+        <span id="st-accel" class="text-base md:text-lg font-bold text-white">0.0 px/ms²</span>
+      </div>
+    </div>
+
+    <!-- Drawing Sandbox -->
+    <div class="flex-grow relative rounded-lg overflow-hidden bg-black border border-gray-800 touch-none">
+      <canvas id="swipe-canvas" class="w-full h-full block select-none"></canvas>
+    </div>
+  </div>
+</div>
+
+<script>
+  import { setupTouchSandbox, getNormalizedCoords } from '../../utils/mobileSandbox';
+
+  const canvas = document.getElementById('swipe-canvas') as HTMLCanvasElement;
+  const speedText = document.getElementById('st-speed');
+  const peakSpeedText = document.getElementById('st-peak-speed');
+  const accelText = document.getElementById('st-accel');
+  const btnClear = document.getElementById('st-btn-clear');
+
+  let ctx: CanvasRenderingContext2D | null = null;
+  let lastPoint: { x: number; y: number; time: number } | null = null;
+  let lastVelocity = 0;
+  
+  let peakVelocity = 0;
+  let peakAcceleration = 0;
+  let activeSwipePoints: { x: number; y: number; age: number }[] = [];
+  let isSwiping = false;
+
+  function initSwipeTracker() {
+    if (!canvas || !speedText || !peakSpeedText || !accelText || !btnClear) return;
+    ctx = canvas.getContext('2d');
+
+    setupTouchSandbox(canvas);
+
+    const resize = () => {
+      const rect = canvas.parentElement?.getBoundingClientRect();
+      canvas.width = (rect?.width || 800) * (window.devicePixelRatio || 1);
+      canvas.height = (rect?.height || 500) * (window.devicePixelRatio || 1);
+      draw();
+    };
+
+    window.addEventListener('resize', resize);
+    resize();
+
+    // Event handlers
+    canvas.addEventListener('pointerdown', handleDown);
+    canvas.addEventListener('pointermove', handleMove);
+    canvas.addEventListener('pointerup', handleUp);
+    canvas.addEventListener('pointercancel', handleUp);
+
+    btnClear.addEventListener('click', clearStats);
+
+    // Animation loop for trail fade out
+    setInterval(updateTrail, 30);
+  }
+
+  function clearStats() {
+    peakVelocity = 0;
+    peakAcceleration = 0;
+    lastVelocity = 0;
+    lastPoint = null;
+    activeSwipePoints = [];
+    isSwiping = false;
+    
+    if (speedText) speedText.textContent = '0.0 px/ms';
+    if (peakSpeedText) peakSpeedText.textContent = '0.0 px/ms';
+    if (accelText) accelText.textContent = '0.0 px/ms²';
+    draw();
+  }
+
+  function handleDown(e: PointerEvent) {
+    if (!canvas) return;
+    isSwiping = true;
+    const coords = getNormalizedCoords(e.clientX, e.clientY, canvas);
+    lastPoint = { x: coords.x, y: coords.y, time: performance.now() };
+    lastVelocity = 0;
+    activeSwipePoints = [{ ...coords, age: 1.0 }];
+  }
+
+  function handleMove(e: PointerEvent) {
+    if (!isSwiping || !lastPoint || !canvas || !speedText || !peakSpeedText || !accelText) return;
+    const coords = getNormalizedCoords(e.clientX, e.clientY, canvas);
+    const now = performance.now();
+    const dt = now - lastPoint.time;
+
+    if (dt > 5) { // Throttle short interval noise
+      const dist = Math.hypot(coords.x - lastPoint.x, coords.y - lastPoint.y);
+      const velocity = dist / dt; // pixels per millisecond
+      const accel = (velocity - lastVelocity) / dt; // px/ms^2
+
+      lastVelocity = velocity;
+      if (velocity > peakVelocity) peakVelocity = velocity;
+      if (Math.abs(accel) > peakAcceleration && Math.abs(accel) < 10) { // filter out physical jump glitches
+        peakAcceleration = Math.abs(accel);
+      }
+
+      speedText.textContent = `${velocity.toFixed(2)} px/ms`;
+      peakSpeedText.textContent = `${peakVelocity.toFixed(2)} px/ms`;
+      accelText.textContent = `${peakAcceleration.toFixed(3)} px/ms²`;
+
+      lastPoint = { x: coords.x, y: coords.y, time: now };
+      activeSwipePoints.push({ x: coords.x, y: coords.y, age: 1.0 });
+    }
+  }
+
+  function handleUp() {
+    isSwiping = false;
+    lastPoint = null;
+  }
+
+  function updateTrail() {
+    let changed = false;
+    for (const p of activeSwipePoints) {
+      p.age -= 0.05;
+      if (p.age < 0) p.age = 0;
+      changed = true;
+    }
+    activeSwipePoints = activeSwipePoints.filter(p => p.age > 0);
+    if (changed || activeSwipePoints.length > 0) {
+      draw();
+    }
+  }
+
+  function draw() {
+    if (!ctx || !canvas) return;
+    const w = canvas.width;
+    const h = canvas.height;
+
+    // Clear and draw black canvas
+    ctx.fillStyle = '#050608';
+    ctx.fillRect(0, 0, w, h);
+
+    // Draw swipe trail
+    if (activeSwipePoints.length > 1) {
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
+      
+      for (let i = 1; i < activeSwipePoints.length; i++) {
+        const p1 = activeSwipePoints[i - 1];
+        const p2 = activeSwipePoints[i];
+
+        ctx.strokeStyle = `rgba(0, 255, 136, ${p2.age})`;
+        ctx.lineWidth = 15 * p2.age * (window.devicePixelRatio || 1);
+
+        ctx.beginPath();
+        ctx.moveTo(p1.x, p1.y);
+        ctx.lineTo(p2.x, p2.y);
+        ctx.stroke();
+      }
+    }
+  }
+
+  initSwipeTracker();
+</script>

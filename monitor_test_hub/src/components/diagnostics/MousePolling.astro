@@ -1,0 +1,86 @@
+---
+/**
+ * MousePolling.astro
+ * Mouse Polling Rate & Jitter Stability Benchmark UI component.
+ */
+---
+
+<div class="w-full max-w-5xl mx-auto space-y-6">
+  <div class="bg-bg-surface/90 border border-border-hairline rounded-2xl p-6 backdrop-blur-xl shadow-2xl space-y-6">
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-border-hairline/60 pb-4">
+      <div>
+        <div class="flex items-center gap-2">
+          <span class="w-2.5 h-2.5 rounded-full bg-status-pass shadow-[0_0_8px_rgba(5,150,105,0.8)]"></span>
+          <h2 class="text-lg font-bold font-mono text-text-primary tracking-wide">Mouse Polling Rate &amp; Jitter Benchmark</h2>
+        </div>
+        <p class="text-xs text-text-muted mt-1">High-frequency USB HID polling rate (Hz) and inter-report timestamp jitter standard deviation.</p>
+      </div>
+
+      <div class="flex items-center gap-3">
+        <button id="reset-polling-btn" class="px-4 py-2 text-xs font-mono font-semibold rounded-lg bg-bg-canvas border border-border-subtle hover:bg-bg-elevated transition-all cursor-pointer">
+          Reset Telemetry
+        </button>
+      </div>
+    </div>
+
+    <!-- Interactive Mouse Tracking Zone -->
+    <div id="polling-tracking-zone" class="relative w-full h-64 rounded-xl bg-bg-canvas border border-border-subtle overflow-hidden flex flex-col items-center justify-center p-6 cursor-crosshair group">
+      <div class="w-12 h-12 rounded-full border-2 border-dashed border-status-pass/60 group-hover:scale-125 transition-transform flex items-center justify-center">
+        <span class="w-3 h-3 rounded-full bg-status-pass"></span>
+      </div>
+      <p class="text-xs font-mono text-text-primary font-bold mt-4">MOVE MOUSE RAPIDLY IN CIRCLES</p>
+      <p class="text-[11px] text-text-muted">Move your mouse continuously inside this box to measure real-time USB polling rate.</p>
+    </div>
+
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 pt-2">
+      <div class="bg-bg-elevated p-3.5 rounded-xl border border-border-hairline">
+        <div class="text-[10px] font-mono text-text-muted uppercase">Measured Polling Rate</div>
+        <div id="metric-hz" class="text-sm font-mono font-bold text-status-pass mt-1">0 Hz</div>
+      </div>
+      <div class="bg-bg-elevated p-3.5 rounded-xl border border-border-hairline">
+        <div class="text-[10px] font-mono text-text-muted uppercase">Peak Polling Rate</div>
+        <div id="metric-peak-hz" class="text-sm font-mono font-bold text-text-primary mt-1">0 Hz</div>
+      </div>
+      <div class="bg-bg-elevated p-3.5 rounded-xl border border-border-hairline">
+        <div class="text-[10px] font-mono text-text-muted uppercase">Average Interval</div>
+        <div id="metric-avg-interval" class="text-sm font-mono font-bold text-text-primary mt-1">0.00 ms</div>
+      </div>
+      <div class="bg-bg-elevated p-3.5 rounded-xl border border-border-hairline">
+        <div class="text-[10px] font-mono text-text-muted uppercase">Jitter Std Dev</div>
+        <div id="metric-jitter" class="text-sm font-mono font-bold text-status-pass mt-1">0.000 ms</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  import { analyzeMousePolling } from '../../engine/MousePollingEngine';
+
+  const zone = document.getElementById('polling-tracking-zone');
+  const resetBtn = document.getElementById('reset-polling-btn');
+  const metricHz = document.getElementById('metric-hz');
+  const metricPeak = document.getElementById('metric-peak-hz');
+  const metricAvg = document.getElementById('metric-avg-interval');
+  const metricJitter = document.getElementById('metric-jitter');
+
+  let timestamps: number[] = [];
+
+  zone?.addEventListener('mousemove', (e) => {
+    timestamps.push(performance.now());
+    if (timestamps.length > 200) timestamps.shift();
+
+    const report = analyzeMousePolling(timestamps);
+    if (metricHz) metricHz.textContent = `${report.measuredHz} Hz`;
+    if (metricPeak) metricPeak.textContent = `${report.peakHz} Hz`;
+    if (metricAvg) metricAvg.textContent = `${report.averageIntervalMs} ms`;
+    if (metricJitter) metricJitter.textContent = `${report.jitterStdDevMs} ms`;
+  });
+
+  resetBtn?.addEventListener('click', () => {
+    timestamps = [];
+    if (metricHz) metricHz.textContent = '0 Hz';
+    if (metricPeak) metricPeak.textContent = '0 Hz';
+    if (metricAvg) metricAvg.textContent = '0.00 ms';
+    if (metricJitter) metricJitter.textContent = '0.000 ms';
+  });
+</script>

@@ -1,0 +1,154 @@
+---
+import Layout from '../../layouts/Layout.astro';
+---
+
+<Layout 
+  title="Display Diagnostics" 
+  description="Examine monitor refresh rates, sub-pixel structures, and OLED panel uniformity using advanced static and dynamic hardware tests."
+>
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <div class="text-center max-w-2xl mx-auto mb-12">
+      <h1 class="heading-brand text-3xl md:text-5xl font-black tracking-tight text-text-primary mb-3">
+        DISPLAY DIAGNOSTIC TESTS
+      </h1>
+      <p class="text-text-secondary text-sm md:text-base leading-relaxed font-sans">
+        Verify monitor parameters, pixel structures, and refresh synchronization using hardware-accelerated, zero-installation test utilities.
+      </p>
+    </div>
+
+    <!-- Diagnostic Cards Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      
+      <!-- Dead Pixel & Color Test -->
+      <a href="/display-tests/dead-pixel" class="bg-bg-surface hover:bg-bg-elevated border border-border-hairline hover:border-status-pass/40 rounded-xl p-6 flex flex-col justify-between transition-all group shadow-specular-top hover:shadow-[0_0_15px_rgba(5,150,105,0.15)] font-mono">
+        <div class="space-y-4">
+          <div class="w-10 h-10 rounded-lg bg-status-pass/10 flex items-center justify-center text-status-pass border border-status-pass/20">
+            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"/></svg>
+          </div>
+          <h3 class="heading-brand text-lg font-bold text-text-primary group-hover:text-status-pass transition-colors font-mono">Dead Pixel &amp; Color Test</h3>
+          <p class="text-text-secondary text-xs md:text-sm leading-relaxed font-sans">
+            Instant fullscreen 11-color cycler with pin markers to detect stuck pixels, dead pixels, and edge bleed.
+          </p>
+        </div>
+        <span class="text-status-pass text-xs font-bold flex items-center gap-1 mt-6">
+          Launch Test &rarr;
+        </span>
+      </a>
+
+      <!-- Sub-Pixel Layout -->
+      <a href="/display-tests/sub-pixel" class="bg-bg-surface hover:bg-bg-elevated border border-border-hairline hover:border-status-pass/40 rounded-xl p-6 flex flex-col justify-between transition-all group shadow-specular-top hover:shadow-[0_0_15px_rgba(5,150,105,0.15)] font-mono">
+        <div class="space-y-4">
+          <div class="w-10 h-10 rounded-lg bg-status-pass/10 flex items-center justify-center text-status-pass border border-status-pass/20">
+            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/></svg>
+          </div>
+          <h3 class="heading-brand text-lg font-bold text-text-primary group-hover:text-status-pass transition-colors font-mono">Sub-Pixel Layout Analyzer</h3>
+          <p class="text-text-secondary text-xs md:text-sm leading-relaxed font-sans">
+            Examine stripe RGB, BGR, triangular QD-OLED, and WOLED sub-pixel structure layouts under magnification.
+          </p>
+        </div>
+        <span class="text-status-pass text-xs font-bold flex items-center gap-1 mt-6">
+          Launch Test &rarr;
+        </span>
+      </a>
+
+      <!-- OLED Uniformity -->
+      <a href="/display-tests/uniformity" class="bg-bg-surface hover:bg-bg-elevated border border-border-hairline hover:border-status-pass/40 rounded-xl p-6 flex flex-col justify-between transition-all group shadow-specular-top hover:shadow-[0_0_15px_rgba(5,150,105,0.15)] font-mono">
+        <div class="space-y-4">
+          <div class="w-10 h-10 rounded-lg bg-status-pass/10 flex items-center justify-center text-status-pass border border-status-pass/20">
+            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
+          </div>
+          <h3 class="heading-brand text-lg font-bold text-text-primary group-hover:text-status-pass transition-colors font-mono">OLED Uniformity Suite</h3>
+          <p class="text-text-secondary text-xs md:text-sm leading-relaxed font-sans">
+            Diagnose vertical banding, Dirty Screen Effect (DSE), and static image burn-in using near-black gray patterns.
+          </p>
+        </div>
+        <span class="text-status-pass text-xs font-bold flex items-center gap-1 mt-6">
+          Launch Test &rarr;
+        </span>
+      </a>
+
+      <!-- VRR Sync Engine -->
+      <a href="/display-tests/vrr" class="bg-bg-surface hover:bg-bg-elevated border border-border-hairline hover:border-status-pass/40 rounded-xl p-6 flex flex-col justify-between transition-all group shadow-specular-top hover:shadow-[0_0_15px_rgba(5,150,105,0.15)] font-mono">
+        <div class="space-y-4">
+          <div class="w-10 h-10 rounded-lg bg-status-pass/10 flex items-center justify-center text-status-pass border border-status-pass/20">
+            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+          </div>
+          <h3 class="heading-brand text-lg font-bold text-text-primary group-hover:text-status-pass transition-colors font-mono">VRR Sync Engine</h3>
+          <p class="text-text-secondary text-xs md:text-sm leading-relaxed font-sans">
+            Test G-Sync, FreeSync, and Adaptive-Sync refresh rate oscillation to check for tearing or brightness flickering.
+          </p>
+        </div>
+        <span class="text-status-pass text-xs font-bold flex items-center gap-1 mt-6">
+          Launch Test &rarr;
+        </span>
+      </a>
+
+      <!-- OLED Burn-In Risk -->
+      <a href="/display-tests/oled-burn-in" class="bg-bg-surface hover:bg-bg-elevated border border-border-hairline hover:border-status-pass/40 rounded-xl p-6 flex flex-col justify-between transition-all group shadow-specular-top hover:shadow-[0_0_15px_rgba(5,150,105,0.15)] font-mono">
+        <div class="space-y-4">
+          <div class="w-10 h-10 rounded-lg bg-status-pass/10 flex items-center justify-center text-status-pass border border-status-pass/20">
+            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+          </div>
+          <h3 class="heading-brand text-lg font-bold text-text-primary group-hover:text-status-pass transition-colors font-mono">OLED Burn-In Analyzer</h3>
+          <p class="text-text-secondary text-xs md:text-sm leading-relaxed font-sans">
+            Calculate image retention degradation risk and luminance decay for QD-OLED, WOLED, and AMOLED displays.
+          </p>
+        </div>
+        <span class="text-status-pass text-xs font-bold flex items-center gap-1 mt-6">
+          Launch Test &rarr;
+        </span>
+      </a>
+
+      <!-- HDR Test -->
+      <a href="/display-tests/hdr-test" class="bg-bg-surface hover:bg-bg-elevated border border-border-hairline hover:border-status-pass/40 rounded-xl p-6 flex flex-col justify-between transition-all group shadow-specular-top hover:shadow-[0_0_15px_rgba(5,150,105,0.15)] font-mono">
+        <div class="space-y-4">
+          <div class="w-10 h-10 rounded-lg bg-status-pass/10 flex items-center justify-center text-status-pass border border-status-pass/20">
+            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+          </div>
+          <h3 class="heading-brand text-lg font-bold text-text-primary group-hover:text-status-pass transition-colors font-mono">HDR Peak Brightness Test</h3>
+          <p class="text-text-secondary text-xs md:text-sm leading-relaxed font-sans">
+            Evaluate 10-bit tone mapping clipping and ABL window sizes (1%–100%) for VESA DisplayHDR compliance.
+          </p>
+        </div>
+        <span class="text-status-pass text-xs font-bold flex items-center gap-1 mt-6">
+          Launch Test &rarr;
+        </span>
+      </a>
+
+      <!-- PPI Calculator -->
+      <a href="/display-tests/ppi-calculator" class="bg-bg-surface hover:bg-bg-elevated border border-border-hairline hover:border-status-pass/40 rounded-xl p-6 flex flex-col justify-between transition-all group shadow-specular-top hover:shadow-[0_0_15px_rgba(5,150,105,0.15)] font-mono">
+        <div class="space-y-4">
+          <div class="w-10 h-10 rounded-lg bg-status-pass/10 flex items-center justify-center text-status-pass border border-status-pass/20">
+            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
+          </div>
+          <h3 class="heading-brand text-lg font-bold text-text-primary group-hover:text-status-pass transition-colors font-mono">PPI &amp; Pixel Density Calculator</h3>
+          <p class="text-text-secondary text-xs md:text-sm leading-relaxed font-sans">
+            Calculate Pixels Per Inch (PPI), pixel pitch, and Retina viewing distance limits (1 arcminute acuity).
+          </p>
+        </div>
+        <span class="text-status-pass text-xs font-bold flex items-center gap-1 mt-6">
+          Launch Test &rarr;
+        </span>
+      </a>
+
+      <!-- Color Gamut & ICC -->
+      <a href="/display-tests/color-gamut" class="bg-bg-surface hover:bg-bg-elevated border border-border-hairline hover:border-status-pass/40 rounded-xl p-6 flex flex-col justify-between transition-all group shadow-specular-top hover:shadow-[0_0_15px_rgba(5,150,105,0.15)] font-mono">
+        <div class="space-y-4">
+          <div class="w-10 h-10 rounded-lg bg-status-pass/10 flex items-center justify-center text-status-pass border border-status-pass/20">
+            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"/></svg>
+          </div>
+          <h3 class="heading-brand text-lg font-bold text-text-primary group-hover:text-status-pass transition-colors font-mono">Color Gamut &amp; ICC Exporter</h3>
+          <p class="text-text-secondary text-xs md:text-sm leading-relaxed font-sans">
+            Visualize sRGB, DCI-P3, and Rec.2020 on the CIE 1931 chromaticity canvas and export custom ICC v4.3 profiles.
+          </p>
+        </div>
+        <span class="text-status-pass text-xs font-bold flex items-center gap-1 mt-6">
+          Launch Test &rarr;
+        </span>
+      </a>
+
+    </div>
+  </div>
+</Layout>
+t>
+

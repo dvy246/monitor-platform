@@ -1,0 +1,94 @@
+---
+/**
+ * GammaCalibration.astro
+ * Gamma 2.2 EOTF Response Evaluator UI component.
+ */
+---
+
+<div class="w-full max-w-5xl mx-auto space-y-6">
+  <div class="bg-bg-surface/90 border border-border-hairline rounded-2xl p-6 backdrop-blur-xl shadow-2xl space-y-6">
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-border-hairline/60 pb-4">
+      <div>
+        <div class="flex items-center gap-2">
+          <span class="w-2.5 h-2.5 rounded-full bg-status-pass shadow-[0_0_8px_rgba(5,150,105,0.8)]"></span>
+          <h2 class="text-lg font-bold font-mono text-text-primary tracking-wide">Gamma 2.2 EOTF Calibration Evaluator</h2>
+        </div>
+        <p class="text-xs text-text-muted mt-1">High-frequency visual dither pattern matching for 1.8, 2.2, and 2.4 gamma curves.</p>
+      </div>
+
+      <div class="flex items-center gap-3">
+        <label class="text-xs font-mono text-text-muted">Target Gamma:</label>
+        <select id="gamma-target-select" class="bg-bg-canvas border border-border-subtle text-text-primary text-xs font-mono rounded-lg px-3 py-1.5 focus:border-status-pass">
+          <option value="1.8">Gamma 1.8</option>
+          <option value="2.2" selected>Gamma 2.2</option>
+          <option value="2.4">Gamma 2.4</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Dither Pattern Visual Box -->
+    <div class="relative w-full h-64 rounded-xl bg-bg-canvas border border-border-subtle overflow-hidden flex items-center justify-center p-4">
+      <div id="gamma-box" class="w-48 h-48 rounded-lg border border-border-hairline flex items-center justify-center shadow-lg transition-all" style="background-color: rgb(186, 186, 186);">
+        <span class="text-xs font-mono font-bold text-black bg-white/80 px-2 py-1 rounded">50% Blend Pattern</span>
+      </div>
+    </div>
+
+    <!-- Slider & Metric Controls -->
+    <div class="space-y-4 pt-2">
+      <div class="flex items-center justify-between text-xs font-mono">
+        <span class="text-text-muted">Adjust Blend Offset:</span>
+        <span id="offset-val" class="font-bold text-status-pass">0.00</span>
+      </div>
+      <input id="gamma-slider" type="range" min="-0.5" max="0.5" step="0.01" value="0" class="w-full text-status-pass accent-status-pass cursor-pointer" />
+    </div>
+
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 pt-2">
+      <div class="bg-bg-elevated p-3.5 rounded-xl border border-border-hairline">
+        <div class="text-[10px] font-mono text-text-muted uppercase">Target Gamma</div>
+        <div id="metric-target-g" class="text-sm font-mono font-bold text-text-primary mt-1">2.20</div>
+      </div>
+      <div class="bg-bg-elevated p-3.5 rounded-xl border border-border-hairline">
+        <div class="text-[10px] font-mono text-text-muted uppercase">Calculated Gamma</div>
+        <div id="metric-calc-g" class="text-sm font-mono font-bold text-status-pass mt-1">2.20</div>
+      </div>
+      <div class="bg-bg-elevated p-3.5 rounded-xl border border-border-hairline">
+        <div class="text-[10px] font-mono text-text-muted uppercase">Target Luminance</div>
+        <div id="metric-lum" class="text-sm font-mono font-bold text-text-primary mt-1">0.2176 L*</div>
+      </div>
+      <div class="bg-bg-elevated p-3.5 rounded-xl border border-border-hairline">
+        <div class="text-[10px] font-mono text-text-muted uppercase">Accuracy Rating</div>
+        <div id="metric-rating" class="text-sm font-mono font-bold text-status-pass mt-1">EXCELLENT</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  import { evaluateGammaMatch } from '../../engine/GammaCalibrationEngine';
+
+  const slider = document.getElementById('gamma-slider') as HTMLInputElement | null;
+  const targetSelect = document.getElementById('gamma-target-select') as HTMLSelectElement | null;
+  const offsetVal = document.getElementById('offset-val');
+  const metricTarget = document.getElementById('metric-target-g');
+  const metricCalc = document.getElementById('metric-calc-g');
+  const metricLum = document.getElementById('metric-lum');
+  const metricRating = document.getElementById('metric-rating');
+
+  function update() {
+    if (!slider || !targetSelect) return;
+    const targetG = parseFloat(targetSelect.value);
+    const offset = parseFloat(slider.value);
+    
+    if (offsetVal) offsetVal.textContent = offset.toFixed(2);
+    const res = evaluateGammaMatch(targetG, offset);
+
+    if (metricTarget) metricTarget.textContent = res.targetGamma.toFixed(2);
+    if (metricCalc) metricCalc.textContent = res.calculatedGamma.toFixed(2);
+    if (metricLum) metricLum.textContent = `${res.perceivedLuminance} L*`;
+    if (metricRating) metricRating.textContent = res.accuracyRating;
+  }
+
+  slider?.addEventListener('input', update);
+  targetSelect?.addEventListener('change', update);
+  update();
+</script>

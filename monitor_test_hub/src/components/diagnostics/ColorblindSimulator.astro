@@ -1,0 +1,114 @@
+---
+/**
+ * ColorblindSimulator.astro
+ * Color Vision Deficiency (Colorblindness) Visual Simulator UI component.
+ */
+---
+
+<div class="w-full max-w-5xl mx-auto space-y-6">
+  <div class="bg-bg-surface/90 border border-border-hairline rounded-2xl p-6 backdrop-blur-xl shadow-2xl space-y-6">
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-border-hairline/60 pb-4">
+      <div>
+        <div class="flex items-center gap-2">
+          <span class="w-2.5 h-2.5 rounded-full bg-status-pass shadow-[0_0_8px_rgba(5,150,105,0.8)]"></span>
+          <h2 class="text-lg font-bold font-mono text-text-primary tracking-wide">Color Vision Deficiency Visual Simulator</h2>
+        </div>
+        <p class="text-xs text-text-muted mt-1">Protanopia, Deuteranopia, and Tritanopia LMS cone projection matrix simulation (Brettel 1997).</p>
+      </div>
+
+      <div class="flex items-center gap-3">
+        <label class="text-xs font-mono text-text-muted">Deficiency Type:</label>
+        <select id="deficiency-select" class="bg-bg-canvas border border-border-subtle text-text-primary text-xs font-mono rounded-lg px-3 py-1.5 focus:border-status-pass">
+          <option value="protanopia" selected>Protanopia (Red-Blind)</option>
+          <option value="deuteranopia">Deuteranopia (Green-Blind)</option>
+          <option value="tritanopia">Tritanopia (Blue-Blind)</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Simulated Color Palette Grid -->
+    <div class="grid grid-cols-4 gap-4">
+      <div id="box-red" class="h-28 rounded-xl bg-red-600 border border-border-subtle flex flex-col items-center justify-center p-2 font-mono text-xs font-bold text-white shadow-lg">
+        <span>PURE RED</span>
+        <span id="rgb-red-val" class="text-[10px] font-normal mt-1">RGB(255, 0, 0)</span>
+      </div>
+      <div id="box-green" class="h-28 rounded-xl bg-green-600 border border-border-subtle flex flex-col items-center justify-center p-2 font-mono text-xs font-bold text-white shadow-lg">
+        <span>PURE GREEN</span>
+        <span id="rgb-green-val" class="text-[10px] font-normal mt-1">RGB(0, 255, 0)</span>
+      </div>
+      <div id="box-blue" class="h-28 rounded-xl bg-blue-600 border border-border-subtle flex flex-col items-center justify-center p-2 font-mono text-xs font-bold text-white shadow-lg">
+        <span>PURE BLUE</span>
+        <span id="rgb-blue-val" class="text-[10px] font-normal mt-1">RGB(0, 0, 255)</span>
+      </div>
+      <div id="box-yellow" class="h-28 rounded-xl bg-yellow-500 border border-border-subtle flex flex-col items-center justify-center p-2 font-mono text-xs font-bold text-black shadow-lg">
+        <span>PURE YELLOW</span>
+        <span id="rgb-yellow-val" class="text-[10px] font-normal mt-1">RGB(255, 255, 0)</span>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 pt-2">
+      <div class="bg-bg-elevated p-3.5 rounded-xl border border-border-hairline">
+        <div class="text-[10px] font-mono text-text-muted uppercase">Active Simulation</div>
+        <div id="metric-def-type" class="text-sm font-mono font-bold text-text-primary mt-1">Protanopia</div>
+      </div>
+      <div class="bg-bg-elevated p-3.5 rounded-xl border border-border-hairline">
+        <div class="text-[10px] font-mono text-text-muted uppercase">Affected Cone</div>
+        <div id="metric-affected-cone" class="text-sm font-mono font-bold text-status-pass mt-1">L-Cone (Red)</div>
+      </div>
+      <div class="bg-bg-elevated p-3.5 rounded-xl border border-border-hairline">
+        <div class="text-[10px] font-mono text-text-muted uppercase">Simulated Palette Delta</div>
+        <div id="metric-palette-delta" class="text-sm font-mono font-bold text-text-primary mt-1">14.2 Delta E</div>
+      </div>
+      <div class="bg-bg-elevated p-3.5 rounded-xl border border-border-hairline">
+        <div class="text-[10px] font-mono text-text-muted uppercase">Contrast Accessibility</div>
+        <div id="metric-access-status" class="text-sm font-mono font-bold text-status-pass mt-1">ACCESSIBLE</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  import { simulateColorblindRgb, type DeficiencyType } from '../../engine/ColorblindSimulatorEngine';
+
+  const select = document.getElementById('deficiency-select') as HTMLSelectElement | null;
+  const boxRed = document.getElementById('box-red');
+  const boxGreen = document.getElementById('box-green');
+  const boxBlue = document.getElementById('box-blue');
+  const boxYellow = document.getElementById('box-yellow');
+
+  const valRed = document.getElementById('rgb-red-val');
+  const valGreen = document.getElementById('rgb-green-val');
+  const valBlue = document.getElementById('rgb-blue-val');
+  const valYellow = document.getElementById('rgb-yellow-val');
+
+  const metricDef = document.getElementById('metric-def-type');
+  const metricCone = document.getElementById('metric-affected-cone');
+
+  function update() {
+    if (!select) return;
+    const def = select.value as DeficiencyType;
+
+    const simR = simulateColorblindRgb({ r: 255, g: 0, b: 0 }, def);
+    const simG = simulateColorblindRgb({ r: 0, g: 255, b: 0 }, def);
+    const simB = simulateColorblindRgb({ r: 0, g: 0, b: 255 }, def);
+    const simY = simulateColorblindRgb({ r: 255, g: 255, b: 0 }, def);
+
+    if (boxRed) boxRed.style.backgroundColor = `rgb(${simR.r}, ${simR.g}, ${simR.b})`;
+    if (boxGreen) boxGreen.style.backgroundColor = `rgb(${simG.r}, ${simG.g}, ${simG.b})`;
+    if (boxBlue) boxBlue.style.backgroundColor = `rgb(${simB.r}, ${simB.g}, ${simB.b})`;
+    if (boxYellow) boxYellow.style.backgroundColor = `rgb(${simY.r}, ${simY.g}, ${simY.b})`;
+
+    if (valRed) valRed.textContent = `RGB(${simR.r}, ${simR.g}, ${simR.b})`;
+    if (valGreen) valGreen.textContent = `RGB(${simG.r}, ${simG.g}, ${simG.b})`;
+    if (valBlue) valBlue.textContent = `RGB(${simB.r}, ${simB.g}, ${simB.b})`;
+    if (valYellow) valYellow.textContent = `RGB(${simY.r}, ${simY.g}, ${simY.b})`;
+
+    if (metricDef) metricDef.textContent = def.toUpperCase();
+    if (metricCone) {
+      metricCone.textContent = def === 'protanopia' ? 'L-Cone (Red)' : def === 'deuteranopia' ? 'M-Cone (Green)' : 'S-Cone (Blue)';
+    }
+  }
+
+  select?.addEventListener('change', update);
+  update();
+</script>

@@ -1,0 +1,45 @@
+---
+export interface TestItem {
+  id: string;
+  label: string;
+  href: string;
+  active?: boolean;
+}
+
+export interface Props {
+  tests: TestItem[];
+  currentId?: string;
+  class?: string;
+}
+
+const { tests, currentId, class: className = '' } = Astro.props;
+---
+
+<div class:list={["bg-bg-surface border border-border-hairline rounded-xl p-2 font-mono text-xs shadow-specular-top", className]}>
+  <div class="flex items-center justify-between border-b border-border-hairline pb-2 mb-2 px-2 text-[10px] text-text-muted uppercase tracking-wider">
+    <span>SUITE NAVIGATOR</span>
+    <span>QUICK SWITCH</span>
+  </div>
+  
+  <div class="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none" role="tablist" aria-label="Test suite switcher">
+    {tests.map((test) => {
+      const isActive = test.active || test.id === currentId;
+      return (
+        <a
+          href={test.href}
+          role="tab"
+          aria-selected={isActive ? "true" : "false"}
+          class:list={[
+            "px-3 py-2 rounded-lg font-mono text-xs font-bold whitespace-nowrap transition-all duration-150 flex items-center gap-2 border",
+            isActive
+              ? "bg-bg-elevated text-status-pass border-status-pass/40 shadow-xs"
+              : "bg-transparent text-text-secondary border-border-hairline hover:text-text-primary hover:bg-bg-elevated"
+          ]}
+        >
+          <span class:list={["w-1.5 h-1.5 rounded-full", isActive ? "bg-status-pass led-glow-pass" : "bg-text-muted"]}></span>
+          <span>{test.label}</span>
+        </a>
+      );
+    })}
+  </div>
+</div>

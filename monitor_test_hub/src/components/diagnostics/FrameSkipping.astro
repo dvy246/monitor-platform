@@ -1,0 +1,101 @@
+---
+/**
+ * FrameSkipping.astro
+ * Screen Refresh Rate & Frame Skipping Checker UI component.
+ */
+---
+
+<div class="w-full max-w-5xl mx-auto space-y-6">
+  <div class="bg-bg-surface/90 border border-border-hairline rounded-2xl p-6 backdrop-blur-xl shadow-2xl space-y-6">
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-border-hairline/60 pb-4">
+      <div>
+        <div class="flex items-center gap-2">
+          <span class="w-2.5 h-2.5 rounded-full bg-status-pass shadow-[0_0_8px_rgba(5,150,105,0.8)]"></span>
+          <h2 class="text-lg font-bold font-mono text-text-primary tracking-wide">Screen Refresh Rate &amp; Frame Skipping Checker</h2>
+        </div>
+        <p class="text-xs text-text-muted mt-1">High-precision rAF timestamp frame gap analysis &amp; camera shutter photo verification matrix.</p>
+      </div>
+
+      <div class="flex items-center gap-3">
+        <label class="text-xs font-mono text-text-muted">Target Hz:</label>
+        <select id="target-hz-select" class="bg-bg-canvas border border-border-subtle text-text-primary text-xs font-mono rounded-lg px-3 py-1.5 focus:border-status-pass">
+          <option value="60">60 Hz</option>
+          <option value="144" selected>144 Hz</option>
+          <option value="240">240 Hz</option>
+          <option value="360">360 Hz</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Shutter Camera Block Grid -->
+    <div class="relative w-full h-48 rounded-xl bg-black border border-border-subtle overflow-hidden flex items-center justify-center p-6">
+      <div id="shutter-grid-box" class="grid grid-cols-8 gap-2 w-full max-w-2xl h-24">
+        {Array.from({ length: 8 }).map((_, i) => (
+          <div data-block-index={i} class="shutter-block rounded border border-gray-800 bg-gray-950 transition-colors"></div>
+        ))}
+      </div>
+    </div>
+
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 pt-2">
+      <div class="bg-bg-elevated p-3.5 rounded-xl border border-border-hairline">
+        <div class="text-[10px] font-mono text-text-muted uppercase">Measured Refresh Rate</div>
+        <div id="metric-frame-hz" class="text-sm font-mono font-bold text-status-pass mt-1">144.0 Hz</div>
+      </div>
+      <div class="bg-bg-elevated p-3.5 rounded-xl border border-border-hairline">
+        <div class="text-[10px] font-mono text-text-muted uppercase">Frames Analyzed</div>
+        <div id="metric-total-frames" class="text-sm font-mono font-bold text-text-primary mt-1">0 Frames</div>
+      </div>
+      <div class="bg-bg-elevated p-3.5 rounded-xl border border-border-hairline">
+        <div class="text-[10px] font-mono text-text-muted uppercase">Skipped Frame Count</div>
+        <div id="metric-skipped-count" class="text-sm font-mono font-bold text-text-primary mt-1">0 Dropped</div>
+      </div>
+      <div class="bg-bg-elevated p-3.5 rounded-xl border border-border-hairline">
+        <div class="text-[10px] font-mono text-text-muted uppercase">Frame Skipping Status</div>
+        <div id="metric-skip-status" class="text-sm font-mono font-bold text-status-pass mt-1">NO SKIPPING</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  import { analyzeFrameSkipping, calculateShutterGridState } from '../../engine/FrameSkippingEngine';
+
+  const blocks = document.querySelectorAll('.shutter-block');
+  const metricHz = document.getElementById('metric-frame-hz');
+  const metricTotal = document.getElementById('metric-total-frames');
+  const metricSkipped = document.getElementById('metric-skipped-count');
+  const metricStatus = document.getElementById('metric-skip-status');
+
+  let timestamps: number[] = [];
+  let frameCount = 0;
+
+  function render(now: number) {
+    timestamps.push(now);
+    if (timestamps.length > 300) timestamps.shift();
+
+    frameCount++;
+    const activeIdx = calculateShutterGridState(frameCount, 8);
+
+    blocks.forEach((el, idx) => {
+      if (idx === activeIdx) {
+        el.className = 'shutter-block rounded border border-status-pass bg-status-pass shadow-[0_0_12px_rgba(5,150,105,0.8)]';
+      } else {
+        el.className = 'shutter-block rounded border border-gray-800 bg-gray-950';
+      }
+    });
+
+    if (timestamps.length > 10) {
+      const report = analyzeFrameSkipping(timestamps, 144);
+      if (metricHz) metricHz.textContent = `${report.measuredRefreshHz} Hz`;
+      if (metricTotal) metricTotal.textContent = `${report.totalFramesAnalyzed} Frames`;
+      if (metricSkipped) metricSkipped.textContent = `${report.skippedFrameCount} Dropped`;
+      if (metricStatus) {
+        metricStatus.textContent = report.hasSkippedFrames ? 'SKIPPING DETECTED' : 'NO SKIPPING';
+        metricStatus.className = `text-sm font-mono font-bold mt-1 ${report.hasSkippedFrames ? 'text-status-fail' : 'text-status-pass'}`;
+      }
+    }
+
+    requestAnimationFrame(render);
+  }
+  requestAnimationFrame(render);
+</script>

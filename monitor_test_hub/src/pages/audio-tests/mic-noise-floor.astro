@@ -1,0 +1,61 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import MicNoiseFloor from '../../components/diagnostics/MicNoiseFloor.astro';
+
+const faqs = [
+  {
+    question: "How is microphone noise floor measured in this test?",
+    answer: "The tool analyzes incoming audio PCM samples via Web Audio API during a silent 3-second window, calculating the Root-Mean-Square (RMS) background noise level in decibels relative to full scale (dBFS)."
+  },
+  {
+    question: "What is a good Signal-to-Noise Ratio (SNR) for a microphone?",
+    answer: "An SNR above 60 dB indicates excellent audio clarity with minimal background hiss. An SNR below 40 dB means ambient fan noise or room electrical hum will be noticeable to listeners."
+  },
+  {
+    question: "What causes microphone static or electrical hum?",
+    answer: "Static hum is typically caused by ungrounded USB ports, cheap motherboard onboard audio DACs, unshielded microphone cables, or excessive software gain boost (+30dB)."
+  },
+  {
+    question: "Is my microphone audio recorded or sent to any server?",
+    answer: "No. Audio processing executes 100% locally inside your web browser's RAM using client-side Web Audio API nodes. Zero audio data is recorded or transmitted."
+  }
+];
+---
+
+<Layout 
+  title="Microphone Test & Noise Floor Analyzer | Online Audio Inspector"
+  description="Test your microphone audio quality online. Measure ambient noise floor dBFS, voice SNR clarity, and input gain clipping with Web Audio API under IEC 61672-1 standards."
+>
+  <main id="main-content" class="py-10 px-4 sm:px-6 lg:px-8 space-y-12">
+    <section class="max-w-4xl mx-auto text-center space-y-4">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-status-pass/10 border border-status-pass/30 text-xs font-mono text-status-pass font-bold">
+        <span>IEC 61672-1 ELECTROACOUSTICS COMPLIANT</span>
+      </div>
+      <h1 class="text-3xl sm:text-4xl font-extrabold font-mono tracking-tight text-text-primary">
+        Microphone Noise Floor &amp; SNR Analyzer
+      </h1>
+      <p class="text-sm sm:text-base text-text-muted leading-relaxed max-w-2xl mx-auto">
+        Evaluate your microphone's ambient background noise floor in dBFS, voice signal clarity, and digital input clipping distortion.
+      </p>
+    </section>
+
+    <MicNoiseFloor />
+
+    <article class="max-w-4xl mx-auto space-y-8 bg-bg-surface/80 border border-border-hairline rounded-2xl p-6 sm:p-8 backdrop-blur-xl text-sm text-text-secondary leading-relaxed">
+      <h2 class="text-xl font-bold font-mono text-text-primary">Understanding Microphone Audio Noise Floor &amp; SNR</h2>
+      <p>
+        The noise floor represents the level of residual background noise created by electrical circuitry, preamps, and room acoustics. A high Signal-to-Noise Ratio (SNR) ensures voice clarity without static hiss.
+      </p>
+
+      <h2 class="text-xl font-bold font-mono text-text-primary">Frequently Asked Questions</h2>
+      <div class="space-y-4">
+        {faqs.map(faq => (
+          <div class="border-b border-border-hairline pb-4 space-y-1">
+            <h3 class="font-bold text-text-primary font-mono">{faq.question}</h3>
+            <p class="text-xs text-text-muted">{faq.answer}</p>
+          </div>
+        ))}
+      </div>
+    </article>
+  </main>
+</Layout>

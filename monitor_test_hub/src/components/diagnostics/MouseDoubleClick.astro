@@ -1,0 +1,92 @@
+---
+/**
+ * MouseDoubleClick.astro
+ * Mouse Double-Click & Debounce Time Tester UI component.
+ */
+---
+
+<div class="w-full max-w-5xl mx-auto space-y-6">
+  <div class="bg-bg-surface/90 border border-border-hairline rounded-2xl p-6 backdrop-blur-xl shadow-2xl space-y-6">
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-border-hairline/60 pb-4">
+      <div>
+        <div class="flex items-center gap-2">
+          <span class="w-2.5 h-2.5 rounded-full bg-status-pass shadow-[0_0_8px_rgba(5,150,105,0.8)]"></span>
+          <h2 class="text-lg font-bold font-mono text-text-primary tracking-wide">Mouse Double-Click &amp; Debounce Tester</h2>
+        </div>
+        <p class="text-xs text-text-muted mt-1">Mechanical mouse switch bounce chatter detection (&lt;30ms) &amp; microsecond debounce interval logger.</p>
+      </div>
+
+      <div class="flex items-center gap-3">
+        <button id="reset-click-btn" class="px-4 py-2 text-xs font-mono font-semibold rounded-lg bg-bg-canvas border border-border-subtle hover:bg-bg-elevated transition-all cursor-pointer">
+          Reset Counter
+        </button>
+      </div>
+    </div>
+
+    <!-- Interactive Click Target Area -->
+    <div id="click-target-zone" class="relative w-full h-64 rounded-xl bg-bg-canvas border border-border-subtle overflow-hidden flex flex-col items-center justify-center p-6 cursor-pointer select-none group">
+      <div class="w-16 h-16 rounded-2xl border-2 border-status-pass/60 bg-status-pass/10 group-hover:scale-110 transition-transform flex items-center justify-center">
+        <span class="text-xs font-mono font-bold text-status-pass">CLICK HERE</span>
+      </div>
+      <p class="text-xs font-mono text-text-primary font-bold mt-4">CLICK FAST OR NORMALLY INSIDE THIS BOX</p>
+      <p class="text-[11px] text-text-muted">Hardware switch bounce chatter registered under 30ms will be flagged as a defect.</p>
+    </div>
+
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 pt-2">
+      <div class="bg-bg-elevated p-3.5 rounded-xl border border-border-hairline">
+        <div class="text-[10px] font-mono text-text-muted uppercase">Total Clicks Logged</div>
+        <div id="metric-total-clicks" class="text-sm font-mono font-bold text-text-primary mt-1">0 Clicks</div>
+      </div>
+      <div class="bg-bg-elevated p-3.5 rounded-xl border border-border-hairline">
+        <div class="text-[10px] font-mono text-text-muted uppercase">Fastest Inter-Click Interval</div>
+        <div id="metric-fastest-click" class="text-sm font-mono font-bold text-text-primary mt-1">0.0 ms</div>
+      </div>
+      <div class="bg-bg-elevated p-3.5 rounded-xl border border-border-hairline">
+        <div class="text-[10px] font-mono text-text-muted uppercase">Switch Bounce Defects</div>
+        <div id="metric-chatter-count" class="text-sm font-mono font-bold text-status-pass mt-1">0 Defects</div>
+      </div>
+      <div class="bg-bg-elevated p-3.5 rounded-xl border border-border-hairline">
+        <div class="text-[10px] font-mono text-text-muted uppercase">Switch Health Status</div>
+        <div id="metric-switch-health" class="text-sm font-mono font-bold text-status-pass mt-1">PASSED (HEALTHY)</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  import { analyzeClickEvents } from '../../engine/MouseDoubleClickEngine';
+
+  const zone = document.getElementById('click-target-zone');
+  const resetBtn = document.getElementById('reset-click-btn');
+  const metricTotal = document.getElementById('metric-total-clicks');
+  const metricFastest = document.getElementById('metric-fastest-click');
+  const metricDefects = document.getElementById('metric-chatter-count');
+  const metricHealth = document.getElementById('metric-switch-health');
+
+  let timestamps: number[] = [];
+
+  zone?.addEventListener('mousedown', (e) => {
+    e.preventDefault();
+    timestamps.push(performance.now());
+    
+    const report = analyzeClickEvents(timestamps, 30);
+    if (metricTotal) metricTotal.textContent = `${report.totalClicks} Clicks`;
+    if (metricFastest) metricFastest.textContent = `${report.fastestClickMs} ms`;
+    if (metricDefects) metricDefects.textContent = `${report.defectCount} Defects`;
+    if (metricHealth) {
+      metricHealth.textContent = report.hasFaultySwitch ? 'FAULTY SWITCH (CHATTER)' : 'PASSED (HEALTHY)';
+      metricHealth.className = `text-sm font-mono font-bold mt-1 ${report.hasFaultySwitch ? 'text-status-fail' : 'text-status-pass'}`;
+    }
+  });
+
+  resetBtn?.addEventListener('click', () => {
+    timestamps = [];
+    if (metricTotal) metricTotal.textContent = '0 Clicks';
+    if (metricFastest) metricFastest.textContent = '0.0 ms';
+    if (metricDefects) metricDefects.textContent = '0 Defects';
+    if (metricHealth) {
+      metricHealth.textContent = 'PASSED (HEALTHY)';
+      metricHealth.className = 'text-sm font-mono font-bold mt-1 text-status-pass';
+    }
+  });
+</script>

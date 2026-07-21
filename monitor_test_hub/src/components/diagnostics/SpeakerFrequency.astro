@@ -1,0 +1,100 @@
+---
+/**
+ * SpeakerFrequency.astro
+ * Speaker Frequency Response & Stereo Balance Sweeper UI component.
+ */
+---
+
+<div class="w-full max-w-5xl mx-auto space-y-6">
+  <div class="bg-bg-surface/90 border border-border-hairline rounded-2xl p-6 backdrop-blur-xl shadow-2xl space-y-6">
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-border-hairline/60 pb-4">
+      <div>
+        <div class="flex items-center gap-2">
+          <span class="w-2.5 h-2.5 rounded-full bg-status-pass shadow-[0_0_8px_rgba(5,150,105,0.8)]"></span>
+          <h2 class="text-lg font-bold font-mono text-text-primary tracking-wide">Speaker Frequency &amp; Stereo Sweeper</h2>
+        </div>
+        <p class="text-xs text-text-muted mt-1">Web Audio logarithmic frequency sweep (20Hz-20kHz) &amp; stereo balance channel isolation (AES17).</p>
+      </div>
+
+      <div class="flex items-center gap-3">
+        <button id="play-left-btn" class="px-3 py-1.5 text-xs font-mono font-semibold rounded-lg bg-bg-canvas border border-border-subtle hover:bg-bg-elevated cursor-pointer">
+          Left Channel Only
+        </button>
+        <button id="play-right-btn" class="px-3 py-1.5 text-xs font-mono font-semibold rounded-lg bg-bg-canvas border border-border-subtle hover:bg-bg-elevated cursor-pointer">
+          Right Channel Only
+        </button>
+        <button id="start-sweep-btn" class="px-4 py-2 text-xs font-mono font-semibold rounded-lg bg-status-pass/10 text-status-pass border border-status-pass/30 hover:bg-status-pass/20 cursor-pointer">
+          Sweep 20Hz - 20kHz
+        </button>
+      </div>
+    </div>
+
+    <!-- Active Frequency Display Box -->
+    <div class="relative w-full h-40 rounded-xl bg-bg-canvas border border-border-subtle overflow-hidden flex flex-col items-center justify-center space-y-2 p-6">
+      <div id="freq-display" class="text-3xl font-mono font-bold text-status-pass tracking-wider">20.0 Hz</div>
+      <p class="text-xs font-mono text-text-muted">LOGARITHMIC FREQUENCY RESPONSE SWEEP</p>
+    </div>
+
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 pt-2">
+      <div class="bg-bg-elevated p-3.5 rounded-xl border border-border-hairline">
+        <div class="text-[10px] font-mono text-text-muted uppercase">Start Frequency</div>
+        <div class="text-sm font-mono font-bold text-text-primary mt-1">20.0 Hz</div>
+      </div>
+      <div class="bg-bg-elevated p-3.5 rounded-xl border border-border-hairline">
+        <div class="text-[10px] font-mono text-text-muted uppercase">End Frequency</div>
+        <div class="text-sm font-mono font-bold text-text-primary mt-1">20,000.0 Hz</div>
+      </div>
+      <div class="bg-bg-elevated p-3.5 rounded-xl border border-border-hairline">
+        <div class="text-[10px] font-mono text-text-muted uppercase">Channel Balance Delta</div>
+        <div id="metric-balance-delta" class="text-sm font-mono font-bold text-status-pass mt-1">0.0 dB (Balanced)</div>
+      </div>
+      <div class="bg-bg-elevated p-3.5 rounded-xl border border-border-hairline">
+        <div class="text-[10px] font-mono text-text-muted uppercase">Phase Inversion</div>
+        <div id="metric-phase" class="text-sm font-mono font-bold text-status-pass mt-1">NORMAL PHASE</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  import { calculateSweepFrequency, evaluateStereoBalance } from '../../engine/SpeakerFrequencyEngine';
+
+  const startSweepBtn = document.getElementById('start-sweep-btn');
+  const playLeftBtn = document.getElementById('play-left-btn');
+  const playRightBtn = document.getElementById('play-right-btn');
+  const freqDisplay = document.getElementById('freq-display');
+
+  let audioCtx: AudioContext | null = null;
+
+  startSweepBtn?.addEventListener('click', () => {
+    if (!audioCtx) audioCtx = new AudioContext();
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    
+    osc.type = 'sine';
+    const now = audioCtx.currentTime;
+    osc.frequency.setValueAtTime(20, now);
+    osc.frequency.exponentialRampToValueAtTime(20000, now + 5.0);
+
+    gain.gain.setValueAtTime(0.1, now);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 5.0);
+
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+    osc.start(now);
+    osc.stop(now + 5.0);
+
+    let startTime = performance.now();
+    function animateFreq() {
+      const elapsed = (performance.now() - startTime) / 5000;
+      if (elapsed <= 1.0) {
+        const currentHz = calculateSweepFrequency(elapsed, 20, 20000);
+        if (freqDisplay) freqDisplay.textContent = `${currentHz} Hz`;
+        requestAnimationFrame(animateFreq);
+      } else {
+        if (freqDisplay) freqDisplay.textContent = 'SWEEP COMPLETE';
+      }
+    }
+    animateFreq();
+  });
+</script>

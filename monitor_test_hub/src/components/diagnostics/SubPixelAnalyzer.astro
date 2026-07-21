@@ -1,0 +1,156 @@
+---
+// SubPixelAnalyzer.astro — High-Precision Sub-Pixel Loupe Engine
+---
+<div class="rounded-xl border border-border-hairline bg-bg-surface p-6 space-y-6 font-mono text-xs shadow-specular-top">
+  
+  <!-- Header & Mode Selection (With ARIA Tablist & Linear Keyboard Hotkeys) -->
+  <div class="space-y-4">
+    <div class="flex items-center justify-between border-b border-border-hairline pb-3">
+      <div class="flex items-center gap-2">
+        <span class="w-2 h-2 rounded-full bg-status-pass led-glow-pass"></span>
+        <span class="font-bold text-text-primary uppercase tracking-wider text-xs">Sub-Pixel Geometry Loupe</span>
+      </div>
+      <span class="text-[10px] text-text-muted">PRESS HOTKEYS [1-4]</span>
+    </div>
+
+    <!-- ARIA Tablist Mode Switcher -->
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-2" role="tablist" aria-label="Sub-pixel layout mode selection">
+      <button id="btn-rgb" role="tab" aria-selected="true" aria-controls="subpixel-panel" class="subpixel-btn flex items-center justify-between px-3 py-2 rounded-md bg-bg-elevated text-text-primary border border-status-pass text-xs font-semibold cursor-pointer transition-colors" data-mode="rgb">
+        <span>Stripe RGB</span>
+        <kbd class="px-1.5 py-0.5 text-[9px] bg-status-pass/10 border border-status-pass/30 text-status-pass rounded font-mono">1</kbd>
+      </button>
+      <button id="btn-bgr" role="tab" aria-selected="false" aria-controls="subpixel-panel" class="subpixel-btn flex items-center justify-between px-3 py-2 rounded-md bg-bg-elevated text-text-secondary border border-border-hairline hover:text-text-primary text-xs cursor-pointer transition-colors" data-mode="bgr">
+        <span>Reverse BGR</span>
+        <kbd class="px-1.5 py-0.5 text-[9px] bg-bg-canvas border border-border-subtle text-text-muted rounded font-mono">2</kbd>
+      </button>
+      <button id="btn-qdoled" role="tab" aria-selected="false" aria-controls="subpixel-panel" class="subpixel-btn flex items-center justify-between px-3 py-2 rounded-md bg-bg-elevated text-text-secondary border border-border-hairline hover:text-text-primary text-xs cursor-pointer transition-colors" data-mode="qdoled">
+        <span>QD-OLED</span>
+        <kbd class="px-1.5 py-0.5 text-[9px] bg-bg-canvas border border-border-subtle text-text-muted rounded font-mono">3</kbd>
+      </button>
+      <button id="btn-woled" role="tab" aria-selected="false" aria-controls="subpixel-panel" class="subpixel-btn flex items-center justify-between px-3 py-2 rounded-md bg-bg-elevated text-text-secondary border border-border-hairline hover:text-text-primary text-xs cursor-pointer transition-colors" data-mode="woled">
+        <span>WOLED RWBG</span>
+        <kbd class="px-1.5 py-0.5 text-[9px] bg-bg-canvas border border-border-subtle text-text-muted rounded font-mono">4</kbd>
+      </button>
+    </div>
+  </div>
+
+  <!-- Dynamic Technical Description -->
+  <div id="subpixel-desc" role="region" aria-live="polite" aria-atomic="true" class="p-3.5 rounded-md bg-bg-canvas border border-border-hairline text-text-secondary text-[11px] font-sans leading-relaxed">
+    <span class="inline-block font-mono text-[10px] font-bold text-status-pass uppercase mr-2">[ MODE: STRIPE_RGB ]</span>
+    Standard RGB sub-pixel stripe layout found in most IPS, VA, and TN LCD monitors. Windows ClearType default.
+  </div>
+
+  <!-- Canvas Loupe Simulation -->
+  <div id="subpixel-panel" class="relative border border-border-hairline rounded-md bg-bg-canvas p-4 flex items-center justify-center min-h-[220px]">
+    <canvas id="subpixel-canvas" role="img" aria-label="Interactive high-magnification sub-pixel grid visualization" class="max-w-full h-auto rounded-sm border border-border-hairline"></canvas>
+  </div>
+
+</div>
+
+<script>
+  function initSubpixelLoupe() {
+    const canvas = document.getElementById('subpixel-canvas') as HTMLCanvasElement;
+    const desc = document.getElementById('subpixel-desc');
+    if (!canvas || !desc) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    const descriptions: Record<string, { mode: string; text: string }> = {
+      rgb: { mode: 'STRIPE_RGB', text: 'Standard RGB sub-pixel stripe layout. Windows ClearType default alignment. Maximum text sharp clarity on standard LCDs.' },
+      bgr: { mode: 'REVERSE_BGR', text: 'Reverse BGR sub-pixel stripe layout. Found on select TV panels and mounted displays. Requires OS font smoothing adjustment.' },
+      qdoled: { mode: 'TRIANGULAR_QD_OLED', text: 'Triangular QD-OLED sub-pixel structure. Causes minor color fringing along high-contrast text edges under standard font renderers.' },
+      woled: { mode: 'RWBG_WOLED', text: 'WOLED RWBG 4-subpixel structure. Includes dedicated white subpixel for peak luminance, creating subtle text antialiasing shifts.' }
+    };
+
+    function drawLoupe(mode: string) {
+      canvas.width = 400;
+      canvas.height = 160;
+      ctx.fillStyle = document.documentElement.classList.contains('light') ? '#f8fafc' : '#08080a';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      const cols = 8;
+      const rows = 3;
+      const cellW = canvas.width / cols;
+      const cellH = canvas.height / rows;
+
+      for (let r = 0; r < rows; r++) {
+        for (let c = 0; c < cols; c++) {
+          const x = c * cellW;
+          const y = r * cellH;
+          ctx.strokeStyle = document.documentElement.classList.contains('light') ? 'rgba(0, 0, 0, 0.08)' : 'rgba(255, 255, 255, 0.08)';
+          ctx.strokeRect(x, y, cellW, cellH);
+
+          if (mode === 'rgb') {
+            ctx.fillStyle = '#ef4444'; ctx.fillRect(x + 4, y + 4, cellW / 3 - 6, cellH - 8);
+            ctx.fillStyle = '#10b981'; ctx.fillRect(x + cellW / 3 + 2, y + 4, cellW / 3 - 6, cellH - 8);
+            ctx.fillStyle = '#3b82f6'; ctx.fillRect(x + (2 * cellW) / 3, y + 4, cellW / 3 - 6, cellH - 8);
+          } else if (mode === 'bgr') {
+            ctx.fillStyle = '#3b82f6'; ctx.fillRect(x + 4, y + 4, cellW / 3 - 6, cellH - 8);
+            ctx.fillStyle = '#10b981'; ctx.fillRect(x + cellW / 3 + 2, y + 4, cellW / 3 - 6, cellH - 8);
+            ctx.fillStyle = '#ef4444'; ctx.fillRect(x + (2 * cellW) / 3, y + 4, cellW / 3 - 6, cellH - 8);
+          } else if (mode === 'qdoled') {
+            ctx.fillStyle = '#10b981'; ctx.beginPath(); ctx.arc(x + cellW / 2, y + cellH / 3, 10, 0, Math.PI * 2); ctx.fill();
+            ctx.fillStyle = '#ef4444'; ctx.beginPath(); ctx.arc(x + cellW / 3, y + (2 * cellH) / 3, 8, 0, Math.PI * 2); ctx.fill();
+            ctx.fillStyle = '#3b82f6'; ctx.beginPath(); ctx.arc(x + (2 * cellW) / 3, y + (2 * cellH) / 3, 8, 0, Math.PI * 2); ctx.fill();
+          } else if (mode === 'woled') {
+            ctx.fillStyle = '#ffffff'; ctx.fillRect(x + 2, y + 4, cellW / 4 - 4, cellH - 8);
+            ctx.fillStyle = '#ef4444'; ctx.fillRect(x + cellW / 4 + 2, y + 4, cellW / 4 - 4, cellH - 8);
+            ctx.fillStyle = '#10b981'; ctx.fillRect(x + cellW / 2 + 2, y + 4, cellW / 4 - 4, cellH - 8);
+            ctx.fillStyle = '#3b82f6'; ctx.fillRect(x + (3 * cellW) / 4 + 2, y + 4, cellW / 4 - 4, cellH - 8);
+          }
+        }
+      }
+    }
+
+    function setSubpixelMode(mode: string) {
+      const buttons = document.querySelectorAll('.subpixel-btn');
+      buttons.forEach((btn) => {
+        const b = btn as HTMLButtonElement;
+        const isActive = b.getAttribute('data-mode') === mode;
+        b.setAttribute('aria-selected', String(isActive));
+        const kbd = b.querySelector('kbd');
+        if (isActive) {
+          b.className = 'subpixel-btn flex items-center justify-between px-3 py-2 rounded-md bg-bg-elevated text-text-primary border border-status-pass text-xs font-semibold cursor-pointer transition-colors';
+          if (kbd) kbd.className = 'px-1.5 py-0.5 text-[9px] bg-status-pass/10 border border-status-pass/30 text-status-pass rounded font-mono';
+        } else {
+          b.className = 'subpixel-btn flex items-center justify-between px-3 py-2 rounded-md bg-bg-elevated text-text-secondary border border-border-hairline hover:text-text-primary text-xs cursor-pointer transition-colors';
+          if (kbd) kbd.className = 'px-1.5 py-0.5 text-[9px] bg-bg-canvas border border-border-subtle text-text-muted rounded font-mono';
+        }
+      });
+
+      if (desc && descriptions[mode]) {
+        desc.innerHTML = `<span class="inline-block font-mono text-[10px] font-bold text-status-pass uppercase mr-2">[ MODE: ${descriptions[mode].mode} ]</span>${descriptions[mode].text}`;
+      }
+      drawLoupe(mode);
+    }
+
+    document.querySelectorAll('.subpixel-btn').forEach((btn) => {
+      btn.addEventListener('click', (e) => {
+        const target = e.currentTarget as HTMLButtonElement;
+        const mode = target.getAttribute('data-mode');
+        if (mode) setSubpixelMode(mode);
+      });
+    });
+
+    // Linear Mechanical Keyboard Hotkeys (1-4)
+    document.addEventListener('keydown', (e: KeyboardEvent) => {
+      if (['INPUT', 'TEXTAREA', 'SELECT'].includes((e.target as HTMLElement)?.tagName)) return;
+      if (e.key === '1') setSubpixelMode('rgb');
+      if (e.key === '2') setSubpixelMode('bgr');
+      if (e.key === '3') setSubpixelMode('qdoled');
+      if (e.key === '4') setSubpixelMode('woled');
+    });
+
+    window.addEventListener('themechange', () => {
+      drawLoupe('rgb');
+    });
+
+    drawLoupe('rgb');
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initSubpixelLoupe);
+  } else {
+    initSubpixelLoupe();
+  }
+</script>

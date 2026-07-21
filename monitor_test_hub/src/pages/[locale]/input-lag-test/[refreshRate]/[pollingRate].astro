@@ -1,0 +1,25 @@
+---
+import { getAllRefreshRates, getAllPollingRates } from '../../../../engine/InputLagEngine';
+
+export function getStaticPaths() {
+  const locales = ['es', 'de', 'fr'];
+  const refreshRates = getAllRefreshRates();
+  const pollingRates = getAllPollingRates();
+
+  return locales.flatMap((locale) =>
+    refreshRates.flatMap((refreshRate) =>
+      pollingRates.map((pollingRate) => ({
+        params: {
+          locale,
+          refreshRate,
+          pollingRate
+        }
+      }))
+    )
+  );
+}
+
+import BasePage from '../../../input-lag-test/[refreshRate]/[pollingRate].astro';
+---
+
+<BasePage />

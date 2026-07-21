@@ -1,0 +1,18 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import ColorMatchAlchemist from '../../components/arcade/ColorMatchAlchemist.astro';
+import HardwareLimitationNotice from '../../components/disclaimers/HardwareLimitationNotice.astro';
+---
+
+<Layout 
+  title="Color Match Alchemist Game" 
+  description="Select matching colors under dynamically decreasing Delta-E thresholds to evaluate screen color resolution."
+>
+  <div class="py-4">
+    <ColorMatchAlchemist />
+    
+    <div class="max-w-4xl mx-auto px-4">
+      <HardwareLimitationNotice />
+    </div>
+  </div>
+</Layout>

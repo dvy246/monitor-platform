@@ -1,0 +1,79 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import Breadcrumbs from '../../components/ui/Breadcrumbs.astro';
+import OledUniformityEngine from '../../components/diagnostics/OledUniformityEngine.astro';
+import HardwareLimitationNotice from '../../components/disclaimers/HardwareLimitationNotice.astro';
+import TestSwitcherBar from '../../components/ui/TestSwitcherBar.astro';
+
+const breadcrumbItems = [
+  { label: 'Display Suite', href: '/display-tests' },
+  { label: 'OLED Near-Black Uniformity Test' }
+];
+
+const displayTests = [
+  { id: 'dead-pixel', label: 'Dead Pixel Test', href: '/display-tests/dead-pixel' },
+  { id: 'sub-pixel', label: 'Sub-Pixel Analyzer', href: '/display-tests/sub-pixel' },
+  { id: 'uniformity', label: 'OLED Uniformity', href: '/display-tests/uniformity', active: true },
+  { id: 'vrr', label: 'VRR Sync Engine', href: '/display-tests/vrr' },
+  { id: 'oled-burn-in', label: 'OLED Burn-In Risk', href: '/display-tests/oled-burn-in' },
+  { id: 'hdr-test', label: 'HDR Brightness', href: '/display-tests/hdr-test' },
+  { id: 'ppi-calculator', label: 'PPI Calculator', href: '/display-tests/ppi-calculator' },
+  { id: 'color-gamut', label: 'Color Gamut & ICC', href: '/display-tests/color-gamut' }
+];
+---
+
+<Layout 
+  title="OLED Near-Black Uniformity & Banding Test | Monitor Test Hub" 
+  description="Diagnose vertical banding, Dirty Screen Effect (DSE), 5% near-black luminance non-uniformity, and static image retention on OLED and QD-OLED panels."
+>
+  <main class="max-w-7xl mx-auto px-4 py-8 space-y-8">
+    <Breadcrumbs items={breadcrumbItems} />
+
+    <header class="space-y-3 border-b border-border-hairline pb-6">
+      <div class="flex items-center gap-2 text-status-pass text-xs font-mono font-bold uppercase tracking-wider">
+        <span class="w-2 h-2 rounded-full bg-status-pass led-glow-pass"></span>
+        IEC 62341-6-2 LUMINANCE UNIFORMITY
+      </div>
+      <h1 class="text-3xl sm:text-4xl font-extrabold text-text-primary tracking-tight">OLED Near-Black Uniformity &amp; Banding Test</h1>
+      <p class="text-sm text-text-secondary max-w-3xl">
+        Evaluate 5% and 10% near-black luminance uniformity, isolate vertical panel banding, detect Dirty Screen Effect (DSE), and identify static UI element burn-in retention across WOLED, QD-OLED, and AMOLED panels.
+      </p>
+    </header>
+
+    <OledUniformityEngine />
+
+    <!-- Technical Analysis & Uniformity Standards Article -->
+    <article class="bg-bg-surface border border-border-hairline rounded-2xl p-6 sm:p-8 space-y-6 shadow-specular-top font-sans text-sm text-text-secondary leading-relaxed">
+      <div class="border-b border-border-hairline pb-4">
+        <span class="font-mono text-[10px] font-bold text-status-pass uppercase tracking-widest block mb-1">IEC 62341-6-2 SCIENTIFIC METHODOLOGY</span>
+        <h2 class="text-xl font-bold text-text-primary">OLED Near-Black Banding &amp; Dirty Screen Effect (DSE) Physics</h2>
+      </div>
+
+      <p>
+        Self-emissive display technologies such as <strong>WOLED (White OLED with color filters)</strong> and <strong>QD-OLED (Quantum Dot OLED)</strong> control brightness down to individual pixels. However, at near-black luminance levels (1% to 10% signal gray, or 0.05 to 1.5 nits), minor threshold voltage (V<sub>th</sub>) variations across the thin-film transistor (TFT) backplane manifest as visible <strong>vertical banding</strong> or <strong>Dirty Screen Effect (DSE)</strong>.
+      </p>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 font-mono text-xs my-4">
+        <div class="bg-bg-canvas p-4 rounded-xl border border-border-hairline space-y-1">
+          <span class="text-text-muted text-[10px] uppercase block">5% Near-Black Gray</span>
+          <strong class="text-text-primary block text-sm">Critical Uniformity Benchmark</strong>
+          <p class="font-sans text-[11px] text-text-secondary">Reveals TFT backplane manufacturing voltage grain and vertical glass processing streaks.</p>
+        </div>
+        <div class="bg-bg-canvas p-4 rounded-xl border border-border-hairline space-y-1">
+          <span class="text-text-muted text-[10px] uppercase block">10% Near-Black Gray</span>
+          <strong class="text-text-primary block text-sm">Shadow Detail Evaluation</strong>
+          <p class="font-sans text-[11px] text-text-secondary">Evaluates macro-vignetting and corner luminance roll-off across large panel sizes.</p>
+        </div>
+        <div class="bg-bg-canvas p-4 rounded-xl border border-border-hairline space-y-1">
+          <span class="text-text-muted text-[10px] uppercase block">Compensation Cycles</span>
+          <strong class="text-text-primary block text-sm">Real-Time TFT Calibration</strong>
+          <p class="font-sans text-[11px] text-text-secondary">Panel hardware runs automated pixel refresh cycles after 4 cumulative operating hours to smooth Vth drift.</p>
+        </div>
+      </div>
+
+      <HardwareLimitationNotice />
+    </article>
+
+    <TestSwitcherBar tests={displayTests} currentId="uniformity" />
+  </main>
+</Layout>

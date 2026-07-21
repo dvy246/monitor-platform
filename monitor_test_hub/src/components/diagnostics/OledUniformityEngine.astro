@@ -1,0 +1,106 @@
+---
+// OledUniformityEngine.astro component
+---
+<div class="max-w-4xl mx-auto px-4 py-8 font-mono">
+  <div class="bg-bg-surface border border-border-hairline rounded-xl p-6 shadow-specular-top">
+    <h3 class="text-xl font-bold heading-brand text-status-pass mb-2 font-mono">OLED Near-Black Uniformity &amp; Burn-in Checker</h3>
+    <p class="text-text-secondary text-sm mb-6 font-sans leading-relaxed">
+      Test for vertical banding, Dirty Screen Effect (DSE), and chromatic unevenness on OLED panels using near-black gray fills, or cycle solid primary colors to diagnose image retention and burn-in.
+    </p>
+
+    <!-- Controls -->
+    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3 mb-6">
+      <button class="uniform-btn bg-bg-elevated hover:bg-bg-subtle text-text-primary px-3 py-2 rounded-lg text-xs md:text-sm font-semibold border border-border-hairline active-btn cursor-pointer" data-color="#0d0d0d" data-name="5% Near-Black Gray">
+        5% Gray
+      </button>
+      <button class="uniform-btn bg-bg-elevated hover:bg-bg-subtle text-text-primary px-3 py-2 rounded-lg text-xs md:text-sm font-semibold border border-border-hairline cursor-pointer" data-color="#1a1a1a" data-name="10% Dark Gray">
+        10% Gray
+      </button>
+      <button class="uniform-btn bg-bg-elevated hover:bg-bg-subtle text-text-primary px-3 py-2 rounded-lg text-xs md:text-sm font-semibold border border-border-hairline cursor-pointer" data-color="#ffffff" data-name="Solid White (Stuck Sub-pixel Check)">
+        White
+      </button>
+      <button class="uniform-btn bg-bg-elevated hover:bg-bg-subtle text-text-primary px-3 py-2 rounded-lg text-xs md:text-sm font-semibold border border-border-hairline cursor-pointer" data-color="#ff0000" data-name="Solid Red (Burn-in Check)">
+        Red
+      </button>
+      <button class="uniform-btn bg-bg-elevated hover:bg-bg-subtle text-text-primary px-3 py-2 rounded-lg text-xs md:text-sm font-semibold border border-border-hairline cursor-pointer" data-color="#00ff00" data-name="Solid Green (Burn-in Check)">
+        Green
+      </button>
+      <button class="uniform-btn bg-bg-elevated hover:bg-bg-subtle text-text-primary px-3 py-2 rounded-lg text-xs md:text-sm font-semibold border border-border-hairline cursor-pointer" data-color="#0000ff" data-name="Solid Blue (Burn-in Check)">
+        Blue
+      </button>
+    </div>
+
+    <!-- Active Fill Indicator & Fullscreen trigger -->
+    <div class="flex items-center justify-between bg-bg-elevated p-4 rounded-lg border border-border-hairline mb-6">
+      <div class="text-xs md:text-sm font-sans">
+        <span class="text-text-muted font-semibold">Active pattern:</span>
+        <span id="active-pattern-name" class="text-text-primary font-bold ml-1 font-mono">5% Near-Black Gray</span>
+      </div>
+      <button id="btn-fullscreen" class="bg-status-pass hover:opacity-90 text-text-on-accent px-4 py-1.5 rounded font-bold text-xs flex items-center gap-1.5 transition-all shadow-[0_0_15px_rgba(16,185,129,0.3)] cursor-pointer">
+        <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M4 8V4m0 0h4M4 4l5 5m11-5V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5v-4m0 0h-4m4 0l-5-5"/></svg>
+        Go Fullscreen
+      </button>
+    </div>
+
+    <!-- Preview Container -->
+    <div id="uniform-preview" class="relative w-full aspect-video md:aspect-[2/1] rounded-lg overflow-hidden border border-border-hairline transition-colors duration-200 cursor-pointer" style="background-color: #0d0d0d;" title="Click to open fullscreen">
+      <!-- Fullscreen instruction overlay -->
+      <div class="absolute inset-0 flex items-center justify-center bg-black/40 backdrop-blur-[1px] hover:backdrop-blur-none transition-all text-center p-4">
+        <span class="text-text-secondary text-xs md:text-sm font-semibold select-none font-sans">
+          Click window or use the button above to test fullscreen.<br/>
+          Press <kbd class="px-1.5 py-0.5 rounded bg-bg-elevated text-text-primary font-mono border border-border-hairline">ESC</kbd> to exit fullscreen.
+        </span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .active-btn {
+    border-color: #00ff88 !important;
+    color: #00ff88 !important;
+    background-color: rgba(0, 255, 136, 0.05) !important;
+    box-shadow: 0 0 15px rgba(0, 255, 136, 0.15);
+  }
+</style>
+
+<script>
+  const preview = document.getElementById('uniform-preview');
+  const activeName = document.getElementById('active-pattern-name');
+  const buttons = document.querySelectorAll('.uniform-btn');
+  const btnFullscreen = document.getElementById('btn-fullscreen');
+
+  let activeColor = '#0d0d0d';
+
+  function initOledUniformity() {
+    if (!preview || !activeName) return;
+
+    buttons.forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const target = e.currentTarget as HTMLButtonElement;
+        const color = target.getAttribute('data-color') || '#0d0d0d';
+        const name = target.getAttribute('data-name') || '';
+
+        activeColor = color;
+        preview.style.backgroundColor = color;
+        activeName.textContent = name;
+
+        buttons.forEach(b => b.classList.remove('active-btn'));
+        target.classList.add('active-btn');
+      });
+    });
+
+    const triggerFullscreen = () => {
+      if (preview.requestFullscreen) {
+        preview.requestFullscreen();
+      } else if ((preview as any).webkitRequestFullscreen) {
+        (preview as any).webkitRequestFullscreen();
+      }
+    };
+
+    btnFullscreen?.addEventListener('click', triggerFullscreen);
+    preview.addEventListener('click', triggerFullscreen);
+  }
+
+  initOledUniformity();
+</script>

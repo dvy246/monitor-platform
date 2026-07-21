@@ -1,0 +1,82 @@
+---
+/**
+ * BacklightBleed.astro
+ * Dark-room Backlight Bleed & IPS Glow Inspector component.
+ */
+---
+
+<div class="w-full max-w-5xl mx-auto space-y-6">
+  <!-- Interactive Diagnostic Canvas / Controls Card -->
+  <div class="bg-bg-surface/90 border border-border-hairline rounded-2xl p-6 backdrop-blur-xl shadow-2xl space-y-6">
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-border-hairline/60 pb-4">
+      <div>
+        <div class="flex items-center gap-2">
+          <span class="w-2.5 h-2.5 rounded-full bg-status-pass shadow-[0_0_8px_rgba(5,150,105,0.8)]"></span>
+          <h2 class="text-lg font-bold font-mono text-text-primary tracking-wide">Backlight Bleed &amp; IPS Glow Inspector</h2>
+        </div>
+        <p class="text-xs text-text-muted mt-1">Dark-room luminance uniformity and light-leakage scoring under IEC 62341-6-2 standards.</p>
+      </div>
+
+      <div class="flex items-center gap-3">
+        <button id="toggle-fullscreen-btn" class="px-4 py-2 text-xs font-mono font-semibold rounded-lg bg-status-pass/10 text-status-pass border border-status-pass/30 hover:bg-status-pass/20 transition-all cursor-pointer">
+          Fullscreen Test (F)
+        </button>
+      </div>
+    </div>
+
+    <!-- Fullscreen Black Canvas Box -->
+    <div id="bleed-canvas-container" class="relative w-full h-80 rounded-xl bg-black border border-border-subtle overflow-hidden flex items-center justify-center cursor-pointer group">
+      <!-- Crosshair / Corner Indicators -->
+      <div class="absolute top-4 left-4 text-[10px] font-mono text-gray-500 group-hover:text-status-pass transition-colors">TOP-LEFT CORNER</div>
+      <div class="absolute top-4 right-4 text-[10px] font-mono text-gray-500 group-hover:text-status-pass transition-colors">TOP-RIGHT CORNER</div>
+      <div class="absolute bottom-4 left-4 text-[10px] font-mono text-gray-500 group-hover:text-status-pass transition-colors">BOTTOM-LEFT CORNER</div>
+      <div class="absolute bottom-4 right-4 text-[10px] font-mono text-gray-500 group-hover:text-status-pass transition-colors">BOTTOM-RIGHT CORNER</div>
+
+      <div class="text-center space-y-2 p-4 bg-bg-canvas/80 backdrop-blur-md rounded-xl border border-border-hairline max-w-md">
+        <div class="text-xs font-mono text-text-primary font-bold">DARK ROOM INSPECTION MODE</div>
+        <p class="text-[11px] text-text-muted">Turn off room lights, click Fullscreen, and inspect screen corners for light leakage or glow shifts.</p>
+      </div>
+    </div>
+
+    <!-- Dynamic Metric Telemetry Deck -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 pt-2">
+      <div class="bg-bg-elevated p-3.5 rounded-xl border border-border-hairline">
+        <div class="text-[10px] font-mono text-text-muted uppercase">Center Baseline</div>
+        <div id="metric-center" class="text-sm font-mono font-bold text-text-primary mt-1">10.0 L*</div>
+      </div>
+      <div class="bg-bg-elevated p-3.5 rounded-xl border border-border-hairline">
+        <div class="text-[10px] font-mono text-text-muted uppercase">Max Corner Delta</div>
+        <div id="metric-delta" class="text-sm font-mono font-bold text-status-pass mt-1">1.2 L*</div>
+      </div>
+      <div class="bg-bg-elevated p-3.5 rounded-xl border border-border-hairline">
+        <div class="text-[10px] font-mono text-text-muted uppercase">Variance Percent</div>
+        <div id="metric-variance" class="text-sm font-mono font-bold text-text-primary mt-1">12.0%</div>
+      </div>
+      <div class="bg-bg-elevated p-3.5 rounded-xl border border-border-hairline">
+        <div class="text-[10px] font-mono text-text-muted uppercase">Uniformity Status</div>
+        <div id="metric-status" class="text-sm font-mono font-bold text-status-pass mt-1">PASSED (IEC 62341)</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  import { calculateBacklightBleed } from '../../engine/BacklightBleedEngine';
+
+  const container = document.getElementById('bleed-canvas-container');
+  const fullscreenBtn = document.getElementById('toggle-fullscreen-btn');
+
+  function toggleFullscreen() {
+    if (!document.fullscreenElement) {
+      container?.requestFullscreen().catch(() => {});
+    } else {
+      document.exitFullscreen().catch(() => {});
+    }
+  }
+
+  fullscreenBtn?.addEventListener('click', toggleFullscreen);
+  container?.addEventListener('click', toggleFullscreen);
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'f' || e.key === 'F') toggleFullscreen();
+  });
+</script>

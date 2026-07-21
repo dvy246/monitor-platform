@@ -1,0 +1,248 @@
+---
+// LagReflexSniper.astro component
+---
+<div class="flex-grow flex flex-col items-center justify-center p-4">
+  <div class="w-full max-w-4xl bg-gray-900/50 border border-gray-800 rounded-xl p-6 shadow-2xl flex flex-col h-[75dvh]">
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
+      <div>
+        <h3 class="text-xl font-bold heading-brand text-diagnostic-matrixGreen mb-1">Lag Reflex Sniper</h3>
+        <p class="text-gray-400 text-xs md:text-sm">
+          Click the targets as fast as possible. Measures DOM event latency delta using high-resolution performance timers.
+        </p>
+      </div>
+      <div class="flex gap-2">
+        <button id="lrs-btn-action" class="bg-diagnostic-matrixGreen hover:bg-diagnostic-matrixGreen/80 text-black font-extrabold text-xs px-4 py-2 rounded-lg transition-all shadow-[0_0_15px_rgba(0,255,136,0.2)]">
+          Start Game
+        </button>
+      </div>
+    </div>
+
+    <!-- Stats -->
+    <div class="grid grid-cols-3 gap-4 mb-4 font-mono text-center">
+      <div class="bg-gray-950 p-2.5 rounded border border-gray-850">
+        <span class="text-gray-500 text-[10px] uppercase block">Reaction Time</span>
+        <span id="lrs-time" class="text-sm md:text-base font-bold text-white">0.0 ms</span>
+      </div>
+      <div class="bg-gray-950 p-2.5 rounded border border-gray-850">
+        <span class="text-gray-500 text-[10px] uppercase block">Average Latency</span>
+        <span id="lrs-avg" class="text-sm md:text-base font-bold text-diagnostic-matrixGreen">0.0 ms</span>
+      </div>
+      <div class="bg-gray-950 p-2.5 rounded border border-gray-850">
+        <span class="text-gray-500 text-[10px] uppercase block">Targets Shot</span>
+        <span id="lrs-count" class="text-sm md:text-base font-bold text-white">0 / 5</span>
+      </div>
+    </div>
+
+    <!-- Active Canvas -->
+    <div class="flex-grow relative rounded-lg overflow-hidden bg-black border border-gray-800 touch-none">
+      <canvas id="lrs-canvas" class="w-full h-full block select-none cursor-crosshair"></canvas>
+    </div>
+  </div>
+</div>
+
+<script>
+  import { setupTouchSandbox, getNormalizedCoords } from '../../utils/mobileSandbox';
+
+  const canvas = document.getElementById('lrs-canvas') as HTMLCanvasElement;
+  const btnAction = document.getElementById('lrs-btn-action');
+  const timeText = document.getElementById('lrs-time');
+  const avgText = document.getElementById('lrs-avg');
+  const countText = document.getElementById('lrs-count');
+
+  let ctx: CanvasRenderingContext2D | null = null;
+  let isPlaying = false;
+
+  let targetX = 0;
+  let targetY = 0;
+  const targetRadius = 30; // base px radius
+
+  let spawnTimestamp = 0;
+  let clickCount = 0;
+  let latencies: number[] = [];
+  let timeoutId: number | null = null;
+
+  function initReflexSniper() {
+    if (!canvas || !btnAction) return;
+    ctx = canvas.getContext('2d');
+
+    setupTouchSandbox(canvas);
+
+    const resize = () => {
+      const rect = canvas.parentElement?.getBoundingClientRect();
+      canvas.width = (rect?.width || 800) * (window.devicePixelRatio || 1);
+      canvas.height = (rect?.height || 500) * (window.devicePixelRatio || 1);
+      draw();
+    };
+
+    window.addEventListener('resize', resize);
+    resize();
+
+    btnAction.addEventListener('click', () => {
+      if (isPlaying) {
+        stopGame();
+      } else {
+        startGame();
+      }
+    });
+
+    canvas.addEventListener('pointerdown', handleShoot);
+  }
+
+  function startGame() {
+    isPlaying = true;
+    clickCount = 0;
+    latencies = [];
+
+    if (btnAction) {
+      btnAction.textContent = 'Terminate';
+      btnAction.classList.replace('bg-diagnostic-matrixGreen', 'bg-diagnostic-deadRed');
+      btnAction.classList.replace('text-black', 'text-white');
+    }
+
+    if (timeText) timeText.textContent = '0.0 ms';
+    if (avgText) avgText.textContent = '0.0 ms';
+    if (countText) countText.textContent = '0 / 5';
+
+    nextTarget();
+  }
+
+  function stopGame() {
+    isPlaying = false;
+    if (btnAction) {
+      btnAction.textContent = 'Start Game';
+      btnAction.classList.replace('bg-diagnostic-deadRed', 'bg-diagnostic-matrixGreen');
+      btnAction.classList.replace('text-white', 'text-black');
+    }
+
+    if (timeoutId !== null) {
+      clearTimeout(timeoutId);
+      timeoutId = null;
+    }
+
+    // Clear target coordinates
+    targetX = 0;
+    targetY = 0;
+    draw();
+  }
+
+  function nextTarget() {
+    if (!canvas || !countText) return;
+
+    if (clickCount >= 5) {
+      // Calculate final stats
+      const total = latencies.reduce((a, b) => a + b, 0);
+      const avg = total / latencies.length;
+      if (avgText) avgText.textContent = `${avg.toFixed(1)} ms`;
+      stopGame();
+      return;
+    }
+
+    // Set target to 0 during delay
+    targetX = 0;
+    targetY = 0;
+    draw();
+
+    // Random delay between 1s and 3.5s
+    const delay = 1000 + Math.random() * 2500;
+    timeoutId = setTimeout(() => {
+      spawnTarget();
+    }, delay) as any;
+  }
+
+  function spawnTarget() {
+    if (!canvas) return;
+
+    const scale = window.devicePixelRatio || 1;
+    const pad = targetRadius * 2 * scale;
+
+    targetX = pad + Math.random() * (canvas.width - pad * 2);
+    targetY = pad + Math.random() * (canvas.height - pad * 2);
+
+    spawnTimestamp = performance.now();
+    draw();
+  }
+
+  function handleShoot(e: PointerEvent) {
+    if (!isPlaying || targetX === 0 || !canvas || !timeText || !countText || !avgText) return;
+
+    const coords = getNormalizedCoords(e.clientX, e.clientY, canvas);
+    const scale = window.devicePixelRatio || 1;
+    const dist = Math.hypot(coords.x - targetX, coords.y - targetY);
+
+    if (dist < targetRadius * scale) {
+      const clickTime = performance.now();
+      const latency = clickTime - spawnTimestamp;
+      latencies.push(latency);
+
+      timeText.textContent = `${latency.toFixed(1)} ms`;
+      
+      clickCount++;
+      countText.textContent = `${clickCount} / 5`;
+
+      const runningTotal = latencies.reduce((a, b) => a + b, 0);
+      avgText.textContent = `${(runningTotal / latencies.length).toFixed(1)} ms`;
+
+      nextTarget();
+    }
+  }
+
+  function draw() {
+    if (!ctx || !canvas) return;
+    const w = canvas.width;
+    const h = canvas.height;
+
+    // Draw background
+    ctx.fillStyle = '#050608';
+    ctx.fillRect(0, 0, w, h);
+
+    // Draw target indicator if active
+    if (targetX !== 0) {
+      const scale = window.devicePixelRatio || 1;
+      const radius = targetRadius * scale;
+
+      // Glow halo
+      ctx.beginPath();
+      ctx.arc(targetX, targetY, radius * 1.5, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(0, 255, 136, 0.1)';
+      ctx.fill();
+
+      // Outer rings
+      ctx.beginPath();
+      ctx.arc(targetX, targetY, radius, 0, Math.PI * 2);
+      ctx.strokeStyle = '#00ff88';
+      ctx.lineWidth = 4 * scale;
+      ctx.stroke();
+
+      ctx.beginPath();
+      ctx.arc(targetX, targetY, radius * 0.4, 0, Math.PI * 2);
+      ctx.strokeStyle = '#00ff88';
+      ctx.lineWidth = 2 * scale;
+      ctx.stroke();
+
+      // Bullseye dot
+      ctx.beginPath();
+      ctx.arc(targetX, targetY, 4 * scale, 0, Math.PI * 2);
+      ctx.fillStyle = '#ff3366';
+      ctx.fill();
+
+      // Diagnostic guidelines inside target
+      ctx.strokeStyle = 'rgba(0, 255, 136, 0.4)';
+      ctx.lineWidth = 1 * scale;
+      ctx.beginPath();
+      ctx.moveTo(targetX - radius - 10, targetY);
+      ctx.lineTo(targetX + radius + 10, targetY);
+      ctx.moveTo(targetX, targetY - radius - 10);
+      ctx.lineTo(targetX, targetY + radius + 10);
+      ctx.stroke();
+    } else if (isPlaying) {
+      // Waiting overlay
+      const scale = window.devicePixelRatio || 1;
+      ctx.fillStyle = '#ffffff';
+      ctx.font = `bold ${14 * scale}px sans-serif`;
+      ctx.textAlign = 'center';
+      ctx.fillText('Wait for target...', w / 2, h / 2);
+    }
+  }
+
+  initReflexSniper();
+</script>

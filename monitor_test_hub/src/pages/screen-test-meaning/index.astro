@@ -1,0 +1,97 @@
+---
+import Layout from '../../layouts/Layout.astro';
+---
+
+<Layout 
+  title="What is a Screen Test? - Semantic Glossary" 
+  description="Learn the differences between display hardware screen tests, film audition screen tests, and medical toxicology screen tests to avoid search intent confusion."
+  showBounceBanner={false}
+>
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12 font-sans">
+    <!-- Header -->
+    <div class="border-b border-border-hairline pb-6 mb-8 text-center sm:text-left">
+      <h1 class="heading-brand text-2xl md:text-4xl font-extrabold text-text-primary mb-3">
+        WHAT IS A "SCREEN TEST"?
+      </h1>
+      <p class="text-text-secondary text-sm md:text-base leading-relaxed">
+        The term "Screen Test" has distinct meanings across technology, medicine, and the performing arts. Review our glossary below to clarify search terminology.
+      </p>
+    </div>
+
+    <!-- Layout Grid -->
+    <div class="space-y-10">
+      <!-- 1. Display Technology -->
+      <section class="bg-bg-surface border border-border-hairline p-6 rounded-xl space-y-4 shadow-specular-top" aria-labelledby="tech-heading">
+        <h2 id="tech-heading" class="heading-brand text-lg md:text-xl font-bold text-status-pass flex items-center gap-2 font-mono">
+          1. Display &amp; Touchscreen Hardware Evaluation
+        </h2>
+        <p class="text-text-secondary text-sm leading-relaxed">
+          In electrical engineering and consumer electronics, a <strong class="text-text-primary">screen test</strong> refers to diagnostic evaluation procedures performed on electronic displays (LCD, OLED, QD-OLED) and touch digitizers to identify defect parameters.
+        </p>
+        
+        <div class="bg-bg-elevated p-4 rounded-lg border border-border-hairline space-y-2 font-mono">
+          <span class="text-text-primary text-xs font-bold block uppercase tracking-wider">Common hardware checkups:</span>
+          <ul class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs text-text-secondary list-disc pl-5 font-sans">
+            <li><strong class="text-text-primary">Dead Pixel Test:</strong> Cycles solid color patterns (white, black, RGB) to detect stuck or dead sub-pixels.</li>
+            <li><strong class="text-text-primary">Touch Grid Test:</strong> Maps coordinate matrices to verify digitizer responsiveness and isolate dead zones.</li>
+            <li><strong class="text-text-primary">Uniformity Test:</strong> Evaluates luminance consistency (dirty screen effect) using low-grey fills.</li>
+            <li><strong class="text-text-primary">Latency Test:</strong> Benchmarks input latency pacing and VSYNC refresh rate locking parameters.</li>
+          </ul>
+        </div>
+        <div class="pt-2 flex gap-4 font-mono">
+          <a href="/display-tests" class="text-status-pass text-xs font-bold hover:underline">Browse Display Tests &rarr;</a>
+          <a href="/touch-tests" class="text-status-pass text-xs font-bold hover:underline">Browse Touch Tests &rarr;</a>
+        </div>
+      </section>
+
+      <!-- 2. Medical / YMYL -->
+      <section class="bg-bg-surface border border-border-hairline p-6 rounded-xl space-y-4 shadow-specular-top" aria-labelledby="medical-heading">
+        <h2 id="medical-heading" class="heading-brand text-lg md:text-xl font-bold text-status-info flex items-center gap-2 font-mono">
+          2. Medical &amp; Clinical Diagnostics (YMYL)
+        </h2>
+        <p class="text-text-secondary text-sm leading-relaxed">
+          In clinical medicine, pathology, and toxicology, a <strong class="text-text-primary">screen test</strong> refers to rapid, preliminary diagnostic tests designed to detect substances, markers, or physical neurological conditions.
+        </p>
+
+        <div class="border border-status-info/30 bg-status-info/10 p-4 rounded-lg space-y-2">
+          <h4 class="text-status-info text-xs font-bold uppercase tracking-wider font-mono">Key medical screening types:</h4>
+          <ul class="space-y-3 text-xs text-text-secondary">
+            <li>
+              <strong class="text-text-primary">Drug Screen Test:</strong> A rapid toxicology test (often urine or saliva) checking for metabolic derivatives of controlled substances.
+            </li>
+            <li>
+              <strong class="text-text-primary">Quad Screen Test:</strong> A prenatal maternal blood serum test checking four fetal markers (AFP, hCG, Estriol, Inhibin-A) to estimate genetic probability parameters.
+            </li>
+            <li>
+              <strong class="text-text-primary">Monofilament Foot Screen Test:</strong> A physical diagnostic check evaluating nerve response thresholds in diabetic neuropathy.
+            </li>
+            <li>
+              <strong class="text-text-primary">DRVVT Screen Test:</strong> Dilute Russell's Viper Venom Time, an in-vitro coagulation test checking for lupus anticoagulants.
+            </li>
+          </ul>
+        </div>
+
+        <div class="pt-2">
+          <span class="text-text-muted text-xs block mb-2 font-mono">Need medical or substance helpline directories? Visit:</span>
+          <a href="https://www.samhsa.gov/" target="_blank" rel="noopener noreferrer" class="inline-block bg-status-info text-bg-canvas font-bold text-xs px-4 py-2 rounded hover:opacity-90 transition-opacity font-mono">
+            SAMHSA National Helpline Directory &rarr;
+          </a>
+        </div>
+      </section>
+
+      <!-- 3. Film & Acting -->
+      <section class="bg-bg-surface border border-border-hairline p-6 rounded-xl space-y-4 shadow-specular-top" aria-labelledby="acting-heading">
+        <h2 id="acting-heading" class="heading-brand text-lg md:text-xl font-bold text-status-warn flex items-center gap-2 font-mono">
+          3. Film Auditions &amp; Performance Evaluations
+        </h2>
+        <p class="text-text-secondary text-sm leading-relaxed">
+          In cinema, television, and performing arts, a <strong class="text-text-primary">screen test</strong> refers to filmed auditions where an actor's performance, camera presence, wardrobe, and chemistry with co-stars are recorded and evaluated by directors and casting agents.
+        </p>
+        <p class="text-text-muted text-xs leading-relaxed">
+          Unlike stage auditions, screen tests evaluate how an actor looks through specific camera lenses, lighting setups, and alongside selected makeup profiles.
+        </p>
+      </section>
+    </div>
+  </div>
+</Layout>
+

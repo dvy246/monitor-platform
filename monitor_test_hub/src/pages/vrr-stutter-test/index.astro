@@ -1,0 +1,98 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import Breadcrumbs from '../../components/ui/Breadcrumbs.astro';
+import VrrStutterGenerator from '../../components/diagnostics/VrrStutterGenerator.astro';
+import {
+  getAllGpuVendors,
+  getAllRefreshRates,
+  getGpuVendorLabel,
+  getRefreshRateLabel
+} from '../../engine/VrrSweepEngine';
+
+const pageTitle = "VRR, G-Sync & FreeSync Stutter & Tear Pattern Generator";
+const metaDescription = "Real-time client-side Variable Refresh Rate (VRR) diagnostic tool. Evaluates Low Frame Rate Compensation (LFC), tear-line desynchronization, and micro-stutter variance across 48Hz-540Hz displays.";
+
+const vendors = getAllGpuVendors();
+const rates = getAllRefreshRates();
+---
+
+<Layout title={pageTitle} description={metaDescription}>
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+    <Breadcrumbs items={[
+      { label: 'Display Suite', href: '/display-tests' },
+      { label: 'VRR Stutter & Tear Generator' }
+    ]} />
+
+    <!-- Page Header Deck -->
+    <header class="space-y-3 border-b border-border-hairline pb-6">
+      <div class="flex items-center gap-2 text-status-pass text-xs font-mono font-bold uppercase tracking-wider">
+        <span class="w-2.5 h-2.5 rounded-full bg-status-pass led-glow-pass"></span>
+        HARDWARE VRR DIAGNOSTIC SUITE
+      </div>
+      <h1 class="text-3xl sm:text-4xl font-extrabold text-text-primary tracking-tight font-mono">
+        VRR, G-Sync &amp; FreeSync Stutter Pattern Generator
+      </h1>
+      <p class="text-sm text-text-secondary max-w-4xl leading-relaxed">
+        Engineered for high-refresh gaming monitors and mobile VRR displays. Dynamically oscillates frame presentation intervals from 20 Hz to 540 Hz to evaluate hardware module handshake, Low Frame Rate Compensation (LFC) transition thresholds, frame pacing micro-stutter, and visual tear lines.
+      </p>
+    </header>
+
+    <!-- Main Diagnostic Generator UI Component -->
+    <section aria-label="Interactive Diagnostic Generator">
+      <VrrStutterGenerator initialVendor="nvidia-geforce" initialRate="144hz" />
+    </section>
+
+    <!-- Hardware Vendor & Refresh Rate Preset Matrix -->
+    <section class="bg-bg-surface border border-border-hairline rounded-xl p-6 space-y-6 font-mono">
+      <h2 class="text-base font-bold text-text-primary uppercase tracking-wider border-b border-border-hairline pb-3">
+        Hardware Calibration Profiles &amp; Target Suites
+      </h2>
+      <p class="text-xs text-text-secondary leading-relaxed">
+        Select a specific GPU architecture preset and target refresh rate profile to pre-render dynamic hardware synchronization benchmarks:
+      </p>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        {vendors.map((vendorKey) => (
+          <div class="bg-bg-canvas border border-border-hairline rounded-lg p-4 space-y-3 shadow-specular-top">
+            <h3 class="text-xs font-bold text-text-primary uppercase tracking-wider border-b border-border-hairline pb-2">
+              {getGpuVendorLabel(vendorKey)}
+            </h3>
+            <div class="flex flex-col gap-1.5 text-xs">
+              {rates.map((rateKey) => (
+                <a
+                  href={`/vrr-stutter-test/${vendorKey}/${rateKey}`}
+                  class="px-2.5 py-1.5 rounded border border-border-hairline text-text-secondary hover:text-text-primary hover:border-status-pass hover:bg-bg-elevated transition-colors flex items-center justify-between group focus:outline-none focus:ring-2 focus:ring-status-pass"
+                >
+                  <span>{getRefreshRateLabel(rateKey)}</span>
+                  <span class="text-[10px] text-text-muted group-hover:text-status-pass transition-colors">&rarr;</span>
+                </a>
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <!-- Technical Deep Dive & Standards Compliance -->
+    <section class="bg-bg-surface border border-border-hairline rounded-xl p-6 space-y-4 font-mono">
+      <h2 class="text-base font-bold text-text-primary uppercase tracking-wider border-b border-border-hairline pb-3">
+        Technical Assessment: Variable Refresh Rate Mechanics
+      </h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-xs text-text-secondary leading-relaxed font-sans">
+        <div class="space-y-3">
+          <h3 class="font-bold font-mono text-text-primary text-sm uppercase">1. Low Frame Rate Compensation (LFC)</h3>
+          <p>
+            Standard VESA Adaptive-Sync hardware scalers feature a minimum physical refresh threshold (typically 48 Hz). When game frame rates drop below 48 FPS, VRR scalers execute frame doubling or tripling (e.g., presenting 30 FPS at 60 Hz display refresh) to prevent panel flicker and retain fluid tear-free animation.
+          </p>
+        </div>
+
+        <div class="space-y-3">
+          <h3 class="font-bold font-mono text-text-primary text-sm uppercase">2. Micro-Stutter Variance (ms²)</h3>
+          <p>
+            Even when average frame rate appears high, frame pacing inconsistency (jitter between sequential frame presentation times) creates perceptible micro-stutter. Our engine measures real-time frame delta variance ($\sigma^2$) and tracks spikes exceeding 1.5x expected pacing.
+          </p>
+        </div>
+      </div>
+    </section>
+  </main>
+</Layout>

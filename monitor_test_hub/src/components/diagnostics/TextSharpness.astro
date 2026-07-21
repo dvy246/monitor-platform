@@ -1,0 +1,95 @@
+---
+/**
+ * TextSharpness.astro
+ * Text Sharpness & ClearType Antialiasing Inspector UI component.
+ */
+---
+
+<div class="w-full max-w-5xl mx-auto space-y-6">
+  <div class="bg-bg-surface/90 border border-border-hairline rounded-2xl p-6 backdrop-blur-xl shadow-2xl space-y-6">
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-border-hairline/60 pb-4">
+      <div>
+        <div class="flex items-center gap-2">
+          <span class="w-2.5 h-2.5 rounded-full bg-status-pass shadow-[0_0_8px_rgba(5,150,105,0.8)]"></span>
+          <h2 class="text-lg font-bold font-mono text-text-primary tracking-wide">Text Sharpness &amp; ClearType Antialiasing Inspector</h2>
+        </div>
+        <p class="text-xs text-text-muted mt-1">Subpixel font legibility &amp; color fringing inspection (RGB vs BGR / ClearType Specs).</p>
+      </div>
+
+      <div class="flex items-center gap-3">
+        <label class="text-xs font-mono text-text-muted">Subpixel Layout:</label>
+        <select id="layout-select" class="bg-bg-canvas border border-border-subtle text-text-primary text-xs font-mono rounded-lg px-3 py-1.5 focus:border-status-pass">
+          <option value="RGB" selected>Standard RGB Stripe</option>
+          <option value="BGR">Inverted BGR Stripe</option>
+          <option value="QD_OLED_TRIANGULAR">QD-OLED Triangular</option>
+          <option value="WOLED_RWBG">WOLED RWBG Stripe</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Typography Legibility Samples -->
+    <div class="space-y-4 p-6 bg-bg-canvas border border-border-subtle rounded-xl">
+      <div class="space-y-2">
+        <div class="text-[10px] font-mono text-text-muted uppercase">8pt Small UI Font (Crispness Test):</div>
+        <p class="text-[11px] font-sans text-text-primary leading-tight">The quick brown fox jumps over the lazy dog. 1234567890 !@#$%^&amp;*()</p>
+      </div>
+
+      <div class="space-y-2 pt-2 border-t border-border-hairline">
+        <div class="text-[10px] font-mono text-text-muted uppercase">12pt Body Reading Text:</div>
+        <p class="text-sm font-sans text-text-primary leading-relaxed">Display subpixel structures alter how operating system font smoothing algorithms render subpixel antialiasing bands around letters.</p>
+      </div>
+
+      <div class="space-y-2 pt-2 border-t border-border-hairline">
+        <div class="text-[10px] font-mono text-text-muted uppercase">18pt Subheading Typography:</div>
+        <p class="text-lg font-bold font-sans text-text-primary">Subpixel Text Legibility &amp; Fringing Boundary Diagnostics</p>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 pt-2">
+      <div class="bg-bg-elevated p-3.5 rounded-xl border border-border-hairline">
+        <div class="text-[10px] font-mono text-text-muted uppercase">Layout Geometry</div>
+        <div id="metric-layout" class="text-sm font-mono font-bold text-text-primary mt-1">RGB Stripe</div>
+      </div>
+      <div class="bg-bg-elevated p-3.5 rounded-xl border border-border-hairline">
+        <div class="text-[10px] font-mono text-text-muted uppercase">Contrast Ratio</div>
+        <div id="metric-text-cr" class="text-sm font-mono font-bold text-status-pass mt-1">21.0 : 1</div>
+      </div>
+      <div class="bg-bg-elevated p-3.5 rounded-xl border border-border-hairline">
+        <div class="text-[10px] font-mono text-text-muted uppercase">WCAG AAA Rating</div>
+        <div id="metric-wcag" class="text-sm font-mono font-bold text-status-pass mt-1">PASSED (AAA)</div>
+      </div>
+      <div class="bg-bg-elevated p-3.5 rounded-xl border border-border-hairline">
+        <div class="text-[10px] font-mono text-text-muted uppercase">Color Fringing Risk</div>
+        <div id="metric-fringing" class="text-sm font-mono font-bold text-status-pass mt-1">NO FRINGING</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  import { calculateContrastRatio, evaluateTextLegibility, type SubpixelLayoutType } from '../../engine/TextSharpnessEngine';
+
+  const layoutSelect = document.getElementById('layout-select') as HTMLSelectElement | null;
+  const metricLayout = document.getElementById('metric-layout');
+  const metricCr = document.getElementById('metric-text-cr');
+  const metricWcag = document.getElementById('metric-wcag');
+  const metricFringing = document.getElementById('metric-fringing');
+
+  function update() {
+    if (!layoutSelect) return;
+    const layout = layoutSelect.value as SubpixelLayoutType;
+    const cr = calculateContrastRatio(1.0, 0.0);
+    const res = evaluateTextLegibility(layout, 12, cr);
+
+    if (metricLayout) metricLayout.textContent = layout.replace(/_/g, ' ');
+    if (metricCr) metricCr.textContent = `${res.contrastRatio} : 1`;
+    if (metricWcag) metricWcag.textContent = res.isWcagAaa ? 'PASSED (AAA)' : 'PASSED (AA)';
+    if (metricFringing) {
+      metricFringing.textContent = res.hasSubpixelFringingRisk ? 'FRINGING RISK' : 'NO FRINGING';
+      metricFringing.className = `text-sm font-mono font-bold mt-1 ${res.hasSubpixelFringingRisk ? 'text-status-fail' : 'text-status-pass'}`;
+    }
+  }
+
+  layoutSelect?.addEventListener('change', update);
+  update();
+</script>

@@ -1,0 +1,263 @@
+---
+// TouchMatrixDefusal.astro component
+---
+<div class="flex-grow flex flex-col items-center justify-center p-4">
+  <div class="w-full max-w-4xl bg-gray-900/50 border border-gray-800 rounded-xl p-6 shadow-2xl flex flex-col h-[75dvh]">
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
+      <div>
+        <h3 class="text-xl font-bold heading-brand text-diagnostic-matrixGreen mb-1">Touch Matrix Defusal</h3>
+        <p class="text-gray-400 text-xs md:text-sm">
+          Multi-touch target benchmark. Energy Orbs spawn in quadrants—tap and hold them simultaneously with your fingers!
+        </p>
+      </div>
+      <div>
+        <button id="tmd-btn-reset" class="bg-gray-800 hover:bg-gray-700 text-gray-200 font-bold text-xs px-4 py-2 rounded-lg border border-gray-700 transition-all">
+          Reset Game
+        </button>
+      </div>
+    </div>
+
+    <!-- Stats -->
+    <div class="grid grid-cols-3 gap-4 mb-4 font-mono text-center">
+      <div class="bg-gray-950 p-2.5 rounded border border-gray-850">
+        <span class="text-gray-500 text-[10px] uppercase block">Concurrent Touches</span>
+        <span id="tmd-touches" class="text-lg font-bold text-white">0</span>
+      </div>
+      <div class="bg-gray-950 p-2.5 rounded border border-gray-850">
+        <span class="text-gray-500 text-[10px] uppercase block">Digitizer Stability</span>
+        <span id="tmd-stability" class="text-lg font-bold text-diagnostic-matrixGreen">100%</span>
+      </div>
+      <div class="bg-gray-950 p-2.5 rounded border border-gray-850">
+        <span class="text-gray-500 text-[10px] uppercase block">Hold Time</span>
+        <span id="tmd-time" class="text-lg font-bold text-white">0.0s</span>
+      </div>
+    </div>
+
+    <!-- Active Sandbox -->
+    <div class="flex-grow relative rounded-lg overflow-hidden bg-black border border-gray-800 touch-none">
+      <canvas id="tmd-canvas" class="w-full h-full block select-none"></canvas>
+    </div>
+  </div>
+</div>
+
+<script>
+  import { setupTouchSandbox, getNormalizedCoords } from '../../utils/mobileSandbox';
+
+  const canvas = document.getElementById('tmd-canvas') as HTMLCanvasElement;
+  const touchesText = document.getElementById('tmd-touches');
+  const stabilityText = document.getElementById('tmd-stability');
+  const timeText = document.getElementById('tmd-time');
+  const btnReset = document.getElementById('tmd-btn-reset');
+
+  let ctx: CanvasRenderingContext2D | null = null;
+  let activeTouches: Map<number, { x: number; y: number; currentOrb: number | null }> = new Map();
+  let orbs: { x: number; y: number; active: boolean; radius: number }[] = [];
+  
+  let gameStartTime = 0;
+  let isPlaying = false;
+  let jitterDelta = 0;
+  let totalMeasurements = 0;
+
+  function initTouchDefusal() {
+    if (!canvas || !touchesText || !stabilityText || !timeText || !btnReset) return;
+    ctx = canvas.getContext('2d');
+
+    setupTouchSandbox(canvas);
+
+    const resize = () => {
+      const rect = canvas.parentElement?.getBoundingClientRect();
+      canvas.width = (rect?.width || 800) * (window.devicePixelRatio || 1);
+      canvas.height = (rect?.height || 500) * (window.devicePixelRatio || 1);
+      generateOrbs();
+      draw();
+    };
+
+    window.addEventListener('resize', resize);
+    resize();
+
+    canvas.addEventListener('pointerdown', handleDown);
+    canvas.addEventListener('pointermove', handleMove);
+    canvas.addEventListener('pointerup', handleUp);
+    canvas.addEventListener('pointercancel', handleUp);
+
+    btnReset.addEventListener('click', resetGame);
+
+    // Dynamic gameloop
+    setInterval(updateGame, 30);
+  }
+
+  function generateOrbs() {
+    if (!canvas) return;
+    const w = canvas.width;
+    const h = canvas.height;
+    const scale = window.devicePixelRatio || 1;
+    const r = 45 * scale;
+
+    orbs = [
+      { x: w * 0.25, y: h * 0.25, active: false, radius: r },
+      { x: w * 0.75, y: h * 0.25, active: false, radius: r },
+      { x: w * 0.25, y: h * 0.75, active: false, radius: r },
+      { x: w * 0.75, y: h * 0.75, active: false, radius: r }
+    ];
+  }
+
+  function resetGame() {
+    activeTouches.clear();
+    generateOrbs();
+    isPlaying = false;
+    gameStartTime = 0;
+    jitterDelta = 0;
+    totalMeasurements = 0;
+
+    if (touchesText) touchesText.textContent = '0';
+    if (stabilityText) stabilityText.textContent = '100%';
+    if (timeText) timeText.textContent = '0.0s';
+    draw();
+  }
+
+  function handleDown(e: PointerEvent) {
+    if (!canvas) return;
+    if (!isPlaying) {
+      isPlaying = true;
+      gameStartTime = performance.now();
+    }
+
+    const coords = getNormalizedCoords(e.clientX, e.clientY, canvas);
+    const scale = window.devicePixelRatio || 1;
+
+    // Check hit test for all orbs
+    let matchedOrb: number | null = null;
+    for (let i = 0; i < orbs.length; i++) {
+      const orb = orbs[i];
+      const dist = Math.hypot(coords.x - orb.x, coords.y - orb.y);
+      if (dist < orb.radius && !orb.active) {
+        orb.active = true;
+        matchedOrb = i;
+        break;
+      }
+    }
+
+    activeTouches.set(e.pointerId, {
+      x: coords.x,
+      y: coords.y,
+      currentOrb: matchedOrb
+    });
+
+    updateStats();
+  }
+
+  function handleMove(e: PointerEvent) {
+    if (!activeTouches.has(e.pointerId) || !canvas) return;
+    const coords = getNormalizedCoords(e.clientX, e.clientY, canvas);
+    const touch = activeTouches.get(e.pointerId);
+
+    if (touch) {
+      // Calculate jitter (displacement offset during hold)
+      const dist = Math.hypot(coords.x - touch.x, coords.y - touch.y);
+      jitterDelta += dist;
+      totalMeasurements++;
+
+      touch.x = coords.x;
+      touch.y = coords.y;
+    }
+
+    updateStats();
+  }
+
+  function handleUp(e: PointerEvent) {
+    const touch = activeTouches.get(e.pointerId);
+    if (touch && touch.currentOrb !== null) {
+      orbs[touch.currentOrb].active = false;
+    }
+    activeTouches.delete(e.pointerId);
+    
+    if (activeTouches.size === 0) {
+      isPlaying = false;
+    }
+
+    updateStats();
+  }
+
+  function updateGame() {
+    if (isPlaying && timeText) {
+      const elapsed = (performance.now() - gameStartTime) / 1000;
+      timeText.textContent = `${elapsed.toFixed(1)}s`;
+    }
+    draw();
+  }
+
+  function updateStats() {
+    if (!touchesText || !stabilityText) return;
+    touchesText.textContent = String(activeTouches.size);
+
+    if (totalMeasurements > 0) {
+      const avgJitter = jitterDelta / totalMeasurements;
+      const scale = 1 / (window.devicePixelRatio || 1);
+      const jitterPx = avgJitter * scale;
+
+      // Calculate score based on jitter: lower jitter = higher stability
+      const stability = Math.max(0, Math.min(100, 100 - jitterPx * 8));
+      stabilityText.textContent = `${stability.toFixed(0)}%`;
+      stabilityText.className = stability > 85 ? "text-lg font-bold text-diagnostic-matrixGreen" : "text-lg font-bold text-diagnostic-deadRed";
+    }
+  }
+
+  function draw() {
+    if (!ctx || !canvas) return;
+    const w = canvas.width;
+    const h = canvas.height;
+
+    // Draw background
+    ctx.fillStyle = '#050608';
+    ctx.fillRect(0, 0, w, h);
+
+    // Draw grid bounds
+    ctx.strokeStyle = '#101318';
+    ctx.lineWidth = 1;
+    ctx.strokeRect(0, 0, w, h);
+    ctx.beginPath();
+    ctx.moveTo(w / 2, 0);
+    ctx.lineTo(w / 2, h);
+    ctx.moveTo(0, h / 2);
+    ctx.lineTo(w, h / 2);
+    ctx.stroke();
+
+    const scale = window.devicePixelRatio || 1;
+
+    // Draw active orbs
+    orbs.forEach((orb) => {
+      ctx.beginPath();
+      ctx.arc(orb.x, orb.y, orb.radius, 0, Math.PI * 2);
+      ctx.fillStyle = orb.active ? 'rgba(0, 255, 136, 0.2)' : 'rgba(255, 255, 255, 0.05)';
+      ctx.fill();
+
+      ctx.beginPath();
+      ctx.arc(orb.x, orb.y, orb.radius, 0, Math.PI * 2);
+      ctx.strokeStyle = orb.active ? '#00ff88' : '#334155';
+      ctx.lineWidth = orb.active ? 4 * scale : 2 * scale;
+      ctx.stroke();
+
+      // Core anchor dot
+      ctx.beginPath();
+      ctx.arc(orb.x, orb.y, 6 * scale, 0, Math.PI * 2);
+      ctx.fillStyle = orb.active ? '#00ff88' : '#475569';
+      ctx.fill();
+    });
+
+    // Draw active finger anchors
+    activeTouches.forEach((touch) => {
+      ctx.beginPath();
+      ctx.arc(touch.x, touch.y, 25 * scale, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(0, 229, 255, 0.15)';
+      ctx.fill();
+
+      ctx.beginPath();
+      ctx.arc(touch.x, touch.y, 25 * scale, 0, Math.PI * 2);
+      ctx.strokeStyle = '#00e5ff';
+      ctx.lineWidth = 2 * scale;
+      ctx.stroke();
+    });
+  }
+
+  initTouchDefusal();
+</script>

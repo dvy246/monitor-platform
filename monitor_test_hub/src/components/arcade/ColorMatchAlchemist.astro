@@ -1,0 +1,236 @@
+---
+// ColorMatchAlchemist.astro component
+---
+<div class="flex-grow flex flex-col items-center justify-center p-4">
+  <div class="w-full max-w-4xl bg-gray-900/50 border border-gray-800 rounded-xl p-6 shadow-2xl flex flex-col min-h-[70dvh] justify-between">
+    <div>
+      <h3 class="text-xl font-bold heading-brand text-diagnostic-matrixGreen mb-1">Color Match Alchemist</h3>
+      <p class="text-gray-400 text-xs md:text-sm mb-4">
+        Select the exact color tile that matches the Reference. Delta-E deviation ($\Delta E_{00}$) decreases each level. Tests display color calibration and visual limits.
+      </p>
+
+      <!-- Stats -->
+      <div class="grid grid-cols-3 gap-4 mb-6 font-mono text-center">
+        <div class="bg-gray-950 p-2.5 rounded border border-gray-850">
+          <span class="text-gray-500 text-[10px] uppercase block">Current Stage</span>
+          <span id="cma-stage" class="text-lg font-bold text-white">1 / 20</span>
+        </div>
+        <div class="bg-gray-950 p-2.5 rounded border border-gray-850">
+          <span class="text-gray-500 text-[10px] uppercase block">Target Delta-E</span>
+          <span id="cma-delta" class="text-lg font-bold text-diagnostic-matrixGreen">10.00</span>
+        </div>
+        <div class="bg-gray-950 p-2.5 rounded border border-gray-850">
+          <span class="text-gray-500 text-[10px] uppercase block">High Score</span>
+          <span id="cma-score" class="text-lg font-bold text-white">0</span>
+        </div>
+      </div>
+
+      <!-- Main Game Board -->
+      <div class="flex flex-col items-center justify-center gap-6 my-4">
+        <!-- Reference Tile -->
+        <div class="text-center">
+          <span class="text-gray-400 text-xs font-semibold block mb-2">REFERENCE COLOR</span>
+          <div id="cma-reference" class="w-36 h-36 md:w-44 md:h-44 rounded-xl border-4 border-white shadow-2xl transition-all" style="background-color: rgb(128, 128, 128);"></div>
+        </div>
+
+        <!-- Option Tiles -->
+        <div class="w-full">
+          <span class="text-gray-400 text-xs font-semibold block text-center mb-3">SELECT MATCHING CANDIDATE</span>
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <button class="cma-option bg-gray-800 hover:scale-105 hover:bg-gray-700 transition-all border-2 border-gray-700 rounded-xl aspect-square flex flex-col items-center justify-center p-2" data-index="0">
+              <div class="option-color w-full h-3/4 rounded-lg mb-2"></div>
+              <span class="text-xs font-bold text-gray-400">OPTION A</span>
+            </button>
+            <button class="cma-option bg-gray-800 hover:scale-105 hover:bg-gray-700 transition-all border-2 border-gray-700 rounded-xl aspect-square flex flex-col items-center justify-center p-2" data-index="1">
+              <div class="option-color w-full h-3/4 rounded-lg mb-2"></div>
+              <span class="text-xs font-bold text-gray-400">OPTION B</span>
+            </button>
+            <button class="cma-option bg-gray-800 hover:scale-105 hover:bg-gray-700 transition-all border-2 border-gray-700 rounded-xl aspect-square flex flex-col items-center justify-center p-2" data-index="2">
+              <div class="option-color w-full h-3/4 rounded-lg mb-2"></div>
+              <span class="text-xs font-bold text-gray-400">OPTION C</span>
+            </button>
+            <button class="cma-option bg-gray-800 hover:scale-105 hover:bg-gray-700 transition-all border-2 border-gray-700 rounded-xl aspect-square flex flex-col items-center justify-center p-2" data-index="3">
+              <div class="option-color w-full h-3/4 rounded-lg mb-2"></div>
+              <span class="text-xs font-bold text-gray-400">OPTION D</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Alert / Status -->
+    <div id="cma-status" class="text-center font-bold text-sm md:text-base text-gray-400 mt-4 h-6">
+      Press Start to begin color alignment.
+    </div>
+
+    <!-- Actions -->
+    <div class="flex justify-center gap-4 mt-6">
+      <button id="cma-btn-action" class="bg-diagnostic-matrixGreen hover:bg-diagnostic-matrixGreen/80 text-black font-extrabold text-sm px-6 py-2.5 rounded-lg transition-all shadow-[0_0_15px_rgba(0,255,136,0.2)]">
+        Start Game
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+  import { IccExporter } from '../../engine/IccExporter';
+
+  const stageText = document.getElementById('cma-stage');
+  const deltaText = document.getElementById('cma-delta');
+  const scoreText = document.getElementById('cma-score');
+  const referenceEl = document.getElementById('cma-reference');
+  const optionButtons = document.querySelectorAll('.cma-option');
+  const statusEl = document.getElementById('cma-status');
+  const btnAction = document.getElementById('cma-btn-action');
+
+  let currentStage = 1;
+  const maxStages = 20;
+  let targetDeltaE = 10.0;
+  let score = 0;
+  let isPlaying = false;
+
+  let refRGB = { r: 128, g: 128, b: 128 };
+  let correctIndex = 0;
+  let candidates: { r: number; g: number; b: number }[] = [];
+
+  function initColorAlchemist() {
+    if (!stageText || !deltaText || !scoreText || !referenceEl || !statusEl || !btnAction) return;
+
+    btnAction.addEventListener('click', () => {
+      if (isPlaying) {
+        endGame(false);
+      } else {
+        startGame();
+      }
+    });
+
+    optionButtons.forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        if (!isPlaying) return;
+        const target = e.currentTarget as HTMLButtonElement;
+        const index = parseInt(target.getAttribute('data-index') || '0', 10);
+        checkAnswer(index);
+      });
+    });
+  }
+
+  function startGame() {
+    isPlaying = true;
+    currentStage = 1;
+    score = 0;
+    targetDeltaE = 10.0;
+
+    if (btnAction) {
+      btnAction.textContent = 'Reset Game';
+      btnAction.classList.replace('bg-diagnostic-matrixGreen', 'bg-diagnostic-deadRed');
+      btnAction.classList.replace('text-black', 'text-white');
+    }
+
+    nextLevel();
+  }
+
+  function endGame(hasWon = false) {
+    isPlaying = false;
+    if (btnAction) {
+      btnAction.textContent = 'Start Game';
+      btnAction.classList.replace('bg-diagnostic-deadRed', 'bg-diagnostic-matrixGreen');
+      btnAction.classList.replace('text-white', 'text-black');
+    }
+
+    if (statusEl) {
+      if (hasWon) {
+        statusEl.textContent = `Victory! Completed all 20 stages. Final Score: ${score}`;
+        statusEl.className = 'text-center font-bold text-sm md:text-base text-diagnostic-matrixGreen mt-4 h-6';
+      } else {
+        statusEl.textContent = `Game Over. Final Score: ${score}`;
+        statusEl.className = 'text-center font-bold text-sm md:text-base text-diagnostic-deadRed mt-4 h-6';
+      }
+    }
+  }
+
+  function nextLevel() {
+    if (currentStage > maxStages) {
+      endGame(true);
+      return;
+    }
+
+    if (stageText) stageText.textContent = `${currentStage} / ${maxStages}`;
+    
+    // Scale target delta E down logarithmically with difficulty levels
+    targetDeltaE = 10.0 * Math.pow(0.85, currentStage - 1);
+    if (deltaText) deltaText.textContent = targetDeltaE.toFixed(2);
+
+    if (statusEl) {
+      statusEl.textContent = `Level ${currentStage}: Match the reference color.`;
+      statusEl.className = 'text-center font-bold text-sm md:text-base text-gray-300 mt-4 h-6';
+    }
+
+    // Generate random reference color (avoid pure white/black extremes)
+    refRGB = {
+      r: Math.floor(Math.random() * 150) + 50,
+      g: Math.floor(Math.random() * 150) + 50,
+      b: Math.floor(Math.random() * 150) + 50
+    };
+
+    if (referenceEl) {
+      referenceEl.style.backgroundColor = `rgb(${refRGB.r}, ${refRGB.g}, ${refRGB.b})`;
+    }
+
+    // Select correct candidate index (0-3)
+    correctIndex = Math.floor(Math.random() * 4);
+    candidates = [];
+
+    for (let i = 0; i < 4; i++) {
+      if (i === correctIndex) {
+        candidates.push({ ...refRGB });
+      } else {
+        candidates.push(generatePerturbedColor(refRGB, targetDeltaE));
+      }
+    }
+
+    // Assign color fills to candidates
+    optionButtons.forEach((btn, index) => {
+      const colorDiv = btn.querySelector('.option-color') as HTMLDivElement;
+      if (colorDiv) {
+        const color = candidates[index];
+        colorDiv.style.backgroundColor = `rgb(${color.r}, ${color.g}, ${color.b})`;
+      }
+    });
+  }
+
+  // Generate perturbed color based on targeted CIE76 Delta E
+  function generatePerturbedColor(ref: { r: number; g: number; b: number }, deltaTarget: number): { r: number; g: number; b: number } {
+    // Generate random offset vector in color space
+    const angle = Math.random() * Math.PI * 2;
+    const offset = deltaTarget * 8.5; // conversion scaler to approximate RGB space offsets
+
+    const rOffset = Math.round(Math.cos(angle) * offset);
+    const gOffset = Math.round(Math.sin(angle) * offset);
+    const bOffset = Math.round((Math.random() - 0.5) * offset * 0.5);
+
+    return {
+      r: Math.max(0, Math.min(255, ref.r + rOffset)),
+      g: Math.max(0, Math.min(255, ref.g + gOffset)),
+      b: Math.max(0, Math.min(255, ref.b + bOffset))
+    };
+  }
+
+  function checkAnswer(index: number) {
+    if (index === correctIndex) {
+      score += Math.round(100 * (10 / targetDeltaE));
+      if (scoreText) scoreText.textContent = String(score);
+      
+      if (statusEl) {
+        statusEl.textContent = 'Correct Match!';
+        statusEl.className = 'text-center font-bold text-sm md:text-base text-diagnostic-matrixGreen mt-4 h-6';
+      }
+
+      currentStage++;
+      setTimeout(nextLevel, 1000);
+    } else {
+      endGame(false);
+    }
+  }
+
+  initColorAlchemist();
+</script>

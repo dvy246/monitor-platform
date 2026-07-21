@@ -1,0 +1,248 @@
+---
+// VectorPrecisionEngine.astro component
+---
+<div class="flex-grow flex flex-col items-center justify-center p-4">
+  <div class="w-full max-w-4xl bg-bg-surface border border-border-hairline rounded-xl p-6 shadow-specular-top flex flex-col h-[75dvh] font-mono">
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
+      <div>
+        <h3 class="text-xl font-bold heading-brand text-status-pass mb-1">Vector Draw Precision Diagnostic</h3>
+        <p class="text-text-secondary text-xs md:text-sm font-sans">
+          Draw a straight line from the Green dot (Start) to the Orange dot (End). Computes the mathematical Root Mean Square (RMS) jitter deviation.
+        </p>
+      </div>
+      <div>
+        <button id="vpe-btn-reset" class="bg-bg-elevated hover:bg-bg-subtle text-text-primary font-bold text-xs px-4 py-2 rounded-lg border border-border-hairline transition-all cursor-pointer">
+          Reset Line
+        </button>
+      </div>
+    </div>
+
+    <!-- Stats -->
+    <div class="grid grid-cols-2 sm:grid-cols-3 gap-4 mb-4">
+      <div class="bg-bg-elevated p-3 rounded border border-border-hairline">
+        <span class="text-text-muted text-[10px] uppercase block">RMS Jitter Deviation</span>
+        <span id="vpe-rms" class="text-lg font-bold text-text-primary font-mono">0.0 px</span>
+      </div>
+      <div class="bg-bg-elevated p-3 rounded border border-border-hairline">
+        <span class="text-text-muted text-[10px] uppercase block">Max Peak Deviation</span>
+        <span id="vpe-max" class="text-lg font-bold text-text-primary font-mono">0.0 px</span>
+      </div>
+      <div class="bg-bg-elevated p-3 rounded border border-border-hairline col-span-2 sm:col-span-1">
+        <span class="text-text-muted text-[10px] uppercase block">Precision Score</span>
+        <span id="vpe-score" class="text-sm font-bold text-status-pass block truncate">Waiting...</span>
+      </div>
+    </div>
+
+    <!-- Drawing Sandbox -->
+    <div class="flex-grow relative rounded-lg overflow-hidden bg-black border border-border-hairline touch-none">
+      <canvas id="vector-canvas" class="w-full h-full block select-none"></canvas>
+    </div>
+  </div>
+</div>
+
+<script>
+  import { setupTouchSandbox, getNormalizedCoords } from '../../utils/mobileSandbox';
+
+  const canvas = document.getElementById('vector-canvas') as HTMLCanvasElement;
+  const rmsText = document.getElementById('vpe-rms');
+  const maxText = document.getElementById('vpe-max');
+  const scoreText = document.getElementById('vpe-score');
+  const btnReset = document.getElementById('vpe-btn-reset');
+
+  let ctx: CanvasRenderingContext25 | null = null;
+  let rawPoints: { x: number; y: number }[] = [];
+  let isDrawing = false;
+
+  // Anchor configurations
+  let startAnchor = { x: 50, y: 0 };
+  let endAnchor = { x: 0, y: 0 };
+  const anchorRadius = 15;
+
+  function initVectorEngine() {
+    if (!canvas || !rmsText || !maxText || !scoreText || !btnReset) return;
+    ctx = canvas.getContext('2d') as any;
+
+    setupTouchSandbox(canvas);
+
+    const resize = () => {
+      const rect = canvas.parentElement?.getBoundingClientRect();
+      canvas.width = (rect?.width || 800) * (window.devicePixelRatio || 1);
+      canvas.height = (rect?.height || 500) * (window.devicePixelRatio || 1);
+
+      // Re-position anchors based on resized canvas
+      const pad = 60 * (window.devicePixelRatio || 1);
+      startAnchor = { x: pad, y: canvas.height / 2 };
+      endAnchor = { x: canvas.width - pad, y: canvas.height / 2 };
+
+      resetDrawing();
+    };
+
+    window.addEventListener('resize', resize);
+    resize();
+
+    // Event handlers
+    canvas.addEventListener('pointerdown', handleDown);
+    canvas.addEventListener('pointermove', handleMove);
+    canvas.addEventListener('pointerup', handleUp);
+    canvas.addEventListener('pointercancel', handleUp);
+
+    btnReset.addEventListener('click', resetDrawing);
+  }
+
+  function resetDrawing() {
+    rawPoints = [];
+    isDrawing = false;
+    if (rmsText) rmsText.textContent = '0.0 px';
+    if (maxText) maxText.textContent = '0.0 px';
+    if (scoreText) {
+      scoreText.textContent = 'Draw line to begin';
+      scoreText.className = 'text-sm font-bold text-gray-500 block';
+    }
+    draw();
+  }
+
+  function handleDown(e: PointerEvent) {
+    if (!canvas) return;
+    const coords = getNormalizedCoords(e.clientX, e.clientY, canvas);
+    
+    // Check if pointer is close enough to Start anchor to initiate
+    const dist = Math.hypot(coords.x - startAnchor.x, coords.y - startAnchor.y);
+    if (dist < anchorRadius * 3) {
+      isDrawing = true;
+      rawPoints = [{ x: coords.x, y: coords.y }];
+      draw();
+    }
+  }
+
+  function handleMove(e: PointerEvent) {
+    if (!isDrawing || !canvas) return;
+    const coords = getNormalizedCoords(e.clientX, e.clientY, canvas);
+    rawPoints.push({ x: coords.x, y: coords.y });
+    
+    // Calculate intermediate stats
+    calculateJitter();
+    draw();
+  }
+
+  function handleUp() {
+    if (isDrawing) {
+      isDrawing = false;
+      calculateJitter(true); // Final evaluation
+      draw();
+    }
+  }
+
+  function calculateJitter(isFinal = false) {
+    if (rawPoints.length < 2 || !rmsText || !maxText || !scoreText) return;
+
+    const x1 = startAnchor.x;
+    const y1 = startAnchor.y;
+    const x2 = endAnchor.x;
+    const y2 = endAnchor.y;
+
+    const lineLen = Math.hypot(x2 - x1, y2 - y1);
+    if (lineLen === 0) return;
+
+    let sumSqDev = 0;
+    let maxDev = 0;
+
+    for (const p of rawPoints) {
+      // Perpendicular deviation formula:
+      const numerator = Math.abs((y2 - y1) * p.x - (x2 - x1) * p.y + x2 * y1 - y2 * x1);
+      const dev = numerator / lineLen;
+
+      sumSqDev += dev * dev;
+      if (dev > maxDev) maxDev = dev;
+    }
+
+    const rms = Math.sqrt(sumSqDev / rawPoints.length);
+
+    // Scale to standard CSS/device pixels for human readable stats
+    const scale = 1 / (window.devicePixelRatio || 1);
+    const finalRms = rms * scale;
+    const finalMax = maxDev * scale;
+
+    rmsText.textContent = `${finalRms.toFixed(2)} px`;
+    maxText.textContent = `${finalMax.toFixed(2)} px`;
+
+    // Scoring heuristics
+    if (isFinal) {
+      const lastPoint = rawPoints[rawPoints.length - 1];
+      const endDist = Math.hypot(lastPoint.x - endAnchor.x, lastPoint.y - endAnchor.y);
+      const reachedEnd = endDist < anchorRadius * 3;
+
+      if (!reachedEnd) {
+        scoreText.textContent = 'Incomplete (Did not reach target)';
+        scoreText.className = 'text-sm font-bold text-diagnostic-deadRed block';
+      } else if (finalRms < 2.0) {
+        scoreText.textContent = 'Esports Pro (Extremely precise)';
+        scoreText.className = 'text-sm font-bold text-diagnostic-matrixGreen block';
+      } else if (finalRms < 5.0) {
+        scoreText.textContent = 'High Quality (Standard stylus)';
+        scoreText.className = 'text-sm font-bold text-blue-400 block';
+      } else {
+        scoreText.textContent = 'High Jitter (Noisy digitizer)';
+        scoreText.className = 'text-sm font-bold text-diagnostic-deadRed block';
+      }
+    } else {
+      scoreText.textContent = 'Drawing...';
+      scoreText.className = 'text-sm font-bold text-gray-300 block';
+    }
+  }
+
+  function draw() {
+    if (!ctx || !canvas) return;
+    const w = canvas.width;
+    const h = canvas.height;
+
+    // Clear and draw black workspace
+    ctx.fillStyle = '#050608';
+    ctx.fillRect(0, 0, w, h);
+
+    // Draw reference line
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
+    ctx.setLineDash([8, 8]);
+    ctx.lineWidth = 2 * (window.devicePixelRatio || 1);
+    ctx.beginPath();
+    ctx.moveTo(startAnchor.x, startAnchor.y);
+    ctx.lineTo(endAnchor.x, endAnchor.y);
+    ctx.stroke();
+    ctx.setLineDash([]); // Reset line dash
+
+    // Draw start anchor (Green)
+    ctx.fillStyle = '#00ff88';
+    ctx.beginPath();
+    ctx.arc(startAnchor.x, startAnchor.y, anchorRadius * (window.devicePixelRatio || 1), 0, Math.PI * 2);
+    ctx.fill();
+
+    // Draw end anchor (Orange)
+    ctx.fillStyle = '#ff9900';
+    ctx.beginPath();
+    ctx.arc(endAnchor.x, endAnchor.y, anchorRadius * (window.devicePixelRatio || 1), 0, Math.PI * 2);
+    ctx.fill();
+
+    // Label anchor dots
+    ctx.fillStyle = '#000000';
+    ctx.font = `bold ${10 * (window.devicePixelRatio || 1)}px sans-serif`;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('START', startAnchor.x, startAnchor.y);
+    ctx.fillText('END', endAnchor.x, endAnchor.y);
+
+    // Draw user drawn trajectory
+    if (rawPoints.length > 0) {
+      ctx.strokeStyle = '#00e5ff';
+      ctx.lineWidth = 4 * (window.devicePixelRatio || 1);
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
+      ctx.beginPath();
+      ctx.moveTo(rawPoints[0].x, rawPoints[0].y);
+      for (let i = 1; i < rawPoints.length; i++) {
+        ctx.lineTo(rawPoints[i].x, rawPoints[i].y);
+      }
+      ctx.stroke();
+    }
+  }
+
+  initVectorEngine();
+</script>
