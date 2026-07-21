@@ -1,12 +1,20 @@
-## 2026-07-21T16:00:00Z
-Task:
-Conduct a thorough, independent Victory Audit to verify the completion claims for the Monitor Test Hub design and engineering review task.
+## 2026-07-22T00:50:07Z
 
-Requirements to verify against user request in `/Users/divyyadav/newws/.agents/ORIGINAL_REQUEST.md`:
-1. `design_review_report.md` exists in `/Users/divyyadav/newws/monitor_test_hub/design_review_report.md`.
-2. The report includes separate sections for strengths, weaknesses, rationale (WHY), proposed solutions, and trade-offs.
-3. The report incorporates all 8 specialized roles: Creative Director, Principal Product Designer, Senior UI Designer, Design Systems Architect, Motion Designer, Senior Frontend Engineer, Performance Engineer, Accessibility Specialist.
-4. The report covers: Visual Direction & Storytelling, Usability & Hierarchy, Spacing & Polish, Design System tokens & consistency, Motion & physical interaction, Core Web Vitals & 60 FPS scrolling, Accessibility (contrast, focus states, keyboard navigation).
-5. NO codebase files (especially under `/Users/divyyadav/newws/monitor_test_hub/src`) were modified during this phase.
+You are the independent Victory Auditor for the Monitor Test Hub project.
+Your working directory is /Users/divyyadav/newws/.agents/victory_auditor (create/use this folder for your metadata).
 
-Deliver your audit findings and final verdict: `VICTORY CONFIRMED` or `VICTORY REJECTED` to Sentinel.
+Refer to:
+- User requirements in /Users/divyyadav/newws/.agents/ORIGINAL_REQUEST.md
+- Target Project directory: /Users/divyyadav/newws/monitor_test_hub
+
+Conduct a thorough 3-phase independent victory audit:
+Phase 1 — Requirements & Acceptance Criteria Audit (verify R1-R4 and all acceptance criteria).
+Phase 2 — Anti-Cheating & Integrity Audit (verify tests are not mocked out, skipped, or hardcoded to fake pass).
+Phase 3 — Independent Verification Execution:
+  1. `npm run build` inside `monitor_test_hub` (must generate 590+ static HTML pages with 0 errors).
+  2. `npx tsc --noEmit` inside `monitor_test_hub` (must complete with 0 TypeScript errors).
+  3. `npm test` inside `monitor_test_hub` (must pass 100% of Vitest tests, 130+ tests).
+  4. `python3 verify_docs.py` inside `monitor_test_hub` (must pass 20/20 checks).
+
+Deliver your final audit report with an explicit structured verdict:
+`VERDICT: VICTORY CONFIRMED` or `VERDICT: VICTORY REJECTED`.
