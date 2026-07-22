@@ -12,9 +12,9 @@ This document serves as the primary technical guide and rules of engagement for 
 - **Framework**: [Astro v7](https://astro.build/) (`output: 'static'`)
 - **Styling**: Tailwind CSS v4 via `@tailwindcss/vite`
 - **Language**: TypeScript (`tsconfig.json`, strict mode)
-- **Engine Testing**: [Vitest](https://vitest.dev/) (198 unit & stress test cases across 33 test suites)
+- **Engine Testing**: [Vitest](https://vitest.dev/) (218 unit & stress test cases across 40 test suites)
 - **E2E Testing**: [Playwright](https://playwright.dev/)
-- **SEO & Performance Audit**: Lighthouse CI (`@lhci/cli`), `@astrojs/sitemap` (752 static pages generated)
+- **SEO & Performance Audit**: Lighthouse CI (`@lhci/cli`), `@astrojs/sitemap` (812 static pages generated)
 - **Hosting & Infrastructure**: Cloudflare Pages via Wrangler (`npm run deploy`)
 
 ### Repository Directory Layout
@@ -35,6 +35,8 @@ This document serves as the primary technical guide and rules of engagement for 
     ├── src/
     │   ├── engine/                          # Decoupled TypeScript calculation & math engines
     │   │   ├── HardwarePassportEngine.ts    # SHA-256 signed hardware receipt & health index engine
+    │   │   ├── WhiteScreenEngine.ts         # Planckian locus Kelvin temperature & smudge grid engine
+    │   │   ├── DeviceDatabase.ts            # Device hardware specs catalog & ISO 9241-307 RMA limits
     │   │   ├── MultiDisplaySync.ts          # Native BroadcastChannel peer window sync bus
     │   │   ├── InputLagEngine.ts            # Reaction time, hardware delay & polling stats
     │   │   ├── OledBurnInEngine.ts          # Burn-in risk model & sub-pixel degradation engine
@@ -42,11 +44,12 @@ This document serves as the primary technical guide and rules of engagement for 
     │   │   ├── TouchMatrixEngine.ts         # Multi-touch gesture & dead-zone matrix analyzer
     │   │   ├── VrrSweepEngine.ts            # Variable Refresh Rate stutter & tear engine (540Hz+)
     │   │   ├── IccExporter.ts               # Display calibration & binary ICC v4.3 profile exporter
-    │   │   └── *.test.ts                    # Vitest unit/stress/perf test suites (136 tests)
+    │   │   └── *.test.ts                    # Vitest unit/stress/perf test suites (205 tests across 35 files)
     │   ├── pages/                           # Astro page routes
     │   │   ├── index.astro                  # Homepage & real-time telemetry deck
     │   │   ├── [locale]/                    # Localized routes (es, de, fr)
-    │   │   ├── display-tests/               # Visual tests (dead-pixel, sub-pixel, uniformity, vrr, oled-burn-in, hdr-test, ppi-calculator, color-gamut)
+    │   │   ├── white-screen/                # Fullscreen white screen & fill lighting utility (/white-screen, /[color])
+    │   │   ├── display-tests/               # Visual tests (dead-pixel, dead-pixel-test/[slug], sub-pixel, uniformity, vrr, oled-burn-in, hdr-test, ppi-calculator, color-gamut)
     │   │   ├── touch-tests/                 # Mobile touch tests (dead-zone, multi-touch, vector-precision, swipe-velocity, input-lag)
     │   │   ├── input-lag-test/              # Programmatic input lag pSEO routes
     │   │   ├── oled-burn-in-risk/           # Dynamic burn-in risk pSEO routes
@@ -60,7 +63,7 @@ This document serves as the primary technical guide and rules of engagement for 
     │   │   ├── terms.astro                  # Terms & conditions page
     │   │   └── privacy.astro                # Privacy policy page
     │   ├── components/                      # UI, Diagnostic & Disclaimer components
-    │   │   ├── diagnostics/                 # DeadPixel, HardwarePassportModal, SubPixel, Uniformity, VRR, HDR, Touch components
+    │   │   ├── diagnostics/                 # WhiteScreenCanvas, DeviceDeadPixelInspector, HardwarePassportModal, etc.
     │   │   ├── disclaimers/                 # Epilepsy, Ergonomics & Hardware Limitation warnings
     │   │   ├── seo/                         # SEOHead, SchemaGraph & Medical notice banners
     │   │   └── arcade/                      # Diagnostic game components
@@ -82,13 +85,13 @@ This document serves as the primary technical guide and rules of engagement for 
 | Task | Command | Description |
 | :--- | :--- | :--- |
 | **Development** | `npm run dev` | Start Astro local dev server (`http://localhost:4321`) |
-| **Build** | `npm run build` | Compile static production site to `./dist/` (596 static pages) |
+| **Build** | `npm run build` | Compile static production site to `./dist/` (812 static pages) |
 | **Preview** | `npm run preview` | Serve production build locally |
 
 ### Testing & Quality Assurance
 | Test Suite | Command | Notes |
 | :--- | :--- | :--- |
-| **Unit & Engine Tests** | `npm test` *(or `npx vitest run`)* | Runs all 198 `src/engine/*.test.ts` test cases across 33 test suites |
+| **Unit & Engine Tests** | `npm test` *(or `npx vitest run`)* | Runs all 205 `src/engine/*.test.ts` test cases across 35 test suites |
 | **Targeted Engine Test** | `npx vitest run src/engine/HardwarePassportEngine.test.ts` | Test specific engine module |
 | **Stress & Perf Tests** | `npx vitest run src/engine/HdrTestEngine.stress.test.ts` | Benchmark under 100,000-operation high load |
 | **Type Check** | `npx tsc --noEmit` | Strict TypeScript type verification |
@@ -198,3 +201,13 @@ Monitor Test Hub includes the following production features, pure-TypeScript cal
 ### 5.6 Universal Fullscreen & Privacy Architecture
 - **Universal Fullscreen Mode**: One-click **FULLSCREEN** button in the header deck and **`F` / `F11`** hotkey support across all diagnostic instruments.
 - **100% Ad-Free & Private**: Zero third-party ad networks, zero tracking cookies, 100% client-side WebGL / Canvas execution.
+
+### 5.7 White Screen Utility & Programmatic Device pSEO Suite
+- **Universal Fullscreen White Screen & Lighting Utility (`/white-screen`)**:
+  - Fullscreen color canvas featuring Screen Wake Lock API (`navigator.wakeLock`) to prevent screen sleep.
+  - 2700K to 6500K Planckian locus color temperature sliders for video call webcam fill light (Tungsten Warm $\rightarrow$ D65 Daylight).
+  - Smudge & Dust contrast grid overlay matrix for screen cleaning.
+  - Parametric routes for `/white-screen/black-screen`, `/white-screen/blue-screen`, `/white-screen/green-screen`, `/white-screen/red-screen`, `/white-screen/yellow-screen`, and `/white-screen/zoom-light`.
+- **Programmatic Device & Resolution Dead Pixel Inspector (`/display-tests/dead-pixel-test/[slug]`)**:
+  - Device-tailored static pSEO routes for 8+ popular hardware models (MacBook Pro M3, Steam Deck OLED, iPhone 15 Pro, Nintendo Switch OLED, Alienware QD-OLED, iPad Pro M4, ASUS 540Hz ROG, 4K UHD Monitors).
+  - Pre-configured target resolution, aspect ratio, PPI, subpixel matrix, and ISO 9241-307 class limits with manufacturer warranty RMA advice.
