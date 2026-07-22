@@ -21,11 +21,26 @@ const displayTests = [
   { id: 'ppi-calculator', label: 'PPI Calculator', href: '/display-tests/ppi-calculator' },
   { id: 'color-gamut', label: 'Color Gamut & ICC', href: '/display-tests/color-gamut' }
 ];
+const vrrFaqs = [
+  {
+    question: "What is Variable Refresh Rate (VRR) and how does G-Sync/FreeSync work?",
+    answer: "Variable Refresh Rate (VRR) dynamically synchronizes your monitor's refresh rate to the instantaneous frame rate output of your graphics card (GPU). This eliminates horizontal screen tearing and minimizes stutter without the high latency penalty of traditional V-Sync."
+  },
+  {
+    question: "What is Low Framerate Compensation (LFC)?",
+    answer: "LFC automatically multiplies frame delivery (e.g., displaying 30 FPS at 60Hz or 120Hz) when the game frame rate drops below the monitor's minimum native VRR range (typically < 48Hz), preventing stutter and tearing at low frame rates."
+  },
+  {
+    question: "How do I set optimal G-Sync/FreeSync frame rate caps?",
+    answer: "To stay strictly within your display's VRR operating window, set a frame rate cap 3 to 4 FPS below your monitor's maximum refresh rate (e.g. cap at 141 FPS on a 144Hz monitor, or 237 FPS on a 240Hz monitor) and enable V-Sync in your GPU driver control panel."
+  }
+];
 ---
 
 <Layout 
   title="VRR, G-Sync & FreeSync Stutter & Tearing Test | Monitor Test Hub" 
   description="Real-time Variable Refresh Rate (VRR) stutter generator, VESA Adaptive-Sync frame pacing analyzer, LFC threshold transition checker, and screen tearing simulator."
+  faqs={vrrFaqs}
 >
   <main class="max-w-7xl mx-auto px-4 py-8 space-y-8">
     <Breadcrumbs items={breadcrumbItems} />

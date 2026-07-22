@@ -27,11 +27,26 @@ const popularDisplays = [
   { name: '24" 1080p (1920x1080)', w: 1920, h: 1080, diag: 24 },
   { name: '49" 5120x1440 Super-UW', w: 5120, h: 1440, diag: 49 },
 ];
+const ppiFaqs = [
+  {
+    question: "What is PPI and why does it matter for monitor sharpness?",
+    answer: "PPI stands for Pixels Per Inch. It measures display pixel density by dividing the diagonal resolution in pixels by the screen size in inches. Higher PPI results in crisper text, sharper images, and less visible pixel grid lines."
+  },
+  {
+    question: "What is Retina Viewing Distance (1-Arcminute Acuity)?",
+    answer: "Retina viewing distance is the threshold distance at which the human eye with 20/20 vision (1 arcminute spatial resolution) can no longer distinguish individual pixels on a display matrix."
+  },
+  {
+    question: "Why does macOS scaling cause blur on 140-160 PPI monitors?",
+    answer: "macOS is optimized for 110 PPI (1x non-Retina) or 220 PPI (2x Retina) displays. Running a 27-inch 4K monitor (~163 PPI) requires fractional 150% scaling, where macOS renders at 5K internally and downscales to 4K, which can cause subtle subpixel blur and mild GPU performance overhead."
+  }
+];
 ---
 
 <Layout 
   title="Monitor PPI Calculator — Pixel Density & Retina Distance | Monitor Test Hub"
   description="Calculate exact Pixels Per Inch (PPI), pixel pitch, retina viewing distance, and arcminute visual acuity for any monitor resolution and screen size."
+  faqs={ppiFaqs}
 >
   <main class="max-w-7xl mx-auto px-4 py-8 space-y-8">
     <Breadcrumbs items={breadcrumbItems} />

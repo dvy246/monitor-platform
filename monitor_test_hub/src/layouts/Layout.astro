@@ -9,9 +9,10 @@ export interface Props {
   title: string;
   description: string;
   showBounceBanner?: boolean;
+  faqs?: Array<{ question: string; answer: string }>;
 }
 
-const { title, description, showBounceBanner = true } = Astro.props;
+const { title, description, showBounceBanner = true, faqs = [] } = Astro.props;
 const { t, lang } = useTranslations(Astro.url.pathname);
 ---
 
@@ -19,7 +20,7 @@ const { t, lang } = useTranslations(Astro.url.pathname);
 <!DOCTYPE html>
 <html lang={lang} class="scroll-smooth">
   <head>
-    <SEOHead title={title} description={description} />
+    <SEOHead title={title} description={description} faqs={faqs} />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@400;500;600;700&family=Geist:wght@300;400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
