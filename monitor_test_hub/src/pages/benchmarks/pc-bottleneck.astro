@@ -1,0 +1,75 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import PcBottleneckInspector from '../../components/diagnostics/PcBottleneckInspector.astro';
+import SEOHead from '../../components/seo/SEOHead.astro';
+import SchemaGraph from '../../components/seo/SchemaGraph.astro';
+import { PcBottleneckEngine } from '../../engine/PcBottleneckEngine';
+import { useTranslations, localizeLink } from '../../utils/i18n';
+
+const { lang } = useTranslations(Astro.url.pathname);
+const cpus = PcBottleneckEngine.CPUS;
+const gpus = PcBottleneckEngine.GPUS;
+
+const seoTitle = "PC Bottleneck & FPS Estimator (2026) — CPU vs GPU Calculator";
+const seoDescription = "Calculate PC bottleneck percentages, CPU vs GPU utilization balance across 1080p, 1440p, and 4K, and estimate real-world game FPS without biased algorithms.";
+const canonicalUrl = "https://monitortester.com/benchmarks/pc-bottleneck";
+---
+
+<Layout title={seoTitle} description={seoDescription} canonicalUrl={canonicalUrl}>
+
+  <div class="min-h-screen bg-[#08080a] text-slate-100 py-12 px-4">
+    <div class="max-w-5xl mx-auto space-y-12">
+      <section class="text-center space-y-4">
+        <h1 class="text-4xl sm:text-5xl font-black text-white tracking-tight">
+          PC Bottleneck & <span class="text-emerald-400">FPS Estimator</span>
+        </h1>
+        <p class="text-slate-400 max-w-2xl mx-auto text-base">
+          Analyze CPU and GPU system balance across 1080p, 1440p, and 4K resolutions with transparent benchmark scoring.
+        </p>
+      </section>
+
+      <PcBottleneckInspector />
+
+      <!-- Programmatic pSEO Child Route Directory for Hardware Pairings -->
+      <section class="space-y-6 bg-[#121215] p-6 sm:p-8 rounded-2xl border border-white/10">
+        <div class="border-b border-white/10 pb-4">
+          <h2 class="text-2xl font-bold text-white">Hardware Benchmark Pairings Directory</h2>
+          <p class="text-slate-400 text-sm mt-1">Explore pre-computed bottleneck evaluations and game FPS benchmarks for 64 CPU and GPU pairings.</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 font-mono text-xs">
+          {cpus.flatMap(cpu => 
+            gpus.map(gpu => {
+              const slug = `${cpu.id}-with-${gpu.id}`;
+              const href = localizeLink(`/benchmarks/pc-bottleneck/${slug}`, lang);
+              return (
+                <a
+                  href={href}
+                  class="p-3 rounded-xl bg-[#18181b] border border-white/5 hover:border-emerald-500/50 hover:bg-emerald-500/10 text-slate-300 hover:text-white transition-all flex items-center justify-between group"
+                >
+                  <span class="truncate font-sans text-xs font-semibold">
+                    {cpu.name.replace(/AMD |Intel /g, '')} + {gpu.name.replace(/NVIDIA GeForce |AMD Radeon /g, '')}
+                  </span>
+                  <span class="text-emerald-400 group-hover:translate-x-0.5 transition-transform text-xs shrink-0 ml-2">&rarr;</span>
+                </a>
+              );
+            })
+          )}
+        </div>
+      </section>
+
+      <!-- Editorial pSEO Educational Guide -->
+      <article class="prose prose-invert max-w-none bg-[#121215] p-8 rounded-2xl border border-white/10 space-y-6">
+        <h2 class="text-2xl font-bold text-white">Understanding PC Hardware Bottlenecks</h2>
+        <p class="text-slate-300 text-sm leading-relaxed">
+          A bottleneck in a personal computer occurs when one component—most commonly either the processor (CPU) or graphics card (GPU)—reaches 100% capacity, preventing the remaining system components from achieving their full performance potential.
+        </p>
+        
+        <h3 class="text-xl font-semibold text-emerald-400">Resolution Shifts: CPU-Bound vs GPU-Bound</h3>
+        <p class="text-slate-300 text-sm leading-relaxed">
+          At 1080p resolution, games process frames so rapidly that the CPU often becomes the primary limiting factor in preparing draw calls. However, as resolution increases to 1440p and 4K UHD, the workload shifts dramatically to the GPU due to the exponential increase in pixel counts (8.3 million pixels at 4K vs 2.07 million at 1080p).
+        </p>
+      </article>
+    </div>
+  </div>
+</Layout>

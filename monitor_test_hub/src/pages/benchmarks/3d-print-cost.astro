@@ -1,0 +1,65 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import FilamentCostInspector from '../../components/diagnostics/FilamentCostInspector.astro';
+import SEOHead from '../../components/seo/SEOHead.astro';
+import SchemaGraph from '../../components/seo/SchemaGraph.astro';
+
+import { FilamentCostEngine } from '../../engine/FilamentCostEngine';
+import { useTranslations, localizeLink } from '../../utils/i18n';
+
+const { lang } = useTranslations(Astro.url.pathname);
+const materials = FilamentCostEngine.MATERIALS;
+
+const seoTitle = "3D Print Cost Calculator & Filament Material Estimator (2026)";
+const seoDescription = "Calculate 3D printing filament costs, electricity consumption, machine wear, failure rate cushions, and commercial Etsy retail selling prices.";
+const canonicalUrl = lang === 'en'
+  ? "https://monitortester.com/benchmarks/3d-print-cost"
+  : `https://monitortester.com/${lang}/benchmarks/3d-print-cost`;
+---
+
+<Layout title={seoTitle} description={seoDescription} canonicalUrl={canonicalUrl}>
+
+  <div class="min-h-screen bg-[#08080a] text-slate-100 py-12 px-4 font-sans">
+    <div class="max-w-5xl mx-auto space-y-12">
+      <section class="text-center space-y-4">
+        <h1 class="text-4xl sm:text-5xl font-black text-white tracking-tight">
+          3D Print Cost & <span class="text-purple-400">Filament Estimator</span>
+        </h1>
+        <p class="text-slate-400 max-w-2xl mx-auto text-base">
+          Accurate material density calculations, power consumption, failure cushion factors, and commercial pricing models.
+        </p>
+      </section>
+
+      <FilamentCostInspector />
+
+      <!-- 3D Printing Filament Material Directory -->
+      <section class="space-y-6 bg-[#121215] p-6 sm:p-8 rounded-2xl border border-white/10">
+        <div class="border-b border-white/10 pb-4">
+          <h2 class="text-2xl font-bold text-white font-sans">3D Printing Filament Material Directory</h2>
+          <p class="text-slate-400 text-sm mt-1">Explore material density specifications, cost models, and retail pricing strategies for popular 3D printing filaments.</p>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 font-mono text-xs">
+          {materials.map(mat => {
+            const href = localizeLink(`/benchmarks/3d-print-cost/${mat.id}`, lang);
+            return (
+              <a
+                href={href}
+                class="p-3.5 rounded-xl bg-[#18181b] border border-white/5 hover:border-purple-400/50 hover:bg-purple-400/10 text-slate-300 hover:text-white transition-all flex items-center justify-between group"
+              >
+                <div class="space-y-1 truncate pr-2 font-sans">
+                  <div class="font-bold text-purple-400 text-xs">{mat.name} Filament</div>
+                  <div class="text-[11px] text-slate-400 group-hover:text-slate-200 font-mono">
+                    Density: {mat.densityGcm3} g/cm³ | ${mat.defaultCostPerKgUsd}/kg
+                  </div>
+                </div>
+                <span class="text-purple-400 group-hover:translate-x-0.5 transition-transform text-xs shrink-0">&rarr;</span>
+              </a>
+            );
+          })}
+        </div>
+      </section>
+    </div>
+  </div>
+</Layout>
+

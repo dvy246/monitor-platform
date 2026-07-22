@@ -7,60 +7,270 @@ import SchemaGraph from '../../components/seo/SchemaGraph.astro';
 export function getStaticPaths() {
   const keyboardCategories = [
     {
+      slug: 'online-keyboard-test',
+      title: 'Online Keyboard Test | Free Web Keyboard Tester & Key Code Inspector',
+      h1: 'Online Keyboard Test & Hardware Key Code Diagnostic Utility',
+      description: 'Free online keyboard test utility to verify every key on your physical keyboard. Test key switches, WASD gaming combos, and key event codes in real-time.',
+      badge: 'ONLINE KEYBOARD DIAGNOSTIC UTILITY',
+      faqs: [
+        { question: "How do I test my keyboard online?", answer: "Press any physical key on your keyboard to instantly see visual highlight feedback, event code, and actuation state." },
+        { question: "Is this online keyboard test free and safe?", answer: "Yes, 100% free and client-side executed with zero keystroke data sent to external servers." },
+        { question: "What is a keyboard test utility?", answer: "A web utility that captures browser KeyboardEvent signals to audit key matrix health and switch chatter." },
+        { question: "Does this tool work on all desktop and mobile browsers?", answer: "Yes, fully compatible with Chrome, Safari, Firefox, Edge, and Brave across Windows, macOS, Linux, and ChromeOS." },
+        { question: "How do I know if a key is non-responsive or broken?", answer: "Keys that fail to highlight in green upon physical depression indicate membrane damage, switch leaf oxidation, or PCB trace breakage." },
+        { question: "What is the difference between physical keys and virtual key codes?", answer: "Physical keys represent switch locations on your key matrix, while virtual key codes reflect OS layout mappings." },
+        { question: "How do I test multimedia and function keys (F1-F12)?", answer: "Ensure Fn lock is enabled or hold the Fn key while pressing function keys to verify secondary layer registration." },
+        { question: "Can I test external USB and Bluetooth keyboards?", answer: "Yes, all connected HID input devices—wired USB, 2.4GHz dongle, or Bluetooth—are detected." },
+        { question: "How do I export my keyboard test results?", answer: "Click 'Download Certificate' to save a JSON hardware passport certifying your keyboard's key matrix coverage." },
+        { question: "Why does my web browser block certain system hotkeys like Ctrl+W?", answer: "Browsers reserve specific OS shortcut combinations for browser window management; all standard text keys and modifier combos register." }
+      ]
+    },
+    {
+      slug: 'chromebook-keyboard-test',
+      title: 'Chromebook Keyboard Test | Online ChromeOS Key Tester & Everything Key Check',
+      h1: 'Online Chromebook Keyboard Tester & ChromeOS Matrix Tool',
+      description: 'Test your Chromebook keyboard online. Verify ChromeOS function keys, Everything (Search) key, launcher shortcuts, and touchpad keyboard combinations.',
+      badge: 'CHROMEOS CHROMEBOOK MATRIX',
+      faqs: [
+        { question: "How do I test a Chromebook keyboard online?", answer: "Open Monitor Test Hub on your Chromebook and press every key on your keyboard to verify ChromeOS key registration." },
+        { question: "How does the Chromebook Everything key register in the online keyboard test?", answer: "The Search / Everything key registers as MetaLeft or Search in browser KeyboardEvent telemetry." },
+        { question: "Why are top-row function keys missing standard F1-F12 labels on Chromebooks?", answer: "ChromeOS replaces F1-F12 with dedicated media, back/forward, refresh, and full-screen control keys." },
+        { question: "How do I test top-row media keys on ChromeOS?", answer: "Press Back, Forward, Refresh, Fullscreen, and Brightness controls; the test utility highlights corresponding top-row keys." },
+        { question: "What causes Chromebook key chatter or stuck keys?", answer: "Debris under membrane dome switches or ChromeOS sticky key accessibility settings can cause double-character inputs." },
+        { question: "Can I test external USB keyboards connected to a Chromebook?", answer: "Yes, external USB or Bluetooth keyboards attached to ChromeOS devices report full ANSI/ISO matrices." },
+        { question: "How do I verify AltGr and international ChromeOS layout options?", answer: "Switch ChromeOS input methods under Settings -> Device -> Keyboard to test localized layout mappings." },
+        { question: "Does this online Chromebook keyboard test require installing an extension?", answer: "No extension or app installation is required; it runs 100% natively in Chrome Browser." },
+        { question: "How do I test Chromebook touchpad tap-to-click and gestures?", answer: "Use our companion Touch Matrix test tool to benchmark Chromebook trackpad multi-touch gestures." },
+        { question: "Can I test Chromebook Fn key combinations?", answer: "Hold Search + top-row keys on supported Chromebook models to test standard F1-F12 function layer events." }
+      ]
+    },
+    {
+      slug: 'mac-keyboard-test',
+      title: 'Mac Keyboard Test | Apple Magic Keyboard & MacBook Key Diagnostic',
+      h1: 'Apple Mac & MacBook Pro Keyboard Diagnostic Tester',
+      description: 'Online Mac keyboard test for Apple Magic Keyboards, MacBooks, and Mac mini setups. Check Command (⌘), Option (⌥), Control (⌃), and Fn key layers.',
+      badge: 'APPLE MACOS & MACBOOK MATRIX',
+      faqs: [
+        { question: "How do I test a Mac keyboard or MacBook online?", answer: "Press any key on your Mac keyboard to verify Command (⌘), Option (⌥), Control (⌃), and function key registration." },
+        { question: "How do I test Apple Command (⌘) and Option (⌥) modifier keys?", answer: "Press Left/Right Command and Left/Right Option keys; the tester verifies MetaLeft/MetaRight and AltLeft/AltRight events." },
+        { question: "Does this tool test MacBook butterfly and scissor switch keyboards?", answer: "Yes, it accurately diagnoses sticky butterfly keys, missing keystrokes, and scissor switch spring bounce." },
+        { question: "How do I test Fn layer keys and Globe (🌐) key on macOS?", answer: "Press Fn or Globe while targeting F1-F12 or media control keys to verify secondary macOS shortcut dispatch." },
+        { question: "Why does pressing Command+Q close the browser window during testing?", answer: "macOS reserves ⌘Q for application quit; test Command keys in combination with letter keys like ⌘A or ⌘C instead." },
+        { question: "Can I test Apple Magic Keyboards connected via Bluetooth?", answer: "Yes, wireless Magic Keyboards report identical USB HID key code events over Bluetooth." },
+        { question: "How do I test the Eject or Touch ID power key?", answer: "Touch ID hardware power buttons do not dispatch standard browser JS keyboard events due to Apple Secure Enclave security." },
+        { question: "How do I verify macOS Option-code accent character entry?", answer: "Hold Option while pressing letter keys to inspect unicode character generation and VirtualKey mappings." },
+        { question: "What should I do if my MacBook keyboard suffers liquid damage?", answer: "Run a full key matrix scan; dark/unresponsive keys indicate corroded trace lines requiring top-case replacement." },
+        { question: "Can I test external PC keyboards connected to a Mac?", answer: "Yes, PC Windows keys map automatically to Command (⌘) and Alt maps to Option (⌥) in macOS." }
+      ]
+    },
+    {
+      slug: 'laptop-keyboard-test',
+      title: 'Laptop Keyboard Test | Notebook Membrane Matrix & Function Key Checker',
+      h1: 'Laptop & Notebook Keyboard Diagnostic Tester',
+      description: 'Check laptop keys for dead membrane contacts, Fn key lock combinations, liquid damage shorts, and key press response time across Windows & Mac laptops.',
+      badge: 'NOTEBOOK MEMBRANE MATRIX',
+      faqs: [
+        { question: "How do I test my laptop keyboard for dead keys?", answer: "Press every key on your laptop keyboard; responsive keys turn green, while dead keys remain unhighlighted." },
+        { question: "What causes individual laptop keys to stop working?", answer: "Common causes include dust accumulation beneath scissor switches, ribbon cable disconnection, or liquid spill short circuits." },
+        { question: "How do I test Fn (Function) lock combinations on a laptop?", answer: "Toggle your laptop's Fn Lock key (Fn+Esc or Fn+Lock) and press top-row keys to test dual-function behavior." },
+        { question: "How do I know if liquid damage broke my laptop keyboard?", answer: "Liquid spills cause adjacent key matrix shorting—pressing one key registers multiple random surrounding keys simultaneously." },
+        { question: "Can I replace individual laptop keycaps and scissor clips?", answer: "Yes, individual keycaps and plastic scissor hinges can be replaced if the underlying rubber dome remains intact." },
+        { question: "Why do some laptop keyboards lack a physical Numpad?", answer: "Compact 13-inch and 14-inch laptops omit Numpads to fit chassis dimensions; test number row keys 1-0 instead." },
+        { question: "How do I test laptop backlight control keys?", answer: "Press Fn + brightness shortcut keys; while screen brightness adjusts in OS, browser registers Fn key combination codes." },
+        { question: "Does this test work on Dell, Lenovo ThinkPad, HP, and ASUS laptops?", answer: "Yes, compatible with all laptop brands, membrane types, and scissor-switch mechanisms." },
+        { question: "How do I fix double-typing letters on a laptop keyboard?", answer: "Clean under keycaps with compressed air or adjust Windows Filter Keys keyboard repeat delay settings." },
+        { question: "How do I test an external USB keyboard plugged into a laptop?", answer: "Simply plug in your USB or wireless keyboard; the online test automatically detects secondary input devices." }
+      ]
+    },
+    {
+      slug: 'keyboard-test-speed',
+      title: 'Keyboard Speed Test | Typing WPM & APM Key Press Speedometer',
+      h1: 'Keyboard Speed Test & WPM Typing Velocity Benchmark',
+      description: 'Benchmark your typing speed in WPM (Words Per Minute) and APM (Actions Per Minute). Track keypress frequency, accuracy, and keystroke speed in real-time.',
+      badge: 'TYPING SPEED & APM BENCHMARK',
+      faqs: [
+        { question: "How is typing speed (WPM) calculated in this keyboard test?", answer: "Words Per Minute is calculated by taking total raw keystrokes per minute and dividing by 5—the standard word length unit." },
+        { question: "What is the difference between WPM and APM?", answer: "WPM measures standardized word output, while APM (Actions Per Minute) counts every physical keystroke and mouse click performed." },
+        { question: "What is considered a good typing speed on a keyboard?", answer: "Average typing speed is 40 WPM; competitive typists average 70-90 WPM, and professional typists exceed 120 WPM." },
+        { question: "How does keyboard switch actuation distance affect typing speed?", answer: "Speed switches with short actuation travel (1.0mm - 1.2mm) reduce finger travel time, enabling faster key cycles." },
+        { question: "Can mechanical keyboards increase typing speed compared to membrane?", answer: "Yes, tactile and linear mechanical switches provide consistent actuation feedback, reducing finger fatigue." },
+        { question: "How does typing accuracy affect net WPM speed?", answer: "Uncorrected errors reduce net WPM score; maintaining 98%+ accuracy produces higher sustained typing velocity." },
+        { question: "What is Ratatype and how does this speed test compare?", answer: "Like Ratatype, our typing speed test evaluates finger agility and WPM, with added real-time APM telemetry." },
+        { question: "How do I test burst typing speed versus sustained typing speed?", answer: "Burst speed measures 15-second peak keystroke velocity, while sustained speed evaluates 60-second endurance." },
+        { question: "Does key chatter or double-typing skew typing speed tests?", answer: "Faulty switches with chatter inject extra ghost keystrokes; our engine filters chatter to ensure genuine WPM scores." },
+        { question: "How can I improve my keyboard typing speed?", answer: "Practice touch typing ergonomics, maintain proper wrist position, and avoid looking down at physical keycaps." }
+      ]
+    },
+    {
+      slug: 'blank-keyboard-test',
+      title: 'Blank Keyboard Test | Touch Typing Muscle Memory & Blind Key Inspector',
+      h1: 'Blank Keyboard Touch Typing & Memory Diagnostic Tool',
+      description: 'Test your touch typing accuracy on a blank keyboard layout with hidden key legends. Master touch typing speed and muscle memory key placement.',
+      badge: 'TOUCH TYPING MUSCLE MEMORY TEST',
+      faqs: [
+        { question: "What is a blank keyboard test?", answer: "A diagnostic test mode where key legends are concealed on screen, forcing typists to rely purely on tactile muscle memory." },
+        { question: "Why do typists use blank keyboards or blank keycaps?", answer: "Concealing key legends prevents looking at fingers, training muscle memory for maximum touch typing speed." },
+        { question: "How do home row bumps (F and J keys) help touch typing?", answer: "Tactile homing bars on F and J index finger keys allow typists to align hands without looking at the board." },
+        { question: "How does the blank keyboard test grade accuracy?", answer: "Correctly pressed keys illuminate green, while missed key attempts highlight red with spatial delta coordinates." },
+        { question: "Can beginners use the blank keyboard test to learn touch typing?", answer: "Yes, practicing on blank layouts accelerates muscle memory retention faster than labeled keyboards." },
+        { question: "What keyboard layout standards are supported in blank mode?", answer: "Supports ANSI 104-key US English, ISO 105-key European, Apple Mac, and 60% compact blank layouts." },
+        { question: "Does blank keycap testing work for special symbols and punctuation?", answer: "Yes, tests number row shift symbols (!@#$%^&*), brackets, and operator keys without visual hints." },
+        { question: "What mechanical switch type is best for touch typing on blank keys?", answer: "Tactile switches (like Cherry MX Brown or Boba U4T) provide distinct bump feedback at the exact actuation point." },
+        { question: "How long does it take to master touch typing on a blank keyboard?", answer: "Most typists achieve 60+ WPM on blank keyboards within 2 to 4 weeks of daily 15-minute practice." },
+        { question: "Can I toggle key legend visibility on and off during the test?", answer: "Yes, click 'Toggle Key Labels' to reveal or hide legend markings at any point during testing." }
+      ]
+    },
+    {
+      slug: 'keyboard-test-latency',
+      title: 'Keyboard Latency Test | Hardware Bounce & Polling Delay Inspector',
+      h1: 'Keyboard Latency & Polling Response Time Diagnostic Tool',
+      description: 'Measure keyboard latency, microsecond switch bounce times, and USB HID polling report rates. Compare hardware responsiveness against PassMark benchmarks.',
+      badge: 'HARDWARE LATENCY & BOUNCE TIMING ANALYZER',
+      faqs: [
+        { question: "How is keyboard input latency measured online?", answer: "Measures microsecond delta between physical switch contact closure dispatch and browser DOM Event Loop rendering." },
+        { question: "What is USB HID polling rate and how does it affect keyboard latency?", answer: "Standard keyboards poll at 125Hz (8ms delay), while gaming keyboards poll at 1000Hz (1ms) or 8000Hz (0.125ms)." },
+        { question: "What is switch bounce time (debounce delay)?", answer: "When metallic switch contacts touch, they vibrate for 1-5ms; MCU debounce algorithms filter this chatter to prevent double-typing." },
+        { question: "How does this tool compare to PassMark KeyboardTest software?", answer: "Provides browser-native microsecond timestamp telemetry, NKRO matrix mapping, and bounce timing without software installation." },
+        { question: "What causes high keyboard latency on Windows or macOS?", answer: "Causes include low USB polling rate, wireless 2.4GHz signal interference, Bluetooth sleep delays, or high DPC latency." },
+        { question: "Do wireless gaming keyboards have higher latency than wired USB?", answer: "Modern 2.4GHz wireless gaming keyboards achieve sub-1ms latency, matching or exceeding standard wired USB connections." },
+        { question: "What is Hall Effect magnetic switch rapid trigger technology?", answer: "Hall Effect switches use magnetic sensors to measure exact key position, allowing instantaneous reset without physical debounce delay." },
+        { question: "How does display refresh rate (144Hz vs 360Hz) impact perceived keyboard latency?", answer: "Higher refresh rate monitors display keystroke visual feedback faster, reducing click-to-photon latency." },
+        { question: "Can Bluetooth keyboards be used for low-latency gaming?", answer: "Bluetooth is limited to 125Hz polling (~8-15ms latency) and is not recommended for competitive fast-paced gaming." },
+        { question: "How do I export latency and bounce test logs?", answer: "Click 'Download Certificate' to export a cryptographically signed JSON ledger containing microsecond latency telemetry." }
+      ]
+    },
+    {
+      slug: 'keyboard-test-keys',
+      title: 'Keyboard Keys Test | Key Event Code & Virtual Key Code Inspector',
+      h1: 'Keyboard Key Code & Event Inspector Diagnostic Tool',
+      description: 'Inspect event.code, event.key, and virtual key codes for every pressed key. Troubleshoot non-responsive keys, remapped keys, and custom keymaps.',
+      badge: 'KEY CODE & EVENT INSPECTOR',
+      faqs: [
+        { question: "What is a keyboard keys test?", answer: "A diagnostic utility that inspects raw DOM KeyboardEvent attributes—event.code, event.key, event.keyCode, and event.which." },
+        { question: "What is the difference between event.code and event.key in JavaScript?", answer: "event.code identifies the physical key location on the board (e.g. KeyA), while event.key reflects the active OS layout character (e.g. a or A)." },
+        { question: "How do I identify non-functioning or dead keys on my keyboard?", answer: "Press every physical key; any key that fails to emit a KeyboardEvent signal is electronically unresponsive." },
+        { question: "How do I test remapped keys or custom VIA/QMK keymaps?", answer: "Press remapped keys to verify whether your custom firmware correctly outputs target key codes to the host OS." },
+        { question: "Why do some multimedia keys (Volume, Play/Pause) not show standard key codes?", answer: "OS media keys dispatch special Consumer Control HID usages that browsers capture as MediaPlayPause or AudioVolumeUp." },
+        { question: "How do I inspect modifier key combinations (Shift, Ctrl, Alt, Meta)?", answer: "Hold modifier keys while pressing primary keys to view active boolean modifier flags (shiftKey, ctrlKey, altKey, metaKey)." },
+        { question: "How do I test Num Lock, Caps Lock, and Scroll Lock toggle keys?", answer: "Toggle lock keys; the inspector displays state changes for getModifierState('CapsLock') and lock LED indicators." },
+        { question: "Can I test international layouts like AZERTY, QWERTZ, or Dvorak?", answer: "Yes, physical key locations remain constant while event.key values adapt dynamically to your active OS language layout." },
+        { question: "Why does my web browser capture some keys differently than desktop apps?", answer: "Browsers intercept web-safe HID key codes; system-level keys like PrtScn or OS Sleep may be handled directly by OS kernel." },
+        { question: "How do I copy raw key code log data for software development?", answer: "Click 'Copy Event Log' to copy JSON formatted KeyboardEvent telemetry to your clipboard for debugging." }
+      ]
+    },
+    {
       slug: 'mechanical-keyboard-test',
       title: 'Mechanical Keyboard Test | Switch Chatter & Debounce Checker',
       h1: 'Mechanical Keyboard Switch & Chatter Diagnostic Tool',
       description: 'Benchmark mechanical switches (Cherry MX, Gateron, Kailh, Razer) for microsecond chatter double-typing, key spring actuation, and individual diode isolation.',
-      badge: 'MECHANICAL SWITCH SPECIFIC BENCHMARK'
-    },
-    {
-      slug: 'mac-keyboard-test',
-      title: 'Mac Keyboard Tester | Apple Magic Keyboard & Command Key Test',
-      h1: 'Apple Mac & Magic Keyboard Diagnostic Tester',
-      description: 'Online test tool for Apple Mac keyboards, Magic Keyboards, and MacBook Pro scissor/butterfly switches. Verifies Command (⌘), Option (⌥), and Fn keys.',
-      badge: 'APPLE MACOS KEYBOARD MATRIX'
+      badge: 'MECHANICAL SWITCH SPECIFIC BENCHMARK',
+      faqs: [
+        { question: "What causes mechanical keyboard switch chatter?", answer: "Oxidized metallic contact leaves, weak spring tension, or dust contamination cause switch contact leaves to bounce multiple times during a single press." },
+        { question: "How does the mechanical switch chatter test detect double typing?", answer: "Logs microsecond timestamp deltas between key release and immediate re-press (t_delta <= 35ms), flagging chatter defects." },
+        { question: "Which mechanical switches are supported?", answer: "Supports Cherry MX, Gateron, Kailh, Outemu, Razer, SteelSeries Apex OmniPoint, and Wooting Lekker magnetic Hall Effect switches." },
+        { question: "Can I test hot-swappable PCB switch sockets?", answer: "Yes, testing after hot-swapping individual switches verifies whether chatter was caused by the switch stem or PCB socket." },
+        { question: "What is switch actuation force and travel distance?", answer: "Actuation force (grams) is the physical pressure required to close contacts, while actuation travel (mm) is distance pressed before signal registers." },
+        { question: "How do tactile, linear, and clicky switches differ?", answer: "Linear switches press smoothly, tactile switches have a tactile bump at actuation, and clicky switches add an audible click mechanism." },
+        { question: "How do I clean a chatty mechanical switch without desoldering?", answer: "Apply 1-2 drops of 99% isopropyl alcohol into the switch stem while depressed and actuate repeatedly to dissolve contact oxide." },
+        { question: "Can software debounce delay fix switch chatter?", answer: "Yes, increasing MCU debounce delay settings in QMK/VIA or Windows registry filters chatter, though it adds minor input latency." },
+        { question: "What is optical switch technology?", answer: "Optical switches break an infrared light beam instead of making metallic contact, completely eliminating mechanical contact chatter." },
+        { question: "How do I export my mechanical switch test results?", answer: "Click 'Download Certificate' to save a JSON hardware passport certifying your mechanical switch chatter status." }
+      ]
     },
     {
       slug: 'gaming-keyboard-test',
       title: 'Gaming Keyboard Test | WASD Ghosting & 1000Hz NKRO Matrix',
       h1: 'Gaming Keyboard Anti-Ghosting & WASD Matrix Benchmark',
       description: 'Test gaming keyboard WASD anti-ghosting, 1000Hz polling rate latency, and multi-key simultaneous skill combinations for CS2, Valorant, Fortnite, and League of Legends.',
-      badge: 'ESPORTS GAMING KEYBOARD MATRIX'
-    },
-    {
-      slug: 'laptop-keyboard-test',
-      title: 'Laptop Keyboard Test | Dead Key Matrix & Function Key Checker',
-      h1: 'Laptop & Notebook Keyboard Dead Key Diagnostic Tool',
-      description: 'Check laptop keys for dead membrane contacts, liquid damage short circuits, and Fn layer key combination registration. Works on Windows, ChromeOS, and macOS.',
-      badge: 'NOTEBOOK MEMBRANE MATRIX'
+      badge: 'ESPORTS GAMING KEYBOARD MATRIX',
+      faqs: [
+        { question: "Why is anti-ghosting crucial for gaming keyboards?", answer: "In fast-paced games, pressing WASD plus Shift+Space simultaneously requires zero key blocking or phantom keystrokes." },
+        { question: "How do I test WASD gaming combinations?", answer: "Hold W+A+S+D while pressing Shift, Ctrl, Space, and Q/E/R/F to verify that all simultaneous key inputs register cleanly." },
+        { question: "What is 1000Hz polling rate on gaming keyboards?", answer: "A 1000Hz USB polling rate sends keystroke reports every 1ms to the PC, reducing input lag compared to standard 125Hz keyboards." },
+        { question: "What is Rapid Trigger technology on analog gaming keyboards?", answer: "Rapid Trigger resets key actuation the instant a key moves upward, allowing faster re-presses in tactical shooters like CS2." },
+        { question: "Can membrane keyboards be used for high-level gaming?", answer: "While membrane keyboards work, limited 2KRO/6KRO rollover can cause key blocking during complex multi-key gaming combos." },
+        { question: "How does NKRO differ from 6KRO in gaming?", answer: "6KRO limits simultaneous key registers to 6 keys, while NKRO allows unlimited simultaneous key presses across the entire board." },
+        { question: "What gaming keyboard switches have the fastest response time?", answer: "Optical and Hall Effect magnetic switches achieve the fastest actuation (0.1ms - 0.5ms) without mechanical debounce delay." },
+        { question: "How do I test macro key bindings on gaming keyboards?", answer: "Press programmed G-keys or macro combinations to verify that single keypresses dispatch intended macro command sequences." },
+        { question: "Why does my gaming keyboard freeze when pressing multiple keys?", answer: "Keyboards without diodes suffer matrix ghosting; the controller halts input processing to prevent phantom keystrokes." },
+        { question: "Can I test RGB lighting synchronization with keystrokes?", answer: "Keystroke events dispatch in real-time; reactive RGB lighting profiles trigger on switch contact closure." }
+      ]
     },
     {
       slug: '60-percent-keyboard-test',
       title: '60% Keyboard Tester | Compact Layer & Fn Combination Test',
       h1: '60% & 65% Compact Keyboard Layer Diagnostic Tool',
       description: 'Benchmark 60%, 65%, and 75% compact mechanical keyboards. Test FN layer arrow keys, function key toggles, and custom keymap rebindings.',
-      badge: '60% / 65% COMPACT LAYOUT SPEC'
+      badge: '60% / 65% COMPACT LAYOUT SPEC',
+      faqs: [
+        { question: "What is a 60% compact keyboard?", answer: "A 60% keyboard layout removes the Numpad, Arrow keys, and F1-F12 function row, retaining only the core typing cluster." },
+        { question: "How do I access Arrow keys on a 60% keyboard?", answer: "Hold the Fn key while pressing I/J/K/L or W/A/S/D to trigger secondary Arrow key layer bindings." },
+        { question: "How do I test Fn layer combinations on a 60% keyboard?", answer: "Press Fn + number keys (1-0) to verify F1-F12 function code generation in the online test utility." },
+        { question: "What is the difference between 60%, 65%, and 75% keyboards?", answer: "60% has 61 keys; 65% adds dedicated Arrow keys; 75% includes Arrow keys plus a compact top Function row." },
+        { question: "Can I test custom QMK/VIA keymap layers?", answer: "Yes, press your customized layer keys to verify that QMK/VIA firmware correctly dispatches remapped key codes." },
+        { question: "How do I test Tap-Dance keys (tap for Slash, hold for Shift)?", answer: "Tap and hold dual-role keys to verify whether your keyboard dispatches tap versus hold key codes as expected." },
+        { question: "Why do some 60% keyboards miss physical Delete or Home/End keys?", answer: "Compact layouts map Delete, Home, End, and Page Up/Down to Fn + Backspace or Fn + letter combinations." },
+        { question: "Are 60% mechanical keyboards good for gaming?", answer: "Yes, compact 60% keyboards maximize desk mousepad area, allowing low-DPI gaming mouse arm swipes." },
+        { question: "How do I test Fn lock toggle on compact keyboards?", answer: "Press Fn + Space or Fn + Ctrl (depending on board model) to lock secondary Fn layer controls." },
+        { question: "Can I test split spacebar 60% layouts?", answer: "Yes, split spacebar keys (e.g. Backspace, Space, Fn) register as distinct physical key switches in the test matrix." }
+      ]
     },
     {
       slug: 'wireless-bluetooth-keyboard-test',
       title: 'Wireless Bluetooth Keyboard Test | Packet Loss & Latency Checker',
       h1: 'Wireless & Bluetooth Keyboard Latency Diagnostic Tool',
       description: 'Test 2.4GHz wireless and Bluetooth keyboards for connection dropouts, key repetition delays, battery sleep wake-up latency, and packet loss jitter.',
-      badge: '2.4GHz & BLUETOOTH HID SPEC'
+      badge: '2.4GHz & BLUETOOTH HID SPEC',
+      faqs: [
+        { question: "How do I test wireless keyboard connection stability?", answer: "Type continuous key sequences to monitor keypress packet loss, dropped inputs, and latency variance." },
+        { question: "What is the difference between 2.4GHz wireless and Bluetooth keyboards?", answer: "2.4GHz wireless uses a USB receiver for 1000Hz polling (1ms latency), while Bluetooth operates at ~125Hz (~8-15ms latency)." },
+        { question: "What causes wireless keyboard key stutter or repeated letters?", answer: "Interference from Wi-Fi routers, low battery voltage, or USB 3.0 port RF noise can cause packet retransmissions." },
+        { question: "How do I test wireless keyboard sleep wake-up latency?", answer: "Let your keyboard sit idle for 5 minutes, then press a key to measure millisecond delay before first keystroke registers." },
+        { question: "How do I reduce wireless 2.4GHz dongle interference?", answer: "Use a USB extension cable to position the 2.4GHz receiver within 1-2 feet of your keyboard, away from USB 3.0 hubs." },
+        { question: "Can Bluetooth 5.0 keyboards be used for fast typing?", answer: "Yes, Bluetooth 5.0+ offers stable 125Hz performance suitable for document editing and general typing." },
+        { question: "How do I monitor wireless keyboard battery status?", answer: "Many modern wireless keyboards report battery level telemetry via OS Bluetooth settings or vendor software." },
+        { question: "Why do wireless keyboards drop inputs when typing fast?", answer: "RF packet collision or low signal-to-noise ratio causes HID buffer overruns, dropping key release/press packets." },
+        { question: "Can I test multi-device Bluetooth switching latency?", answer: "Switch between Device 1, 2, and 3 channels to measure reconnection handshake time in milliseconds." },
+        { question: "Is wired USB mode recommended when battery is charging?", answer: "Plugging in USB charging cable switches most dual-mode keyboards to wired HID mode for 0ms wireless latency." }
+      ]
     },
     {
       slug: 'key-chatter-test',
       title: 'Keyboard Switch Chatter Test | Double-Typing Debounce Analyzer',
       h1: 'Keyboard Switch Chatter & Double-Fire Diagnostic Tool',
       description: 'Detect mechanical switch metallic leaf chatter, double-typing faults, and key bounce errors with microsecond timestamp analysis. Identifies failing switches.',
-      badge: 'MICROSECOND DEBOUNCE TIMING ANALYZER'
+      badge: 'MICROSECOND DEBOUNCE TIMING ANALYZER',
+      faqs: [
+        { question: "What is mechanical switch chatter (double typing)?", answer: "Switch chatter occurs when a mechanical switch keypress registers multiple times within milliseconds due to oxidized metallic leaf contacts." },
+        { question: "How does the chatter analyzer detect faulty switches?", answer: "Logs microsecond timestamp deltas between key release and immediate re-press (t_delta <= 35ms), highlighting chatty keys in red." },
+        { question: "Can dust or crumbs cause keyboard switch chatter?", answer: "Yes, dust or debris inside switch housings prevents clean metal contact closure, causing erratic electrical bouncing." },
+        { question: "How do I fix a chatty key switch on a hot-swappable keyboard?", answer: "Remove keycap, pull out switch stem, and replace with a fresh 3-pin or 5-pin mechanical switch." },
+        { question: "Can isopropyl alcohol fix key switch chatter without desoldering?", answer: "Dripping 1-2 drops of 99% isopropyl alcohol into the switch stem while depressed can clean oxide off contacts." },
+        { question: "What is debounce delay in keyboard firmware?", answer: "Debounce delay is a software timer in keyboard MCU firmware (typically 5ms) that ignores contact bouncing signals." },
+        { question: "Do optical or Hall Effect switches suffer from key chatter?", answer: "No, optical and magnetic Hall Effect switches do not use metallic contact leaves and are immune to chatter." },
+        { question: "How do I adjust Windows Filter Keys to temporarily block chatter?", answer: "Enable Windows Filter Keys and set repeat delay thresholds to prevent unintentional rapid double keystrokes." },
+        { question: "What is the difference between chatter and key bounce?", answer: "Key bounce is the physical vibration of switch contacts; chatter is the resulting erroneous multiple character inputs." },
+        { question: "How do I export a switch chatter audit report?", answer: "Click 'Download Certificate' to export a JSON hardware passport detailing all chatty key switch locations." }
+      ]
     },
     {
       slug: 'nkro-rollover-test',
       title: 'NKRO Rollover Test | Simultaneous Key Press & Anti-Ghosting',
       h1: 'N-Key Rollover (NKRO) & Simultaneous Key Matrix Benchmark',
       description: 'Verify 6KRO vs NKRO simultaneous key press limits on your physical keyboard. Test USB HID report protocols and key blocking diode matrix limits.',
-      badge: 'USB HID REPORT PROTOCOL NKRO MATRIX'
+      badge: 'USB HID REPORT PROTOCOL NKRO MATRIX',
+      faqs: [
+        { question: "What is N-Key Rollover (NKRO)?", answer: "NKRO allows every key on the keyboard to be pressed simultaneously without key blocking, dropping, or ghosting." },
+        { question: "What is 6KRO (6-Key Rollover)?", answer: "6KRO restricts USB HID reports to 6 concurrent alphanumeric keys plus modifier keys (Ctrl, Shift, Alt, Cmd)." },
+        { question: "What is keyboard ghosting?", answer: "Ghosting occurs on cheap membrane keyboards when pressing 3 adjacent keys causes an unpressed 4th key to falsely trigger." },
+        { question: "How do diodes enable NKRO in mechanical keyboards?", answer: "Individual diodes placed on every switch circuit prevent electrical current from backflowing across grid traces." },
+        { question: "How do I perform an NKRO rollover test?", answer: "Press both palms down across your keyboard matrix; the counter records total simultaneous registered keys." },
+        { question: "Why do some USB keyboards require pressing a shortcut to enable NKRO?", answer: "Some keyboards default to 6KRO for legacy BIOS compatibility; press Fn+N or Fn+F12 to switch to USB NKRO mode." },
+        { question: "Does USB protocol natively support NKRO?", answer: "Standard USB HID boot protocol limits reports to 6KRO; NKRO keyboards use custom report descriptors or virtual hub endpoints." },
+        { question: "Is NKRO necessary for rhythm games like Osu! or IIDX?", answer: "Yes, rhythm games require simultaneous multi-key chords; 6KRO can cause dropped inputs during dense note patterns." },
+        { question: "Can Bluetooth keyboards support full NKRO?", answer: "Most Bluetooth HID profiles cap simultaneous key reports at 6KRO to conserve wireless bandwidth and power." },
+        { question: "How do I export my NKRO rollover test score?", answer: "Click 'Download Certificate' to export a cryptographically signed report certifying your keyboard's peak NKRO count." }
+      ]
     }
   ];
 
@@ -70,24 +280,21 @@ export function getStaticPaths() {
   }));
 }
 
-const cat = Astro.props.cat || keyboardCategories[0];
-const canonicalUrl = `https://monitortesthub.com/keyboard-tester/${cat.slug}`;
+const cat = Astro.props.cat || {
+  slug: 'online-keyboard-test',
+  title: 'Online Keyboard Test | Free Web Keyboard Tester & Key Code Inspector',
+  h1: 'Online Keyboard Test & Hardware Key Code Diagnostic Utility',
+  description: 'Free online keyboard test utility to verify every key on your physical keyboard. Test key switches, WASD gaming combos, and key event codes in real-time.',
+  badge: 'ONLINE KEYBOARD DIAGNOSTIC UTILITY',
+  faqs: []
+};
+
+const canonicalUrl = `https://monitortester.com/keyboard-tester/${cat.slug}`;
 ---
 
-<Layout title={cat.title} description={cat.description}>
-  <SEOHead
-    title={cat.title}
-    description={cat.description}
-    canonicalUrl={canonicalUrl}
-  />
-  <SchemaGraph
-    type="WebApplication"
-    name={cat.title}
-    description={cat.description}
-    url={canonicalUrl}
-  />
+<Layout title={cat.title} description={cat.description} faqs={cat.faqs} canonicalUrl={canonicalUrl}>
 
-  <main id="main-content" class="py-10 px-4 sm:px-6 lg:px-8 space-y-12 bg-bg-canvas">
+  <div class="py-10 px-4 sm:px-6 lg:px-8 space-y-12 bg-bg-canvas">
     <section class="max-w-4xl mx-auto text-center space-y-4">
       <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-status-pass/10 border border-status-pass/30 text-xs font-mono text-status-pass font-bold">
         <span>{cat.badge}</span>
@@ -102,5 +309,23 @@ const canonicalUrl = `https://monitortesthub.com/keyboard-tester/${cat.slug}`;
 
     <!-- Main Visual Diagnostic Engine Component -->
     <KeyboardTesterCanvas />
-  </main>
+
+    <!-- 10-Item Technical FAQ Section -->
+    {cat.faqs && cat.faqs.length > 0 && (
+      <section class="max-w-5xl mx-auto space-y-6 bg-bg-surface/80 border border-border-hairline rounded-2xl p-6 sm:p-8 backdrop-blur-xl font-sans">
+        <div class="border-b border-border-hairline pb-4">
+          <h2 class="text-xl font-bold font-mono text-text-primary">Frequently Asked Questions ({cat.h1})</h2>
+          <p class="text-xs text-text-muted mt-1 font-mono">10-Item Technical FAQ &amp; USB HID Diagnostic Troubleshooting</p>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {cat.faqs.map(faq => (
+            <div class="p-4 rounded-xl bg-bg-canvas border border-border-hairline space-y-1.5">
+              <h3 class="font-bold text-text-primary font-mono text-xs sm:text-sm">{faq.question}</h3>
+              <p class="text-xs text-text-muted leading-relaxed">{faq.answer}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+    )}
+  </div>
 </Layout>

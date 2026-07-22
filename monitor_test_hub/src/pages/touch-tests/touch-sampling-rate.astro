@@ -1,0 +1,64 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import Breadcrumbs from '../../components/ui/Breadcrumbs.astro';
+import TouchSamplingRateInspector from '../../components/diagnostics/TouchSamplingRateInspector.astro';
+import SEOHead from '../../components/seo/SEOHead.astro';
+import SchemaGraph from '../../components/seo/SchemaGraph.astro';
+
+const breadcrumbItems = [
+  { label: 'Touch Suite', href: '/touch-tests' },
+  { label: 'Touch Sampling Rate' }
+];
+
+const seoTitle = "Touch Sampling Rate & Coalesced Event Inspector (W3C Pointer Events)";
+const seoDescription = "Measure mobile digitizer touch sampling rate (Hz), microsecond inter-sample jitter, W3C Pointer Events Level 3 coalesced buffer depth, and VSync beat frequency micro-stutter.";
+const canonicalUrl = "https://monitortester.com/touch-tests/touch-sampling-rate";
+
+const faqs = [
+  {
+    question: "What is touch sampling rate (Hz) and why does it matter?",
+    answer: "Touch sampling rate (measured in Hz) represents how many times per second the digitizer hardware scans for finger or stylus contacts. A higher sampling rate (e.g. 240Hz–540Hz) cuts touch input latency and provides instantaneous drawing response."
+  },
+  {
+    question: "What are W3C Pointer Event coalesced events?",
+    answer: "Browsers dispatch touch events aligned with display VSync (e.g. 60Hz or 120Hz). High-frequency digitizers (240Hz+) buffer intermediate touch contacts between frame dispatches. `PointerEvent.getCoalescedEvents()` unwraps these micro-samples to measure true hardware Hz."
+  },
+  {
+    question: "What causes VSync phase beat frequency stutter in touch response?",
+    answer: "When touch sampling frequency is not an exact integer multiple of display refresh rate (e.g. 240Hz touch on a 144Hz display), phase interference creates a beat frequency micro-stutter in motion response."
+  }
+];
+---
+
+<Layout title={seoTitle} description={seoDescription} canonicalUrl={canonicalUrl}>
+
+  <div class="max-w-7xl mx-auto px-4 py-8 space-y-8">
+    <Breadcrumbs items={breadcrumbItems} />
+
+    <header class="space-y-3 border-b border-border-hairline pb-6">
+      <div class="flex items-center gap-2 text-status-pass text-xs font-mono font-bold uppercase tracking-wider">
+        <span class="w-2 h-2 rounded-full bg-status-pass led-glow-pass"></span>
+        W3C POINTER EVENTS LEVEL 3 — HARDWARE DIGITIZER PROFILER
+      </div>
+      <h1 class="text-3xl sm:text-4xl font-extrabold text-text-primary tracking-tight">Touch Sampling Rate &amp; Coalesced Event Inspector</h1>
+      <p class="text-sm text-text-secondary max-w-3xl">
+        Unwrap W3C Pointer Event coalesced sub-samples to calculate true hardware touch digitizer sampling rates (up to 540Hz+), inter-sample microsecond jitter, buffer depth ratios, and VSync phase beat frequency micro-stutter.
+      </p>
+    </header>
+
+    <TouchSamplingRateInspector />
+
+    <!-- FAQ Section -->
+    <section class="space-y-6 bg-bg-surface p-6 sm:p-8 rounded-2xl border border-border-hairline font-sans">
+      <h2 class="text-2xl font-bold text-text-primary">Frequently Asked Questions</h2>
+      <div class="space-y-4">
+        {faqs.map(faq => (
+          <div class="p-4 rounded-xl bg-bg-canvas border border-border-hairline space-y-2 font-mono">
+            <h3 class="text-base font-bold text-amber-400">{faq.question}</h3>
+            <p class="text-text-secondary text-xs sm:text-sm leading-relaxed">{faq.answer}</p>
+          </div>
+        ))}
+      </div>
+    </section>
+  </div>
+</Layout>

@@ -1,0 +1,95 @@
+---
+export interface FAQItem {
+  question?: string;
+  answer?: string;
+  q?: string;
+  a?: string;
+}
+
+export interface Props {
+  faqs: FAQItem[];
+  title?: string;
+  description?: string;
+  emitSchema?: boolean;
+  canonicalUrl?: string;
+  className?: string;
+}
+
+const {
+  faqs = [],
+  title,
+  description,
+  emitSchema = true,
+  canonicalUrl,
+  className = ''
+} = Astro.props;
+
+const normalizedFaqs = faqs.map((item) => ({
+  question: item.question || item.q || '',
+  answer: item.answer || item.a || ''
+})).filter(f => f.question && f.answer);
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": normalizedFaqs.map((faq) => ({
+    "@type": "Question",
+    "name": faq.question,
+    "acceptedAnswer": {
+      "@type": "Answer",
+      "text": faq.answer
+    }
+  }))
+};
+---
+
+{emitSchema && normalizedFaqs.length > 0 && (
+  <script type="application/ld+json" set:html={JSON.stringify(faqSchema)} />
+)}
+
+<div class={`space-y-4 ${className}`}>
+  {title && (
+    <div class="border-b border-border-hairline pb-3">
+      <h2 class="text-xl font-bold font-mono text-text-primary">{title}</h2>
+      {description && <p class="text-xs text-text-muted mt-1 font-sans">{description}</p>}
+    </div>
+  )}
+
+  <div class="space-y-2.5">
+    {normalizedFaqs.map(({ question, answer }, index) => {
+      const qId = `faq-q-${index}`;
+      const aId = `faq-a-${index}`;
+      return (
+        <details class="border border-border-hairline rounded-xl bg-bg-canvas group overflow-hidden transition-all duration-200">
+          <summary 
+            id={qId}
+            aria-controls={aId}
+            class="cursor-pointer py-3.5 px-4 font-mono font-bold text-text-primary flex items-center justify-between gap-3 select-none list-none hover:bg-bg-elevated transition-colors"
+          >
+            <span class="flex items-center gap-3">
+              <span class="text-status-pass text-xs font-mono tracking-widest shrink-0 font-bold">
+                {String(index + 1).padStart(2, '0')}
+              </span>
+              <span class="text-xs sm:text-sm font-sans font-semibold text-text-primary">{question}</span>
+            </span>
+            <span aria-hidden="true" class="shrink-0 text-text-muted text-xs font-mono group-open:rotate-180 transition-transform duration-200">▼</span>
+          </summary>
+          <div 
+            id={aId} 
+            role="region" 
+            aria-labelledby={qId} 
+            class="px-4 pb-4 pt-2 border-t border-border-hairline/60 bg-bg-elevated/50 font-sans text-xs sm:text-sm text-text-secondary leading-relaxed"
+          >
+            <p>{answer}</p>
+          </div>
+        </details>
+      );
+    })}
+  </div>
+</div>
+
+<style>
+  details summary::-webkit-details-marker {
+    display: none;
+  }
+</style>

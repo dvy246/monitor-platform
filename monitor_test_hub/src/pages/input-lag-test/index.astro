@@ -18,7 +18,7 @@ const pollingRates = getAllPollingRates();
 ---
 
 <Layout title={pageTitle} description={metaDescription}>
-  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
     <Breadcrumbs items={[
       { label: 'Display Diagnostics', href: '/display-tests' },
       { label: 'Input Lag & Reflex Sniper' }
@@ -74,5 +74,5 @@ const pollingRates = getAllPollingRates();
     <div class="max-w-4xl mx-auto">
       <HardwareLimitationNotice />
     </div>
-  </main>
+  </div>
 </Layout>

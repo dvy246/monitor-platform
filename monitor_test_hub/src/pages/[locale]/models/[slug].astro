@@ -1,0 +1,18 @@
+---
+import BasePage from '../../models/[slug].astro';
+import { DeviceDatabase } from '../../../engine/DeviceDatabase';
+
+export function getStaticPaths() {
+  const locales = ['es', 'de', 'fr'];
+  const slugs = DeviceDatabase.getAllSlugs();
+
+  return locales.flatMap(locale =>
+    slugs.map(slug => ({
+      params: { locale, slug },
+      props: { device: DeviceDatabase.getDeviceBySlug(slug)! }
+    }))
+  );
+}
+---
+
+<BasePage device={Astro.props.device} />

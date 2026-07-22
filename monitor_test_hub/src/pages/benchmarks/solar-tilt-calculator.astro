@@ -1,0 +1,56 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import SolarTiltInspector from '../../components/diagnostics/SolarTiltInspector.astro';
+import SEOHead from '../../components/seo/SEOHead.astro';
+import SchemaGraph from '../../components/seo/SchemaGraph.astro';
+
+const seoTitle = "Solar PV Panel Tilt Angle & Azimuth Yield Calculator (2026)";
+const seoDescription = "Calculate optimal solar panel tilt angle, seasonal winter/summer tilt adjustments, and annual kWh energy yield across all 50 US states.";
+const canonicalUrl = "https://monitortester.com/benchmarks/solar-tilt-calculator";
+
+const faqs = [
+  {
+    question: "What is the optimal tilt angle for solar panels in the US?",
+    answer: "For year-round fixed solar arrays, the optimal tilt angle roughly equals your latitude times 0.76 plus 3.1° (typically 28° to 45° across the US). Panels should face True South (180° Azimuth) in the Northern Hemisphere."
+  },
+  {
+    question: "Should solar panel tilt angle be adjusted between summer and winter?",
+    answer: "Adjustable ground mounts benefit from seasonal tilt tweaks: steepen tilt to Latitude + 15° in winter (when the sun is lower on the horizon) and flatten tilt to Latitude - 15° in summer."
+  },
+  {
+    question: "How much energy does an 8kW DC solar system produce annually?",
+    answer: "In high-insolation US states like Arizona or Texas, an 8kW DC solar array yields 11,500 kWh to 14,000 kWh annually; in northern states like Washington or New York, it produces 9,000 kWh to 10,500 kWh."
+  }
+];
+---
+
+<Layout title={seoTitle} description={seoDescription} canonicalUrl={canonicalUrl}>
+
+  <div class="min-h-screen bg-[#08080a] text-slate-100 py-12 px-4">
+    <div class="max-w-5xl mx-auto space-y-12">
+      <section class="text-center space-y-4">
+        <h1 class="text-4xl sm:text-5xl font-black text-white tracking-tight">
+          Solar Panel Tilt Angle &amp; <span class="text-amber-400">Energy Yield</span>
+        </h1>
+        <p class="text-slate-400 max-w-2xl mx-auto text-base font-sans">
+          Calculate latitude-optimized solar panel tilt angles, seasonal winter/summer adjustments, and NREL PVWatts insolation yields.
+        </p>
+      </section>
+
+      <SolarTiltInspector />
+
+      <!-- FAQ Section -->
+      <section class="space-y-6 bg-[#121215] p-6 sm:p-8 rounded-2xl border border-white/10 font-sans">
+        <h2 class="text-2xl font-bold text-white">Frequently Asked Questions</h2>
+        <div class="space-y-4">
+          {faqs.map(faq => (
+            <div class="p-4 rounded-xl bg-[#18181b] border border-white/5 space-y-2">
+              <h3 class="text-base font-bold text-amber-400">{faq.question}</h3>
+              <p class="text-slate-300 text-sm leading-relaxed">{faq.answer}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+    </div>
+  </div>
+</Layout>

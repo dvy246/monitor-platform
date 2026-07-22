@@ -6,10 +6,10 @@ export interface Props {
 
 const { 
   widgetTitle = 'VRR Stutter & Tear Test',
-  embedUrl = 'https://monitortesthub.com/embed/vrr-stutter'
+  embedUrl = 'https://monitortester.com/embed/vrr-stutter'
 } = Astro.props;
 
-const iframeSnippet = `<iframe src="${embedUrl}" width="100%" height="450" frameborder="0" loading="lazy" style="border-radius: 12px; border: 1px solid rgba(255,255,255,0.1);" title="${widgetTitle} Widget"></iframe>\n<p style="font-size: 11px; text-align: right;"><a href="https://monitortesthub.com" target="_blank" rel="noopener">Powered by Monitor Test Hub</a></p>`;
+const iframeSnippet = `<iframe src="${embedUrl}" width="100%" height="450" frameborder="0" loading="lazy" style="border-radius: 12px; border: 1px solid rgba(255,255,255,0.1);" title="${widgetTitle} Widget"></iframe>\n<p style="font-size: 11px; text-align: right;"><a href="https://monitortester.com" target="_blank" rel="noopener">Powered by Monitor Test Hub</a></p>`;
 ---
 
 <!-- Embed Widget Modal -->

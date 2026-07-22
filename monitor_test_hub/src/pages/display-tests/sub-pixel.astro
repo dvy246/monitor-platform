@@ -26,7 +26,7 @@ const displayTests = [
   title="Sub-Pixel Layout Analyzer (RGB, BGR, QD-OLED, WOLED) | Monitor Test Hub" 
   description="Inspect sub-pixel stripe layouts, evaluate ClearType and FreeType font subpixel antialiasing fringing, and analyze QD-OLED triangular and WOLED RWBG subpixel arrangements."
 >
-  <main class="max-w-7xl mx-auto px-4 py-8 space-y-8">
+  <div class="max-w-7xl mx-auto px-4 py-8 space-y-8">
     <Breadcrumbs items={breadcrumbItems} />
 
     <header class="space-y-3 border-b border-border-hairline pb-6">
@@ -75,5 +75,5 @@ const displayTests = [
     </article>
 
     <TestSwitcherBar tests={displayTests} currentId="sub-pixel" />
-  </main>
+  </div>
 </Layout>

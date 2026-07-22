@@ -1,13 +1,58 @@
 ---
 import Layout from '../../layouts/Layout.astro';
+import FAQSection from '../../components/ui/FAQSection.astro';
+
+const faqs = [
+  {
+    question: "How do I test if my touchscreen has dead zones or unresponsive areas?",
+    answer: "Open our Touch Matrix Grid or Dead-Zone Matrix test. Drag your finger slowly across every section of your screen. Active cells light up upon contact; any unlit, gray cells indicate unresponsive digitizer dead zones caused by hardware damage or failing touch controllers."
+  },
+  {
+    question: "How many touch points can my smartphone or tablet register simultaneously?",
+    answer: "Most modern iOS and Android smartphones support 10-point multi-touch (10 simultaneous finger contact points). Budget tablets or touch laptops may support 5-point or 2-point touch. Launch our Multi-Touch Tracker to test your screen's physical touch limit in real time."
+  },
+  {
+    question: "What causes touchscreen line jitter when charging?",
+    answer: "Inexpensive or unshielded third-party wall chargers can inject Electro-Magnetic Interference (EMI) ripple noise into your device's ground plane. This disrupts capacitive sensor measurements, causing drawn lines to wobble or register ghost touches. Use our Vector Precision test while plugged in to measure EMI line noise."
+  },
+  {
+    question: "What is touch sampling rate (Hz) vs screen refresh rate (Hz)?",
+    answer: "Screen refresh rate (e.g. 60Hz, 120Hz) is how many times per second the display panel updates visual images. Touch sampling rate (e.g. 240Hz, 480Hz) is how many times per second the digitizer checks for finger input. Higher touch sampling rates reduce touch-to-response input lag."
+  },
+  {
+    question: "How do capacitive touchscreens detect finger contacts?",
+    answer: "Capacitive touchscreens use a transparent grid of indium tin oxide (ITO) electrodes carrying an electrostatic field. When a conductive human finger touches the glass, it distorts the local electrostatic field, allowing the touch controller to calculate X/Y coordinates."
+  },
+  {
+    question: "Can screen protectors affect touch sensitivity and stylus precision?",
+    answer: "Thick tempered glass screen protectors can increase spatial air gap thickness, reducing capacitive coupling strength and causing missed taps or stylus pen tracking offset."
+  },
+  {
+    question: "What is ghost touch and why does it happen on mobile screens?",
+    answer: "Ghost touch occurs when the digitizer registers random taps without physical contact. Causes include cracked digitizer layers, moisture under the screen protector, software driver corruption, or high EMI noise."
+  },
+  {
+    question: "How do active styluses (Apple Pencil, S Pen) differ from capacitive rubber styluses?",
+    answer: "Passive rubber styluses simulate a human finger on standard capacitive grids. Active styluses (Apple Pencil, Samsung S Pen) emit active electromagnetic or Bluetooth signals to transfer sub-pixel position, tilt angle, and 4,096 levels of pressure sensitivity."
+  },
+  {
+    question: "Does wet or sweaty fingers cause touchscreen malfunction?",
+    answer: "Water is conductive. Droplets on a mutual capacitive touchscreen cause false capacitive bridges between adjacent grid nodes, creating erratic touch tracking until wiped clean."
+  },
+  {
+    question: "How do I measure click-to-photon touch latency on Android or iOS?",
+    answer: "Use our Touch Input Lag test. Tap the screen repeatedly: our engine records high-resolution PointerEvent timestamps to quantify hardware dispatch delay and browser event processing time in milliseconds."
+  }
+];
 ---
 
 <Layout 
-  title="Touch Screen Diagnostics" 
-  description="Run responsive, mobile-first touch digitizer tests to map dead-zones, measure multi-touch count support, and check drawing jitter precision."
+  title="Touch Screen Diagnostics & Matrix Test | Monitor Test Hub" 
+  description="Test mobile touchscreen digitizer responsiveness, map dead-zones, measure 10-finger multi-touch limits, and check drawing line jitter. Instant browser test."
+  faqs={faqs}
 >
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-    <div class="text-center max-w-3xl mx-auto mb-12">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-12">
+    <div class="text-center max-w-3xl mx-auto">
       <h1 class="heading-brand text-3xl md:text-5xl font-black tracking-tight text-text-primary mb-3">
         TOUCH SCREEN DIAGNOSTICS
       </h1>
@@ -17,6 +62,7 @@ import Layout from '../../layouts/Layout.astro';
     </div>
 
     <!-- Diagnostic Cards -->
+    <h2 class="sr-only">Touch Screen Diagnostic Modules</h2>
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
       <!-- Touch Matrix Suite -->
       <a href="/touch-matrix" class="bg-bg-surface hover:bg-bg-elevated border border-status-pass/40 hover:border-status-pass rounded-xl p-5 flex flex-col justify-between transition-all group shadow-specular-top hover:shadow-[0_0_15px_rgba(5,150,105,0.15)] font-mono">
@@ -70,7 +116,7 @@ import Layout from '../../layouts/Layout.astro';
       <a href="/touch-tests/vector-precision" class="bg-bg-surface hover:bg-bg-elevated border border-border-hairline hover:border-status-pass/40 rounded-xl p-5 flex flex-col justify-between transition-all group shadow-specular-top hover:shadow-[0_0_15px_rgba(5,150,105,0.15)] font-mono">
         <div class="space-y-4">
           <div class="w-10 h-10 rounded-lg bg-purple-500/10 flex items-center justify-center text-purple-400 border border-purple-500/20">
-            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 01-2 2v12a2 2 0 022 2h10a2 2 0 022-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
           </div>
           <h3 class="heading-brand text-base font-bold text-text-primary group-hover:text-status-pass transition-colors font-mono">Vector Draw Jitter</h3>
           <p class="text-text-secondary text-xs leading-relaxed font-sans">
@@ -98,6 +144,9 @@ import Layout from '../../layouts/Layout.astro';
         </span>
       </a>
     </div>
+
+    <!-- FAQ Section -->
+    <FAQSection faqs={faqs} />
   </div>
 </Layout>
 

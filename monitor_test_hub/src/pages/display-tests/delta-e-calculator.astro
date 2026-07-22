@@ -1,0 +1,64 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import Breadcrumbs from '../../components/ui/Breadcrumbs.astro';
+import DeltaECalculatorInspector from '../../components/diagnostics/DeltaECalculatorInspector.astro';
+import SEOHead from '../../components/seo/SEOHead.astro';
+import SchemaGraph from '../../components/seo/SchemaGraph.astro';
+
+const breadcrumbItems = [
+  { label: 'Display Suite', href: '/display-tests' },
+  { label: 'CIEDE2000 Delta E Calculator' }
+];
+
+const seoTitle = "CIEDE2000 Display Calibration Color Accuracy Tool (Delta E Calculator)";
+const seoDescription = "Calculate CIEDE2000 (Delta E 2000), CIE94, and CIE76 color difference metrics. Analyze lightness, chroma, and hue errors with 24-patch Macbeth ColorChecker presets.";
+const canonicalUrl = "https://monitortester.com/display-tests/delta-e-calculator";
+
+const faqs = [
+  {
+    question: "What is CIEDE2000 (Delta E 2000)?",
+    answer: "CIEDE2000 (Delta E 00) is the modern ISO and CIE standard formula for quantifying visual color difference. It accounts for human eye non-linearities in blue-purple hue angles, neutral gray chroma weighting, and lightness perception."
+  },
+  {
+    question: "What is a good Delta E score for display calibration?",
+    answer: "A Delta E 2000 of less than 1.0 is considered mastering reference quality (imperceptible error). Delta E under 2.0 is professional grade for content creation, and under 3.0 satisfies ISO 9241-307 consumer limits."
+  },
+  {
+    question: "What are the 24-patch Macbeth ColorChecker reference patches?",
+    answer: "The Macbeth ColorChecker includes standard natural colors (skin tones, sky blue, foliage), primary and secondary color gamuts, and a 6-step neutral gray scale used worldwide for camera, monitor, and printer calibration."
+  }
+];
+---
+
+<Layout title={seoTitle} description={seoDescription} canonicalUrl={canonicalUrl}>
+
+  <div class="max-w-7xl mx-auto px-4 py-8 space-y-8">
+    <Breadcrumbs items={breadcrumbItems} />
+
+    <header class="space-y-3 border-b border-border-hairline pb-6">
+      <div class="flex items-center gap-2 text-status-pass text-xs font-mono font-bold uppercase tracking-wider">
+        <span class="w-2 h-2 rounded-full bg-status-pass led-glow-pass"></span>
+        ISO 9241-307 — CIEDE2000 COLOR TOLERANCING
+      </div>
+      <h1 class="text-3xl sm:text-4xl font-extrabold text-text-primary tracking-tight">CIEDE2000 Display Calibration Color Accuracy Tool</h1>
+      <p class="text-sm text-text-secondary max-w-3xl">
+        Calculate exact perceptual color difference ($\Delta E_{00}$, $\Delta E_{94}$, $\Delta E_{76}$) between reference target color patches and measured display outputs. Evaluates Lightness ($\Delta L$), Chroma ($\Delta C$), and Hue ($\Delta H$) errors with ISO 9241-307 compliance grading.
+      </p>
+    </header>
+
+    <DeltaECalculatorInspector />
+
+    <!-- FAQ Section -->
+    <section class="space-y-6 bg-bg-surface p-6 sm:p-8 rounded-2xl border border-border-hairline font-sans">
+      <h2 class="text-2xl font-bold text-text-primary">Frequently Asked Questions</h2>
+      <div class="space-y-4">
+        {faqs.map(faq => (
+          <div class="p-4 rounded-xl bg-bg-canvas border border-border-hairline space-y-2 font-mono">
+            <h3 class="text-base font-bold text-amber-400">{faq.question}</h3>
+            <p class="text-text-secondary text-xs sm:text-sm leading-relaxed">{faq.answer}</p>
+          </div>
+        ))}
+      </div>
+    </section>
+  </div>
+</Layout>

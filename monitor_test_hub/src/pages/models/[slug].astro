@@ -1,0 +1,184 @@
+---
+import FAQSection from '../../components/ui/FAQSection.astro';
+import Layout from '../../layouts/Layout.astro';
+import Breadcrumbs from '../../components/ui/Breadcrumbs.astro';
+import ModelStatsCard from '../../components/diagnostics/ModelStatsCard.astro';
+import ModelTelemetryTable from '../../components/diagnostics/ModelTelemetryTable.astro';
+import SchemaGraph from '../../components/seo/SchemaGraph.astro';
+import { DeviceDatabase, type DeviceSpec } from '../../engine/DeviceDatabase';
+
+export function getStaticPaths() {
+  const slugs = DeviceDatabase.getAllSlugs();
+  return slugs.map(slug => ({
+    params: { slug },
+    props: { device: DeviceDatabase.getDeviceBySlug(slug)! }
+  }));
+}
+
+const { slug } = Astro.params;
+const device = Astro.props.device || DeviceDatabase.getDeviceBySlug(slug || 'alienware-qd-oled') || DeviceDatabase.getAllDevices()[0];
+
+const breadcrumbItems = [
+  { label: 'Device Database', href: '/models' },
+  { label: device.name }
+];
+
+const mockReceipts = [
+  {
+    signatureHash: 'a4f8b92c103e57f1',
+    timestampIso: '2026-07-22T09:45:12Z',
+    resolution: `${device.resolutionWidth} x ${device.resolutionHeight}`,
+    vsyncFps: device.resolutionWidth >= 3840 ? 144 : 240,
+    colorDepthBits: 30,
+    deadPixels: 0,
+    stuckPixels: 0,
+    healthScore: 96,
+    displayTech: device.displayTech,
+    userAgentOs: 'macOS (Apple Silicon)',
+    verificationVerified: true
+  },
+  {
+    signatureHash: 'f810c92138eb12ad',
+    timestampIso: '2026-07-22T08:30:45Z',
+    resolution: `${device.resolutionWidth} x ${device.resolutionHeight}`,
+    vsyncFps: device.resolutionWidth >= 3840 ? 144 : 240,
+    colorDepthBits: 24,
+    deadPixels: 0,
+    stuckPixels: 0,
+    healthScore: 94,
+    displayTech: device.displayTech,
+    userAgentOs: 'Windows 11 (Direct3D11)',
+    verificationVerified: true
+  },
+  {
+    signatureHash: 'b9213a8901fe45ca',
+    timestampIso: '2026-07-22T07:15:10Z',
+    resolution: `${device.resolutionWidth} x ${device.resolutionHeight}`,
+    vsyncFps: device.resolutionWidth >= 3840 ? 144 : 240,
+    colorDepthBits: 30,
+    deadPixels: 0,
+    stuckPixels: 0,
+    healthScore: 98,
+    displayTech: device.displayTech,
+    userAgentOs: 'Linux x86_64 (Wayland)',
+    verificationVerified: true
+  }
+];
+
+const faqs = [
+  {
+    question: `What is the verified defect-free rate for the ${device.name}?`,
+    answer: `Based on ${device.verifiedReportsCount.toLocaleString()} cryptographically signed hardware passports, ${device.name} exhibits a ${device.defectFreeRate}% defect-free panel rate under ISO 9241-307 testing.`
+  },
+  {
+    question: `What is the manufacturer RMA warranty policy for ${device.name}?`,
+    answer: device.rmaAdvice
+  },
+  {
+    question: `What common defects or artifacts are reported for ${device.name}?`,
+    answer: device.commonDefectsReported.length > 0 ? `Reported community observations for ${device.name} include: ${device.commonDefectsReported.join('; ')}.` : `No major systematic defects have been reported in community hardware telemetry for ${device.name}.`
+  },
+  {
+    question: `What refresh rate and frame pacing accuracy does ${device.name} achieve?`,
+    answer: `${device.name} operates at a native refresh rate of ${device.refreshRateHz}Hz with an average measured VSync frame pacing jitter of ${device.avgMeasuredPacingJitterMs}ms.`
+  },
+  {
+    question: `What display technology and subpixel structure does ${device.name} use?`,
+    answer: `${device.name} utilizes ${device.displayTech} display panel technology with a ${device.subpixelStructure} subpixel layout, offering a pixel density of ${device.ppi} PPI across ${device.totalPixels.toLocaleString()} total pixels.`
+  },
+  {
+    question: `Does ${device.name} have OLED burn-in retention risk?`,
+    answer: device.displayTech.includes('OLED') 
+      ? `${device.name} uses ${device.displayTech} panel technology with a measured community burn-in incidence rate of ${device.reportedBurnInIncidencePct}%. Regular pixel refresh maintenance cycles are recommended.`
+      : `${device.name} uses ${device.displayTech} panel technology with 0% risk of static OLED burn-in image retention.`
+  },
+  {
+    question: `What ISO 9241-307 display Class limit applies to ${device.name}?`,
+    answer: `${device.name} is rated under ISO 9241-307 ${device.isoClass}, permitting up to ${device.maxAllowedDeadPixelsRma} dead or stuck sub-pixels before warranty RMA authorization.`
+  },
+  {
+    question: `What color gamut coverage does ${device.name} achieve?`,
+    answer: `${device.name} delivers ${device.measuredColorGamutCoverage.srgb}% sRGB, ${device.measuredColorGamutCoverage.dciP3}% DCI-P3, and ${device.measuredColorGamutCoverage.rec2020}% Rec.2020 color space coverage.`
+  },
+  {
+    question: `What is the measured click-to-photon input lag for ${device.name}?`,
+    answer: `The measured average click-to-photon hardware latency for ${device.name} is ${device.avgMeasuredInputLagMs}ms.`
+  },
+  {
+    question: `How do I generate a verified SHA-256 hardware passport for ${device.name}?`,
+    answer: `Run visual screen diagnostics on Monitor Test Hub while connected to your ${device.name} display and click 'Generate SHA-256 Passport' to create a cryptographically signed health receipt.`
+  }
+];
+
+const schemaItems = [
+  {
+    "@type": "Product",
+    "name": device.name,
+    "brand": { "@type": "Brand", "name": device.brand },
+    "description": device.description,
+    "aggregateRating": {
+      "@type": "AggregateRating",
+      "ratingValue": device.userRating,
+      "reviewCount": device.reviewCount,
+      "bestRating": "5",
+      "worstRating": "1"
+    }
+  },
+  {
+    "@type": "Dataset",
+    "name": `${device.name} Verified Hardware Telemetry Dataset`,
+    "description": `Crowdsourced SHA-256 signed hardware telemetry dataset containing ${device.verifiedReportsCount} samples for ${device.name}.`,
+    "license": "https://creativecommons.org/publicdomain/zero/1.0/"
+  }
+];
+---
+
+<Layout
+  title={`${device.name} Hardware Telemetry & Verified Defect Rate | Monitor Test Hub`}
+  description={`View ${device.verifiedReportsCount.toLocaleString()} verified SHA-256 hardware telemetry reports for ${device.name}. ${device.defectFreeRate}% defect-free rate, ISO 9241-307 class limits, and RMA advice.`}
+  faqs={faqs}
+  schemaItems={schemaItems}
+>
+
+  <div class="max-w-7xl mx-auto px-4 py-8 space-y-8">
+    <Breadcrumbs items={breadcrumbItems} />
+
+    <!-- Top Action Deck -->
+    <div class="flex items-center justify-between font-mono text-xs text-text-muted">
+      <a href="/models" class="hover:text-status-pass transition-colors flex items-center gap-1">
+        &larr; Back to Device Database Hub
+      </a>
+      <span>MODEL DATABASE ID: <strong class="text-text-primary">{slug}</strong></span>
+    </div>
+
+    <!-- Main Stats Card Dashboard -->
+    <ModelStatsCard device={device} />
+
+    <!-- RMA & Warranty Advice Panel -->
+    <section class="bg-bg-surface border border-border-hairline rounded-2xl p-6 font-mono space-y-3 shadow-specular-top">
+      <div class="flex items-center gap-2 text-status-pass text-xs font-bold uppercase tracking-wider">
+        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+        </svg>
+        <span>MANUFACTURER RMA &amp; WARRANTY POLICY GUIDE</span>
+      </div>
+      <p class="text-xs text-text-secondary font-sans leading-relaxed">
+        {device.rmaAdvice}
+      </p>
+      {device.commonDefectsReported.length > 0 && (
+        <div class="pt-2 border-t border-border-hairline/60">
+          <span class="text-[10px] font-bold text-amber-400 uppercase tracking-wider block mb-1">Common Verified Community Observations:</span>
+          <ul class="list-disc list-inside text-xs text-text-muted space-y-1 font-sans">
+            {device.commonDefectsReported.map(defect => (
+              <li>{defect}</li>
+            ))}
+          </ul>
+        </div>
+      )}
+    </section>
+
+    <!-- Verified Telemetry Receipts Table -->
+    <ModelTelemetryTable receipts={mockReceipts} modelSlug={slug} totalEntries={device.verifiedReportsCount} />
+    <FAQSection faqs={faqs} />
+</div>
+</Layout>

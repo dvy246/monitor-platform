@@ -1,0 +1,46 @@
+---
+import Layout from '../../../../layouts/Layout.astro';
+import FilamentCostInspector from '../../../../components/diagnostics/FilamentCostInspector.astro';
+import SEOHead from '../../../../components/seo/SEOHead.astro';
+import SchemaGraph from '../../../../components/seo/SchemaGraph.astro';
+import { FilamentCostEngine } from '../../../../engine/FilamentCostEngine';
+
+export function getStaticPaths() {
+  const locales = ['es', 'de', 'fr'];
+  const materials = FilamentCostEngine.MATERIALS;
+
+  const paths = [];
+
+  for (const locale of locales) {
+    for (const mat of materials) {
+      paths.push({
+        params: { locale, slug: mat.id },
+        props: { material: mat }
+      });
+    }
+  }
+
+  return paths;
+}
+
+const { locale } = Astro.params;
+const { material } = Astro.props;
+
+const seoTitle = `${material.name} 3D Print Cost Calculator (${locale.toUpperCase()})`;
+const seoDescription = `Calculate print costs for ${material.name} filament in ${locale.toUpperCase()}.`;
+---
+
+<Layout title={seoTitle} description={seoDescription} canonicalUrl={`https://monitortester.com/${locale}`}>
+
+  <div class="min-h-screen bg-[#08080a] text-slate-100 py-12 px-4">
+    <div class="max-w-5xl mx-auto space-y-12">
+      <section class="text-center space-y-4">
+        <h1 class="text-3xl sm:text-4xl font-black text-white tracking-tight">
+          {material.name} Printing Cost Calculator ({locale.toUpperCase()})
+        </h1>
+      </section>
+
+      <FilamentCostInspector initialMaterialId={material.id} />
+    </div>
+  </div>
+</Layout>

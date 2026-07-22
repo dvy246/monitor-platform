@@ -1,0 +1,18 @@
+---
+import { getStaticPaths as baseGetStaticPaths } from '../../../display-tests/dead-pixel-test/[slug].astro';
+
+export async function getStaticPaths() {
+  const locales = ['es', 'de', 'fr'];
+  const basePaths = await baseGetStaticPaths();
+
+  return locales.flatMap((locale) =>
+    basePaths.map((bp) => ({
+      params: { locale, slug: bp.params.slug },
+      props: bp.props
+    }))
+  );
+}
+
+import BasePage from '../../../display-tests/dead-pixel-test/[slug].astro';
+---
+<BasePage {...Astro.props} />

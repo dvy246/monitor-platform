@@ -1,0 +1,56 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import GamepadDriftInspector from '../../components/diagnostics/GamepadDriftInspector.astro';
+import SEOHead from '../../components/seo/SEOHead.astro';
+import SchemaGraph from '../../components/seo/SchemaGraph.astro';
+
+const seoTitle = "Gamepad & Controller Dead-Zone & Stick Drift Inspector (2026)";
+const seoDescription = "Test Xbox, PlayStation DualSense, Switch Pro, and Steam Deck controllers for analog stick drift, dead-zone thresholds, and circularity error % with zero downloads.";
+const canonicalUrl = "https://monitortester.com/benchmarks/gamepad-drift";
+
+const faqs = [
+  {
+    question: "How do I test my controller for stick drift online?",
+    answer: "Connect your controller via USB or Bluetooth, press any button to activate the HTML5 Gamepad API, and rotate your analog sticks. Our inspector tracks raw axis vectors, circularity error %, and center dead-zone drift."
+  },
+  {
+    question: "What is an acceptable stick drift percentage?",
+    answer: "A drift vector under 5.0% is normal for new controllers. Drift between 5.0% and 12.0% can be compensated with in-game dead-zone settings. Drift exceeding 15.0% typically indicates potentiometer wear requiring cleaning or replacement."
+  },
+  {
+    question: "Does this tool support DualSense, Xbox, and Nintendo Switch controllers?",
+    answer: "Yes. Monitor Test Hub supports all Web Gamepad API compatible controllers including Sony PS5 DualSense, Xbox Series X/S, Switch Pro Controller, Steam Deck, and third-party Hall-effect gamepads."
+  }
+];
+---
+
+<Layout title={seoTitle} description={seoDescription} canonicalUrl={canonicalUrl}>
+
+  <div class="min-h-screen bg-[#08080a] text-slate-100 py-12 px-4">
+    <div class="max-w-5xl mx-auto space-y-12">
+      <section class="text-center space-y-4">
+        <h1 class="text-4xl sm:text-5xl font-black text-white tracking-tight">
+          Gamepad Dead-Zone &amp; <span class="text-emerald-400">Drift Inspector</span>
+        </h1>
+        <p class="text-slate-400 max-w-2xl mx-auto text-base font-sans">
+          Real-time hardware axis polling for Xbox, PlayStation DualSense, Nintendo Switch Pro, and Steam Deck controllers.
+        </p>
+      </section>
+
+      <GamepadDriftInspector />
+
+      <!-- FAQ Section -->
+      <section class="space-y-6 bg-[#121215] p-6 sm:p-8 rounded-2xl border border-white/10 font-sans">
+        <h2 class="text-2xl font-bold text-white">Frequently Asked Questions</h2>
+        <div class="space-y-4">
+          {faqs.map(faq => (
+            <div class="p-4 rounded-xl bg-[#18181b] border border-white/5 space-y-2">
+              <h3 class="text-base font-bold text-emerald-400">{faq.question}</h3>
+              <p class="text-slate-300 text-sm leading-relaxed">{faq.answer}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+    </div>
+  </div>
+</Layout>

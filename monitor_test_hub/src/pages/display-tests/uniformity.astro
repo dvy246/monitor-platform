@@ -26,7 +26,7 @@ const displayTests = [
   title="OLED Near-Black Uniformity & Banding Test | Monitor Test Hub" 
   description="Diagnose vertical banding, Dirty Screen Effect (DSE), 5% near-black luminance non-uniformity, and static image retention on OLED and QD-OLED panels."
 >
-  <main class="max-w-7xl mx-auto px-4 py-8 space-y-8">
+  <div class="max-w-7xl mx-auto px-4 py-8 space-y-8">
     <Breadcrumbs items={breadcrumbItems} />
 
     <header class="space-y-3 border-b border-border-hairline pb-6">
@@ -75,5 +75,5 @@ const displayTests = [
     </article>
 
     <TestSwitcherBar tests={displayTests} currentId="uniformity" />
-  </main>
+  </div>
 </Layout>

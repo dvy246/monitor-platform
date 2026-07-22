@@ -56,3 +56,30 @@ export function calculatePursuitPosition(
   const rawX = (elapsedMs / 1000) * speedPxPerSec;
   return Math.round(rawX % totalTravel) - patternWidth;
 }
+
+export interface IPursuitSyncGrid {
+  ticks: Array<{ x: number; isMajor: boolean }>;
+  syncLineColor: string;
+}
+
+/**
+ * Calculates temporal pursuit camera tick marks for camera pursuit tracking alignment.
+ * TestUFO feature parity tick grid generator.
+ */
+export function calculatePursuitCameraTickMarks(
+  canvasWidth: number,
+  tickSpacingPx: number = 60
+): IPursuitSyncGrid {
+  const count = Math.floor(canvasWidth / tickSpacingPx);
+  const ticks = [];
+  for (let i = 0; i <= count; i++) {
+    ticks.push({
+      x: i * tickSpacingPx,
+      isMajor: i % 5 === 0
+    });
+  }
+  return {
+    ticks,
+    syncLineColor: '#00ffcc'
+  };
+}

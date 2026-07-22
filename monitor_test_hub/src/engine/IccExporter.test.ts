@@ -31,4 +31,12 @@ describe('IccExporter math and structures', () => {
     const acsp = String.fromCharCode(binary[36], binary[37], binary[38], binary[39]);
     expect(acsp).toBe('acsp');
   });
+
+  it('generates a valid sRGB profile binary using generateSrgbProfileBinary', () => {
+    const binary = IccExporter.generateSrgbProfileBinary();
+    expect(binary).toBeInstanceOf(Uint8Array);
+    expect(binary.byteLength).toBeGreaterThan(128);
+    const acsp = String.fromCharCode(binary[36], binary[37], binary[38], binary[39]);
+    expect(acsp).toBe('acsp');
+  });
 });

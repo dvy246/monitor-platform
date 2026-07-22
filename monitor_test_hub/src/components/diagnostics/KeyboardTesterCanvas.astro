@@ -1,0 +1,425 @@
+---
+/**
+ * KeyboardTesterCanvas.astro
+ * State-of-the-art interactive keyboard diagnostic suite component.
+ * Features: Visual 104-key ANSI & Mac layouts, switch chatter/bounce microsecond analysis,
+ * NKRO gaming combo stress tests, real-time heatmaps, Web Audio mechanical switch sound synthesizer,
+ * typing speed APM/WPM metrics, and downloadable JSON diagnostic health receipts.
+ */
+---
+
+<div class="w-full max-w-6xl mx-auto space-y-6">
+  <!-- Top Control Deck -->
+  <div class="bg-bg-surface/90 border border-border-hairline rounded-2xl p-4 sm:p-6 backdrop-blur-xl shadow-2xl space-y-6">
+    <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 border-b border-border-hairline/60 pb-4">
+      <div>
+        <div class="flex items-center gap-2">
+          <span class="w-3 h-3 rounded-full bg-status-pass shadow-[0_0_10px_rgba(5,150,105,0.8)] animate-pulse"></span>
+          <h2 class="text-xl font-bold font-mono text-text-primary tracking-wide">Universal Keyboard Diagnostic Suite</h2>
+        </div>
+        <p class="text-xs text-text-muted mt-1">Multi-layout visual key tester, switch chatter bounce analyzer, NKRO gaming combo stress tester &amp; APM counter.</p>
+      </div>
+
+      <!-- Mode & Sound Selectors -->
+      <div class="flex flex-wrap items-center gap-2">
+        <div class="bg-bg-canvas p-1 rounded-xl border border-border-subtle flex items-center gap-1 text-xs font-mono">
+          <button id="mode-standard" class="mode-btn px-3 py-1.5 rounded-lg font-semibold bg-status-pass/20 text-status-pass border border-status-pass/40 cursor-pointer transition-all">
+            Key Matrix
+          </button>
+          <button id="mode-chatter" class="mode-btn px-3 py-1.5 rounded-lg font-semibold text-text-muted hover:text-text-primary cursor-pointer transition-all">
+            Chatter Test
+          </button>
+          <button id="mode-combos" class="mode-btn px-3 py-1.5 rounded-lg font-semibold text-text-muted hover:text-text-primary cursor-pointer transition-all">
+            Gaming NKRO
+          </button>
+          <button id="mode-heatmap" class="mode-btn px-3 py-1.5 rounded-lg font-semibold text-text-muted hover:text-text-primary cursor-pointer transition-all">
+            Heatmap
+          </button>
+        </div>
+
+        <select id="sound-selector" class="bg-bg-canvas border border-border-subtle text-text-primary text-xs font-mono rounded-xl px-3 py-2 focus:outline-none cursor-pointer">
+          <option value="none">🔊 Mute Click Sound</option>
+          <option value="blue" selected>🔊 Clicky Blue Switch</option>
+          <option value="brown">🔊 Tactile Brown Switch</option>
+          <option value="red">🔊 Linear Red Switch</option>
+        </select>
+
+        <button id="reset-suite-btn" class="px-3.5 py-2 text-xs font-mono font-semibold rounded-xl bg-bg-canvas border border-border-subtle hover:bg-bg-elevated text-text-primary cursor-pointer transition-all">
+          🔄 Reset Suite
+        </button>
+
+        <button id="export-cert-btn" class="px-3.5 py-2 text-xs font-mono font-semibold rounded-xl bg-status-pass/10 border border-status-pass/40 text-status-pass hover:bg-status-pass/20 cursor-pointer transition-all">
+          📄 Download Certificate
+        </button>
+      </div>
+    </div>
+
+    <!-- Active Key & Combo Status Box -->
+    <div class="relative w-full p-4 rounded-xl bg-bg-canvas border border-border-subtle space-y-3">
+      <div class="flex flex-col sm:flex-row items-center justify-between gap-2 border-b border-border-hairline/40 pb-2">
+        <div class="flex items-center gap-2">
+          <span class="text-xs font-mono font-bold text-text-muted uppercase">Active Input Event:</span>
+          <span id="active-event-code" class="text-xs font-mono font-bold text-status-pass bg-status-pass/10 px-2 py-0.5 rounded border border-status-pass/30">
+            Awaiting keypress...
+          </span>
+        </div>
+        <div id="chatter-warning-badge" class="hidden items-center gap-1.5 px-2.5 py-0.5 rounded bg-rose-500/20 border border-rose-500/50 text-rose-400 font-mono text-[11px] font-bold animate-bounce">
+          <span>⚠️ SWITCH CHATTER DETECTED!</span>
+        </div>
+      </div>
+
+      <!-- Gaming Combo Tracker Deck (Visible in Combos Mode) -->
+      <div id="combos-deck" class="hidden space-y-2">
+        <div class="text-xs font-mono font-bold text-text-muted uppercase">Gaming NKRO Combo Verification Tests:</div>
+        <div id="combos-list-container" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
+          <!-- Dynamically populated -->
+        </div>
+      </div>
+
+      <!-- Live Pressed Keys Visual Pills -->
+      <div id="live-keys-container" class="flex flex-wrap items-center gap-1.5 min-h-[36px]">
+        <span class="text-xs font-mono text-text-muted italic">Press any keys simultaneously on your physical keyboard to begin diagnosis...</span>
+      </div>
+    </div>
+
+    <!-- Interactive Visual Keyboard Grid Container -->
+    <div class="w-full overflow-x-auto pb-2">
+      <div id="keyboard-visual-grid" class="min-w-[840px] space-y-1.5 p-4 rounded-xl bg-bg-canvas border border-border-subtle select-none">
+        <!-- Rendered via JS -->
+      </div>
+    </div>
+
+    <!-- Dynamic Metrics Telemetry Deck -->
+    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+      <div class="bg-bg-elevated p-3 rounded-xl border border-border-hairline text-center">
+        <div class="text-[10px] font-mono text-text-muted uppercase">Tested Keys</div>
+        <div id="metric-tested-keys" class="text-base sm:text-lg font-mono font-bold text-text-primary mt-0.5">0 / 84 (0%)</div>
+      </div>
+      <div class="bg-bg-elevated p-3 rounded-xl border border-border-hairline text-center">
+        <div class="text-[10px] font-mono text-text-muted uppercase">Active Keys</div>
+        <div id="metric-active-keys" class="text-base sm:text-lg font-mono font-bold text-text-primary mt-0.5">0 Held</div>
+      </div>
+      <div class="bg-bg-elevated p-3 rounded-xl border border-border-hairline text-center">
+        <div class="text-[10px] font-mono text-text-muted uppercase">Peak NKRO</div>
+        <div id="metric-peak-nkro" class="text-base sm:text-lg font-mono font-bold text-status-pass mt-0.5">0 Keys</div>
+      </div>
+      <div class="bg-bg-elevated p-3 rounded-xl border border-border-hairline text-center">
+        <div class="text-[10px] font-mono text-text-muted uppercase">Chatter Alerts</div>
+        <div id="metric-chatter-alerts" class="text-base sm:text-lg font-mono font-bold text-emerald-400 mt-0.5">0 Defects</div>
+      </div>
+      <div class="bg-bg-elevated p-3 rounded-xl border border-border-hairline text-center">
+        <div class="text-[10px] font-mono text-text-muted uppercase">Typing Speed</div>
+        <div id="metric-apm-speed" class="text-base sm:text-lg font-mono font-bold text-amber-400 mt-0.5">0 APM</div>
+      </div>
+      <div class="bg-bg-elevated p-3 rounded-xl border border-border-hairline text-center">
+        <div class="text-[10px] font-mono text-text-muted uppercase">NKRO Protocol</div>
+        <div id="metric-nkro-status" class="text-base sm:text-lg font-mono font-bold text-status-pass mt-0.5">READY</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  import { KeyboardTesterState, ANSI_104_KEYS, GAMING_COMBOS } from '../../engine/KeyboardTesterEngine';
+
+  const state = new KeyboardTesterState();
+  let currentMode: 'standard' | 'chatter' | 'combos' | 'heatmap' = 'standard';
+  let soundType: 'none' | 'blue' | 'brown' | 'red' = 'blue';
+  let audioCtx: AudioContext | null = null;
+
+  // DOM references
+  const visualGrid = document.getElementById('keyboard-visual-grid');
+  const liveKeysContainer = document.getElementById('live-keys-container');
+  const activeEventCode = document.getElementById('active-event-code');
+  const chatterWarningBadge = document.getElementById('chatter-warning-badge');
+  const combosDeck = document.getElementById('combos-deck');
+  const combosListContainer = document.getElementById('combos-list-container');
+  const soundSelector = document.getElementById('sound-selector') as HTMLSelectElement;
+  const resetBtn = document.getElementById('reset-suite-btn');
+  const exportBtn = document.getElementById('export-cert-btn');
+
+  // Metrics DOM
+  const metricTested = document.getElementById('metric-tested-keys');
+  const metricActive = document.getElementById('metric-active-keys');
+  const metricPeak = document.getElementById('metric-peak-nkro');
+  const metricChatter = document.getElementById('metric-chatter-alerts');
+  const metricApm = document.getElementById('metric-apm-speed');
+  const metricNkro = document.getElementById('metric-nkro-status');
+
+  // Mode buttons
+  const modeStandard = document.getElementById('mode-standard');
+  const modeChatter = document.getElementById('mode-chatter');
+  const modeCombos = document.getElementById('mode-combos');
+  const modeHeatmap = document.getElementById('mode-heatmap');
+
+  function initAudio() {
+    if (!audioCtx && typeof window !== 'undefined') {
+      const AudioContextClass = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
+      if (AudioContextClass) {
+        audioCtx = new AudioContextClass();
+      }
+    }
+    if (audioCtx && audioCtx.state === 'suspended') {
+      audioCtx.resume();
+    }
+  }
+
+  function playSwitchSound(type: string) {
+    if (type === 'none') return;
+    initAudio();
+    if (!audioCtx) return;
+
+    try {
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+
+      const now = audioCtx.currentTime;
+
+      if (type === 'blue') { // High clicky double transient
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(1400, now);
+        osc.frequency.exponentialRampToValueAtTime(300, now + 0.03);
+        gain.gain.setValueAtTime(0.3, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.03);
+        osc.start(now);
+        osc.stop(now + 0.03);
+      } else if (type === 'brown') { // Tactile medium thock
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(600, now);
+        osc.frequency.exponentialRampToValueAtTime(120, now + 0.04);
+        gain.gain.setValueAtTime(0.4, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.04);
+        osc.start(now);
+        osc.stop(now + 0.04);
+      } else if (type === 'red') { // Soft smooth linear thock
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(350, now);
+        osc.frequency.exponentialRampToValueAtTime(80, now + 0.05);
+        gain.gain.setValueAtTime(0.35, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.05);
+        osc.start(now);
+        osc.stop(now + 0.05);
+      }
+    } catch {
+      // Ignore audio synthesis errors
+    }
+  }
+
+  function renderVisualGrid() {
+    if (!visualGrid) return;
+
+    // Group keys by row (Row 0 through Row 5)
+    const rowsMap = new Map<number, typeof ANSI_104_KEYS>();
+    ANSI_104_KEYS.forEach(key => {
+      const r = key.row;
+      if (!rowsMap.has(r)) rowsMap.set(r, []);
+      rowsMap.get(r)!.push(key);
+    });
+
+    let html = '';
+    rowsMap.forEach((rowKeys) => {
+      html += `<div class="flex items-center gap-1 w-full justify-between sm:justify-start">`;
+      rowKeys.forEach(k => {
+        const w = k.width || 1.0;
+        const styleWidth = `calc(${w * 44}px + ${(w - 1) * 4}px)`;
+
+        const isActive = state.activeKeys.has(k.code);
+        const isTested = state.testedKeys.has(k.code);
+        const tele = state.telemetryMap.get(k.code);
+        const isChattered = tele && tele.chatterCount > 0;
+
+        let bgClass = 'bg-bg-surface border-border-hairline text-text-secondary';
+
+        if (currentMode === 'heatmap') {
+          const intensity = state.getHeatmapIntensity(k.code);
+          if (intensity > 0) {
+            if (intensity > 0.75) bgClass = 'bg-rose-500/80 border-rose-400 text-white shadow-[0_0_10px_rgba(244,63,94,0.6)]';
+            else if (intensity > 0.4) bgClass = 'bg-amber-500/80 border-amber-400 text-black shadow-[0_0_8px_rgba(245,158,11,0.5)]';
+            else bgClass = 'bg-emerald-500/80 border-emerald-400 text-black shadow-[0_0_6px_rgba(16,185,129,0.4)]';
+          }
+        } else {
+          if (isActive) {
+            bgClass = 'bg-status-pass border-status-pass text-black font-bold scale-[0.96] shadow-[0_0_12px_rgba(5,150,105,0.9)]';
+          } else if (isChattered) {
+            bgClass = 'bg-rose-500/30 border-rose-500 text-rose-300 font-bold';
+          } else if (isTested) {
+            bgClass = 'bg-blue-500/20 border-blue-500/50 text-blue-300 font-semibold';
+          }
+        }
+
+        html += `
+          <div 
+            id="key-cap-${k.code}" 
+            data-code="${k.code}"
+            style="width: ${styleWidth}; min-width: ${styleWidth}; height: 42px;" 
+            class="relative flex flex-col items-center justify-center rounded-lg border text-xs font-mono transition-all duration-75 select-none ${bgClass}"
+          >
+            <span class="font-bold text-[11px] leading-none">${k.label}</span>
+            ${k.subLabel ? `<span class="text-[8px] opacity-60 leading-none mt-0.5">${k.subLabel}</span>` : ''}
+            ${isChattered ? `<span class="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-rose-500 animate-ping"></span>` : ''}
+          </div>
+        `;
+      });
+      html += `</div>`;
+    });
+
+    visualGrid.innerHTML = html;
+  }
+
+  function renderCombos() {
+    if (!combosListContainer) return;
+    let html = '';
+    GAMING_COMBOS.forEach(combo => {
+      const activeKeysSet = state.activeKeys;
+      const isComplete = combo.keys.every(k => activeKeysSet.has(k));
+
+      const statusBadge = isComplete
+        ? `<span class="px-2 py-0.5 rounded bg-status-pass/20 border border-status-pass/50 text-status-pass font-bold text-[10px]">PASSED</span>`
+        : `<span class="px-2 py-0.5 rounded bg-bg-canvas border border-border-hairline text-text-muted text-[10px]">WAITING</span>`;
+
+      html += `
+        <div class="p-2.5 rounded-lg bg-bg-elevated border border-border-hairline flex items-center justify-between text-xs font-mono">
+          <div>
+            <div class="font-bold text-text-primary text-[11px]">${combo.name}</div>
+            <div class="text-[9px] text-text-muted">${combo.keys.join(' + ')}</div>
+          </div>
+          ${statusBadge}
+        </div>
+      `;
+    });
+    combosListContainer.innerHTML = html;
+  }
+
+  function updateTelemetry() {
+    const report = state.generateReport(ANSI_104_KEYS, Date.now());
+
+    if (metricTested) metricTested.textContent = `${report.testedKeysCount} / ${report.totalLayoutKeysCount} (${report.coveragePercent}%)`;
+    if (metricActive) metricActive.textContent = `${report.activeKeysCount} Held`;
+    if (metricPeak) metricPeak.textContent = `${report.peakSimultaneousKeys} Keys`;
+    if (metricChatter) {
+      if (report.chatterAlertCount > 0) {
+        metricChatter.textContent = `${report.chatterAlertCount} Defects!`;
+        metricChatter.className = 'text-base sm:text-lg font-mono font-bold text-rose-400 mt-0.5 animate-pulse';
+      } else {
+        metricChatter.textContent = '0 Defects';
+        metricChatter.className = 'text-base sm:text-lg font-mono font-bold text-emerald-400 mt-0.5';
+      }
+    }
+    if (metricApm) metricApm.textContent = `${report.apm} APM`;
+    if (metricNkro) metricNkro.textContent = report.isNkroCompliant ? 'NKRO VERIFIED' : '6KRO / TESTING';
+
+    // Update live keys display pills
+    if (liveKeysContainer) {
+      if (state.activeKeys.size === 0) {
+        liveKeysContainer.innerHTML = `<span class="text-xs font-mono text-text-muted italic">Press any keys simultaneously on your physical keyboard to begin diagnosis...</span>`;
+      } else {
+        liveKeysContainer.innerHTML = Array.from(state.activeKeys)
+          .map(c => `<span class="px-2.5 py-1 rounded-md bg-status-pass/20 border border-status-pass/50 text-status-pass font-mono font-bold text-xs shadow-[0_0_8px_rgba(5,150,105,0.4)]">${c}</span>`)
+          .join('');
+      }
+    }
+
+    renderVisualGrid();
+    if (currentMode === 'combos') renderCombos();
+  }
+
+  // Event Listeners
+  window.addEventListener('keydown', (e) => {
+    const isNavKey = e.key === 'F5' || e.key === 'F12' || ((e.metaKey || e.ctrlKey) && ['r', 'R', 'w', 'W', 'i', 'I'].includes(e.key));
+    if (!isNavKey) {
+      e.preventDefault();
+    }
+    initAudio();
+    const { isChatter, deltaMs } = state.processKeyDown(e.code, performance.now());
+
+    playSwitchSound(soundType);
+
+    if (activeEventCode) {
+      activeEventCode.textContent = `${e.code} (${e.key === ' ' ? 'Space' : e.key})`;
+    }
+
+    if (isChatter && chatterWarningBadge) {
+      chatterWarningBadge.classList.remove('hidden');
+      chatterWarningBadge.classList.add('flex');
+      chatterWarningBadge.textContent = `⚠️ SWITCH CHATTER DETECTED: ${e.code} (${Math.round(deltaMs)}ms)!`;
+    }
+
+    updateTelemetry();
+  });
+
+  window.addEventListener('keyup', (e) => {
+    const isNavKey = e.key === 'F5' || e.key === 'F12' || ((e.metaKey || e.ctrlKey) && ['r', 'R', 'w', 'W', 'i', 'I'].includes(e.key));
+    if (!isNavKey) {
+      e.preventDefault();
+    }
+    state.processKeyUp(e.code, performance.now());
+    updateTelemetry();
+  });
+
+  soundSelector?.addEventListener('change', (e) => {
+    soundType = (e.target as HTMLSelectElement).value as 'none' | 'blue' | 'brown' | 'red';
+  });
+
+  resetBtn?.addEventListener('click', () => {
+    state.reset();
+    if (chatterWarningBadge) {
+      chatterWarningBadge.classList.add('hidden');
+      chatterWarningBadge.classList.remove('flex');
+    }
+    if (activeEventCode) activeEventCode.textContent = 'Awaiting keypress...';
+    updateTelemetry();
+  });
+
+  exportBtn?.addEventListener('click', () => {
+    const report = state.generateReport(ANSI_104_KEYS, Date.now());
+    const certificate = {
+      title: 'Monitor Test Hub — Keyboard Health Certificate',
+      timestamp: new Date().toISOString(),
+      userAgent: navigator.userAgent,
+      telemetry: report,
+      keyDetails: Array.from(state.telemetryMap.values())
+    };
+
+    const blob = new Blob([JSON.stringify(certificate, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `keyboard-health-passport-${Date.now()}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+  });
+
+  // Mode button handlers
+  const setMode = (mode: 'standard' | 'chatter' | 'combos' | 'heatmap') => {
+    currentMode = mode;
+    [modeStandard, modeChatter, modeCombos, modeHeatmap].forEach(btn => {
+      if (btn) btn.className = 'mode-btn px-3 py-1.5 rounded-lg font-semibold text-text-muted hover:text-text-primary cursor-pointer transition-all';
+    });
+
+    if (mode === 'standard' && modeStandard) modeStandard.className = 'mode-btn px-3 py-1.5 rounded-lg font-semibold bg-status-pass/20 text-status-pass border border-status-pass/40 cursor-pointer transition-all';
+    if (mode === 'chatter' && modeChatter) modeChatter.className = 'mode-btn px-3 py-1.5 rounded-lg font-semibold bg-rose-500/20 text-rose-400 border border-rose-500/40 cursor-pointer transition-all';
+    if (mode === 'combos' && modeCombos) modeCombos.className = 'mode-btn px-3 py-1.5 rounded-lg font-semibold bg-blue-500/20 text-blue-400 border border-blue-500/40 cursor-pointer transition-all';
+    if (mode === 'heatmap' && modeHeatmap) modeHeatmap.className = 'mode-btn px-3 py-1.5 rounded-lg font-semibold bg-amber-500/20 text-amber-400 border border-amber-500/40 cursor-pointer transition-all';
+
+    if (combosDeck) {
+      if (mode === 'combos') {
+        combosDeck.classList.remove('hidden');
+        renderCombos();
+      } else {
+        combosDeck.classList.add('hidden');
+      }
+    }
+
+    renderVisualGrid();
+  };
+
+  modeStandard?.addEventListener('click', () => setMode('standard'));
+  modeChatter?.addEventListener('click', () => setMode('chatter'));
+  modeCombos?.addEventListener('click', () => setMode('combos'));
+  modeHeatmap?.addEventListener('click', () => setMode('heatmap'));
+
+  // Initial render
+  renderVisualGrid();
+</script>

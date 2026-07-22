@@ -1,0 +1,6 @@
+{"id":"rec_001","timestamp":"2026-07-22T00:00:00Z","model":"alienware-qd-oled","resolution":"3440x1440","vsyncFps":240.0,"p95JitterMs":0.38,"isoClass":"class-1","isoDefects":0,"oledRiskScore":4}
+{"id":"rec_002","timestamp":"2026-07-22T01:15:00Z","model":"samsung-odyssey-oled-g95sc","resolution":"5120x1440","vsyncFps":240.0,"p95JitterMs":0.42,"isoClass":"class-1","isoDefects":0,"oledRiskScore":5}
+{"id":"rec_003","timestamp":"2026-07-22T02:30:00Z","model":"asus-rog-swift-pg32ucdm","resolution":"3840x2160","vsyncFps":240.0,"p95JitterMs":0.31,"isoClass":"class-1","isoDefects":0,"oledRiskScore":3}
+{"id":"rec_004","timestamp":"2026-07-22T03:45:00Z","model":"asus-540hz-rog","resolution":"1920x1080","vsyncFps":540.0,"p95JitterMs":0.12,"isoClass":"class-1","isoDefects":0,"oledRiskScore":0}
+{"id":"rec_005","timestamp":"2026-07-22T04:20:00Z","model":"macbook-pro","resolution":"3024x1964","vsyncFps":120.0,"p95JitterMs":0.55,"isoClass":"class-1","isoDefects":0,"oledRiskScore":1}
+{"id":"rec_006","timestamp":"2026-07-22T05:00:00Z","model":"steam-deck-oled","resolution":"1280x800","vsyncFps":90.0,"p95JitterMs":0.68,"isoClass":"class-1","isoDefects":0,"oledRiskScore":2}

@@ -1,0 +1,310 @@
+---
+import TestGuideModal from '../ui/TestGuideModal.astro';
+
+export interface Props {
+  targetHz?: string;
+}
+
+const { targetHz = 'auto' } = Astro.props;
+
+const guideSteps = [
+  "Allow the real-time Hz counter to measure your screen's frame rate for 3 seconds.",
+  "Observe the 4 side-by-side moving reticles (1x, 1/2x, 1/4x, 1/8x) to inspect motion blur and overdrive ghosting.",
+  "If using a camera/phone to photograph motion blur, click '📷 Camera Pursuit Grid' to enable alignment lines.",
+  "Click 'START FULLSCREEN TEST' when ready for uninterrupted full-screen frame pacing diagnostics."
+];
+---
+
+<div class="bg-[#121215] border border-white/10 rounded-2xl p-6 sm:p-8 space-y-6 shadow-2xl font-mono text-text-primary">
+  
+  <!-- Quick Start Guide Modal -->
+  <TestGuideModal 
+    testId="refresh-rate-test"
+    testTitle="Screen Refresh Rate & Frame Pacing Guide"
+    steps={guideSteps}
+    fullscreenButtonId="hz-fullscreen-btn"
+  />
+
+  <!-- Header Bar -->
+  <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-white/10 pb-4">
+    <div>
+      <div class="text-xs font-bold text-cyan-400 uppercase tracking-widest flex items-center gap-2">
+        <span class="w-2.5 h-2.5 rounded-full bg-cyan-400 animate-pulse shadow-[0_0_10px_rgba(34,211,238,0.8)]"></span>
+        <span>W3C HIGH-RESOLUTION TIME API &amp; ISO 9241-307</span>
+      </div>
+      <h2 class="text-xl sm:text-2xl font-bold text-white mt-1">Screen Refresh Rate &amp; Frame Pacing Inspector</h2>
+    </div>
+
+    <!-- Rating Badge & How to Test Trigger -->
+    <div class="flex items-center gap-2">
+      <button
+        type="button"
+        onclick="window.openGuide_refresh_rate_test ? window.openGuide_refresh_rate_test() : null"
+        class="px-3 py-1.5 rounded-full bg-white/5 border border-white/10 text-slate-300 hover:text-white text-xs font-bold transition-all cursor-pointer hover:border-cyan-400/40"
+      >
+        📖 How To Test
+      </button>
+
+      <div id="hz-rating-badge" class="px-4 py-1.5 rounded-full bg-cyan-400/10 border border-cyan-400/30 text-cyan-400 text-xs font-bold transition-all shadow-sm">
+        DETECTING REFRESH RATE...
+      </div>
+    </div>
+  </div>
+
+  <!-- Primary Hz & Latency Telemetry Grid -->
+  <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
+    <div class="bg-[#08080a] p-4 rounded-xl border border-white/10 shadow-inner">
+      <div class="text-slate-400 text-[11px] font-sans font-medium">Measured Real Hz</div>
+      <div id="real-hz-num" class="text-2xl sm:text-3xl font-bold text-cyan-400 mt-1">0.00 Hz</div>
+      <div id="nominal-hz-label" class="text-[10px] text-slate-500 mt-0.5">Nominal: --</div>
+    </div>
+
+    <div class="bg-[#08080a] p-4 rounded-xl border border-white/10 shadow-inner">
+      <div class="text-slate-400 text-[11px] font-sans font-medium">Average Frame Time</div>
+      <div id="avg-frame-time" class="text-2xl sm:text-3xl font-bold text-emerald-400 mt-1">0.00 ms</div>
+      <div id="expected-time-label" class="text-[10px] text-slate-500 mt-0.5">Target: 16.67ms</div>
+    </div>
+
+    <div class="bg-[#08080a] p-4 rounded-xl border border-white/10 shadow-inner">
+      <div class="text-slate-400 text-[11px] font-sans font-medium">Inter-Frame Jitter (σ)</div>
+      <div id="jitter-std-dev" class="text-2xl sm:text-3xl font-bold text-purple-400 mt-1">0.00 ms</div>
+      <div id="p99-pacing-label" class="text-[10px] text-slate-500 mt-0.5">P99: 0.00ms</div>
+    </div>
+
+    <div class="bg-[#08080a] p-4 rounded-xl border border-white/10 shadow-inner">
+      <div class="text-slate-400 text-[11px] font-sans font-medium">Mobile ProMotion / LTPO</div>
+      <div id="ltpo-state-num" class="text-sm font-bold text-amber-400 mt-2">DETECTING...</div>
+      <div id="ltpo-range-label" class="text-[10px] text-slate-500 mt-1">Range: --</div>
+    </div>
+  </div>
+
+  <!-- Multi-Rate Motion Pursuit Canvas Visualizer -->
+  <div class="space-y-2">
+    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 text-xs font-sans">
+      <span class="text-slate-400 font-medium">Side-by-Side Multi-Rate Motion Sweep (1x, 1/2x, 1/4x, 1/8x)</span>
+      <div class="flex items-center gap-2">
+        <button id="toggle-pursuit-grid" type="button" class="px-2.5 py-1 rounded bg-bg-surface border border-border-hairline text-slate-300 hover:text-white text-[11px] cursor-pointer transition-colors">
+          📷 Camera Pursuit Grid: OFF
+        </button>
+        <button id="toggle-wake-lock" type="button" class="px-2.5 py-1 rounded bg-bg-surface border border-border-hairline text-slate-300 hover:text-white text-[11px] cursor-pointer transition-colors">
+          🔒 Screen Wake Lock: OFF
+        </button>
+      </div>
+    </div>
+
+    <div class="relative w-full overflow-hidden rounded-xl border border-white/10 bg-[#08080a] p-2 shadow-2xl">
+      <canvas id="motion-sweep-canvas" width="800" height="280" class="w-full h-[280px] rounded-lg bg-[#0a0a0d] block cursor-crosshair"></canvas>
+    </div>
+  </div>
+
+  <!-- Controls Deck -->
+  <div class="flex flex-wrap items-center justify-between gap-3 pt-2 border-t border-white/10 text-xs font-sans">
+    <div class="flex items-center gap-2">
+      <span class="text-slate-400">Target Hz Filter:</span>
+      <span class="px-2 py-0.5 rounded bg-cyan-500/10 text-cyan-400 font-mono font-bold uppercase">{targetHz}</span>
+    </div>
+
+    <div class="flex items-center gap-3">
+      <button 
+        id="hz-fullscreen-btn" 
+        onclick="window.toggleGlobalFullscreen &amp;&amp; window.toggleGlobalFullscreen()"
+        class="px-4 py-2 rounded-lg bg-status-pass/10 border border-status-pass/30 text-status-pass font-bold hover:bg-status-pass/20 transition-all cursor-pointer shadow-sm"
+      >
+        FULLSCREEN TEST (F)
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+  import {
+    calculateRefreshRateMetrics,
+    detectMobileLtpoStatus,
+    calculateMotionSweepVectors,
+  } from '../../engine/RefreshRateEngine';
+
+  function initRefreshRateInspector() {
+    const canvas = document.getElementById('motion-sweep-canvas') as HTMLCanvasElement;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    const realHzNum = document.getElementById('real-hz-num');
+    const nominalHzLabel = document.getElementById('nominal-hz-label');
+    const avgFrameTime = document.getElementById('avg-frame-time');
+    const expectedTimeLabel = document.getElementById('expected-time-label');
+    const jitterStdDev = document.getElementById('jitter-std-dev');
+    const p99PacingLabel = document.getElementById('p99-pacing-label');
+    const ltpoStateNum = document.getElementById('ltpo-state-num');
+    const ltpoRangeLabel = document.getElementById('ltpo-range-label');
+    const ratingBadge = document.getElementById('hz-rating-badge');
+    const pursuitGridBtn = document.getElementById('toggle-pursuit-grid');
+    const wakeLockBtn = document.getElementById('toggle-wake-lock');
+
+    const timestamps: number[] = [];
+    const historyHz: number[] = [];
+    let isTouchActive = false;
+    let cameraPursuitMode = false;
+    let wakeLockSentinel: any = null;
+
+    // Responsive Canvas Resizing
+    function resizeCanvas() {
+      if (!canvas) return;
+      const rect = canvas.getBoundingClientRect();
+      canvas.width = rect.width * (window.devicePixelRatio || 1);
+      canvas.height = 280 * (window.devicePixelRatio || 1);
+    }
+    resizeCanvas();
+    window.addEventListener('resize', resizeCanvas);
+
+    // Touch boost detection for Mobile ProMotion
+    window.addEventListener('touchstart', () => { isTouchActive = true; }, { passive: true });
+    window.addEventListener('touchend', () => {
+      setTimeout(() => { isTouchActive = false; }, 800);
+    });
+
+    // Camera Pursuit Grid Toggle
+    pursuitGridBtn?.addEventListener('click', () => {
+      cameraPursuitMode = !cameraPursuitMode;
+      if (pursuitGridBtn) {
+        pursuitGridBtn.textContent = cameraPursuitMode ? '📷 Camera Pursuit Grid: ON' : '📷 Camera Pursuit Grid: OFF';
+        pursuitGridBtn.className = cameraPursuitMode
+          ? 'px-2.5 py-1 rounded bg-cyan-400/20 border border-cyan-400 text-cyan-300 font-bold text-[11px] cursor-pointer'
+          : 'px-2.5 py-1 rounded bg-bg-surface border border-border-hairline text-slate-300 hover:text-white text-[11px] cursor-pointer';
+      }
+    });
+
+    // Screen Wake Lock API
+    async function toggleWakeLock() {
+      try {
+        if ('wakeLock' in navigator) {
+          if (!wakeLockSentinel) {
+            wakeLockSentinel = await (navigator as any).wakeLock.request('screen');
+            if (wakeLockBtn) {
+              wakeLockBtn.textContent = '🔒 Screen Wake Lock: ACTIVE';
+              wakeLockBtn.className = 'px-2.5 py-1 rounded bg-emerald-400/20 border border-emerald-400 text-emerald-300 font-bold text-[11px] cursor-pointer';
+            }
+          } else {
+            await wakeLockSentinel.release();
+            wakeLockSentinel = null;
+            if (wakeLockBtn) {
+              wakeLockBtn.textContent = '🔒 Screen Wake Lock: OFF';
+              wakeLockBtn.className = 'px-2.5 py-1 rounded bg-bg-surface border border-border-hairline text-slate-300 hover:text-white text-[11px] cursor-pointer';
+            }
+          }
+        }
+      } catch {
+        // Wake lock unavailable or denied
+      }
+    }
+    wakeLockBtn?.addEventListener('click', toggleWakeLock);
+
+    const startTime = performance.now();
+
+    function renderFrame(now: number) {
+      timestamps.push(now);
+      if (timestamps.length > 300) timestamps.shift();
+
+      const metrics = calculateRefreshRateMetrics(timestamps, 60);
+      historyHz.push(metrics.smoothedHz);
+      if (historyHz.length > 180) historyHz.shift();
+
+      const ltpo = detectMobileLtpoStatus(historyHz, isTouchActive);
+
+      // Update UI Telemetry Cards
+      if (realHzNum) realHzNum.textContent = `${metrics.smoothedHz.toFixed(2)} Hz`;
+      if (nominalHzLabel) nominalHzLabel.textContent = `Nominal: ${metrics.nominalHz}Hz`;
+
+      if (avgFrameTime) avgFrameTime.textContent = `${metrics.averageDeltaMs.toFixed(2)} ms`;
+      if (expectedTimeLabel) expectedTimeLabel.textContent = `Target: ${(1000 / metrics.nominalHz).toFixed(2)}ms`;
+
+      if (jitterStdDev) jitterStdDev.textContent = `${metrics.jitterStdDevMs.toFixed(2)} ms`;
+      if (p99PacingLabel) p99PacingLabel.textContent = `P99: ${metrics.p99DeltaMs.toFixed(2)}ms`;
+
+      if (ltpoStateNum) {
+        if (ltpo.isLtpoDetected) {
+          ltpoStateNum.textContent = ltpo.currentLtpoState === 'TOUCH_BOOSTED' ? '⚡ TOUCH BOOST (120Hz)' : '🔋 IDLE SCALED (30Hz)';
+          ltpoStateNum.className = ltpo.currentLtpoState === 'TOUCH_BOOSTED' ? 'text-sm font-bold text-cyan-400 mt-2' : 'text-sm font-bold text-amber-400 mt-2';
+        } else {
+          ltpoStateNum.textContent = 'STATIC PANEL RATE';
+          ltpoStateNum.className = 'text-sm font-bold text-emerald-400 mt-2';
+        }
+      }
+      if (ltpoRangeLabel) ltpoRangeLabel.textContent = `Observed: ${ltpo.minObservedHz}Hz - ${ltpo.maxObservedHz}Hz`;
+
+      if (ratingBadge) {
+        ratingBadge.textContent = metrics.ratingLabel.toUpperCase();
+        ratingBadge.style.color = metrics.ratingColor;
+        ratingBadge.style.borderColor = `${metrics.ratingColor}50`;
+        ratingBadge.style.backgroundColor = `${metrics.ratingColor}15`;
+      }
+
+      // Render Visual Reticle Canvas
+      const w = canvas.width;
+      const h = canvas.height;
+      ctx.clearRect(0, 0, w, h);
+
+      const elapsedTimeSec = (now - startTime) / 1000;
+      const vectors = calculateMotionSweepVectors(elapsedTimeSec, w - 80, metrics.nominalHz, 800);
+
+      const trackHeight = h / 4;
+
+      for (let i = 0; i < vectors.length; i++) {
+        const vec = vectors[i];
+        const yTop = i * trackHeight;
+        const yCenter = yTop + trackHeight / 2;
+
+        // Track Background
+        ctx.fillStyle = i % 2 === 0 ? 'rgba(255, 255, 255, 0.02)' : 'rgba(0, 0, 0, 0.2)';
+        ctx.fillRect(0, yTop, w, trackHeight);
+
+        // Track Separator Line
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.08)';
+        ctx.beginPath();
+        ctx.moveTo(0, yTop);
+        ctx.lineTo(w, yTop);
+        ctx.stroke();
+
+        // Label
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
+        ctx.font = '12px monospace';
+        ctx.fillText(`${vec.label} (${Math.round(metrics.nominalHz * vec.speedMultiplier)} FPS)`, 12, yTop + 20);
+
+        // Moving Reticle Circle
+        const rx = 40 + vec.positionPx;
+        ctx.beginPath();
+        ctx.arc(rx, yCenter, 14, 0, Math.PI * 2);
+        if (i === 0) ctx.fillStyle = '#22d3ee';      // Cyan
+        else if (i === 1) ctx.fillStyle = '#10b981'; // Green
+        else if (i === 2) ctx.fillStyle = '#f59e0b'; // Amber
+        else ctx.fillStyle = '#a855f7';             // Purple
+
+        ctx.shadowColor = ctx.fillStyle;
+        ctx.shadowBlur = 12;
+        ctx.fill();
+        ctx.shadowBlur = 0;
+
+        // Camera Pursuit Grid Overlay (when enabled)
+        if (cameraPursuitMode) {
+          ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
+          ctx.setLineDash([4, 4]);
+          ctx.beginPath();
+          ctx.moveTo(rx, yTop);
+          ctx.lineTo(rx, yTop + trackHeight);
+          ctx.stroke();
+          ctx.setLineDash([]);
+        }
+      }
+
+      requestAnimationFrame(renderFrame);
+    }
+
+    requestAnimationFrame(renderFrame);
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initRefreshRateInspector);
+  } else {
+    initRefreshRateInspector();
+  }
+</script>

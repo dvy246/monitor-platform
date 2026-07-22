@@ -1,0 +1,18 @@
+---
+import { getStaticPaths as baseGetStaticPaths } from '../../white-screen/[color].astro';
+
+export async function getStaticPaths() {
+  const locales = ['es', 'de', 'fr'];
+  const basePaths = await baseGetStaticPaths();
+
+  return locales.flatMap((locale) =>
+    basePaths.map((bp) => ({
+      params: { locale, color: bp.params.color },
+      props: bp.props
+    }))
+  );
+}
+
+import BasePage from '../../white-screen/[color].astro';
+---
+<BasePage {...Astro.props} />

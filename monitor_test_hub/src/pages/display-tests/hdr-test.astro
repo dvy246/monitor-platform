@@ -22,10 +22,10 @@ const displayTests = [
 ---
 
 <Layout 
-  title="HDR Peak Brightness & Tone Mapping Clipping Test | Monitor Test Hub"
-  description="Client-side HDR tone mapping clipping test with 10-bit step gradients, ABL window size patterns (1%–100%), and peak luminance threshold detection for OLED and Mini-LED HDR displays."
+  title="HDR Peak Brightness & Tone Mapping Test | Monitor Test Hub"
+  description="Test HDR tone mapping, 10-bit gradients, and ABL peak brightness (1%-100% window sizes) for OLED & Mini-LED screens. Free browser test for VESA DisplayHDR."
 >
-  <main class="max-w-7xl mx-auto px-4 py-8 space-y-8">
+  <div class="max-w-7xl mx-auto px-4 py-8 space-y-8">
     <Breadcrumbs items={breadcrumbItems} />
 
     <header class="space-y-3 border-b border-border-hairline pb-6">
@@ -80,5 +80,5 @@ const displayTests = [
     </article>
 
     <TestSwitcherBar tests={displayTests} currentId="hdr-test" />
-  </main>
+  </div>
 </Layout>

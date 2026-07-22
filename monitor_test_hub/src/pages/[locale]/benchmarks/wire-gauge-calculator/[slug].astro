@@ -1,0 +1,51 @@
+---
+import Layout from '../../../../layouts/Layout.astro';
+import WireGaugeInspector from '../../../../components/diagnostics/WireGaugeInspector.astro';
+import SEOHead from '../../../../components/seo/SEOHead.astro';
+import SchemaGraph from '../../../../components/seo/SchemaGraph.astro';
+
+export function getStaticPaths() {
+  const locales = ['es', 'de', 'fr'];
+  const circuits = [
+    { amp: 15, volt: 120 },
+    { amp: 20, volt: 120 },
+    { amp: 30, volt: 240 },
+    { amp: 50, volt: 240 }
+  ];
+
+  const paths = [];
+
+  for (const locale of locales) {
+    for (const c of circuits) {
+      const slug = `${c.amp}-amp-${c.volt}v`;
+      paths.push({
+        params: { locale, slug },
+        props: { amp: c.amp, volt: c.volt }
+      });
+    }
+  }
+
+  return paths;
+}
+
+const { locale } = Astro.params;
+const { amp, volt } = Astro.props;
+
+const seoTitle = `Wire Size Calculator for ${amp}A ${volt}V Circuit (${locale.toUpperCase()})`;
+const seoDescription = `Calculate recommended wire gauge for a ${amp}A ${volt}V circuit according to NEC standards.`;
+---
+
+<Layout title={seoTitle} description={seoDescription} canonicalUrl={`https://monitortester.com/${locale}`}>
+
+  <div class="min-h-screen bg-[#08080a] text-slate-100 py-12 px-4">
+    <div class="max-w-5xl mx-auto space-y-12">
+      <section class="text-center space-y-4">
+        <h1 class="text-3xl sm:text-4xl font-black text-white tracking-tight">
+          Wire Size for {amp}A {volt}V Circuit ({locale.toUpperCase()})
+        </h1>
+      </section>
+
+      <WireGaugeInspector initialAmperage={amp} initialVoltage={volt} />
+    </div>
+  </div>
+</Layout>

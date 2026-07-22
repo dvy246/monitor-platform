@@ -1,0 +1,13 @@
+---
+import BasePage from '../../models/index.astro';
+
+export function getStaticPaths() {
+  return [
+    { params: { locale: 'es' } },
+    { params: { locale: 'de' } },
+    { params: { locale: 'fr' } }
+  ];
+}
+---
+
+<BasePage />

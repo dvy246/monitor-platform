@@ -2,10 +2,16 @@
 export function getStaticPaths() {
   const locales = ['es', 'de', 'fr'];
   const slugs = [
-    'mechanical-keyboard-test',
+    'online-keyboard-test',
+    'chromebook-keyboard-test',
     'mac-keyboard-test',
-    'gaming-keyboard-test',
     'laptop-keyboard-test',
+    'keyboard-test-speed',
+    'blank-keyboard-test',
+    'keyboard-test-latency',
+    'keyboard-test-keys',
+    'mechanical-keyboard-test',
+    'gaming-keyboard-test',
     '60-percent-keyboard-test',
     'wireless-bluetooth-keyboard-test',
     'key-chatter-test',
@@ -24,7 +30,8 @@ export function getStaticPaths() {
             title: 'Keyboard Diagnostic Suite',
             h1: 'Keyboard Diagnostic Tool',
             description: 'Test your mechanical or membrane keyboard for key ghosting, N-Key Rollover (NKRO), and switch chatter.',
-            badge: 'KEYBOARD DIAGNOSTIC BENCHMARK'
+            badge: 'KEYBOARD DIAGNOSTIC BENCHMARK',
+            faqs: []
           }
         }
       });
@@ -35,7 +42,6 @@ export function getStaticPaths() {
 }
 
 import BasePage from '../../keyboard-tester/[slug].astro';
-const { cat } = Astro.props;
 ---
 
-<BasePage cat={cat} />
+<BasePage />

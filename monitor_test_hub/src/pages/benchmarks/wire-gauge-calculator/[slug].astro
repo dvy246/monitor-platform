@@ -1,0 +1,50 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+import WireGaugeInspector from '../../../components/diagnostics/WireGaugeInspector.astro';
+import SEOHead from '../../../components/seo/SEOHead.astro';
+import SchemaGraph from '../../../components/seo/SchemaGraph.astro';
+import { WireGaugeEngine } from '../../../engine/WireGaugeEngine';
+
+export function getStaticPaths() {
+  const circuits = [
+    { amp: 15, volt: 120 },
+    { amp: 20, volt: 120 },
+    { amp: 30, volt: 240 },
+    { amp: 50, volt: 240 },
+    { amp: 100, volt: 240 },
+    { amp: 200, volt: 240 }
+  ];
+
+  return circuits.map(c => {
+    const slug = `${c.amp}-amp-${c.volt}v`;
+    return {
+      params: { slug },
+      props: { amp: c.amp, volt: c.volt }
+    };
+  });
+}
+
+const { amp, volt } = Astro.props;
+const result = WireGaugeEngine.calculateWireSizing(amp, volt, 50);
+
+const seoTitle = `Wire Size Calculator for ${amp} Amp ${volt}V Circuit (NEC 2026)`;
+const seoDescription = `What size wire is required for a ${amp}A ${volt}V circuit? Recommended gauge: ${result.recommendedGauge} Copper. NEC Table 310.16 compliance.`;
+---
+
+<Layout title={seoTitle} description={seoDescription} canonicalUrl={`https://monitortester.com/benchmarks/wire-gauge-calculator/${amp}`}>
+
+  <div class="min-h-screen bg-[#08080a] text-slate-100 py-12 px-4">
+    <div class="max-w-5xl mx-auto space-y-12">
+      <section class="text-center space-y-4">
+        <div class="inline-block px-3 py-1 bg-rose-500/10 border border-rose-500/20 text-rose-400 rounded-full text-xs font-mono uppercase">
+          NEC Trade Compliance
+        </div>
+        <h1 class="text-3xl sm:text-4xl font-black text-white tracking-tight">
+          Wire Size for {amp} Amp {volt}V Circuit
+        </h1>
+      </section>
+
+      <WireGaugeInspector initialAmperage={amp} initialVoltage={volt} />
+    </div>
+  </div>
+</Layout>

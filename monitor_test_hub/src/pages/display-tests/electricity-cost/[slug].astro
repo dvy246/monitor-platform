@@ -1,0 +1,42 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+import ApplianceEnergyInspector from '../../../components/diagnostics/ApplianceEnergyInspector.astro';
+import SEOHead from '../../../components/seo/SEOHead.astro';
+import SchemaGraph from '../../../components/seo/SchemaGraph.astro';
+import { ApplianceEnergyEngine } from '../../../engine/ApplianceEnergyEngine';
+
+export function getStaticPaths() {
+  const states = ApplianceEnergyEngine.US_STATES;
+
+  return states.map(st => {
+    const slug = st.name.toLowerCase().replace(/\s+/g, '-');
+    return {
+      params: { slug },
+      props: { state: st }
+    };
+  });
+}
+
+const { state } = Astro.props;
+
+const seoTitle = `${state.name} Electricity Cost & Appliance Energy Calculator`;
+const seoDescription = `Calculate household appliance power usage and electric bill costs in ${state.name} based on the average ${state.rateCentsPerKwh}¢/kWh rate.`;
+---
+
+<Layout title={seoTitle} description={seoDescription} canonicalUrl={`https://monitortester.com/display-tests/electricity-cost/${state.name.toLowerCase().replace(/\s+/g, '-')}`}>
+
+  <div class="min-h-screen bg-[#08080a] text-slate-100 py-12 px-4">
+    <div class="max-w-5xl mx-auto space-y-12">
+      <section class="text-center space-y-4">
+        <div class="inline-block px-3 py-1 bg-amber-500/10 border border-amber-500/20 text-amber-400 rounded-full text-xs font-mono uppercase">
+          {state.name} Utility Benchmark ({state.rateCentsPerKwh}¢/kWh)
+        </div>
+        <h1 class="text-3xl sm:text-4xl font-black text-white tracking-tight">
+          {state.name} Electricity Cost Calculator
+        </h1>
+      </section>
+
+      <ApplianceEnergyInspector initialStateCode={state.code} />
+    </div>
+  </div>
+</Layout>

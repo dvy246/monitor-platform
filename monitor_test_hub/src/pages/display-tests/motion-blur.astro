@@ -18,6 +18,30 @@ const faqs = [
   {
     question: "What is MPRT versus GtG response time?",
     answer: "Gray-to-Gray (GtG) measures how fast a pixel transitions between two gray shades, while Motion Picture Response Time (MPRT) measures how long a pixel remains visible on screen, dictating perceived motion blur."
+  },
+  {
+    question: "Why does sample-and-hold cause motion blur even at 240Hz?",
+    answer: "Sample-and-hold displays hold each frame continuously until the next frame update, causing eye tracking motion blur as human eyes smoothly track moving targets across static frame steps."
+  },
+  {
+    question: "What is DyAc and DyAc+ on BenQ Zowie monitors?",
+    answer: "DyAc (Dynamic Accuracy) is BenQ Zowie's backlight strobing technology designed to reduce motion blur by flashing the backlight off between frame refreshes."
+  },
+  {
+    question: "What is ULMB 2 (Ultra Low Motion Blur 2)?",
+    answer: "NVIDIA ULMB 2 is a high-frequency backlight strobing technology that delivers full-refresh-rate motion clarity (over 1000Hz effective MPRT) with zero crosstalk."
+  },
+  {
+    question: "How do I photograph monitor motion blur accurately?",
+    answer: "Use a pursuit camera setup where the camera slides smoothly along a rail at exact tracking speed matching the motion pattern across the screen."
+  },
+  {
+    question: "Does OLED technology eliminate motion blur completely?",
+    answer: "OLED displays have instantaneous near-0.1ms GtG response times eliminating transition trails, but sample-and-hold persistence blur still requires high refresh rates (360Hz/540Hz) or BFI to minimize."
+  },
+  {
+    question: "What is Black Frame Insertion (BFI)?",
+    answer: "Black Frame Insertion inserts black frames between active image frames to clear the human retina's visual persistence, mimicking CRT motion sharpness."
   }
 ];
 ---
@@ -26,7 +50,7 @@ const faqs = [
   title="Motion Blur & Ghosting Test | Monitor Response Time Analyzer"
   description="Check your gaming monitor for motion blur, ghosting, and overdrive overshoot trails. Free pursuit sweep tool for 60Hz to 540Hz displays."
 >
-  <main id="main-content" class="py-10 px-4 sm:px-6 lg:px-8 space-y-12">
+  <div class="py-10 px-4 sm:px-6 lg:px-8 space-y-12">
     <section class="max-w-4xl mx-auto text-center space-y-4">
       <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-status-pass/10 border border-status-pass/30 text-xs font-mono text-status-pass font-bold">
         <span>ISO 9241-305 MPRT SPECIFICATIONS</span>
@@ -57,5 +81,5 @@ const faqs = [
         ))}
       </div>
     </article>
-  </main>
+  </div>
 </Layout>

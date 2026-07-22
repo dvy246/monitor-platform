@@ -1,0 +1,56 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import ApcaContrastInspector from '../../components/diagnostics/ApcaContrastInspector.astro';
+import SEOHead from '../../components/seo/SEOHead.astro';
+import SchemaGraph from '../../components/seo/SchemaGraph.astro';
+
+const seoTitle = "APCA Ambient Contrast & Visual Legibility Calculator (WCAG 3.0 / ISO 9241-307)";
+const seoDescription = "Calculate APCA non-linear perceptual contrast (Lc) and ambient room lux derating for OLED, IPS, and VA displays in compliance with W3C WCAG 3.0 & ISO 9241-307 standards.";
+const canonicalUrl = "https://monitortester.com/display-tests/apca-contrast";
+
+const faqs = [
+  {
+    question: "What is APCA contrast and how does it differ from WCAG 2.1?",
+    answer: "APCA (Advanced Perceptual Contrast Algorithm) is the proposed contrast standard for WCAG 3.0. Unlike WCAG 2.1 which uses a simple 4.5:1 ratio, APCA calculates non-linear human visual perception based on spatial frequency, font weight, background polarity, and ambient room light."
+  },
+  {
+    question: "What is an acceptable APCA Lc value for web & UI text?",
+    answer: "An APCA Lc score of 75+ is recommended for primary body text, Lc 60+ for secondary text, and Lc 45+ for large headings (24px+). Scores below Lc 45 fail accessibility legibility guidelines."
+  },
+  {
+    question: "How does ambient room lighting (Lux) affect display contrast?",
+    answer: "Ambient room light reflects off screen surfaces, raising effective black levels (especially on glossy OLED or IPS panels). Our calculator applies ISO 9241-307 specular reflection formulas to derate contrast ratio based on room lux."
+  }
+];
+---
+
+<Layout title={seoTitle} description={seoDescription} canonicalUrl={canonicalUrl}>
+
+  <div class="min-h-screen bg-[#08080a] text-slate-100 py-12 px-4">
+    <div class="max-w-5xl mx-auto space-y-12">
+      <section class="text-center space-y-4">
+        <h1 class="text-4xl sm:text-5xl font-black text-white tracking-tight">
+          APCA Perceptual Contrast &amp; <span class="text-cyan-400">Ambient Lux Analyzer</span>
+        </h1>
+        <p class="text-slate-400 max-w-2xl mx-auto text-base font-sans">
+          Evaluate text legibility, WCAG 3.0 APCA Lc scores, and ambient room light contrast derating across OLED and LCD displays.
+        </p>
+      </section>
+
+      <ApcaContrastInspector />
+
+      <!-- FAQ Section -->
+      <section class="space-y-6 bg-[#121215] p-6 sm:p-8 rounded-2xl border border-white/10 font-sans">
+        <h2 class="text-2xl font-bold text-white">Frequently Asked Questions</h2>
+        <div class="space-y-4">
+          {faqs.map(faq => (
+            <div class="p-4 rounded-xl bg-[#18181b] border border-white/5 space-y-2">
+              <h3 class="text-base font-bold text-cyan-400">{faq.question}</h3>
+              <p class="text-slate-300 text-sm leading-relaxed">{faq.answer}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+    </div>
+  </div>
+</Layout>

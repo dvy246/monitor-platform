@@ -1,0 +1,53 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+import PcBottleneckInspector from '../../../components/diagnostics/PcBottleneckInspector.astro';
+import SEOHead from '../../../components/seo/SEOHead.astro';
+import SchemaGraph from '../../../components/seo/SchemaGraph.astro';
+import { PcBottleneckEngine } from '../../../engine/PcBottleneckEngine';
+
+export function getStaticPaths() {
+  const cpus = PcBottleneckEngine.CPUS;
+  const gpus = PcBottleneckEngine.GPUS;
+
+  const paths = [];
+
+  for (const cpu of cpus) {
+    for (const gpu of gpus) {
+      const slug = `${cpu.id}-with-${gpu.id}`;
+      paths.push({
+        params: { slug },
+        props: { cpu, gpu }
+      });
+    }
+  }
+
+  return paths;
+}
+
+const { cpu, gpu } = Astro.props;
+const result1440p = PcBottleneckEngine.calculateBottleneck(cpu.id, gpu.id, '1440p');
+
+const seoTitle = `${cpu.name} with ${gpu.name} Bottleneck & FPS Calculator`;
+const seoDescription = `Detailed bottleneck analysis and game FPS benchmarks for ${cpu.name} paired with ${gpu.name} at 1080p, 1440p, and 4K UHD resolutions.`;
+---
+
+<Layout title={seoTitle} description={seoDescription} canonicalUrl={`https://monitortester.com/benchmarks/pc-bottleneck/${cpu.id}`}>
+
+  <div class="min-h-screen bg-[#08080a] text-slate-100 py-12 px-4">
+    <div class="max-w-5xl mx-auto space-y-12">
+      <section class="text-center space-y-4">
+        <div class="inline-block px-3 py-1 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 rounded-full text-xs font-mono uppercase">
+          Hardware Benchmark Pair
+        </div>
+        <h1 class="text-3xl sm:text-4xl font-black text-white tracking-tight">
+          {cpu.name} + <span class="text-emerald-400">{gpu.name}</span>
+        </h1>
+        <p class="text-slate-400 max-w-2xl mx-auto text-sm">
+          System balance evaluation: {result1440p.bottleneckPercentage}% {result1440p.primaryBottleneck} Bottleneck rating at 1440p.
+        </p>
+      </section>
+
+      <PcBottleneckInspector initialCpuId={cpu.id} initialGpuId={gpu.id} initialResolution="1440p" />
+    </div>
+  </div>
+</Layout>

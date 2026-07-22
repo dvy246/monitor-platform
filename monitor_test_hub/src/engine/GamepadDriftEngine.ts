@@ -57,3 +57,18 @@ export function calculateCircularityError(sampledDistances: number[]): ICircular
     isHallEffectQuality: circularityErrorPercent <= 2.0
   };
 }
+
+export class GamepadDriftEngine {
+  static calculateDriftOffset(axisX: number, axisY: number): number {
+    const metrics = calculateStickMetrics(axisX, axisY);
+    return metrics.restingOffsetDistance;
+  }
+
+  static calculateCircularityError(history: Array<{ x: number; y: number }>): number {
+    if (!history || history.length === 0) return 0;
+    const distances = history.map((p) => Math.sqrt(p.x * p.x + p.y * p.y));
+    const metrics = calculateCircularityError(distances);
+    return metrics.circularityErrorPercent;
+  }
+}
+

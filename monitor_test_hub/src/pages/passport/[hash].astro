@@ -3,6 +3,7 @@ import Layout from '../../layouts/Layout.astro';
 import Breadcrumbs from '../../components/ui/Breadcrumbs.astro';
 import HardwarePassportModal from '../../components/diagnostics/HardwarePassportModal.astro';
 import AdSenseSlot from '../../components/seo/AdSenseSlot.astro';
+import { HardwarePassportEngine } from '../../engine/HardwarePassportEngine';
 
 export function getStaticPaths() {
   return [
@@ -21,13 +22,15 @@ const breadcrumbItems = [
   { label: 'Hardware Passport Verification' },
   { label: `#${hash}` }
 ];
+
+const snippets = HardwarePassportEngine.generateEmbedSnippets(hash || 'a4f8b92c103e57f1', 98);
 ---
 
 <Layout 
   title={`Verified Hardware Passport #${hash} | Monitor Test Hub`} 
   description={`Cryptographic SHA-256 verified hardware calibration receipt #${hash}. Verifies zero dead pixels, low OLED burn-in risk, and 540Hz+ VSync frame pacing jitter limits.`}
 >
-  <main class="max-w-4xl mx-auto px-4 py-8 space-y-8 font-mono">
+  <div class="max-w-4xl mx-auto px-4 py-8 space-y-8 font-mono">
     <Breadcrumbs items={breadcrumbItems} />
 
     <!-- Passport Card Container -->
@@ -116,12 +119,49 @@ const breadcrumbItems = [
           <span class="font-bold text-status-pass">240.0 Hz</span>
         </div>
         <div class="bg-bg-canvas p-3.5 rounded-xl border border-border-hairline space-y-1">
-          <span class="text-[10px] text-text-muted block uppercase">Frame Pacing Jitter</span>
-          <span class="font-bold text-status-pass">0.12 ms</span>
+          <span class="text-[10px] text-text-muted block uppercase">ISO 9241-307 Defect Standard</span>
+          <span class="font-bold text-status-pass">Class I (0 Dead Pixels)</span>
         </div>
         <div class="bg-bg-canvas p-3.5 rounded-xl border border-border-hairline space-y-1">
           <span class="text-[10px] text-text-muted block uppercase">OLED Burn-In Wear</span>
           <span class="font-bold text-status-pass">MINIMAL (&lt;0.01%)</span>
+        </div>
+      </div>
+
+      <!-- Live Embed Badge Preview Card -->
+      <div class="bg-bg-canvas border border-border-hairline rounded-xl p-5 space-y-4">
+        <div class="flex items-center justify-between">
+          <span class="text-[11px] font-bold text-text-primary uppercase tracking-wider">EMBEDDABLE VERIFICATION BADGE PREVIEW</span>
+          <span class="text-[10px] text-status-pass font-bold">READY FOR MARKETPLACE EMBED</span>
+        </div>
+        
+        <div class="p-4 bg-bg-surface rounded-xl border border-border-hairline flex justify-center">
+          <iframe 
+            src={`/embed/passport?hash=${hash}&score=98&res=3840x2160&fps=240`} 
+            width="380" 
+            height="110" 
+            class="rounded-xl border border-border-hairline shadow-lg"
+            loading="lazy"
+          ></iframe>
+        </div>
+
+        <!-- Code Snippet Selector -->
+        <div class="space-y-3 font-sans text-xs">
+          <div class="flex gap-2 border-b border-border-hairline pb-2">
+            <button id="btn-tab-iframe" class="px-3 py-1 rounded bg-status-pass/10 text-status-pass font-bold border border-status-pass/30 cursor-pointer">HTML Iframe</button>
+            <button id="btn-tab-markdown" class="px-3 py-1 rounded bg-bg-surface text-text-muted hover:text-text-primary border border-border-hairline cursor-pointer">Markdown Badge</button>
+            <button id="btn-tab-html" class="px-3 py-1 rounded bg-bg-surface text-text-muted hover:text-text-primary border border-border-hairline cursor-pointer">HTML Anchor</button>
+          </div>
+
+          <div class="relative">
+            <pre id="snippet-code" class="p-3 bg-bg-surface rounded-lg border border-border-hairline text-[11px] font-mono text-text-secondary overflow-x-auto select-all leading-relaxed">{snippets.iframeSnippet}</pre>
+            <button 
+              id="copy-snippet-btn" 
+              class="absolute top-2 right-2 px-2.5 py-1 bg-status-pass text-bg-canvas font-bold text-[10px] rounded hover:opacity-90 transition-opacity cursor-pointer flex items-center gap-1"
+            >
+              <span>COPY</span>
+            </button>
+          </div>
         </div>
       </div>
 
@@ -157,5 +197,41 @@ const breadcrumbItems = [
         </a>
       </div>
     </div>
-  </main>
+
+    <script is:inline define:vars={{ snippets }}>
+      const btnIframe = document.getElementById('btn-tab-iframe');
+      const btnMarkdown = document.getElementById('btn-tab-markdown');
+      const btnHtml = document.getElementById('btn-tab-html');
+      const snippetCode = document.getElementById('snippet-code');
+      const copyBtn = document.getElementById('copy-snippet-btn');
+
+      let currentSnippet = snippets.iframeSnippet;
+
+      function setActiveTab(btn, code) {
+        [btnIframe, btnMarkdown, btnHtml].forEach(b => {
+          if (b) {
+            b.className = 'px-3 py-1 rounded bg-bg-surface text-text-muted hover:text-text-primary border border-border-hairline cursor-pointer';
+          }
+        });
+        if (btn) {
+          btn.className = 'px-3 py-1 rounded bg-status-pass/10 text-status-pass font-bold border border-status-pass/30 cursor-pointer';
+        }
+        currentSnippet = code;
+        if (snippetCode) snippetCode.textContent = code;
+      }
+
+      btnIframe?.addEventListener('click', () => setActiveTab(btnIframe, snippets.iframeSnippet));
+      btnMarkdown?.addEventListener('click', () => setActiveTab(btnMarkdown, snippets.markdownSnippet));
+      btnHtml?.addEventListener('click', () => setActiveTab(btnHtml, snippets.htmlBadgeSnippet));
+
+      copyBtn?.addEventListener('click', () => {
+        navigator.clipboard.writeText(currentSnippet);
+        if (copyBtn) copyBtn.textContent = 'COPIED!';
+        setTimeout(() => {
+          if (copyBtn) copyBtn.textContent = 'COPY';
+        }, 2000);
+      });
+    </script>
+  </div>
 </Layout>
+

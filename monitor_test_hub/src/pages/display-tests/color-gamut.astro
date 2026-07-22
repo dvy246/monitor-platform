@@ -3,6 +3,50 @@ import Layout from '../../layouts/Layout.astro';
 import Breadcrumbs from '../../components/ui/Breadcrumbs.astro';
 import TestSwitcherBar from '../../components/ui/TestSwitcherBar.astro';
 import HardwareLimitationNotice from '../../components/disclaimers/HardwareLimitationNotice.astro';
+import FAQSection from '../../components/ui/FAQSection.astro';
+
+const faqs = [
+  {
+    question: "What is a color gamut and why does it matter?",
+    answer: "A color gamut represents the total range of colors a display monitor or screen can physically render. Standard sRGB displays cover standard web content, while wide-gamut displays (DCI-P3, Adobe RGB, Rec.2020) render richer, more saturated reds, greens, and vibrant HDR colors."
+  },
+  {
+    question: "What is the difference between sRGB, DCI-P3, and Adobe RGB?",
+    answer: "sRGB is the universal color standard for web browsers and standard SDR content (~33.5% of visible CIE 1931 spectrum). DCI-P3 is a wider gamut standard used in digital cinema, HDR video, Apple displays, and QD-OLED screens (~45.5% coverage). Adobe RGB expands green primaries specifically for commercial print and photography."
+  },
+  {
+    question: "How does the browser ICC Profile Exporter work?",
+    answer: "Our client-side IccExporter.ts engine calculates the 3x3 primary color matrix and 2.2 gamma transfer curves directly in WebAssembly/TypeScript, serializing a 128-byte binary header with magic signature 'acsp' and illuminant D65 to generate a standard .icc file for operating system color management."
+  },
+  {
+    question: "Do I need color management enabled in my browser?",
+    answer: "Yes. Wide-gamut displays require color-managed web browsers (like Chrome or Firefox) to prevent over-saturation when viewing standard sRGB web images and video content."
+  },
+  {
+    question: "What is Rec. 2020 and is any display capable of 100% Rec. 2020 coverage?",
+    answer: "Rec. 2020 is the Ultra HD HDR color space standard covering ~75.8% of visible CIE 1931 chromaticity. Current QD-OLED panels achieve ~80-85% Rec. 2020 coverage, while RGB laser projectors approach 95%+."
+  },
+  {
+    question: "How do chromaticity coordinates (x, y) define primary colors?",
+    answer: "CIE 1931 chromaticity coordinates (x, y) map pure spectral wavelengths onto a 2D plane. Red, green, and blue primary coordinates form the corners of a triangle representing the panel's maximum color gamut volume."
+  },
+  {
+    question: "Why do untagged sRGB images look over-saturated on a DCI-P3 wide-gamut monitor?",
+    answer: "Without active OS color management, the display maps standard sRGB RGB signals directly to wide-gamut DCI-P3 panel primaries, expanding skin tones and neon greens beyond intended levels."
+  },
+  {
+    question: "How do I verify if my web browser supports CSS Color Module Level 4 (p3 gamut)?",
+    answer: "Our visual tool uses CSS media queries (@media (color-gamut: p3)) to test whether your browser and operating system pipeline pass wide DCI-P3 color signals."
+  },
+  {
+    question: "What is the difference between Delta-E 1976 and CIEDE2000 (ΔE00)?",
+    answer: "Delta-E 1976 uses simple Euclidean distance in Lab space, overestimating human perceptual errors in blue/gray regions. CIEDE2000 adds weighting factors for lightness, chroma, and hue neutral shifts."
+  },
+  {
+    question: "Can an ICC profile improve color accuracy on a budget gaming monitor?",
+    answer: "Yes. An ICC profile corrects display transfer curves and color gamut boundaries in software, correcting factory white point tinting and gamma tracking errors."
+  }
+];
 
 
 const breadcrumbItems = [
@@ -22,10 +66,11 @@ const displayTests = [
 ---
 
 <Layout 
-  title="Color Gamut Visualizer & ICC Profile Exporter | Monitor Test Hub"
+  title="Color Gamut Visualizer & ICC Profile Exporter | Test Hub"
   description="Client-side CIE 1931 chromaticity diagram gamut visualizer and zero-backend ICC profile generator. Visualize sRGB, DCI-P3, Adobe RGB, and Rec.2020 color spaces."
+  faqs={faqs}
 >
-  <main class="max-w-7xl mx-auto px-4 py-8 space-y-8">
+  <div class="max-w-7xl mx-auto px-4 py-8 space-y-8">
     <Breadcrumbs items={breadcrumbItems} />
 
     <header class="space-y-3 border-b border-border-hairline pb-6">
@@ -177,10 +222,11 @@ const displayTests = [
         <li><strong>Header (128 bytes):</strong> Specifies profile size, magic signature <code>'acsp'</code>, target OS platform, and illuminant D65 (X=0.9642, Y=1.0000, Z=0.8249).</li>
         <li><strong>Tag Table:</strong> Serializes <code>'rXYZ'</code>, <code>'gXYZ'</code>, <code>'bXYZ'</code> primary matrix tags and <code>'rTRC'</code>, <code>'gTRC'</code>, <code>'bTRC'</code> 2.2 gamma transfer curve tags.</li>
       </ul>
+      <FAQSection faqs={faqs} />
     </article>
 
     <TestSwitcherBar tests={displayTests} currentId="color-gamut" />
-  </main>
+  </div>
 </Layout>
 
 <script>

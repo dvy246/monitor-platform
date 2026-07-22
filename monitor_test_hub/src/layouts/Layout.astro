@@ -2,6 +2,7 @@
 import SEOHead from '../components/seo/SEOHead.astro';
 import MedicalBounceBanner from '../components/seo/MedicalBounceBanner.astro';
 import HardwarePassportModal from '../components/diagnostics/HardwarePassportModal.astro';
+import FloatingActionMenu from '../components/ui/FloatingActionMenu.astro';
 import { useTranslations, localizeLink } from '../utils/i18n';
 import '../styles/global.css';
 
@@ -10,17 +11,22 @@ export interface Props {
   description: string;
   showBounceBanner?: boolean;
   faqs?: Array<{ question: string; answer: string }>;
+  canonicalUrl?: string;
+  ogImage?: string;
+  ogType?: string;
+  noindex?: boolean;
+  schemaItems?: any[];
 }
 
-const { title, description, showBounceBanner = true, faqs = [] } = Astro.props;
+const { title, description, showBounceBanner = true, faqs = [], canonicalUrl, ogImage, ogType, noindex, schemaItems = [] } = Astro.props;
 const { t, lang } = useTranslations(Astro.url.pathname);
 ---
 
 
 <!DOCTYPE html>
-<html lang={lang} class="scroll-smooth">
+<html lang={lang} class="scroll-smooth overflow-x-hidden w-full max-w-full">
   <head>
-    <SEOHead title={title} description={description} faqs={faqs} />
+    <SEOHead title={title} description={description} faqs={faqs} canonicalUrl={canonicalUrl} ogImage={ogImage} ogType={ogType} noindex={noindex} schemaItems={schemaItems} />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@400;500;600;700&family=Geist:wght@300;400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
@@ -40,7 +46,7 @@ const { t, lang } = useTranslations(Astro.url.pathname);
       }
     </script>
   </head>
-  <body class="bg-bg-canvas bg-precision-grid text-text-primary min-h-dvh flex flex-col antialiased selection:bg-status-pass selection:text-text-on-accent">
+  <body class="bg-bg-canvas bg-precision-grid text-text-primary min-h-dvh flex flex-col antialiased selection:bg-status-pass selection:text-text-on-accent overflow-x-hidden w-full max-w-full">
     <a href="#main-content" class="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:bg-status-pass focus:text-text-on-accent focus:px-4 focus:py-2 focus:rounded-md focus:font-bold focus:z-50">
       Skip to main content
     </a>
@@ -50,7 +56,7 @@ const { t, lang } = useTranslations(Astro.url.pathname);
 
     <!-- Header Navigation Shell -->
     <header class="border-b border-border-hairline/80 bg-bg-canvas/90 backdrop-blur-xl sticky top-0 z-40 font-mono transform-gpu shadow-xl">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-14 flex items-center justify-between gap-4">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-12 sm:h-14 flex items-center justify-between gap-2 sm:gap-4">
         
         <!-- Left Group: Logo Emblem -->
         <div class="flex items-center gap-3 shrink-0">
@@ -64,151 +70,343 @@ const { t, lang } = useTranslations(Astro.url.pathname);
           </a>
         </div>
 
-        <!-- Center Group: Minimalist 3-Tab Mega Menu -->
-        <nav class="hidden md:flex items-center gap-1 text-xs font-sans font-medium" aria-label="Main Navigation">
+        <!-- Center Group: Streamlined 4-Pillar Navigation Deck -->
+        <nav class="hidden md:flex items-center gap-1.5 text-xs font-sans font-medium" aria-label="Main Navigation">
           
-          <!-- Unified Diagnostics Suite Mega-Menu Dropdown -->
+          <!-- Pillar 1: Display Tests Mega-Menu -->
           <div class="relative group">
             <button 
               class:list={[
-                "flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg transition-all duration-150 border cursor-pointer",
-                (Astro.url.pathname.includes('/display-tests') || Astro.url.pathname.includes('/touch-tests') || Astro.url.pathname.includes('/input-tests') || Astro.url.pathname.includes('/audio-tests'))
-                  ? 'bg-bg-surface border-status-pass/40 text-status-pass font-semibold shadow-[0_0_12px_rgba(5,150,105,0.2)]' 
-                  : 'border-transparent text-text-secondary hover:text-text-primary hover:bg-bg-elevated hover:border-border-hairline'
+                "flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition-colors cursor-pointer",
+                (Astro.url.pathname.includes('/display-tests') || Astro.url.pathname.includes('/refresh-rate-test') || Astro.url.pathname.includes('/white-screen') || Astro.url.pathname.includes('/vrr-stutter-test'))
+                  ? 'bg-bg-elevated text-status-pass font-semibold border border-status-pass/30' 
+                  : 'text-text-secondary hover:text-text-primary hover:bg-bg-elevated/60 border border-transparent'
               ]}
             >
-              <span class="w-1.5 h-1.5 rounded-full bg-status-pass"></span>
-              <span>All Diagnostics</span>
-              <svg class="w-3 h-3 text-text-muted group-hover:text-status-pass group-hover:rotate-180 transition-transform duration-200" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+              <span>Display Tests</span>
+              <svg class="w-3 h-3 text-text-muted group-hover:text-text-primary group-hover:rotate-180 transition-transform duration-200" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
             </button>
 
-            <!-- Comprehensive Mega Menu Overlay -->
-            <div class="absolute left-1/2 -translate-x-1/2 top-full pt-2 opacity-0 translate-y-1 pointer-events-none group-hover:opacity-100 group-hover:translate-y-0 group-hover:pointer-events-auto transition-all duration-200 z-50">
-              <div class="w-[620px] bg-bg-surface/98 backdrop-blur-2xl border border-border-hairline rounded-2xl p-4 shadow-2xl shadow-black/80 font-mono space-y-3">
+            <!-- Display Tests Dropdown Overlay -->
+            <div class="absolute left-0 top-full pt-2 opacity-0 translate-y-1 pointer-events-none group-hover:opacity-100 group-hover:translate-y-0 group-hover:pointer-events-auto transition-all duration-200 z-50">
+              <div class="w-[580px] bg-bg-surface/98 backdrop-blur-2xl border border-border-hairline rounded-2xl p-4 shadow-2xl shadow-black/80 font-mono space-y-3">
                 <div class="flex items-center justify-between pb-2 border-b border-border-hairline/60">
-                  <div class="flex items-center gap-2">
-                    <span class="w-2 h-2 rounded-full bg-status-pass shadow-[0_0_8px_rgba(5,150,105,0.8)]"></span>
-                    <span class="text-xs font-bold text-text-primary uppercase tracking-wider">HARDWARE DIAGNOSTIC SUITE (34 INSTRUMENTS)</span>
-                  </div>
-                  <span class="text-[10px] text-text-muted">100% Client-Side Pure WebGL / TS</span>
+                  <span class="text-xs font-bold text-text-primary uppercase tracking-wider font-sans">Screen &amp; Display Testing Suite</span>
+                  <span class="text-[10px] text-status-pass font-bold">100% WebGL Client-Side</span>
                 </div>
 
                 <div class="grid grid-cols-2 gap-4">
-                  <!-- Category 1: Display Diagnostics -->
-                  <div class="space-y-1.5">
-                    <div class="text-[10px] font-bold text-status-pass uppercase tracking-wider px-1">Display &amp; Panel (22)</div>
-                    <div class="space-y-0.5 max-h-48 overflow-y-auto pr-1">
-                      <a href={localizeLink("/display-tests/dead-pixel", lang)} class="flex items-center justify-between p-1.5 rounded-md hover:bg-bg-elevated text-xs text-text-secondary hover:text-text-primary transition-colors">
-                        <span>Dead Pixel Test</span>
-                        <span class="text-[9px] text-status-pass font-bold">ISO</span>
-                      </a>
-                      <a href={localizeLink("/display-tests/uniformity", lang)} class="flex items-center justify-between p-1.5 rounded-md hover:bg-bg-elevated text-xs text-text-secondary hover:text-text-primary transition-colors">
-                        <span>OLED Uniformity</span>
-                        <span class="text-[9px] text-status-pass font-bold">OLED</span>
-                      </a>
-                      <a href={localizeLink("/display-tests/vrr", lang)} class="flex items-center justify-between p-1.5 rounded-md hover:bg-bg-elevated text-xs text-text-secondary hover:text-text-primary transition-colors">
-                        <span>VRR Stutter Sweep</span>
-                        <span class="text-[9px] text-status-pass font-bold">540Hz</span>
-                      </a>
-                      <a href={localizeLink("/display-tests/oled-burn-in", lang)} class="flex items-center justify-between p-1.5 rounded-md hover:bg-bg-elevated text-xs text-text-secondary hover:text-text-primary transition-colors">
-                        <span>OLED Burn-In Risk</span>
-                        <span class="text-[9px] text-text-muted">Model</span>
-                      </a>
-                      <a href={localizeLink("/display-tests/hdr-test", lang)} class="flex items-center justify-between p-1.5 rounded-md hover:bg-bg-elevated text-xs text-text-secondary hover:text-text-primary transition-colors">
-                        <span>HDR Tone Mapping</span>
-                        <span class="text-[9px] text-text-muted">EOTF</span>
-                      </a>
-                      <a href={localizeLink("/display-tests/color-gamut", lang)} class="flex items-center justify-between p-1.5 rounded-md hover:bg-bg-elevated text-xs text-text-secondary hover:text-text-primary transition-colors">
-                        <span>Color Gamut &amp; ICC</span>
-                        <span class="text-[9px] text-status-pass font-bold">ICC</span>
-                      </a>
-                      <a href={localizeLink("/display-tests/backlight-bleed", lang)} class="flex items-center justify-between p-1.5 rounded-md hover:bg-bg-elevated text-xs text-text-secondary hover:text-text-primary transition-colors">
-                        <span>Backlight Bleed</span>
-                        <span class="text-[9px] text-text-muted">Leak</span>
-                      </a>
-                      <a href={localizeLink("/display-tests/motion-blur", lang)} class="flex items-center justify-between p-1.5 rounded-md hover:bg-bg-elevated text-xs text-text-secondary hover:text-text-primary transition-colors">
-                        <span>Motion Blur Ghosting</span>
-                        <span class="text-[9px] text-text-muted">MPRT</span>
-                      </a>
-                      <a href={localizeLink("/display-tests/stuck-pixel", lang)} class="flex items-center justify-between p-1.5 rounded-md hover:bg-bg-elevated text-xs text-text-secondary hover:text-text-primary transition-colors">
-                        <span>Stuck Pixel Healer</span>
-                        <span class="text-[9px] text-status-pass font-bold">Fixer</span>
-                      </a>
-                    </div>
+                  <!-- Refresh Rate & Panel Tests -->
+                  <div class="space-y-1">
+                    <div class="text-[10px] font-bold text-status-pass uppercase tracking-wider px-1">Speed &amp; Defect Tests</div>
+                    <a href={localizeLink("/refresh-rate-test", lang)} class="flex items-center justify-between p-1.5 rounded-md hover:bg-bg-elevated text-xs text-text-secondary hover:text-text-primary transition-colors">
+                      <span>Screen Refresh Rate &amp; Hz Test</span>
+                      <span class="text-[9px] text-cyan-400 font-bold">Hz / FPS</span>
+                    </a>
+                    <a href={localizeLink("/display-tests/dead-pixel", lang)} class="flex items-center justify-between p-1.5 rounded-md hover:bg-bg-elevated text-xs text-text-secondary hover:text-text-primary transition-colors">
+                      <span>Dead Pixel Inspector</span>
+                      <span class="text-[9px] text-status-pass font-bold">ISO 9241</span>
+                    </a>
+                    <a href={localizeLink("/display-tests/dead-pixel-test", lang)} class="flex items-center justify-between p-1.5 rounded-md hover:bg-bg-elevated text-xs text-text-secondary hover:text-text-primary transition-colors">
+                      <span>Device Dead Pixel Directory</span>
+                      <span class="text-[9px] text-cyan-400 font-bold">Directory</span>
+                    </a>
+                    <a href={localizeLink("/display-tests/sub-pixel", lang)} class="flex items-center justify-between p-1.5 rounded-md hover:bg-bg-elevated text-xs text-text-secondary hover:text-text-primary transition-colors">
+                      <span>OLED Sub-Pixel Text Fringing</span>
+                      <span class="text-[9px] text-status-pass font-bold">Reticle</span>
+                    </a>
+                    <a href={localizeLink("/display-tests/hdr-test", lang)} class="flex items-center justify-between p-1.5 rounded-md hover:bg-bg-elevated text-xs text-text-secondary hover:text-text-primary transition-colors">
+                      <span>HDR ST 2084 PQ &amp; ABL</span>
+                      <span class="text-[9px] text-status-pass font-bold">1000 Nits</span>
+                    </a>
+                    <a href={localizeLink("/display-tests/uniformity", lang)} class="flex items-center justify-between p-1.5 rounded-md hover:bg-bg-elevated text-xs text-text-secondary hover:text-text-primary transition-colors">
+                      <span>OLED 5% Gray Uniformity</span>
+                      <span class="text-[9px] text-text-muted">Banding</span>
+                    </a>
+                    <a href={localizeLink("/display-tests/vrr", lang)} class="flex items-center justify-between p-1.5 rounded-md hover:bg-bg-elevated text-xs text-text-secondary hover:text-text-primary transition-colors">
+                      <span>540Hz+ VRR Stutter Sweep</span>
+                      <span class="text-[9px] text-status-pass font-bold">540Hz</span>
+                    </a>
                   </div>
 
-                  <!-- Category 2: Touch, Input & Audio -->
-                  <div class="space-y-3">
-                    <!-- Touch & Stylus -->
-                    <div class="space-y-1">
-                      <div class="text-[10px] font-bold text-status-pass uppercase tracking-wider px-1">Touch &amp; Stylus Digitizer (6)</div>
-                      <a href={localizeLink("/touch-matrix", lang)} class="flex items-center justify-between p-1.5 rounded-md hover:bg-bg-elevated text-xs text-text-secondary hover:text-text-primary transition-colors">
-                        <span>Dead-Zone Grid Matrix</span>
-                        <span class="text-[9px] text-status-pass font-bold">100dvh</span>
-                      </a>
-                      <a href={localizeLink("/touch-tests/stylus-pressure", lang)} class="flex items-center justify-between p-1.5 rounded-md hover:bg-bg-elevated text-xs text-text-secondary hover:text-text-primary transition-colors">
-                        <span>Stylus Pen Pressure &amp; Tilt</span>
-                        <span class="text-[9px] text-status-pass font-bold">W3C</span>
-                      </a>
-                    </div>
-
-                    <!-- Peripherals -->
-                    <div class="space-y-1">
-                      <div class="text-[10px] font-bold text-status-pass uppercase tracking-wider px-1">Gaming Inputs &amp; Audio (6)</div>
-                      <a href={localizeLink("/input-tests/mouse-polling", lang)} class="flex items-center justify-between p-1.5 rounded-md hover:bg-bg-elevated text-xs text-text-secondary hover:text-text-primary transition-colors">
-                        <span>Mouse Polling Rate (Hz)</span>
-                        <span class="text-[9px] text-status-pass font-bold">8000Hz</span>
-                      </a>
-                      <a href={localizeLink("/input-tests/gamepad-drift", lang)} class="flex items-center justify-between p-1.5 rounded-md hover:bg-bg-elevated text-xs text-text-secondary hover:text-text-primary transition-colors">
-                        <span>Gamepad Stick Drift</span>
-                        <span class="text-[9px] text-text-muted">API</span>
-                      </a>
-                      <a href={localizeLink("/audio-tests/mic-noise-floor", lang)} class="flex items-center justify-between p-1.5 rounded-md hover:bg-bg-elevated text-xs text-text-secondary hover:text-text-primary transition-colors">
-                        <span>Microphone Noise Floor</span>
-                        <span class="text-[9px] text-text-muted">dBFS</span>
-                      </a>
-                      <a href={localizeLink("/audio-tests/speaker-frequency", lang)} class="flex items-center justify-between p-1.5 rounded-md hover:bg-bg-elevated text-xs text-text-secondary hover:text-text-primary transition-colors">
-                        <span>Speaker Frequency Sweep</span>
-                        <span class="text-[9px] text-text-muted">20Hz</span>
-                      </a>
-                    </div>
+                  <!-- Color, Contrast & Lighting -->
+                  <div class="space-y-1">
+                    <div class="text-[10px] font-bold text-status-pass uppercase tracking-wider px-1">Color &amp; Lighting</div>
+                    <a href={localizeLink("/monitor-color-calibration", lang)} class="flex items-center justify-between p-1.5 rounded-md hover:bg-bg-elevated text-xs text-text-secondary hover:text-text-primary transition-colors">
+                      <span>Monitor Color Calibration Suite</span>
+                      <span class="text-[9px] text-emerald-400 font-bold">ICC v4.3</span>
+                    </a>
+                    <a href={localizeLink("/display-tests/contrast-accessibility", lang)} class="flex items-center justify-between p-1.5 rounded-md hover:bg-bg-elevated text-xs text-text-secondary hover:text-text-primary transition-colors">
+                      <span>APCA Contrast &amp; Accessibility</span>
+                      <span class="text-[9px] text-cyan-400 font-bold">WCAG 3.0</span>
+                    </a>
+                    <a href={localizeLink("/display-tests/delta-e-calculator", lang)} class="flex items-center justify-between p-1.5 rounded-md hover:bg-bg-elevated text-xs text-text-secondary hover:text-text-primary transition-colors">
+                      <span>Delta-E Color Accuracy</span>
+                      <span class="text-[9px] text-emerald-400 font-bold">ΔE00</span>
+                    </a>
+                    <a href={localizeLink("/display-tests/color-gamut", lang)} class="flex items-center justify-between p-1.5 rounded-md hover:bg-bg-elevated text-xs text-text-secondary hover:text-text-primary transition-colors">
+                      <span>Color Gamut &amp; ICC Profile</span>
+                      <span class="text-[9px] text-status-pass font-bold">ICC v4.3</span>
+                    </a>
+                    <a href={localizeLink("/white-screen", lang)} class="flex items-center justify-between p-1.5 rounded-md hover:bg-bg-elevated text-xs text-text-secondary hover:text-text-primary transition-colors">
+                      <span>White Screen &amp; Fill Lighting</span>
+                      <span class="text-[9px] text-text-muted">Kelvin</span>
+                    </a>
+                    <a href={localizeLink("/display-tests/ppi-calculator", lang)} class="flex items-center justify-between p-1.5 rounded-md hover:bg-bg-elevated text-xs text-text-secondary hover:text-text-primary transition-colors">
+                      <span>PPI &amp; Arcminute Acuity</span>
+                      <span class="text-[9px] text-text-muted">Optics</span>
+                    </a>
                   </div>
                 </div>
 
-                <div class="pt-2 border-t border-border-hairline/60 flex items-center justify-between text-[11px]">
-                  <a href={localizeLink("/display-tests", lang)} class="text-status-pass font-bold hover:underline">View All 34 Diagnostic Tools &rarr;</a>
-                  <a href={localizeLink("/benchmarks", lang)} class="text-text-muted hover:text-text-primary">Telemetry Ledger</a>
+                <div class="pt-2 border-t border-border-hairline/60 flex items-center justify-between text-[11px] font-sans">
+                  <a href={localizeLink("/display-tests", lang)} class="text-status-pass font-bold hover:underline">View All Display Tests Hub &rarr;</a>
+                  <a href={localizeLink("/refresh-rate-test", lang)} class="text-cyan-400 font-bold hover:underline">Refresh Rate Test &rarr;</a>
                 </div>
               </div>
             </div>
           </div>
 
-          <!-- Arcade Suite -->
-          <a 
-            href={localizeLink("/arcade", lang)} 
-            class:list={[
-              "px-3.5 py-1.5 rounded-lg transition-all duration-150 border",
-              Astro.url.pathname.includes('/arcade') 
-                ? 'bg-bg-surface border-status-pass/40 text-status-pass font-semibold shadow-[0_0_12px_rgba(5,150,105,0.2)]' 
-                : 'border-transparent text-text-secondary hover:text-text-primary hover:bg-bg-elevated hover:border-border-hairline'
-            ]}
-          >
-            <span>{t.arcadeSuite}</span>
-          </a>
+          <!-- Pillar 2: Touch Tests Mega-Menu -->
+          <div class="relative group">
+            <button 
+              class:list={[
+                "flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition-colors cursor-pointer",
+                (Astro.url.pathname.includes('/touch-tests') || Astro.url.pathname.includes('/touch-matrix'))
+                  ? 'bg-bg-elevated text-emerald-400 font-semibold border border-emerald-500/30' 
+                  : 'text-text-secondary hover:text-text-primary hover:bg-bg-elevated/60 border border-transparent'
+              ]}
+            >
+              <span>Touch Tests</span>
+              <svg class="w-3 h-3 text-text-muted group-hover:text-text-primary group-hover:rotate-180 transition-transform duration-200" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+            </button>
 
-          <!-- Guides & Glossary -->
-          <a 
-            href={localizeLink("/screen-test-meaning", lang)} 
-            class:list={[
-              "px-3.5 py-1.5 rounded-lg transition-all duration-150 border",
-              Astro.url.pathname.includes('/screen-test-meaning') 
-                ? 'bg-bg-surface border-status-pass/40 text-status-pass font-semibold shadow-[0_0_12px_rgba(5,150,105,0.2)]' 
-                : 'border-transparent text-text-secondary hover:text-text-primary hover:bg-bg-elevated hover:border-border-hairline'
-            ]}
-          >
-            <span>{t.glossary}</span>
-          </a>
+            <!-- Touch & Mobile Dropdown Overlay -->
+            <div class="absolute left-0 top-full pt-2 opacity-0 translate-y-1 pointer-events-none group-hover:opacity-100 group-hover:translate-y-0 group-hover:pointer-events-auto transition-all duration-200 z-50">
+              <div class="w-[560px] bg-bg-surface/98 backdrop-blur-2xl border border-border-hairline rounded-2xl p-4 shadow-2xl shadow-black/80 font-mono space-y-3">
+                <div class="flex items-center justify-between pb-2 border-b border-border-hairline/60">
+                  <span class="text-xs font-bold text-text-primary uppercase tracking-wider font-sans">Touch &amp; Mobile Diagnostics</span>
+                  <span class="text-[10px] text-emerald-400 font-bold">Touch Matrix</span>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                  <!-- Touch Matrix & Hardware Noise -->
+                  <div class="space-y-1">
+                    <div class="text-[10px] font-bold text-emerald-400 uppercase tracking-wider px-1">Hardware &amp; Matrix</div>
+                    <a href={localizeLink("/touch-matrix", lang)} class="flex items-center justify-between p-1.5 rounded-md hover:bg-bg-elevated text-xs text-text-secondary hover:text-text-primary transition-colors">
+                      <span>Touch Charger EMI Inspector</span>
+                      <span class="text-[9px] text-emerald-400 font-bold">RMS SNR</span>
+                    </a>
+                    <a href={localizeLink("/touch-tests/dead-zone", lang)} class="flex items-center justify-between p-1.5 rounded-md hover:bg-bg-elevated text-xs text-text-secondary hover:text-text-primary transition-colors">
+                      <span>Touch Matrix Dead-Zone</span>
+                      <span class="text-[9px] text-text-muted">Matrix</span>
+                    </a>
+                    <a href={localizeLink("/touch-tests/multi-touch", lang)} class="flex items-center justify-between p-1.5 rounded-md hover:bg-bg-elevated text-xs text-text-secondary hover:text-text-primary transition-colors">
+                      <span>Multi-Touch Point Counter</span>
+                      <span class="text-[9px] text-text-muted">10-Point</span>
+                    </a>
+                    <a href={localizeLink("/touch-tests/touch-sampling-rate", lang)} class="flex items-center justify-between p-1.5 rounded-md hover:bg-bg-elevated text-xs text-text-secondary hover:text-text-primary transition-colors">
+                      <span>Touch Sampling Rate &amp; Latency</span>
+                      <span class="text-[9px] text-emerald-400 font-bold">240Hz+</span>
+                    </a>
+                  </div>
+
+                  <!-- Kinematics & Precision -->
+                  <div class="space-y-1">
+                    <div class="text-[10px] font-bold text-emerald-400 uppercase tracking-wider px-1">Precision &amp; Latency</div>
+                    <a href={localizeLink("/touch-tests/vector-precision", lang)} class="flex items-center justify-between p-1.5 rounded-md hover:bg-bg-elevated text-xs text-text-secondary hover:text-text-primary transition-colors">
+                      <span>Vector Line Precision</span>
+                      <span class="text-[9px] text-text-muted">RMS Noise</span>
+                    </a>
+                    <a href={localizeLink("/touch-tests/swipe-velocity", lang)} class="flex items-center justify-between p-1.5 rounded-md hover:bg-bg-elevated text-xs text-text-secondary hover:text-text-primary transition-colors">
+                      <span>Gesture Kinematics &amp; Velocity</span>
+                      <span class="text-[9px] text-text-muted">px/ms</span>
+                    </a>
+                    <a href={localizeLink("/touch-tests/input-lag", lang)} class="flex items-center justify-between p-1.5 rounded-md hover:bg-bg-elevated text-xs text-text-secondary hover:text-text-primary transition-colors">
+                      <span>Click-to-Photon Touch Lag</span>
+                      <span class="text-[9px] text-emerald-400 font-bold">Latency</span>
+                    </a>
+                    <a href={localizeLink("/touch-matrix", lang)} class="flex items-center justify-between p-1.5 rounded-md hover:bg-bg-elevated text-xs text-text-secondary hover:text-text-primary transition-colors">
+                      <span>Touch Matrix Grid Inspector</span>
+                      <span class="text-[9px] text-text-muted">Grid</span>
+                    </a>
+                  </div>
+                </div>
+
+                <div class="pt-2 border-t border-border-hairline/60 flex items-center justify-between text-[11px] font-sans">
+                  <a href={localizeLink("/touch-tests", lang)} class="text-emerald-400 font-bold hover:underline">View All Touch Tests &rarr;</a>
+                  <a href={localizeLink("/touch-matrix", lang)} class="text-text-muted hover:text-text-primary font-mono">Touch Matrix Grid &rarr;</a>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Pillar 3: Calculators & Tools Mega-Menu -->
+          <div class="relative group">
+            <button 
+              class:list={[
+                "flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition-colors cursor-pointer",
+                (Astro.url.pathname.includes('/keyboard-tester') || Astro.url.pathname.includes('/benchmarks') || Astro.url.pathname.includes('/electricity-cost') || Astro.url.pathname.includes('/tv-viewing-distance') || Astro.url.pathname.includes('/wire-gauge-calculator') || Astro.url.pathname.includes('/3d-print-cost'))
+                  ? 'bg-bg-elevated text-cyan-400 font-semibold border border-cyan-500/30' 
+                  : 'text-text-secondary hover:text-text-primary hover:bg-bg-elevated/60 border border-transparent'
+              ]}
+            >
+              <span>Calculators &amp; Tools</span>
+              <svg class="w-3 h-3 text-text-muted group-hover:text-text-primary group-hover:rotate-180 transition-transform duration-200" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+            </button>
+
+            <!-- Calculators & Tools Dropdown Overlay -->
+            <div class="absolute left-0 top-full pt-2 opacity-0 translate-y-1 pointer-events-none group-hover:opacity-100 group-hover:translate-y-0 group-hover:pointer-events-auto transition-all duration-200 z-50">
+              <div class="w-[580px] bg-bg-surface/98 backdrop-blur-2xl border border-border-hairline rounded-2xl p-4 shadow-2xl shadow-black/80 font-mono space-y-3">
+                <div class="flex items-center justify-between pb-2 border-b border-border-hairline/60">
+                  <span class="text-xs font-bold text-text-primary uppercase tracking-wider font-sans">Hardware Calculators &amp; Input Diagnostics</span>
+                  <span class="text-[10px] text-cyan-400 font-bold">Calculators</span>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                  <!-- Keyboards & Peripherals -->
+                  <div class="space-y-1">
+                    <div class="text-[10px] font-bold text-cyan-400 uppercase tracking-wider px-1">Keyboard &amp; Input</div>
+                    <a href={localizeLink("/keyboard-tester", lang)} class="flex items-center justify-between p-1.5 rounded-md hover:bg-bg-elevated text-xs text-text-secondary hover:text-text-primary transition-colors">
+                      <span>Keyboard Diagnostic Suite</span>
+                      <span class="text-[9px] text-cyan-400 font-bold">NKRO Hub</span>
+                    </a>
+                    <a href={localizeLink("/keyboard-tester/key-chatter-test", lang)} class="flex items-center justify-between p-1.5 rounded-md hover:bg-bg-elevated text-xs text-text-secondary hover:text-text-primary transition-colors">
+                      <span>Switch Chatter Analysis</span>
+                      <span class="text-[9px] text-rose-400 font-bold">Bounce</span>
+                    </a>
+                    <a href={localizeLink("/keyboard-tester/switches", lang)} class="flex items-center justify-between p-1.5 rounded-md hover:bg-bg-elevated text-xs text-text-secondary hover:text-text-primary transition-colors">
+                      <span>120+ Switch Bounce Hub</span>
+                      <span class="text-[9px] text-cyan-400 font-bold">120+</span>
+                    </a>
+                    <a href={localizeLink("/input-tests/mouse-polling", lang)} class="flex items-center justify-between p-1.5 rounded-md hover:bg-bg-elevated text-xs text-text-secondary hover:text-text-primary transition-colors">
+                      <span>8000Hz Mouse Polling &amp; Pacing</span>
+                      <span class="text-[9px] text-status-pass font-bold">8000Hz</span>
+                    </a>
+                    <a href={localizeLink("/benchmarks/gamepad-drift", lang)} class="flex items-center justify-between p-1.5 rounded-md hover:bg-bg-elevated text-xs text-text-secondary hover:text-text-primary transition-colors">
+                      <span>Gamepad Drift Inspector</span>
+                      <span class="text-[9px] text-emerald-400 font-bold">HTML5</span>
+                    </a>
+                    <a href={localizeLink("/benchmarks/wireless-latency", lang)} class="flex items-center justify-between p-1.5 rounded-md hover:bg-bg-elevated text-xs text-text-secondary hover:text-text-primary transition-colors">
+                      <span>Wireless Audio &amp; Input Latency</span>
+                      <span class="text-[9px] text-amber-400 font-bold">WebAudio</span>
+                    </a>
+                  </div>
+
+                  <!-- Technical Calculators -->
+                  <div class="space-y-1">
+                    <div class="text-[10px] font-bold text-amber-400 uppercase tracking-wider px-1">Hardware Calculators</div>
+                    <a href={localizeLink("/benchmarks/pc-bottleneck", lang)} class="flex items-center justify-between p-1.5 rounded-md hover:bg-bg-elevated text-xs text-text-secondary hover:text-text-primary transition-colors">
+                      <span>PC Bottleneck &amp; FPS Estimator</span>
+                      <span class="text-[9px] text-amber-400 font-bold">CPU/GPU</span>
+                    </a>
+                    <a href={localizeLink("/display-tests/electricity-cost", lang)} class="flex items-center justify-between p-1.5 rounded-md hover:bg-bg-elevated text-xs text-text-secondary hover:text-text-primary transition-colors">
+                      <span>Appliance Energy Cost</span>
+                      <span class="text-[9px] text-amber-400 font-bold">50 States</span>
+                    </a>
+                    <a href={localizeLink("/display-tests/tv-viewing-distance", lang)} class="flex items-center justify-between p-1.5 rounded-md hover:bg-bg-elevated text-xs text-text-secondary hover:text-text-primary transition-colors">
+                      <span>TV &amp; Projector Distance</span>
+                      <span class="text-[9px] text-amber-400 font-bold">THX/SMPTE</span>
+                    </a>
+                    <a href={localizeLink("/benchmarks/wire-gauge-calculator", lang)} class="flex items-center justify-between p-1.5 rounded-md hover:bg-bg-elevated text-xs text-text-secondary hover:text-text-primary transition-colors">
+                      <span>NEC 2026 Wire Gauge</span>
+                      <span class="text-[9px] text-amber-400 font-bold">NEC '26</span>
+                    </a>
+                    <a href={localizeLink("/benchmarks/3d-print-cost", lang)} class="flex items-center justify-between p-1.5 rounded-md hover:bg-bg-elevated text-xs text-text-secondary hover:text-text-primary transition-colors">
+                      <span>3D Print Cost Estimator</span>
+                      <span class="text-[9px] text-amber-400 font-bold">Etsy</span>
+                    </a>
+                    <a href={localizeLink("/benchmarks/room-mode-calculator", lang)} class="flex items-center justify-between p-1.5 rounded-md hover:bg-bg-elevated text-xs text-text-secondary hover:text-text-primary transition-colors">
+                      <span>Acoustic Room Mode</span>
+                      <span class="text-[9px] text-purple-400 font-bold">Schroeder</span>
+                    </a>
+                  </div>
+                </div>
+
+                <div class="pt-2 border-t border-border-hairline/60 flex items-center justify-between text-[11px] font-sans">
+                  <a href={localizeLink("/keyboard-tester", lang)} class="text-cyan-400 font-bold hover:underline">Keyboard Diagnostic Suite &rarr;</a>
+                  <a href={localizeLink("/benchmarks/pc-bottleneck", lang)} class="text-text-muted hover:text-text-primary">PC Bottleneck Directory &rarr;</a>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Pillar 4: Device Database Mega-Menu -->
+          <div class="relative group">
+            <button 
+              class:list={[
+                "flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition-colors cursor-pointer",
+                (Astro.url.pathname.includes('/models') || Astro.url.pathname.includes('/compare') || Astro.url.pathname.includes('/passport') || Astro.url.pathname.includes('/arcade') || Astro.url.pathname.includes('/screen-test-meaning'))
+                  ? 'bg-bg-elevated text-purple-400 font-semibold border border-purple-500/30' 
+                  : 'text-text-secondary hover:text-text-primary hover:bg-bg-elevated/60 border border-transparent'
+              ]}
+            >
+              <span>Device Database</span>
+              <svg class="w-3 h-3 text-text-muted group-hover:text-text-primary group-hover:rotate-180 transition-transform duration-200" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+            </button>
+
+            <!-- Device Database Dropdown Overlay -->
+            <div class="absolute left-0 top-full pt-2 opacity-0 translate-y-1 pointer-events-none group-hover:opacity-100 group-hover:translate-y-0 group-hover:pointer-events-auto transition-all duration-200 z-50">
+              <div class="w-[560px] bg-bg-surface/98 backdrop-blur-2xl border border-border-hairline rounded-2xl p-4 shadow-2xl shadow-black/80 font-mono space-y-3">
+                <div class="flex items-center justify-between pb-2 border-b border-border-hairline/60">
+                  <span class="text-xs font-bold text-text-primary uppercase tracking-wider font-sans">Verified Hardware &amp; Display Database</span>
+                  <span class="text-[10px] text-purple-400 font-bold">Verified Hardware</span>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                  <!-- Crowdsourced Database & Receipts -->
+                  <div class="space-y-1">
+                    <div class="text-[10px] font-bold text-amber-400 uppercase tracking-wider px-1">Hardware Ledger &amp; Compare</div>
+                    <a href={localizeLink("/models", lang)} class="flex items-center justify-between p-1.5 rounded-md hover:bg-bg-elevated text-xs text-text-secondary hover:text-text-primary transition-colors">
+                      <span>Per-Model Hardware Database</span>
+                      <span class="text-[9px] text-amber-400 font-bold">25 Models</span>
+                    </a>
+                    <a href={localizeLink("/compare", lang)} class="flex items-center justify-between p-1.5 rounded-md hover:bg-bg-elevated text-xs text-text-secondary hover:text-text-primary transition-colors">
+                      <span>Display Comparison Matrix</span>
+                      <span class="text-[9px] text-emerald-400 font-bold">VS Engine</span>
+                    </a>
+                    <a href={localizeLink("/display-tests/color-gamut", lang)} class="flex items-center justify-between p-1.5 rounded-md hover:bg-bg-elevated text-xs text-text-secondary hover:text-text-primary transition-colors">
+                      <span>Color Gamut &amp; ICC Profile</span>
+                      <span class="text-[9px] text-status-pass font-bold">ICC v4.3</span>
+                    </a>
+                    <a href={localizeLink("/passport", lang)} class="flex items-center justify-between p-1.5 rounded-md hover:bg-bg-elevated text-xs text-text-secondary hover:text-text-primary transition-colors">
+                      <span>Cryptographic Hardware Passport</span>
+                      <span class="text-[9px] text-amber-400 font-bold">SHA-256</span>
+                    </a>
+                  </div>
+
+                  <!-- Arcade & Standards Guides -->
+                  <div class="space-y-1">
+                    <div class="text-[10px] font-bold text-purple-400 uppercase tracking-wider px-1">Micro-Arcade &amp; Standards</div>
+                    <a href={localizeLink("/arcade", lang)} class="flex items-center justify-between p-1.5 rounded-md hover:bg-bg-elevated text-xs text-text-secondary hover:text-text-primary transition-colors">
+                      <span>Diagnostic Arcade Suite</span>
+                      <span class="text-[9px] text-purple-400 font-bold">Ghosting Invaders</span>
+                    </a>
+                    <a href={localizeLink("/screen-test-meaning", lang)} class="flex items-center justify-between p-1.5 rounded-md hover:bg-bg-elevated text-xs text-text-secondary hover:text-text-primary transition-colors">
+                      <span>Engineering Learning Guides</span>
+                      <span class="text-[9px] text-purple-400 font-bold">ISO 9241</span>
+                    </a>
+                    <a href={localizeLink("/faq", lang)} class="flex items-center justify-between p-1.5 rounded-md hover:bg-bg-elevated text-xs text-text-secondary hover:text-text-primary transition-colors">
+                      <span>Frequently Asked Questions</span>
+                      <span class="text-[9px] text-emerald-400 font-bold">12 FAQs</span>
+                    </a>
+                    <a href={localizeLink("/about", lang)} class="flex items-center justify-between p-1.5 rounded-md hover:bg-bg-elevated text-xs text-text-secondary hover:text-text-primary transition-colors">
+                      <span>About &amp; Standards Compliance</span>
+                      <span class="text-[9px] text-text-muted">E-E-A-T</span>
+                    </a>
+                  </div>
+                </div>
+
+                <div class="pt-2 border-t border-border-hairline/60 flex items-center justify-between text-[11px] font-sans">
+                  <a href={localizeLink("/models", lang)} class="text-amber-400 font-bold hover:underline">Explore Verified Model Database &rarr;</a>
+                  <a href={localizeLink("/compare", lang)} class="text-text-muted hover:text-text-primary">Compare Displays &rarr;</a>
+                </div>
+              </div>
+            </div>
+          </div>
         </nav>
+>
+
 
         <!-- Right Control Deck: Streamlined Command Bar & Settings Popover -->
         <div class="flex items-center gap-2">
@@ -226,13 +424,13 @@ const { t, lang } = useTranslations(Astro.url.pathname);
             onclick="window.toggleGlobalFullscreen && window.toggleGlobalFullscreen()" 
             aria-label="Toggle Fullscreen Mode" 
             title="Toggle Fullscreen (Hotkey: F)"
-            class="flex items-center justify-center w-8 h-8 rounded-lg bg-status-pass/10 border border-status-pass/30 text-status-pass hover:bg-status-pass/20 cursor-pointer transition-all shadow-[0_0_10px_rgba(5,150,105,0.2)]"
+            class="hidden md:flex items-center justify-center w-8 h-8 rounded-lg bg-status-pass/10 border border-status-pass/30 text-status-pass hover:bg-status-pass/20 cursor-pointer transition-all shadow-[0_0_10px_rgba(5,150,105,0.2)]"
           >
             <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M4 8V4m0 0h4M4 4l5 5m11-5V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5v-4m0 0h-4m4 0l-5-5"/></svg>
           </button>
 
           <!-- Settings & Hardware Passport Popover Menu -->
-          <div class="relative group">
+          <div class="hidden sm:block relative group">
             <button aria-label="System Settings & Hardware Passport" class="flex items-center justify-center w-8 h-8 rounded-lg bg-bg-surface border border-border-hairline text-text-secondary hover:text-text-primary hover:border-border-subtle cursor-pointer transition-all shadow-sm">
               <svg class="w-4 h-4 text-text-muted group-hover:text-status-pass transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
             </button>
@@ -250,32 +448,9 @@ const { t, lang } = useTranslations(Astro.url.pathname);
                   </div>
                   <span class="text-[9px]">SHA-256</span>
                 </button>
-
-                <div class="h-px bg-border-hairline"></div>
-
-                <!-- Language Selector -->
-                <div class="space-y-1">
-                  <span class="text-[10px] text-text-muted uppercase">Display Language</span>
-                  <select id="lang-selector" aria-label="Select Language" class="w-full bg-bg-canvas border border-border-subtle text-text-primary text-xs font-mono rounded-lg p-1.5 focus:border-status-pass cursor-pointer">
-                    <option value="en" selected={lang === 'en'}>English (EN)</option>
-                    <option value="es" selected={lang === 'es'}>Español (ES)</option>
-                    <option value="de" selected={lang === 'de'}>Deutsch (DE)</option>
-                    <option value="fr" selected={lang === 'fr'}>Français (FR)</option>
-                  </select>
-                </div>
-
-                <!-- Theme Toggle -->
-                <div class="space-y-1">
-                  <span class="text-[10px] text-text-muted uppercase">Color Theme</span>
-                  <div class="flex items-center justify-between p-1 bg-bg-canvas border border-border-subtle rounded-lg text-xs">
-                    <button id="theme-slider-dark" type="button" class="flex-1 py-1 text-center font-bold text-status-pass rounded bg-bg-surface">DARK</button>
-                    <button id="theme-slider-light" type="button" class="flex-1 py-1 text-center text-text-muted hover:text-text-primary">LIGHT</button>
-                  </div>
-                </div>
               </div>
             </div>
           </div>
-
 
           <!-- Search Modal Overlay -->
           <div id="search-modal" role="dialog" aria-modal="true" aria-label="Site search" class="hidden fixed inset-0 z-50 flex items-start justify-center pt-24 px-4" style="background:rgba(0,0,0,0.7);backdrop-filter:blur(4px)">
@@ -287,39 +462,29 @@ const { t, lang } = useTranslations(Astro.url.pathname);
               </div>
               <div id="search-results" class="max-h-72 overflow-y-auto py-2">
                 <div class="px-4 py-2 text-[10px] text-text-muted uppercase tracking-wider">QUICK LINKS</div>
-                <a href="/display-tests" class="search-item flex items-center gap-3 px-4 py-2.5 hover:bg-bg-elevated text-sm text-text-secondary hover:text-text-primary transition-colors">
-                  <span class="w-2 h-2 rounded-full bg-status-pass shrink-0"></span>
-                  Display Test Suite — Sub-Pixel, Uniformity, VRR
+                <a href="/refresh-rate-test" class="search-item flex items-center gap-3 px-4 py-2.5 hover:bg-bg-elevated text-sm text-text-secondary hover:text-text-primary transition-colors">
+                  <span class="w-2 h-2 rounded-full bg-cyan-400 shrink-0"></span>
+                  Screen Refresh Rate &amp; Hz Test (60Hz - 540Hz+)
                 </a>
-                <a href="/touch-tests" class="search-item flex items-center gap-3 px-4 py-2.5 hover:bg-bg-elevated text-sm text-text-secondary hover:text-text-primary transition-colors">
-                  <span class="w-2 h-2 rounded-full bg-status-pass shrink-0"></span>
-                  Touch Test Suite — Dead Zone, Multi-Touch, Swipe
+                <a href="/benchmarks/pc-bottleneck" class="search-item flex items-center gap-3 px-4 py-2.5 hover:bg-bg-elevated text-sm text-text-secondary hover:text-text-primary transition-colors">
+                  <span class="w-2 h-2 rounded-full bg-amber-400 shrink-0"></span>
+                  PC Bottleneck &amp; FPS Calculator
                 </a>
-                <a href="/arcade" class="search-item flex items-center gap-3 px-4 py-2.5 hover:bg-bg-elevated text-sm text-text-secondary hover:text-text-primary transition-colors">
-                  <span class="w-2 h-2 rounded-full bg-status-pass shrink-0"></span>
-                  Arcade — Ghosting Invaders, Color Match, Reflex Sniper
+                <a href="/display-tests/electricity-cost" class="search-item flex items-center gap-3 px-4 py-2.5 hover:bg-bg-elevated text-sm text-text-secondary hover:text-text-primary transition-colors">
+                  <span class="w-2 h-2 rounded-full bg-amber-400 shrink-0"></span>
+                  Appliance Electricity Cost Calculator
                 </a>
-                <a href="/display-tests/sub-pixel" class="search-item flex items-center gap-3 px-4 py-2.5 hover:bg-bg-elevated text-sm text-text-secondary hover:text-text-primary transition-colors">
-                  <span class="w-2 h-2 rounded-full bg-text-muted shrink-0"></span>Sub-Pixel Analyzer
+                <a href="/display-tests/tv-viewing-distance" class="search-item flex items-center gap-3 px-4 py-2.5 hover:bg-bg-elevated text-sm text-text-secondary hover:text-text-primary transition-colors">
+                  <span class="w-2 h-2 rounded-full bg-amber-400 shrink-0"></span>
+                  TV &amp; Projector Viewing Distance Calculator
                 </a>
-                <a href="/display-tests/uniformity" class="search-item flex items-center gap-3 px-4 py-2.5 hover:bg-bg-elevated text-sm text-text-secondary hover:text-text-primary transition-colors">
-                  <span class="w-2 h-2 rounded-full bg-text-muted shrink-0"></span>OLED Uniformity Inspector
+                <a href="/benchmarks/wire-gauge-calculator" class="search-item flex items-center gap-3 px-4 py-2.5 hover:bg-bg-elevated text-sm text-text-secondary hover:text-text-primary transition-colors">
+                  <span class="w-2 h-2 rounded-full bg-amber-400 shrink-0"></span>
+                  NEC 2026 Electrical Wire Gauge Calculator
                 </a>
-                <a href="/display-tests/vrr" class="search-item flex items-center gap-3 px-4 py-2.5 hover:bg-bg-elevated text-sm text-text-secondary hover:text-text-primary transition-colors">
-                  <span class="w-2 h-2 rounded-full bg-text-muted shrink-0"></span>VRR Sync Engine
-                </a>
-                <a href="/display-tests/oled-burn-in" class="search-item flex items-center gap-3 px-4 py-2.5 hover:bg-bg-elevated text-sm text-text-secondary hover:text-text-primary transition-colors">
-                  <span class="w-2 h-2 rounded-full bg-text-muted shrink-0"></span>OLED Burn-In Risk Analyzer
-                </a>
-                <a href="/touch-matrix" class="search-item flex items-center gap-3 px-4 py-2.5 hover:bg-bg-elevated text-sm text-text-secondary hover:text-text-primary transition-colors">
-                  <span class="w-2 h-2 rounded-full bg-status-pass shrink-0"></span>
-                  Touch Matrix Suite — Digitizer Dead-Zone & Multi-Touch Precision Matrix
-                </a>
-                <a href="/touch-tests/dead-zone" class="search-item flex items-center gap-3 px-4 py-2.5 hover:bg-bg-elevated text-sm text-text-secondary hover:text-text-primary transition-colors">
-                  <span class="w-2 h-2 rounded-full bg-text-muted shrink-0"></span>Dead Zone Matrix
-                </a>
-                <a href="/screen-test-meaning" class="search-item flex items-center gap-3 px-4 py-2.5 hover:bg-bg-elevated text-sm text-text-secondary hover:text-text-primary transition-colors">
-                  <span class="w-2 h-2 rounded-full bg-text-muted shrink-0"></span>What Does a Screen Test Detect?
+                <a href="/benchmarks/3d-print-cost" class="search-item flex items-center gap-3 px-4 py-2.5 hover:bg-bg-elevated text-sm text-text-secondary hover:text-text-primary transition-colors">
+                  <span class="w-2 h-2 rounded-full bg-amber-400 shrink-0"></span>
+                  3D Printer Filament Cost Estimator
                 </a>
               </div>
               <div class="px-4 py-2.5 border-t border-border-hairline flex items-center gap-4 text-[10px] text-text-muted">
@@ -330,11 +495,10 @@ const { t, lang } = useTranslations(Astro.url.pathname);
             </div>
           </div>
 
-
           <span class="hidden md:block w-px h-4 bg-border-hairline"></span>
 
-          <!-- Language Selector Dropdown -->
-          <div class="relative inline-block text-left">
+          <!-- Desktop Language Selector Dropdown -->
+          <div class="hidden md:inline-block relative text-left">
             <select id="lang-selector" aria-label="Select Language" class="bg-bg-surface text-text-secondary border border-border-hairline rounded-md px-2.5 py-1 text-xs font-mono font-medium focus:outline-none focus:border-status-pass cursor-pointer shadow-specular-top">
               <option value="en" selected={lang === 'en'}>EN</option>
               <option value="es" selected={lang === 'es'}>ES</option>
@@ -343,8 +507,8 @@ const { t, lang } = useTranslations(Astro.url.pathname);
             </select>
           </div>
 
-          <!-- Interactive Precision Theme Slider Switch -->
-          <div class="relative inline-flex items-center bg-bg-surface border border-border-hairline rounded-full p-0.5 font-mono text-[10px] select-none shadow-specular-top">
+          <!-- Desktop Interactive Precision Theme Slider Switch -->
+          <div class="hidden md:inline-flex relative items-center bg-bg-surface border border-border-hairline rounded-full p-0.5 font-mono text-[10px] select-none shadow-specular-top">
             <button id="theme-slider-dark" type="button" aria-label="Dark Mode" aria-pressed="true" class="relative z-10 px-2 py-1 rounded-full flex items-center gap-1 cursor-pointer transition-colors text-text-primary font-bold">
               <svg class="w-3 h-3 text-status-pass" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg>
               <span class="hidden sm:inline">DARK</span>
@@ -366,15 +530,142 @@ const { t, lang } = useTranslations(Astro.url.pathname);
         </div>
       </div>
 
-      <!-- Mobile menu -->
-      <nav id="mobile-menu" aria-label="Mobile Navigation" class="hidden md:hidden border-b border-border-hairline bg-bg-surface px-4 py-3 space-y-2 text-xs font-mono text-text-secondary">
-        <a href={localizeLink("/display-tests", lang)} class="block py-1.5 hover:text-status-pass font-bold transition-colors">{t.displayTests} (22 Tools)</a>
-        <a href={localizeLink("/touch-tests", lang)} class="block py-1.5 hover:text-status-pass font-bold transition-colors">{t.touchTests} (6 Tools)</a>
-        <a href={localizeLink("/input-tests/mouse-polling", lang)} class="block py-1.5 hover:text-status-pass font-bold transition-colors">{t.inputTests} (4 Tools)</a>
-        <a href={localizeLink("/audio-tests/mic-noise-floor", lang)} class="block py-1.5 hover:text-status-pass font-bold transition-colors">{t.audioTests} (2 Tools)</a>
-        <a href={localizeLink("/arcade", lang)} class="block py-1.5 hover:text-status-pass font-bold transition-colors">{t.arcadeSuite} (Micro-Games)</a>
-        <a href={localizeLink("/benchmarks", lang)} class="block py-1.5 hover:text-status-pass transition-colors">Telemetry Ledger</a>
-        <a href={localizeLink("/screen-test-meaning", lang)} class="block py-1.5 hover:text-status-pass transition-colors">{t.glossary}</a>
+      <!-- Mobile menu drawer -->
+      <nav id="mobile-menu" aria-label="Mobile Navigation" class="hidden md:hidden border-b border-border-hairline bg-bg-surface/98 backdrop-blur-2xl px-4 py-4 space-y-4 text-xs font-mono text-text-secondary max-h-[85vh] overflow-y-auto">
+        <!-- 0. Mobile Language & Theme Quick Switcher Card -->
+        <div class="flex items-center justify-between p-2.5 bg-bg-canvas rounded-xl border border-border-hairline gap-2">
+          <div class="flex items-center gap-1.5 text-xs">
+            <span class="text-[10px] text-text-muted font-bold uppercase">LANG:</span>
+            <select id="mobile-lang-selector" aria-label="Select Language" class="bg-bg-surface text-text-primary border border-border-hairline rounded-md px-2 py-1 text-xs font-mono font-medium focus:outline-none focus:border-status-pass cursor-pointer">
+              <option value="en" selected={lang === 'en'}>EN</option>
+              <option value="es" selected={lang === 'es'}>ES</option>
+              <option value="de" selected={lang === 'de'}>DE</option>
+              <option value="fr" selected={lang === 'fr'}>FR</option>
+            </select>
+          </div>
+          <div class="flex items-center gap-1 bg-bg-surface p-1 rounded-lg border border-border-hairline text-[10px]">
+            <button id="mobile-theme-dark" type="button" class="px-2 py-1 rounded font-bold text-status-pass bg-bg-elevated cursor-pointer">DARK</button>
+            <button id="mobile-theme-light" type="button" class="px-2 py-1 rounded text-text-muted hover:text-text-primary cursor-pointer">LIGHT</button>
+          </div>
+        </div>
+
+        <!-- 1. Model Database -->
+        <div class="space-y-1">
+          <div class="text-[10px] font-bold text-amber-400 uppercase tracking-wider px-1">Hardware Database</div>
+          <a href={localizeLink("/models", lang)} class="flex items-center justify-between p-2 rounded-lg bg-amber-400/10 border border-amber-400/30 text-amber-400 font-bold min-h-[44px]">
+            <span>📊 Model Telemetry Database</span>
+            <span class="text-[10px] font-mono">101 Devices</span>
+          </a>
+        </div>
+
+        <!-- 2. Display & Touch Diagnostics -->
+        <div class="space-y-1">
+          <div class="text-[10px] font-bold text-status-pass uppercase tracking-wider px-1">Display &amp; Touch Diagnostics</div>
+          <div class="grid grid-cols-1 gap-1">
+            <a href={localizeLink("/display-tests/dead-pixel", lang)} class="flex items-center justify-between p-2 rounded-lg hover:bg-bg-elevated text-text-primary min-h-[44px]">
+              <span>Dead Pixel Inspector</span>
+              <span class="text-[9px] text-status-pass font-bold">ISO 9241</span>
+            </a>
+            <a href={localizeLink("/display-tests/sub-pixel", lang)} class="flex items-center justify-between p-2 rounded-lg hover:bg-bg-elevated text-text-primary min-h-[44px]">
+              <span>OLED Sub-Pixel Text Fringing</span>
+              <span class="text-[9px] text-status-pass font-bold">Reticle</span>
+            </a>
+            <a href={localizeLink("/display-tests/hdr-test", lang)} class="flex items-center justify-between p-2 rounded-lg hover:bg-bg-elevated text-text-primary min-h-[44px]">
+              <span>HDR ST 2084 PQ &amp; ABL</span>
+              <span class="text-[9px] text-status-pass font-bold">1000 Nits</span>
+            </a>
+            <a href={localizeLink("/display-tests/vrr", lang)} class="flex items-center justify-between p-2 rounded-lg hover:bg-bg-elevated text-text-primary min-h-[44px]">
+              <span>540Hz+ VRR Stutter Sweep</span>
+              <span class="text-[9px] text-status-pass font-bold">540Hz</span>
+            </a>
+            <a href={localizeLink("/touch-matrix/charger-emi-inspector", lang)} class="flex items-center justify-between p-2 rounded-lg hover:bg-bg-elevated text-text-primary min-h-[44px]">
+              <span>Touch Charger EMI Inspector</span>
+              <span class="text-[9px] text-status-pass font-bold">RMS SNR</span>
+            </a>
+            <a href={localizeLink("/white-screen", lang)} class="flex items-center justify-between p-2 rounded-lg hover:bg-bg-elevated text-text-primary min-h-[44px]">
+              <span>White Screen &amp; Fill Light</span>
+              <span class="text-[9px] text-text-muted">Kelvin</span>
+            </a>
+            <a href={localizeLink("/display-tests/apca-contrast", lang)} class="flex items-center justify-between p-2 rounded-lg hover:bg-bg-elevated text-text-primary min-h-[44px]">
+              <span>APCA Ambient Contrast</span>
+              <span class="text-[9px] text-cyan-400 font-bold">WCAG 3.0</span>
+            </a>
+          </div>
+        </div>
+
+        <!-- 3. Peripherals & Calculators -->
+        <div class="space-y-1">
+          <div class="text-[10px] font-bold text-cyan-400 uppercase tracking-wider px-1 font-sans">Peripherals &amp; Tools</div>
+          <div class="grid grid-cols-1 gap-1">
+            <a href={localizeLink("/keyboard-tester", lang)} class="flex items-center justify-between p-2 rounded-lg hover:bg-bg-elevated text-text-primary min-h-[44px]">
+              <span>Keyboard Diagnostic Suite</span>
+              <span class="text-[9px] text-cyan-400 font-bold">NKRO</span>
+            </a>
+            <a href={localizeLink("/input-tests/mouse-polling", lang)} class="flex items-center justify-between p-2 rounded-lg hover:bg-bg-elevated text-text-primary min-h-[44px]">
+              <span>8000Hz Mouse Polling &amp; Pacing</span>
+              <span class="text-[9px] text-status-pass font-bold">8000Hz</span>
+            </a>
+            <a href={localizeLink("/benchmarks/gamepad-drift", lang)} class="flex items-center justify-between p-2 rounded-lg hover:bg-bg-elevated text-text-primary min-h-[44px]">
+              <span>Gamepad Drift Inspector</span>
+              <span class="text-[9px] text-emerald-400 font-bold">HTML5</span>
+            </a>
+            <a href={localizeLink("/benchmarks/wireless-latency", lang)} class="flex items-center justify-between p-2 rounded-lg hover:bg-bg-elevated text-text-primary min-h-[44px]">
+              <span>Wireless Audio Latency</span>
+              <span class="text-[9px] text-amber-400 font-bold">WebAudio</span>
+            </a>
+            <a href={localizeLink("/compare", lang)} class="flex items-center justify-between p-2 rounded-lg hover:bg-bg-elevated text-text-primary min-h-[44px]">
+              <span>Display Comparison Matrix</span>
+              <span class="text-[9px] text-emerald-400 font-bold">VS</span>
+            </a>
+            <a href={localizeLink("/benchmarks/pc-bottleneck", lang)} class="flex items-center justify-between p-2 rounded-lg hover:bg-bg-elevated text-text-primary min-h-[44px]">
+              <span>PC Bottleneck &amp; FPS</span>
+              <span class="text-[9px] text-amber-400 font-bold">GPU/CPU</span>
+            </a>
+            <a href={localizeLink("/display-tests/electricity-cost", lang)} class="flex items-center justify-between p-2 rounded-lg hover:bg-bg-elevated text-text-primary min-h-[44px]">
+              <span>Appliance Electricity Cost</span>
+              <span class="text-[9px] text-amber-400 font-bold">50 States</span>
+            </a>
+            <a href={localizeLink("/display-tests/tv-viewing-distance", lang)} class="flex items-center justify-between p-2 rounded-lg hover:bg-bg-elevated text-text-primary min-h-[44px]">
+              <span>TV &amp; Projector Distance</span>
+              <span class="text-[9px] text-amber-400 font-bold">THX/SMPTE</span>
+            </a>
+            <a href={localizeLink("/benchmarks/wire-gauge-calculator", lang)} class="flex items-center justify-between p-2 rounded-lg hover:bg-bg-elevated text-text-primary min-h-[44px]">
+              <span>NEC 2026 Wire Gauge</span>
+              <span class="text-[9px] text-amber-400 font-bold">NEC '26</span>
+            </a>
+            <a href={localizeLink("/benchmarks/3d-print-cost", lang)} class="flex items-center justify-between p-2 rounded-lg hover:bg-bg-elevated text-text-primary min-h-[44px]">
+              <span>3D Print Cost Estimator</span>
+              <span class="text-[9px] text-amber-400 font-bold">Etsy</span>
+            </a>
+            <a href={localizeLink("/benchmarks/room-mode-calculator", lang)} class="flex items-center justify-between p-2 rounded-lg hover:bg-bg-elevated text-text-primary min-h-[44px]">
+              <span>Acoustic Room Mode</span>
+              <span class="text-[9px] text-purple-400 font-bold">Schroeder</span>
+            </a>
+            <a href={localizeLink("/benchmarks/solar-tilt-calculator", lang)} class="flex items-center justify-between p-2 rounded-lg hover:bg-bg-elevated text-text-primary min-h-[44px]">
+              <span>Solar PV Tilt Angle</span>
+              <span class="text-[9px] text-amber-400 font-bold">NREL</span>
+            </a>
+          </div>
+        </div>
+
+        <!-- 4. Engineering Knowledge Base & Arcade -->
+        <div class="space-y-1">
+          <div class="text-[10px] font-bold text-purple-400 uppercase tracking-wider px-1 font-sans">Guides &amp; Arcade</div>
+          <div class="grid grid-cols-1 gap-1">
+            <a href={localizeLink("/screen-test-meaning", lang)} class="flex items-center justify-between p-2 rounded-lg hover:bg-bg-elevated text-text-primary min-h-[44px]">
+              <span>Technical Glossary &amp; Terms</span>
+              <span class="text-[9px] text-purple-400 font-bold">ISO 9241</span>
+            </a>
+            <a href={localizeLink("/arcade", lang)} class="flex items-center justify-between p-2 rounded-lg hover:bg-bg-elevated text-text-primary min-h-[44px]">
+              <span>Diagnostic Arcade Games</span>
+              <span class="text-[9px] text-purple-400 font-bold">Arcade</span>
+            </a>
+            <a href={localizeLink("/faq", lang)} class="flex items-center justify-between p-2 rounded-lg hover:bg-bg-elevated text-text-primary min-h-[44px]">
+              <span>General FAQ</span>
+              <span class="text-[9px] text-emerald-400 font-bold">FAQ</span>
+            </a>
+          </div>
+        </div>
       </nav>
     </header>
 
@@ -396,11 +687,13 @@ const { t, lang } = useTranslations(Astro.url.pathname);
 
           <div class="grid grid-cols-2 md:grid-cols-3 gap-8 text-[11px]">
             <div class="space-y-2">
-              <h3 class="text-text-primary font-bold uppercase tracking-wider text-[10px]">Diagnostics</h3>
+              <h3 class="text-text-primary font-bold uppercase tracking-wider text-[10px]">Diagnostics &amp; Tools</h3>
               <ul class="space-y-1.5">
-                <li><a href={localizeLink("/display-tests", lang)} class="hover:text-text-primary transition-colors">{t.displayTests}</a></li>
-                <li><a href={localizeLink("/touch-tests", lang)} class="hover:text-text-primary transition-colors">{t.touchTests}</a></li>
-                <li><a href={localizeLink("/arcade", lang)} class="hover:text-text-primary transition-colors">{t.arcadeSuite}</a></li>
+                <li><a href={localizeLink("/benchmarks/pc-bottleneck", lang)} class="hover:text-amber-400 transition-colors">PC Bottleneck Estimator</a></li>
+                <li><a href={localizeLink("/display-tests/electricity-cost", lang)} class="hover:text-amber-400 transition-colors">Appliance Energy Cost</a></li>
+                <li><a href={localizeLink("/display-tests/tv-viewing-distance", lang)} class="hover:text-amber-400 transition-colors">TV Viewing Distance</a></li>
+                <li><a href={localizeLink("/benchmarks/wire-gauge-calculator", lang)} class="hover:text-amber-400 transition-colors">NEC Wire Gauge</a></li>
+                <li><a href={localizeLink("/benchmarks/3d-print-cost", lang)} class="hover:text-amber-400 transition-colors">3D Print Cost Estimator</a></li>
               </ul>
             </div>
             <div class="space-y-2">
@@ -416,7 +709,7 @@ const { t, lang } = useTranslations(Astro.url.pathname);
           </div>
         </div>
 
-        <div class="border-t border-border-hairline pt-6 flex flex-col md:flex-row items-center justify-between gap-4 text-[11px] text-text-muted">
+        <div class="border-t border-border-hairline pt-6 flex flex-col md:flex-row items-center justify-between gap-4 text-[11px] text-text-muted pr-14 sm:pr-20">
           <span>&copy; {new Date().getFullYear()} Monitor Test Hub. Precision engineering tools. Non-medical.</span>
           <div class="flex gap-4 flex-wrap">
             <a href={localizeLink("/privacy", lang)} class="hover:text-text-secondary transition-colors">Privacy Policy</a>
@@ -429,10 +722,10 @@ const { t, lang } = useTranslations(Astro.url.pathname);
     </footer>
 
     <HardwarePassportModal />
+    <FloatingActionMenu lang={lang} />
 
     <!-- Interactive Navigation Scripts -->
     <script>
-
       const btn = document.getElementById('mobile-menu-toggle');
       const menu = document.getElementById('mobile-menu');
       if (btn && menu) {
@@ -482,26 +775,35 @@ const { t, lang } = useTranslations(Astro.url.pathname);
 
       if (darkBtn) darkBtn.addEventListener('click', () => updateThemeUI(false));
       if (lightBtn) lightBtn.addEventListener('click', () => updateThemeUI(true));
+      const mobDarkBtn = document.getElementById('mobile-theme-dark');
+      const mobLightBtn = document.getElementById('mobile-theme-light');
+      if (mobDarkBtn) mobDarkBtn.addEventListener('click', () => updateThemeUI(false));
+      if (mobLightBtn) mobLightBtn.addEventListener('click', () => updateThemeUI(true));
+
+      function handleLangChange(selectedLang: string) {
+        const currentPath = window.location.pathname;
+        const segments = currentPath.split('/').filter(Boolean);
+        const currentPrefix = segments[0];
+        const supportedLocales = ['es', 'de', 'fr'];
+        if (supportedLocales.includes(currentPrefix)) {
+          segments.shift();
+        }
+        let newPath = '/' + segments.join('/');
+        if (selectedLang !== 'en') {
+          newPath = '/' + selectedLang + newPath;
+        }
+        newPath = newPath.replace(/\/+/g, '/');
+        if (!newPath.startsWith('/')) newPath = '/' + newPath;
+        window.location.pathname = newPath;
+      }
 
       const langSelector = document.getElementById('lang-selector') as HTMLSelectElement;
       if (langSelector) {
-        langSelector.addEventListener('change', () => {
-          const selectedLang = langSelector.value;
-          const currentPath = window.location.pathname;
-          const segments = currentPath.split('/').filter(Boolean);
-          const currentPrefix = segments[0];
-          const supportedLocales = ['es', 'de', 'fr'];
-          if (supportedLocales.includes(currentPrefix)) {
-            segments.shift();
-          }
-          let newPath = '/' + segments.join('/');
-          if (selectedLang !== 'en') {
-            newPath = '/' + selectedLang + newPath;
-          }
-          newPath = newPath.replace(/\/+/g, '/');
-          if (!newPath.startsWith('/')) newPath = '/' + newPath;
-          window.location.pathname = newPath;
-        });
+        langSelector.addEventListener('change', () => handleLangChange(langSelector.value));
+      }
+      const mobLangSelector = document.getElementById('mobile-lang-selector') as HTMLSelectElement;
+      if (mobLangSelector) {
+        mobLangSelector.addEventListener('change', () => handleLangChange(mobLangSelector.value));
       }
 
       // Search Modal Logic
@@ -560,9 +862,8 @@ const { t, lang } = useTranslations(Astro.url.pathname);
           searchModal?.classList.contains('hidden') ? openSearch() : closeSearch();
         }
         
-        // Fullscreen hotkey: F key when no form inputs are focused
         const activeEl = document.activeElement;
-        const isInput = activeEl && (activeEl.tagName === 'INPUT' || activeEl.tagName === 'TEXTAREA' || (activeEl as HTMLElement).isContentEditable);
+        const isInput = activeEl && (activeEl.tagName === 'INPUT' || activeEl.tagName === 'TEXTAREA' || activeEl.tagName === 'SELECT' || (activeEl as HTMLElement).isContentEditable);
         if (!isInput && (e.key === 'f' || e.key === 'F')) {
           e.preventDefault();
           (window as any).toggleGlobalFullscreen();

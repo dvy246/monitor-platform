@@ -15,11 +15,11 @@ const benchmarkDatasetSchema = {
   "@type": "Dataset",
   "name": "Monitor Test Hub Crowdsourced SHA-256 Display Performance Ledger",
   "description": "Empirical crowdsourced hardware benchmarks for monitor input latency, VSync frame pacing jitter, pixel density, OLED health index, and digitizer touch matrix precision.",
-  "url": "https://monitortesthub.com/benchmarks",
+  "url": "https://monitortester.com/benchmarks",
   "creator": {
     "@type": "Organization",
     "name": "Monitor Test Hub Engineering Team",
-    "url": "https://monitortesthub.com"
+    "url": "https://monitortester.com"
   },
   "license": "https://creativecommons.org/licenses/by/4.0/",
   "keywords": ["display benchmarks", "input lag database", "vsync jitter", "oled health score", "sha256 hardware receipt"]
@@ -32,7 +32,7 @@ const benchmarkDatasetSchema = {
 >
   <script type="application/ld+json" set:html={JSON.stringify(benchmarkDatasetSchema)} />
 
-  <main class="max-w-7xl mx-auto px-4 py-8 space-y-8">
+  <div class="max-w-7xl mx-auto px-4 py-8 space-y-8">
     <Breadcrumbs items={breadcrumbItems} />
 
     <header class="space-y-3 border-b border-border-hairline pb-6">
@@ -84,5 +84,5 @@ const benchmarkDatasetSchema = {
 
     <!-- Hardware Passport Modal -->
     <HardwarePassportModal />
-  </main>
+  </div>
 </Layout>

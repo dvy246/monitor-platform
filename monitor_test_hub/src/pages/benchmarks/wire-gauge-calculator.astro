@@ -1,0 +1,71 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import WireGaugeInspector from '../../components/diagnostics/WireGaugeInspector.astro';
+import SEOHead from '../../components/seo/SEOHead.astro';
+import SchemaGraph from '../../components/seo/SchemaGraph.astro';
+
+import { useTranslations, localizeLink } from '../../utils/i18n';
+
+const { lang } = useTranslations(Astro.url.pathname);
+
+const seoTitle = "NEC 2026 Wire Gauge & Voltage Drop Calculator — Conductor Ampacity";
+const seoDescription = "Calculate electrical wire gauge, voltage drop percentage, and conduit fill ratios according to NEC Table 310.16 and NEC 2026 standards.";
+const canonicalUrl = lang === 'en'
+  ? "https://monitortester.com/benchmarks/wire-gauge-calculator"
+  : `https://monitortester.com/${lang}/benchmarks/wire-gauge-calculator`;
+
+const circuits = [
+  { amp: 15, volt: 120, label: '15A 120V Lighting & Receptacle Circuit' },
+  { amp: 20, volt: 120, label: '20A 120V Small Appliance & Kitchen Circuit' },
+  { amp: 30, volt: 240, label: '30A 240V Electric Clothes Dryer / RV Circuit' },
+  { amp: 50, volt: 240, label: '50A 240V Electric Range & Level 2 EV Charger' },
+  { amp: 100, volt: 240, label: '100A 240V Residential Subpanel Feed' },
+  { amp: 200, volt: 240, label: '200A 240V Main Service Electrical Panel' }
+];
+---
+
+<Layout title={seoTitle} description={seoDescription} canonicalUrl={canonicalUrl}>
+
+  <div class="min-h-screen bg-[#08080a] text-slate-100 py-12 px-4 font-sans">
+    <div class="max-w-5xl mx-auto space-y-12">
+      <section class="text-center space-y-4">
+        <h1 class="text-4xl sm:text-5xl font-black text-white tracking-tight">
+          NEC 2026 Wire Gauge & <span class="text-rose-400">Voltage Drop</span> Calculator
+        </h1>
+        <p class="text-slate-400 max-w-2xl mx-auto text-base">
+          Conductor ampacity sizing and branch circuit voltage drop compliance with inspector-ready NEC citations.
+        </p>
+      </section>
+
+      <WireGaugeInspector />
+
+      <!-- Circuit Amperage & Voltage Wire Sizing Directory -->
+      <section class="space-y-6 bg-[#121215] p-6 sm:p-8 rounded-2xl border border-white/10">
+        <div class="border-b border-white/10 pb-4">
+          <h2 class="text-2xl font-bold text-white font-sans">Branch Circuit Wire Sizing Directory</h2>
+          <p class="text-slate-400 text-sm mt-1">Explore NEC 2026 ampacity, wire gauge, and voltage drop compliance reports for common residential circuits.</p>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 font-mono text-xs">
+          {circuits.map(c => {
+            const slug = `${c.amp}-amp-${c.volt}v`;
+            const href = localizeLink(`/benchmarks/wire-gauge-calculator/${slug}`, lang);
+            return (
+              <a
+                href={href}
+                class="p-3.5 rounded-xl bg-[#18181b] border border-white/5 hover:border-rose-400/50 hover:bg-rose-400/10 text-slate-300 hover:text-white transition-all flex items-center justify-between group"
+              >
+                <div class="space-y-1 truncate pr-2">
+                  <div class="font-bold text-rose-400 text-xs font-sans">{c.amp}A {c.volt}V Circuit</div>
+                  <div class="text-[11px] text-slate-400 group-hover:text-slate-200 font-sans truncate">{c.label}</div>
+                </div>
+                <span class="text-rose-400 group-hover:translate-x-0.5 transition-transform text-xs shrink-0">&rarr;</span>
+              </a>
+            );
+          })}
+        </div>
+      </section>
+    </div>
+  </div>
+</Layout>
+

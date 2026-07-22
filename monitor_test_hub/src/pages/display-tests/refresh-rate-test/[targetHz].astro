@@ -1,0 +1,55 @@
+---
+import FAQSection from '../../../components/ui/FAQSection.astro';
+import Layout from '../../../layouts/Layout.astro';
+import RefreshRateInspector from '../../../components/diagnostics/RefreshRateInspector.astro';
+
+export function getStaticPaths() {
+  return [
+    { params: { targetHz: '60hz' }, props: { title: '60Hz Refresh Rate Test & Monitor FPS Check', targetLabel: '60Hz Standard' } },
+    { params: { targetHz: '120hz' }, props: { title: '120Hz Refresh Rate Test — ProMotion & Mobile Check', targetLabel: '120Hz High-Refresh' } },
+    { params: { targetHz: '144hz' }, props: { title: '144Hz Monitor Refresh Rate Test & Frame Pacing', targetLabel: '144Hz Gaming' } },
+    { params: { targetHz: '240hz' }, props: { title: '240Hz Esports Refresh Rate Test & Motion Blur Check', targetLabel: '240Hz Esports' } },
+    { params: { targetHz: '360hz' }, props: { title: '360Hz Ultra-High Refresh Rate Monitor Inspector', targetLabel: '360Hz Competitive' } },
+    { params: { targetHz: '540hz' }, props: { title: '540Hz Esports Flagship Refresh Rate & Pacing Test', targetLabel: '540Hz Flagship' } },
+    { params: { targetHz: 'mobile' }, props: { title: 'Mobile Screen Refresh Rate Test — LTPO & ProMotion', targetLabel: 'Mobile ProMotion' } },
+  ];
+}
+
+const { targetHz } = Astro.params;
+const { title, targetLabel } = Astro.props;
+
+const faqs = [
+  {
+    question: `How do I verify if my display is running at ${targetLabel}?`,
+    answer: `Ensure your OS display settings match ${targetLabel}. On Windows, check Display Settings -> Advanced Display. On Mac/Mobile, ensure High Refresh / ProMotion toggle is enabled.`
+  },
+  {
+    question: "What causes frame pacing jitter on high-refresh monitors?",
+    answer: "Frame pacing jitter occurs when GPU rendering or browser compositor scheduling fails to synchronize perfectly with VSync intervals, creating micro-stutter."
+  }
+];
+---
+
+<Layout 
+  title={`${title} | Monitor Test Hub`}
+  description={`Verify your monitor or mobile screen runs at ${targetLabel}. Test real-time Hz, sub-millisecond frame pacing deltas, and motion blur side-by-side.`}
+  faqs={faqs}
+>
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-10">
+    <div class="text-center space-y-4 max-w-3xl mx-auto">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 text-xs font-mono font-bold">
+        <span class="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></span>
+        TARGET: {targetLabel.toUpperCase()}
+      </div>
+      <h1 class="text-3xl sm:text-5xl font-extrabold text-white tracking-tight">
+        {title}
+      </h1>
+      <p class="text-base text-slate-300 font-sans leading-relaxed">
+        Hardware-level refresh rate verification, microsecond frame time jitter calculation, and side-by-side motion reticle sweeps.
+      </p>
+    </div>
+
+    <RefreshRateInspector targetHz={targetHz?.toUpperCase()} />
+    <FAQSection faqs={faqs} />
+</div>
+</Layout>

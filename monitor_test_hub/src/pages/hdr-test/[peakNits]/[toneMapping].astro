@@ -85,7 +85,7 @@ const schemaGraph = {
 <Layout title={pageTitle} description={metaDescription}>
   <script type="application/ld+json" set:html={JSON.stringify(schemaGraph)} />
 
-  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
     <Breadcrumbs items={[
       { label: 'Display Suite', href: '/display-tests' },
       { label: 'HDR Diagnostics', href: '/hdr-test' },
@@ -187,5 +187,5 @@ const schemaGraph = {
       <EpilepsyWarning />
       <HardwareLimitationNotice />
     </div>
-  </main>
+  </div>
 </Layout>

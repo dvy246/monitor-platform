@@ -1,0 +1,76 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+import Breadcrumbs from '../../../components/ui/Breadcrumbs.astro';
+import DeviceDeadPixelInspector from '../../../components/diagnostics/DeviceDeadPixelInspector.astro';
+import { DeviceDatabase, type DeviceSpec } from '../../../engine/DeviceDatabase';
+
+export async function getStaticPaths() {
+  const devices = DeviceDatabase.getAllDevices();
+  return devices.map((device) => ({
+    params: { slug: device.slug },
+    props: { device }
+  }));
+}
+
+interface Props {
+  device: DeviceSpec;
+}
+
+const { device } = Astro.props;
+
+const breadcrumbItems = [
+  { label: 'Display Suite', href: '/display-tests' },
+  { label: 'Dead Pixel Test', href: '/display-tests/dead-pixel' },
+  { label: `${device.name}` }
+];
+
+const pageTitle = `${device.name} Dead Pixel & Screen Test — ISO 9241-307 RMA Audit | Monitor Test Hub`;
+const pageDescription = `Official ${device.name} dead pixel, stuck pixel, and backlight bleed test. Pre-configured for ${device.resolutionWidth}x${device.resolutionHeight} resolution (${device.ppi} PPI ${device.displayTech} display). Generates cryptographic SHA-256 warranty RMA receipts.`;
+
+const canonicalUrl = `${Astro.url.origin}/display-tests/dead-pixel-test/${device.slug}`;
+
+const schemaGraph = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebApplication",
+      "@id": `${canonicalUrl}#webapp`,
+      "name": `${device.name} Dead Pixel Test Instrument`,
+      "url": canonicalUrl,
+      "applicationCategory": "DeveloperApplication",
+      "operatingSystem": "All (macOS, Windows, iOS, Android, SteamOS)",
+      "browserRequirements": "Requires HTML5 Canvas and WebGL subpixel rendering engine",
+      "featureList": [
+        `Pre-configured for ${device.name} (${device.resolutionWidth}x${device.resolutionHeight})`,
+        `ISO 9241-307 ${device.isoClass} Defect Coordinate Pin Logging`,
+        `Subpixel structure selector (${device.subpixelStructure})`,
+        `Cryptographic SHA-256 Warranty RMA Certificate Generator`
+      ]
+    }
+  ]
+};
+---
+
+<Layout title={pageTitle} description={pageDescription}>
+  <script type="application/ld+json" set:html={JSON.stringify(schemaGraph)} />
+
+  <div class="max-w-7xl mx-auto px-4 py-8 space-y-8">
+    <Breadcrumbs items={breadcrumbItems} />
+
+    <header class="space-y-3 border-b border-border-hairline pb-6 font-mono">
+      <div class="flex items-center gap-2 text-status-pass text-xs font-bold uppercase tracking-wider">
+        <span class="w-2 h-2 rounded-full bg-status-pass led-glow-pass"></span>
+        PROGRAMMATIC pSEO DEVICE WARRANTY AUDIT
+      </div>
+      <h1 class="text-3xl sm:text-4xl font-extrabold text-text-primary tracking-tight">
+        {device.name} Dead Pixel Test
+      </h1>
+      <p class="text-sm text-text-secondary max-w-3xl font-sans">
+        Audit your {device.name} for stuck pixels, bright sub-pixels, and OLED burn-in artifacts. Formatted for {device.resolutionWidth}x{device.resolutionHeight} ({device.ppi} PPI {device.displayTech} matrix) with ISO 9241-307 defect coordinate logging and SHA-256 RMA warranty receipts.
+      </p>
+    </header>
+
+    <!-- Interactive Device Inspector Component -->
+    <DeviceDeadPixelInspector device={device} />
+  </div>
+</Layout>

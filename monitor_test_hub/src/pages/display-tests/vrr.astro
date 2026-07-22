@@ -3,6 +3,7 @@ import Layout from '../../layouts/Layout.astro';
 import Breadcrumbs from '../../components/ui/Breadcrumbs.astro';
 import VrrStutterEngine from '../../components/diagnostics/VrrStutterEngine.astro';
 import HardwareLimitationNotice from '../../components/disclaimers/HardwareLimitationNotice.astro';
+import EpilepsyWarning from '../../components/disclaimers/EpilepsyWarning.astro';
 import TestSwitcherBar from '../../components/ui/TestSwitcherBar.astro';
 import EmbedWidgetModal from '../../components/ui/EmbedWidgetModal.astro';
 
@@ -38,11 +39,11 @@ const vrrFaqs = [
 ---
 
 <Layout 
-  title="VRR, G-Sync & FreeSync Stutter & Tearing Test | Monitor Test Hub" 
+  title="VRR, G-Sync & FreeSync Stutter Test | Monitor Test Hub" 
   description="Real-time Variable Refresh Rate (VRR) stutter generator, VESA Adaptive-Sync frame pacing analyzer, LFC threshold transition checker, and screen tearing simulator."
   faqs={vrrFaqs}
 >
-  <main class="max-w-7xl mx-auto px-4 py-8 space-y-8">
+  <div class="max-w-7xl mx-auto px-4 py-8 space-y-8">
     <Breadcrumbs items={breadcrumbItems} />
 
     <header class="space-y-3 border-b border-border-hairline pb-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -66,6 +67,7 @@ const vrrFaqs = [
       </button>
     </header>
 
+    <EpilepsyWarning />
     <VrrStutterEngine />
 
     <!-- Scientific Methodology & VRR Physics Article -->
@@ -103,8 +105,8 @@ const vrrFaqs = [
     <TestSwitcherBar tests={displayTests} currentId="vrr" />
 
     <!-- Embed Widget Modal -->
-    <EmbedWidgetModal widgetTitle="VRR Stutter & Tear Test" embedUrl="https://monitortesthub.com/embed/vrr-stutter" />
-  </main>
+    <EmbedWidgetModal widgetTitle="VRR Stutter & Tear Test" embedUrl="https://monitortester.com/embed/vrr-stutter" />
+  </div>
 
   <script>
     function initVrrEmbedTrigger() {

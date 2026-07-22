@@ -44,11 +44,11 @@ const ppiFaqs = [
 ---
 
 <Layout 
-  title="Monitor PPI Calculator — Pixel Density & Retina Distance | Monitor Test Hub"
+  title="Monitor PPI & Pixel Density Calculator | Monitor Test Hub"
   description="Calculate exact Pixels Per Inch (PPI), pixel pitch, retina viewing distance, and arcminute visual acuity for any monitor resolution and screen size."
   faqs={ppiFaqs}
 >
-  <main class="max-w-7xl mx-auto px-4 py-8 space-y-8">
+  <div class="max-w-7xl mx-auto px-4 py-8 space-y-8">
     <Breadcrumbs items={breadcrumbItems} />
 
     <header class="space-y-3 border-b border-border-hairline pb-6">
@@ -230,7 +230,7 @@ const ppiFaqs = [
     </article>
 
     <TestSwitcherBar tests={displayTests} currentId="ppi-calculator" />
-  </main>
+  </div>
 </Layout>
 
 <script>

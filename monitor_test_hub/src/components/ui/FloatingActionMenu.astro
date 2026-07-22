@@ -1,0 +1,188 @@
+---
+import { localizeLink } from '../../utils/i18n';
+
+export interface Props {
+  lang?: string;
+}
+
+const { lang = 'en' } = Astro.props;
+const contactHref = localizeLink('/contact', lang);
+---
+
+<div id="floating-fab-container" class="fixed bottom-5 right-5 sm:bottom-6 sm:right-6 z-50 font-mono text-xs select-none pb-[env(safe-area-inset-bottom,0px)] pr-[env(safe-area-inset-right,0px)]">
+  <!-- Toast Feedback Popup -->
+  <div 
+    id="fab-toast" 
+    class="opacity-0 pointer-events-none transition-all duration-300 transform translate-y-2 mb-3 bg-bg-surface/95 backdrop-blur-xl border border-status-pass/50 text-text-primary px-4 py-2.5 rounded-xl shadow-2xl flex items-center gap-2.5 max-w-xs text-[11px] font-sans"
+  >
+    <span class="w-2 h-2 rounded-full bg-status-pass led-glow-pass shrink-0"></span>
+    <span id="fab-toast-message">Link copied to clipboard!</span>
+  </div>
+
+  <!-- Expanded Action Items Stack -->
+  <div 
+    id="fab-menu" 
+    class="opacity-0 pointer-events-none scale-95 origin-bottom-right transition-all duration-200 ease-[cubic-bezier(0.16,1,0.3,1)] flex flex-col items-end gap-2.5 mb-3"
+  >
+    <!-- Bookmark Button -->
+    <button 
+      id="btn-fab-bookmark" 
+      type="button"
+      class="group flex items-center gap-2.5 bg-bg-surface/95 backdrop-blur-xl border border-border-hairline hover:border-status-pass px-3.5 py-2 rounded-xl text-text-primary shadow-2xl hover:bg-bg-elevated transition-all cursor-pointer font-mono"
+      title="Bookmark Monitor Test Hub (Ctrl+D / Cmd+D)"
+    >
+      <span class="text-[11px] font-bold text-text-secondary group-hover:text-status-pass transition-colors">Bookmark Site</span>
+      <span class="w-7 h-7 rounded-lg bg-status-pass/10 border border-status-pass/30 text-status-pass flex items-center justify-center font-bold text-sm">
+        📌
+      </span>
+    </button>
+
+    <!-- Share Button -->
+    <button 
+      id="btn-fab-share" 
+      type="button"
+      class="group flex items-center gap-2.5 bg-bg-surface/95 backdrop-blur-xl border border-border-hairline hover:border-cyan-400 px-3.5 py-2 rounded-xl text-text-primary shadow-2xl hover:bg-bg-elevated transition-all cursor-pointer font-mono"
+      title="Share Monitor Test Hub"
+    >
+      <span class="text-[11px] font-bold text-text-secondary group-hover:text-cyan-400 transition-colors">Share</span>
+      <span class="w-7 h-7 rounded-lg bg-cyan-400/10 border border-cyan-400/30 text-cyan-400 flex items-center justify-center font-bold text-sm">
+        📤
+      </span>
+    </button>
+
+    <!-- Contact Us Link -->
+    <a 
+      href={contactHref} 
+      class="group flex items-center gap-2.5 bg-bg-surface/95 backdrop-blur-xl border border-border-hairline hover:border-purple-400 px-3.5 py-2 rounded-xl text-text-primary shadow-2xl hover:bg-bg-elevated transition-all cursor-pointer font-mono"
+      title="Contact Engineering Team"
+    >
+      <span class="text-[11px] font-bold text-text-secondary group-hover:text-purple-400 transition-colors">Contact Us</span>
+      <span class="w-7 h-7 rounded-lg bg-purple-400/10 border border-purple-400/30 text-purple-400 flex items-center justify-center font-bold text-sm">
+        💬
+      </span>
+    </a>
+  </div>
+
+  <!-- Primary Floating Toggle (+) Button -->
+  <button 
+    id="btn-fab-toggle" 
+    type="button"
+    aria-label="Quick Actions Menu"
+    class="w-12 h-12 sm:w-13 sm:h-13 rounded-2xl bg-bg-surface/90 backdrop-blur-xl border border-border-hairline hover:border-status-pass text-text-primary hover:text-status-pass shadow-[0_10px_30px_rgba(0,0,0,0.8),0_0_15px_rgba(5,150,105,0.15)] active:scale-95 transition-all duration-300 flex items-center justify-center cursor-pointer group relative overflow-hidden"
+  >
+    <div class="absolute inset-0 bg-radial from-status-pass/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+    <svg 
+      id="fab-plus-icon" 
+      class="w-5 h-5 sm:w-6 sm:h-6 transition-transform duration-300 transform relative z-10" 
+      fill="none" 
+      viewBox="0 0 24 24" 
+      stroke="currentColor" 
+      stroke-width="2.5"
+    >
+      <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+    </svg>
+    <span class="sr-only">Quick Actions Menu (Bookmark, Share, Contact)</span>
+  </button>
+</div>
+
+<script>
+  function initFloatingFab() {
+    const fabContainer = document.getElementById('floating-fab-container');
+    const fabToggle = document.getElementById('btn-fab-toggle');
+    const fabMenu = document.getElementById('fab-menu');
+    const plusIcon = document.getElementById('fab-plus-icon');
+    const btnBookmark = document.getElementById('btn-fab-bookmark');
+    const btnShare = document.getElementById('btn-fab-share');
+    const toast = document.getElementById('fab-toast');
+    const toastMsg = document.getElementById('fab-toast-message');
+
+    let isOpen = false;
+    let toastTimeout: ReturnType<typeof setTimeout> | null = null;
+
+    function showToast(message: string) {
+      if (!toast || !toastMsg) return;
+      toastMsg.textContent = message;
+      toast.classList.remove('opacity-0', 'pointer-events-none', 'translate-y-2');
+      toast.classList.add('opacity-100', 'translate-y-0');
+
+      if (toastTimeout) clearTimeout(toastTimeout);
+      toastTimeout = setTimeout(() => {
+        toast.classList.remove('opacity-100', 'translate-y-0');
+        toast.classList.add('opacity-0', 'pointer-events-none', 'translate-y-2');
+      }, 3000);
+    }
+
+    function toggleMenu(state?: boolean) {
+      isOpen = state !== undefined ? state : !isOpen;
+
+      if (isOpen) {
+        fabMenu?.classList.remove('opacity-0', 'pointer-events-none', 'scale-95');
+        fabMenu?.classList.add('opacity-100', 'scale-100');
+        plusIcon?.classList.add('rotate-45');
+      } else {
+        fabMenu?.classList.remove('opacity-100', 'scale-100');
+        fabMenu?.classList.add('opacity-0', 'pointer-events-none', 'scale-95');
+        plusIcon?.classList.remove('rotate-45');
+      }
+    }
+
+    fabToggle?.addEventListener('click', (e) => {
+      e.stopPropagation();
+      toggleMenu();
+    });
+
+    btnBookmark?.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const isMac = navigator.platform.toUpperCase().indexOf('MAC') >= 0;
+      const shortcut = isMac ? '⌘+D' : 'Ctrl+D';
+      
+      // Copy current URL to clipboard as fallback/convenience
+      navigator.clipboard.writeText(window.location.href).then(() => {
+        showToast(`Press ${shortcut} to bookmark | Link copied!`);
+      }).catch(() => {
+        showToast(`Press ${shortcut} to bookmark this page`);
+      });
+
+      toggleMenu(false);
+    });
+
+    btnShare?.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const shareData = {
+        title: document.title || 'Monitor Test Hub',
+        text: 'Free online display and touchscreen testing diagnostics suite.',
+        url: window.location.href,
+      };
+
+      if (navigator.share) {
+        navigator.share(shareData).catch(() => {});
+      } else {
+        navigator.clipboard.writeText(window.location.href).then(() => {
+          showToast('Page link copied to clipboard!');
+        }).catch(() => {
+          showToast('Failed to copy link.');
+        });
+      }
+
+      toggleMenu(false);
+    });
+
+    document.addEventListener('click', (e) => {
+      if (isOpen && fabContainer && !fabContainer.contains(e.target as Node)) {
+        toggleMenu(false);
+      }
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && isOpen) {
+        toggleMenu(false);
+      }
+    });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initFloatingFab);
+  } else {
+    initFloatingFab();
+  }
+</script>

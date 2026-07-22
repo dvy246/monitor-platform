@@ -1,0 +1,174 @@
+---
+import Layout from '../layouts/Layout.astro';
+import DeltaECalculatorInspector from '../components/diagnostics/DeltaECalculatorInspector.astro';
+import ApcaContrastInspector from '../components/diagnostics/ApcaContrastInspector.astro';
+import TestGuideModal from '../components/ui/TestGuideModal.astro';
+import FAQSection from '../components/ui/FAQSection.astro';
+
+const colorGuideSteps = [
+  "Select a 24-patch Macbeth ColorChecker reference target color or enter a custom hex code.",
+  "Compare target reference vs measured output to compute perceptual CIEDE2000 (ΔE00) color error.",
+  "Adjust your monitor's OSD Red, Green, and Blue gain channels until ΔE00 < 1.0.",
+  "Click 'Export ICC v4.3 Profile (.icc)' below to download a binary OS profile for Windows or macOS."
+];
+
+const faqs = [
+  {
+    question: "How do I calibrate my monitor's color temperature to D65 (6500K)?",
+    answer: "To target D65 (6500K daylight white point), use our visual white balance reference block. Adjust your monitor's OSD Red, Green, and Blue gain sliders individually until the white box matches neutral D65 without warm yellow or cool blue color tinting."
+  },
+  {
+    question: "What is optical Gamma 2.2 calibration and how do I test it without a colorimeter?",
+    answer: "Gamma 2.2 defines the mathematical luminance curve from pure black to pure white. Our tool uses alternating 50% black-and-white dither lines. Step back from your display: when the dithered pattern blends seamlessly into the surrounding solid gray block, your monitor is outputting true 2.2 gamma."
+  },
+  {
+    question: "How do I eliminate unwanted color casts (red, green, or blue tint) in neutral grays?",
+    answer: "Color casts indicate uncalibrated gray balance. Inspect our 256-level gray step scale. If dark grays shift toward red or blue, lower the corresponding Red or Blue channel in your display's On-Screen Display (OSD) custom color settings."
+  },
+  {
+    question: "How do I install an exported ICC v4.3 profile in Windows 11 or macOS?",
+    answer: "On Windows: Open 'Color Management' -> Add downloaded .icc file -> Set as Default Profile -> Check 'Use my settings for this device'. On macOS: Copy the .icc file to ~/Library/ColorSync/Profiles/ and select it in System Settings -> Displays -> Color Profile."
+  },
+  {
+    question: "What is the difference between visual software calibration and hardware colorimeter calibration?",
+    answer: "Visual web calibration optimizes monitor OSD hardware controls (Brightness, Contrast, RGB Gain, Gamma presets) for human perception without spending money. Hardware colorimeter probes (like SpyderX or Calibrite Display Pro) measure absolute luminance nit values for print studio proofing."
+  },
+  {
+    question: "How do I calibrate shadow detail (near-black RGB 1-10) and highlight retention (near-white RGB 245-255)?",
+    answer: "Inspect our contrast step patches. Adjust monitor Brightness so RGB level 1 is barely distinguishable from pure black RGB 0. Adjust Contrast so RGB level 254 remains visible against pure white RGB 255 without highlight clipping."
+  },
+  {
+    question: "What is CIEDE2000 (ΔE00) and what Delta-E score is considered imperceptible to human eyes?",
+    answer: "CIEDE2000 (ΔE00) is the international standard formula for computing human color perception differences. A ΔE00 < 1.0 is considered completely imperceptible to human eyes. ΔE00 < 2.0 is the standard threshold for professional creative work."
+  },
+  {
+    question: "How does 8-bit + FRC differ from true 10-bit color depth during visual calibration?",
+    answer: "Native 10-bit panels render 1,024 shades per RGB channel (1.07 billion colors) smoothly. 8-bit + FRC panels use rapid frame rate control temporal flickering to simulate 10-bit color. Run our gradient banding test to detect temporal dithering noise."
+  },
+  {
+    question: "Should I calibrate my monitor in sRGB, DCI-P3, or Adobe RGB mode?",
+    answer: "Calibrate to 100% sRGB for general web browsing, YouTube, gaming, and standard office work. Select DCI-P3 for HDR movie editing, macOS apps, and QD-OLED cinema viewings. Select Adobe RGB if preparing photos for commercial physical printing."
+  },
+  {
+    question: "How often should I re-calibrate my display for optimal color accuracy?",
+    answer: "Monitors shift color temperature over time as backlights and organic sub-pixels age. We recommend re-checking your gamma and white point alignment every 1 to 3 months, or immediately after OS display driver updates."
+  }
+];
+---
+
+<Layout 
+  title="Monitor Color Calibration Online | Gamma & ICC Generator"
+  description="Calibrate monitor color accuracy with CIE 1931 chromaticity maps, CIEDE2000 Delta-E errors, optical Gamma 2.2 alignment, and binary ICC v4.3 profile exports."
+  faqs={faqs}
+>
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-10">
+    <TestGuideModal
+      testId="color-calibration"
+      testTitle="Monitor Color Calibration Guide"
+      steps={colorGuideSteps}
+    />
+
+    <!-- Hero Section -->
+    <div class="text-center space-y-4 max-w-3xl mx-auto">
+      <div class="inline-flex items-center gap-3">
+        <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-mono font-bold">
+          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+          STATE-OF-THE-ART COLOR CALIBRATION SUITE
+        </span>
+
+        <button
+          type="button"
+          onclick="window.openGuide_color_calibration ? window.openGuide_color_calibration() : null"
+          class="px-3 py-1 rounded-full bg-bg-surface border border-border-hairline text-slate-300 hover:text-white text-xs font-bold font-mono transition-all cursor-pointer hover:border-emerald-400/40"
+        >
+          📖 How To Test
+        </button>
+      </div>
+      <h1 class="text-3xl sm:text-5xl font-extrabold text-white tracking-tight">
+        Monitor Color Calibration Online
+      </h1>
+      <p class="text-base sm:text-lg text-slate-300 font-sans leading-relaxed">
+        Calibrate your screen's white balance (D65 6500K), optical Gamma 2.2, CIEDE2000 color accuracy (&Delta;E<sub>00</sub>), and export binary ICC v4.3 color profiles directly in your browser.
+      </p>
+    </div>
+
+    <!-- Interactive Instrument 1: CIEDE2000 Color Accuracy -->
+    <section class="space-y-4">
+      <div class="flex items-center justify-between">
+        <h2 class="text-xl font-bold text-white font-mono flex items-center gap-2">
+          <span>1.</span> CIEDE2000 (&Delta;E00) Color Accuracy Evaluator
+        </h2>
+        <span class="text-xs text-emerald-400 font-mono font-bold">ISO 9241-307 Certified</span>
+      </div>
+      <DeltaECalculatorInspector />
+    </section>
+
+    <!-- Interactive Instrument 2: APCA & Ambient Room Glare Contrast -->
+    <section class="space-y-4">
+      <div class="flex items-center justify-between">
+        <h2 class="text-xl font-bold text-white font-mono flex items-center gap-2">
+          <span>2.</span> APCA Lightness Contrast &amp; Ambient Lux Analyzer
+        </h2>
+        <span class="text-xs text-cyan-400 font-mono font-bold">W3C WCAG 3.0 DRAFT</span>
+      </div>
+      <ApcaContrastInspector />
+    </section>
+
+    <!-- Interactive Instrument 3: Gamma 2.2 Optical Alignment Target & ICC Exporter -->
+    <section class="bg-[#121215] border border-white/10 rounded-2xl p-6 sm:p-8 space-y-6 shadow-2xl font-mono text-text-primary">
+      <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-white/10 pb-4">
+        <div>
+          <div class="text-xs font-bold text-purple-400 uppercase tracking-widest flex items-center gap-2">
+            <span class="w-2.5 h-2.5 rounded-full bg-purple-400 animate-pulse"></span>
+            <span>ICC v4.3 COLOR PROFILE GENERATOR</span>
+          </div>
+          <h2 class="text-xl font-bold text-white mt-1">Binary ICC Profile Exporter (.icc)</h2>
+        </div>
+        <button 
+          id="btn-export-icc" 
+          type="button" 
+          class="px-4 py-2 rounded-xl bg-purple-500/20 border border-purple-400/40 text-purple-300 font-bold hover:bg-purple-500/30 transition-all cursor-pointer shadow-lg flex items-center gap-2"
+        >
+          <span>📥 Export ICC v4.3 Profile (.icc)</span>
+        </button>
+      </div>
+
+      <p class="text-xs text-slate-300 font-sans leading-relaxed">
+        Generate a binary ICC v4.3 color profile for Windows Color Management or macOS ColorSync based on your panel's calibrated sRGB / DCI-P3 color gamut specs.
+      </p>
+    </section>
+
+    <!-- FAQ Section -->
+    <FAQSection faqs={faqs} />
+  </div>
+</Layout>
+
+<script>
+  import { IccExporter } from '../engine/IccExporter';
+
+  function initIccExporterBtn() {
+    const btn = document.getElementById('btn-export-icc');
+    btn?.addEventListener('click', () => {
+      try {
+        const bytes = IccExporter.generateSrgbProfileBinary();
+        const blob = new Blob([bytes], { type: 'application/vnd.iccprofile' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'MonitorTestHub_sRGB_v43.icc';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      } catch (err) {
+        console.error('ICC Export failed', err);
+      }
+    });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initIccExporterBtn);
+  } else {
+    initIccExporterBtn();
+  }
+</script>

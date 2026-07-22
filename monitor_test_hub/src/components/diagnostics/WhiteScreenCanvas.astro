@@ -1,0 +1,270 @@
+---
+/**
+ * WhiteScreenCanvas.astro
+ * High-performance full-screen white screen generator, video call lighting controller,
+ * and monitor dust/smudge inspection tool with Screen Wake Lock API and Kelvin temperature sliders.
+ */
+interface Props {
+  initialColor?: string;
+  initialKelvin?: number;
+  activeColorName?: string;
+}
+
+const { 
+  initialColor = '#ffffff', 
+  initialKelvin = 6500,
+  activeColorName = 'Pure White'
+} = Astro.props;
+
+const colorPresets = [
+  { id: 'white', name: 'Solid White', hex: '#ffffff', textColor: 'text-zinc-900', key: '1' },
+  { id: 'warm', name: '2700K Soft Light', hex: '#ffa957', textColor: 'text-zinc-900', key: '2' },
+  { id: 'neutral', name: '4500K Fill Light', hex: '#ffd1a3', textColor: 'text-zinc-900', key: '3' },
+  { id: 'black', name: 'Solid Black', hex: '#000000', textColor: 'text-white', key: '4' },
+  { id: 'red', name: 'Pure Red', hex: '#ff0000', textColor: 'text-white', key: '5' },
+  { id: 'green', name: 'Pure Green', hex: '#00ff00', textColor: 'text-zinc-900', key: '6' },
+  { id: 'blue', name: 'Pure Blue', hex: '#0000ff', textColor: 'text-white', key: '7' },
+  { id: 'yellow', name: 'Pure Yellow', hex: '#ffff00', textColor: 'text-zinc-900', key: '8' }
+];
+---
+
+<div class="w-full space-y-6">
+  <!-- Interactive Diagnostic Deck -->
+  <div class="bg-bg-surface border border-border-hairline rounded-2xl p-6 font-mono shadow-specular-top space-y-6">
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-border-hairline pb-4">
+      <div class="space-y-1">
+        <div class="flex items-center gap-2 text-status-pass text-xs font-bold uppercase tracking-wider">
+          <span class="w-2.5 h-2.5 rounded-full bg-status-pass led-glow-pass"></span>
+          UNIVERSAL FULLSCREEN LIGHT & CANVAS ENGINE
+        </div>
+        <h2 class="text-lg font-extrabold text-text-primary">White Screen Lighting & Inspection Tool</h2>
+      </div>
+
+      <div class="flex flex-wrap items-center gap-3">
+        <!-- Screen Wake Lock Toggle Button -->
+        <button
+          id="wakelock-toggle-btn"
+          type="button"
+          class="px-3.5 py-2 text-xs font-bold rounded-lg border border-border-hairline bg-bg-elevated text-text-secondary hover:text-text-primary transition-all flex items-center gap-2 cursor-pointer"
+        >
+          <span id="wakelock-indicator" class="w-2 h-2 rounded-full bg-zinc-500"></span>
+          <span id="wakelock-status-text">WAKE LOCK: OFF</span>
+        </button>
+
+        <!-- Fullscreen Launcher -->
+        <button
+          id="launch-fullscreen-btn"
+          type="button"
+          class="px-4 py-2 text-xs font-bold rounded-lg bg-status-pass text-white hover:bg-emerald-600 transition-all flex items-center gap-2 cursor-pointer shadow-specular-top"
+        >
+          <span>FULLSCREEN (F)</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Active Lighting Preview Box -->
+    <div
+      id="lighting-preview-box"
+      class="relative w-full h-72 sm:h-96 rounded-xl border border-border-hairline flex flex-col items-center justify-center transition-colors duration-200 cursor-pointer overflow-hidden group shadow-inner"
+      style={`background-color: ${initialColor};`}
+    >
+      <!-- Dust & Smudge Grid Overlay (Hidden by default) -->
+      <div
+        id="dust-grid-overlay"
+        class="absolute inset-0 pointer-events-none opacity-0 transition-opacity duration-200"
+        style="background-image: linear-gradient(to right, rgba(0,0,0,0.15) 1px, transparent 1px), linear-gradient(to bottom, rgba(0,0,0,0.15) 1px, transparent 1px); background-size: 25px 25px;"
+      ></div>
+
+      <!-- Center Control Overlay Badge -->
+      <div class="z-10 bg-black/75 backdrop-blur-md px-6 py-4 rounded-xl border border-white/20 text-center space-y-2 max-w-sm pointer-events-none group-hover:scale-105 transition-transform">
+        <span class="text-[11px] font-bold text-emerald-400 uppercase tracking-widest block" id="preview-color-label">
+          [ {activeColorName.toUpperCase()} ]
+        </span>
+        <p class="text-xs text-zinc-300 font-sans">
+          Click box or press <kbd class="px-1.5 py-0.5 rounded bg-zinc-800 border border-zinc-700 text-white font-mono text-[10px]">F</kbd> for Fullscreen Lighting
+        </p>
+      </div>
+
+      <!-- Corner Hotkey Indicators -->
+      <div class="absolute bottom-3 right-3 text-[10px] text-black/60 bg-white/40 px-2 py-1 rounded backdrop-blur font-mono pointer-events-none">
+        PRESS ESC TO EXIT
+      </div>
+    </div>
+
+    <!-- Controls & Palette Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <!-- Kelvin Color Temperature Control -->
+      <div class="bg-bg-canvas p-4 rounded-xl border border-border-hairline space-y-3">
+        <div class="flex items-center justify-between">
+          <label for="kelvin-slider" class="text-xs font-bold text-text-primary uppercase tracking-wider">
+            Color Temp (Kelvin): <span id="kelvin-val-display" class="text-status-pass font-extrabold">{initialKelvin}K</span>
+          </label>
+          <span class="text-[10px] text-text-muted">2700K Warm — 6500K Daylight</span>
+        </div>
+        <input
+          id="kelvin-slider"
+          type="range"
+          min="2700"
+          max="6500"
+          step="100"
+          value={initialKelvin}
+          class="w-full h-2 bg-bg-elevated rounded-lg appearance-none cursor-pointer accent-status-pass"
+        />
+        <div class="flex justify-between text-[10px] text-text-muted">
+          <span>2700K (Tungsten)</span>
+          <span>4500K (Neutral)</span>
+          <span>6500K (D65 Daylight)</span>
+        </div>
+      </div>
+
+      <!-- Utility Overlay Toggles -->
+      <div class="bg-bg-canvas p-4 rounded-xl border border-border-hairline space-y-3">
+        <span class="text-xs font-bold text-text-primary uppercase tracking-wider block">Utility Filters & Cleaning</span>
+        <div class="flex flex-wrap items-center gap-3">
+          <button
+            id="dust-grid-toggle-btn"
+            type="button"
+            class="px-3 py-1.5 text-xs font-bold rounded-lg border border-border-hairline bg-bg-surface text-text-secondary hover:text-text-primary transition-all cursor-pointer"
+          >
+            SMUDGE GRID: OFF
+          </button>
+
+          <a
+            href="/display-tests/dead-pixel"
+            class="px-3 py-1.5 text-xs font-bold rounded-lg border border-status-pass/40 bg-status-pass/10 text-status-pass hover:bg-status-pass/20 transition-all cursor-pointer"
+          >
+            ISO 9241 DEAD PIXEL TEST &rarr;
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick Color Palette Buttons -->
+    <div class="space-y-2">
+      <span class="text-xs font-bold text-text-muted uppercase tracking-wider block">Preset Color Palette</span>
+      <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-2">
+        {colorPresets.map((c) => (
+          <button
+            type="button"
+            data-hex={c.hex}
+            data-name={c.name}
+            class="preset-color-btn p-2.5 rounded-lg border border-border-hairline flex flex-col justify-between h-20 text-left transition-all hover:scale-105 cursor-pointer shadow-sm"
+            style={`background-color: ${c.hex};`}
+          >
+            <span class={`text-[9px] font-bold px-1 rounded bg-black/40 ${c.textColor}`}>
+              [{c.key}]
+            </span>
+            <span class={`text-[11px] font-bold ${c.textColor}`}>
+              {c.name}
+            </span>
+          </button>
+        ))}
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  import { WhiteScreenEngine } from '../../engine/WhiteScreenEngine';
+
+  let currentHex = '#ffffff';
+  let isDustGridActive = false;
+  let wakeLockObj: WakeLockSentinel | null = null;
+
+  const previewBox = document.getElementById('lighting-preview-box') as HTMLDivElement;
+  const kelvinSlider = document.getElementById('kelvin-slider') as HTMLInputElement;
+  const kelvinDisplay = document.getElementById('kelvin-val-display') as HTMLSpanElement;
+  const previewLabel = document.getElementById('preview-color-label') as HTMLSpanElement;
+  const dustGridOverlay = document.getElementById('dust-grid-overlay') as HTMLDivElement;
+  const dustGridBtn = document.getElementById('dust-grid-toggle-btn') as HTMLButtonElement;
+  const launchFullscreenBtn = document.getElementById('launch-fullscreen-btn') as HTMLButtonElement;
+  const wakelockBtn = document.getElementById('wakelock-toggle-btn') as HTMLButtonElement;
+  const wakelockIndicator = document.getElementById('wakelock-indicator') as HTMLSpanElement;
+  const wakelockStatusText = document.getElementById('wakelock-status-text') as HTMLSpanElement;
+
+  function updateColor(hex: string, labelText: string) {
+    currentHex = hex;
+    if (previewBox) previewBox.style.backgroundColor = hex;
+    if (previewLabel) previewLabel.textContent = `[ ${labelText.toUpperCase()} ]`;
+  }
+
+  // Kelvin Slider Input
+  if (kelvinSlider) {
+    kelvinSlider.addEventListener('input', (e) => {
+      const kelvin = parseInt((e.target as HTMLInputElement).value, 10);
+      if (kelvinDisplay) kelvinDisplay.textContent = `${kelvin}K`;
+      const rgb = WhiteScreenEngine.kelvinToRgb(kelvin);
+      const hex = WhiteScreenEngine.rgbToHex(rgb);
+      updateColor(hex, `${kelvin}K Color Temperature`);
+    });
+  }
+
+  // Dust Grid Toggle
+  if (dustGridBtn && dustGridOverlay) {
+    dustGridBtn.addEventListener('click', () => {
+      isDustGridActive = !isDustGridActive;
+      dustGridOverlay.style.opacity = isDustGridActive ? '1' : '0';
+      dustGridBtn.textContent = isDustGridActive ? 'SMUDGE GRID: ON' : 'SMUDGE GRID: OFF';
+      dustGridBtn.classList.toggle('bg-status-pass/20', isDustGridActive);
+      dustGridBtn.classList.toggle('text-status-pass', isDustGridActive);
+    });
+  }
+
+  // Preset Color Buttons
+  document.querySelectorAll('.preset-color-btn').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const hex = btn.getAttribute('data-hex') || '#ffffff';
+      const name = btn.getAttribute('data-name') || 'Custom Color';
+      updateColor(hex, name);
+    });
+  });
+
+  // Fullscreen Request Handler
+  function toggleFullscreen() {
+    if (!document.fullscreenElement) {
+      if (previewBox.requestFullscreen) {
+        previewBox.requestFullscreen().catch(() => {});
+      }
+    } else {
+      if (document.exitFullscreen) {
+        document.exitFullscreen().catch(() => {});
+      }
+    }
+  }
+
+  if (launchFullscreenBtn) launchFullscreenBtn.addEventListener('click', toggleFullscreen);
+  if (previewBox) previewBox.addEventListener('click', toggleFullscreen);
+
+  // Screen Wake Lock API Handler
+  async function requestWakeLock() {
+    if ('wakeLock' in navigator) {
+      try {
+        wakeLockObj = await navigator.wakeLock.request('screen');
+        if (wakelockIndicator) wakelockIndicator.className = 'w-2 h-2 rounded-full bg-status-pass led-glow-pass';
+        if (wakelockStatusText) wakelockStatusText.textContent = 'WAKE LOCK: ACTIVE';
+      } catch (err) {
+        if (wakelockStatusText) wakelockStatusText.textContent = 'WAKE LOCK: UNSUPPORTED';
+      }
+    }
+  }
+
+  if (wakelockBtn) {
+    wakelockBtn.addEventListener('click', () => {
+      if (wakeLockObj) {
+        wakeLockObj.release();
+        wakeLockObj = null;
+        if (wakelockIndicator) wakelockIndicator.className = 'w-2 h-2 rounded-full bg-zinc-500';
+        if (wakelockStatusText) wakelockStatusText.textContent = 'WAKE LOCK: OFF';
+      } else {
+        requestWakeLock();
+      }
+    });
+  }
+
+  // Hotkeys Listener
+  window.addEventListener('keydown', (e) => {
+    if (e.key === 'f' || e.key === 'F') {
+      toggleFullscreen();
+    }
+  });
+</script>

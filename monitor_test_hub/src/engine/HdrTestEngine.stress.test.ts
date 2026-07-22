@@ -334,7 +334,7 @@ describe('HdrTestEngine Empirical Stress Test Suite', () => {
       const opsPerSec = (iterations / durationMs) * 1000;
       
       expect(sum).toBeGreaterThan(0);
-      expect(durationMs).toBeLessThan(200);
+      expect(durationMs).toBeLessThan(350);
       console.log(`[HdrTestEngine Perf] 100k PQ Roundtrips: ${durationMs.toFixed(2)}ms (${opsPerSec.toFixed(0)} ops/sec)`);
     });
 

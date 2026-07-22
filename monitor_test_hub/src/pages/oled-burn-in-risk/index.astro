@@ -30,7 +30,7 @@ const presetProfiles = [
   title="OLED Burn-In & Image Retention Risk Analyzer | Monitor Test Hub"
   description="Client-side OLED burn-in risk calculator and 5% near-black uniformity inspector for QD-OLED, WOLED, and AMOLED displays under ISO 9241-307 standards."
 >
-  <main class="max-w-7xl mx-auto px-4 py-8 space-y-10">
+  <div class="max-w-7xl mx-auto px-4 py-8 space-y-10">
     <Breadcrumbs items={breadcrumbItems} />
 
     <header class="space-y-4 border-b border-border-hairline pb-6">
@@ -107,5 +107,5 @@ const presetProfiles = [
     </section>
 
     <TestSwitcherBar tests={displayTests} currentId="oled-burn-in" />
-  </main>
+  </div>
 </Layout>

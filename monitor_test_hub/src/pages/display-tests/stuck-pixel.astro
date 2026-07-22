@@ -1,6 +1,7 @@
 ---
 import Layout from '../../layouts/Layout.astro';
 import StuckPixel from '../../components/diagnostics/StuckPixel.astro';
+import EpilepsyWarning from '../../components/disclaimers/EpilepsyWarning.astro';
 
 const faqs = [
   {
@@ -26,7 +27,7 @@ const faqs = [
   title="Stuck Pixel Fixer & Healer | Free Online Screen Repair Tool"
   description="Unstick stuck screen pixels online with high-frequency sub-pixel color stimulation. Free browser tool for LCD, IPS, and OLED display panels under ISO 9241-307 Class I specs."
 >
-  <main id="main-content" class="py-10 px-4 sm:px-6 lg:px-8 space-y-12">
+  <div class="py-10 px-4 sm:px-6 lg:px-8 space-y-12">
     <section class="max-w-4xl mx-auto text-center space-y-4">
       <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-status-pass/10 border border-status-pass/30 text-xs font-mono text-status-pass font-bold">
         <span>ISO 9241-307 CLASS I STIMULATION ALGORITHM</span>
@@ -39,6 +40,7 @@ const faqs = [
       </p>
     </section>
 
+    <EpilepsyWarning />
     <StuckPixel />
 
     <article class="max-w-4xl mx-auto space-y-8 bg-bg-surface/80 border border-border-hairline rounded-2xl p-6 sm:p-8 backdrop-blur-xl text-sm text-text-secondary leading-relaxed">
@@ -57,5 +59,5 @@ const faqs = [
         ))}
       </div>
     </article>
-  </main>
+  </div>
 </Layout>

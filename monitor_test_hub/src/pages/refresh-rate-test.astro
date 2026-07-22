@@ -1,0 +1,108 @@
+---
+import Layout from '../layouts/Layout.astro';
+import RefreshRateInspector from '../components/diagnostics/RefreshRateInspector.astro';
+import EpilepsyWarning from '../components/disclaimers/EpilepsyWarning.astro';
+import FAQSection from '../components/ui/FAQSection.astro';
+
+const faqs = [
+  {
+    question: "How does the Screen Refresh Rate Test measure real hardware Hz?",
+    answer: "Our engine uses W3C High-Resolution Time (performance.now()) microsecond hardware timestamps combined with requestAnimationFrame compositor callbacks to measure your display's true physical refresh rate and inter-frame pacing deltas."
+  },
+  {
+    question: "How do I test dynamic ProMotion or LTPO refresh rates on iPhone, iPad, or Android?",
+    answer: "On dynamic mobile displays (such as Apple ProMotion or Samsung LTPO), the screen drops to 10Hz–30Hz when idle to save battery. Swiping or touching the screen triggers maximum 120Hz boost mode, which our real-time LTPO inspector automatically measures."
+  },
+  {
+    question: "Why does my 144Hz, 240Hz, 360Hz, or 540Hz monitor only show 60Hz?",
+    answer: "If your high-refresh gaming monitor displays 60Hz, check your operating system display settings (Windows Display Settings -> Advanced Display Settings -> Choose Refresh Rate). Ensure you are using a DisplayPort 1.4/2.1 or HDMI 2.1 cable capable of high bandwidth."
+  },
+  {
+    question: "What is inter-frame jitter and micro-stutter?",
+    answer: "Inter-frame jitter (measured in milliseconds σ) quantifies variance in frame delivery timing. High jitter causes visual micro-stutter even when average FPS appears high."
+  },
+  {
+    question: "Can I test high refresh rate screens in any web browser?",
+    answer: "Yes, modern Chromium (Chrome, Edge, Brave), Firefox, and Safari support hardware-accelerated requestAnimationFrame callbacks up to 540Hz+. Ensure browser hardware acceleration is enabled in settings."
+  },
+  {
+    question: "How does VSync, G-Sync, and FreeSync affect refresh rate test results?",
+    answer: "Variable Refresh Rate (VRR) technologies like NVIDIA G-Sync and AMD FreeSync dynamically synchronize your monitor's refresh rate to the GPU frame dispatch rate. Disabling VSync during testing allows measuring uncapped browser compositor performance."
+  },
+  {
+    question: "What is display motion blur and Pursuit Camera reticle testing?",
+    answer: "Sample-and-hold display tech (LCD/OLED) causes motion blur as human eyes track moving objects. Our pursuit motion sweep reticles display side-by-side moving targets at 1x, 1/2x, and 1/4x speeds to evaluate panel response time and overdrive ghosting."
+  },
+  {
+    question: "Why does my frame rate drop when switching web browser tabs?",
+    answer: "Web browsers automatically throttle requestAnimationFrame callbacks for background or unfocused tabs to save CPU/GPU power and battery. Keep the test window focused for accurate hardware measurements."
+  },
+  {
+    question: "Does a higher refresh rate reduce input latency in competitive gaming?",
+    answer: "Yes. Higher refresh rates reduce visual frame delay ($1000\text{ms} / 240\text{Hz} = 4.16\text{ms}$ vs $1000\text{ms} / 60\text{Hz} = 16.67\text{ms}$). This gives competitive players a ~12.5ms click-to-photon advantage."
+  },
+  {
+    question: "How do I enable 120Hz or 144Hz output on macOS or Windows laptops?",
+    answer: "On macOS: System Settings -> Displays -> Refresh Rate -> Select 120Hz or ProMotion. On Windows: Settings -> System -> Display -> Advanced Display -> Select Refresh Rate."
+  }
+];
+---
+
+<Layout 
+  title="Screen Refresh Rate Test Online | Hz & Pacing Inspector" 
+  description="Test your screen refresh rate online. Measure true display Hz, microsecond frame pacing jitter, 540Hz+ esports monitors, and Apple ProMotion / LTPO scaling."
+  faqs={faqs}
+>
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-10">
+    <!-- Hero Section -->
+    <div class="text-center space-y-4 max-w-3xl mx-auto">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 text-xs font-mono font-bold">
+        <span class="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></span>
+        STATE-OF-THE-ART REFRESH RATE TEST
+      </div>
+      <h1 class="text-3xl sm:text-5xl font-extrabold text-white tracking-tight">
+        Screen Refresh Rate Test
+      </h1>
+      <p class="text-base sm:text-lg text-slate-300 font-sans leading-relaxed">
+        Measure true hardware display Hz, microsecond inter-frame jitter, mobile ProMotion LTPO dynamic refresh scaling, and esports 540Hz+ frame pacing instantly in your browser.
+      </p>
+    </div>
+
+    <!-- Interactive Diagnostic Instrument -->
+    <EpilepsyWarning />
+    <RefreshRateInspector targetHz="AUTO (DETECTING)" />
+
+    <!-- Technical Guide & E-E-A-T Standards -->
+    <article class="bg-[#121215] border border-white/10 rounded-2xl p-6 sm:p-8 space-y-6 text-slate-300 font-sans shadow-xl">
+      <h2 class="text-xl font-bold text-white font-mono flex items-center gap-2">
+        <span>🔬</span> ISO 9241-307 &amp; W3C Frame Pacing Telemetry Standards
+      </h2>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-xs font-mono">
+        <div class="bg-[#08080a] p-4 rounded-xl border border-white/10 space-y-2">
+          <div class="text-cyan-400 font-bold uppercase">1. Microsecond Precision</div>
+          <p class="text-slate-400 font-sans leading-relaxed">
+            Measures exact frame presentation intervals using sub-millisecond browser compositor timestamps rather than standard rounded integer counters.
+          </p>
+        </div>
+
+        <div class="bg-[#08080a] p-4 rounded-xl border border-white/10 space-y-2">
+          <div class="text-emerald-400 font-bold uppercase">2. Mobile LTPO / ProMotion</div>
+          <p class="text-slate-400 font-sans leading-relaxed">
+            Evaluates dynamic variable refresh rate scaling, detecting energy-saving idle drops down to 10Hz and touch-boosted 120Hz gaming performance.
+          </p>
+        </div>
+
+        <div class="bg-[#08080a] p-4 rounded-xl border border-white/10 space-y-2">
+          <div class="text-purple-400 font-bold uppercase">3. Multi-Rate Pursuit</div>
+          <p class="text-slate-400 font-sans leading-relaxed">
+            Displays side-by-side 1x, 1/2x, 1/4x, and 1/8x motion sweep reticles for evaluating sample-and-hold display motion blur and tracking clarity.
+          </p>
+        </div>
+      </div>
+    </article>
+
+    <!-- FAQ Section -->
+    <FAQSection faqs={faqs} />
+  </div>
+</Layout>

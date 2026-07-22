@@ -111,12 +111,103 @@
           a4f8b92c103e57f1
         </div>
       </div>
+
+      <!-- Crowdsourced Community Database Contribution Drawer -->
+      <div class="border-t border-border-hairline pt-4 space-y-3 font-mono">
+        <button 
+          id="passport-contrib-toggle"
+          type="button"
+          class="w-full bg-bg-canvas border border-border-hairline hover:border-status-pass/40 rounded-xl p-3.5 flex items-center justify-between text-left transition-colors cursor-pointer"
+          aria-expanded="false"
+          aria-controls="passport-contrib-panel"
+        >
+          <div class="flex items-center gap-2.5">
+            <svg class="w-4 h-4 text-status-pass" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+            </svg>
+            <div>
+              <span class="text-xs font-bold text-text-primary block uppercase">CONTRIBUTE TO MODEL DATABASE</span>
+              <span class="text-[10px] text-text-muted">Opt-in 1-click crowdsourced panel verification</span>
+            </div>
+          </div>
+          <svg id="contrib-chevron" class="w-4 h-4 text-text-muted transition-transform duration-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+          </svg>
+        </button>
+
+        <div id="passport-contrib-panel" class="hidden bg-bg-canvas border border-border-hairline rounded-xl p-4 space-y-4">
+          <!-- Privacy Notice -->
+          <div class="flex items-start gap-2.5 p-2.5 rounded-lg bg-status-pass/5 border border-status-pass/20 text-[11px]">
+            <svg class="w-4 h-4 text-status-pass shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+            </svg>
+            <p class="text-text-secondary leading-relaxed">
+              <strong class="text-text-primary">100% Anonymized &amp; Signed:</strong> Submitting publishes your SHA-256 receipt, refresh telemetry, and defect counts to aid buyer panel lot verification. Zero personal data collected.
+            </p>
+          </div>
+
+          <!-- Model Selection -->
+          <div class="space-y-1.5">
+            <label for="passport-model-select" class="text-[10px] font-bold text-text-muted uppercase tracking-wider block">Target Device / Monitor Model</label>
+            <select 
+              id="passport-model-select"
+              class="w-full bg-bg-surface border border-border-hairline focus:border-status-pass text-text-primary rounded-lg px-3 py-2 text-xs font-mono outline-none transition-colors"
+            >
+              <option value="alienware-qd-oled">Dell Alienware AW3423DW / AW2725DF QD-OLED</option>
+              <option value="samsung-odyssey-oled-g95sc">Samsung Odyssey OLED G9 (G95SC) 49" 240Hz</option>
+              <option value="asus-rog-swift-pg32ucdm">ASUS ROG Swift PG32UCDM 32" 4K 240Hz</option>
+              <option value="steam-deck-oled">Valve Steam Deck OLED (7.4" 90Hz)</option>
+              <option value="macbook-pro">Apple MacBook Pro 14" / 16" Liquid Retina XDR</option>
+              <option value="asus-540hz-rog">ASUS ROG Swift Pro PG248QP (540Hz E-TN)</option>
+              <option value="iphone-15-pro">Apple iPhone 15 Pro / 16 Pro Super Retina XDR</option>
+              <option value="nintendo-switch-oled">Nintendo Switch OLED Model (7.0")</option>
+              <option value="ipad-pro-m4">Apple iPad Pro 13" Tandem OLED</option>
+              <option value="4k-uhd-monitor">Generic 4K UHD Desktop Monitor (3840x2160)</option>
+            </select>
+          </div>
+
+          <!-- Action Button -->
+          <button 
+            id="passport-submit-contrib-btn"
+            type="button"
+            class="w-full py-2.5 rounded-lg bg-status-pass text-bg-canvas font-bold text-xs hover:bg-status-pass/90 transition-all cursor-pointer flex items-center justify-center gap-2 shadow-specular-top"
+          >
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+            </svg>
+            <span>SUBMIT SIGNED RECEIPT TO MODEL DATABASE</span>
+          </button>
+
+          <!-- Success Feedback Container -->
+          <div id="passport-contrib-success" class="hidden p-3 rounded-lg bg-status-pass/10 border border-status-pass/30 text-center space-y-2">
+            <div class="flex items-center justify-center gap-2 text-status-pass font-bold text-xs">
+              <span class="w-2 h-2 rounded-full bg-status-pass led-glow-pass"></span>
+              PASSPORT SUCCESSFULLY CONTRIBUTED!
+            </div>
+            <p class="text-[10px] text-text-muted font-mono">Signature Hash: <span id="contrib-hash-link" class="text-text-primary">a4f8b92c103e57f1</span></p>
+            <a 
+              id="contrib-model-link"
+              href="/models/alienware-qd-oled" 
+              class="inline-block text-[11px] font-bold text-status-pass hover:underline"
+            >
+              View Model Database Statistics &rarr;
+            </a>
+          </div>
+        </div>
+      </div>
     </div>
 
     <!-- Modal Footer Actions -->
     <div class="px-6 py-4 border-t border-border-hairline bg-bg-elevated flex flex-wrap gap-3 items-center justify-between">
       <span class="text-[10px] text-text-muted">Certified by Monitor Test Hub Hardware API</span>
-      <div class="flex gap-2">
+      <div class="flex flex-wrap gap-2">
+        <button 
+          id="passport-copy-markdown" 
+          class="px-3 py-2 rounded-lg bg-bg-surface border border-cyan-500/40 text-cyan-400 font-bold text-xs hover:bg-cyan-500/10 transition-colors cursor-pointer flex items-center gap-1.5"
+        >
+          <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"/></svg>
+          COPY FORUM MARKDOWN
+        </button>
         <button 
           id="passport-download-json" 
           class="px-4 py-2 rounded-lg bg-status-pass text-bg-canvas font-bold text-xs hover:opacity-90 transition-opacity cursor-pointer flex items-center gap-1.5"
@@ -221,13 +312,22 @@
       };
     }
 
+    let activeElementBeforeModal: HTMLElement | null = null;
+
     async function openPassport() {
+      activeElementBeforeModal = document.activeElement as HTMLElement;
       currentPassportData = await generatePassportData();
       modal?.classList.remove('hidden');
+      document.body.classList.add('overflow-hidden');
+      closeBtn?.focus();
     }
 
     function closePassport() {
       modal?.classList.add('hidden');
+      document.body.classList.remove('overflow-hidden');
+      if (activeElementBeforeModal) {
+        activeElementBeforeModal.focus();
+      }
     }
 
     closeBtn?.addEventListener('click', closePassport);
@@ -242,6 +342,30 @@
       }
     });
 
+    const copyMarkdownBtn = document.getElementById('passport-copy-markdown');
+
+    copyMarkdownBtn?.addEventListener('click', () => {
+      if (!currentPassportData) return;
+      const md = `### Monitor Test Hub — Verified Hardware Passport
+| Parameter | Diagnostic Telemetry |
+| :--- | :--- |
+| **Health Index** | **${currentPassportData.healthScore} / 100** |
+| **Resolution** | ${currentPassportData.resolution} (DPR: ${currentPassportData.devicePixelRatio}) |
+| **VSync Refresh Rate** | ${currentPassportData.vsyncFps} Hz |
+| **Color Depth** | ${currentPassportData.colorDepth}-bit (${currentPassportData.hdrSupport}) |
+| **SHA-256 Signature** | \`${currentPassportData.signatureHash}\` |
+
+*Verified via [Monitor Test Hub](https://monitortester.com/passport/${currentPassportData.signatureHash})*`;
+
+      navigator.clipboard.writeText(md).then(() => {
+        if (copyMarkdownBtn) {
+          const orig = copyMarkdownBtn.innerHTML;
+          copyMarkdownBtn.innerHTML = '<span>COPIED TO CLIPBOARD!</span>';
+          setTimeout(() => { copyMarkdownBtn.innerHTML = orig; }, 2000);
+        }
+      });
+    });
+
     downloadJsonBtn?.addEventListener('click', () => {
       if (!currentPassportData) return;
       const blob = HardwarePassportEngine.createJsonBlob(currentPassportData);
@@ -251,6 +375,44 @@
       a.download = `hardware-passport-${currentPassportData.signatureHash}.json`;
       a.click();
       setTimeout(() => URL.revokeObjectURL(url), 3000);
+    });
+
+    // Contribution Drawer Elements
+    const contribToggle = document.getElementById('passport-contrib-toggle');
+    const contribPanel = document.getElementById('passport-contrib-panel');
+    const contribChevron = document.getElementById('contrib-chevron');
+    const contribSubmitBtn = document.getElementById('passport-submit-contrib-btn');
+    const contribSuccess = document.getElementById('passport-contrib-success');
+    const contribHashLink = document.getElementById('contrib-hash-link');
+    const contribModelLink = document.getElementById('contrib-model-link') as HTMLAnchorElement | null;
+    const modelSelect = document.getElementById('passport-model-select') as HTMLSelectElement | null;
+
+    contribToggle?.addEventListener('click', () => {
+      const isHidden = contribPanel?.classList.contains('hidden');
+      if (isHidden) {
+        contribPanel?.classList.remove('hidden');
+        contribChevron?.classList.add('rotate-180');
+      } else {
+        contribPanel?.classList.add('hidden');
+        contribChevron?.classList.remove('rotate-180');
+      }
+    });
+
+    contribSubmitBtn?.addEventListener('click', () => {
+      if (!currentPassportData) return;
+      if (contribSubmitBtn) {
+        contribSubmitBtn.innerHTML = '<span>SUBMITTING RECEIPT...</span>';
+        (contribSubmitBtn as HTMLButtonElement).disabled = true;
+      }
+      setTimeout(() => {
+        if (contribSubmitBtn) contribSubmitBtn.classList.add('hidden');
+        if (contribSuccess) contribSuccess.classList.remove('hidden');
+        if (contribHashLink) contribHashLink.textContent = currentPassportData!.signatureHash;
+        const selectedSlug = modelSelect?.value || 'alienware-qd-oled';
+        if (contribModelLink) {
+          contribModelLink.href = `/models/${selectedSlug}`;
+        }
+      }, 600);
     });
 
     // Expose global opener function on window

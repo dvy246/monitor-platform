@@ -1,0 +1,221 @@
+---
+---
+
+<div class="bg-[#121215] border border-white/10 rounded-2xl p-6 sm:p-8 space-y-6 shadow-2xl font-mono">
+  <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-white/10 pb-4">
+    <div>
+      <div class="text-xs font-bold text-emerald-400 uppercase tracking-widest flex items-center gap-2">
+        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+        <span>HTML5 GAMEPAD API DIAGNOSTIC</span>
+      </div>
+      <h3 class="text-xl font-bold text-white mt-1">Analog Stick Dead-Zone &amp; Drift Inspector</h3>
+    </div>
+    <div id="gamepad-status-badge" class="px-3 py-1 rounded-full bg-amber-400/10 border border-amber-400/30 text-amber-400 text-xs font-bold">
+      CONNECT CONTROLLER &amp; PRESS ANY BUTTON
+    </div>
+  </div>
+
+  <!-- Dual Stick Visualizer Grid -->
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <!-- Left Stick Canvas -->
+    <div class="bg-[#08080a] border border-white/10 rounded-xl p-4 flex flex-col items-center space-y-3">
+      <div class="flex justify-between w-full text-xs text-slate-400 font-bold">
+        <span>LEFT STICK (AXIS 0, 1)</span>
+        <span id="left-stick-coords" class="text-emerald-400">X: 0.00 | Y: 0.00</span>
+      </div>
+      <canvas id="left-stick-canvas" width="280" height="280" class="border border-white/10 rounded-lg bg-[#0e0e11]"></canvas>
+      <div class="w-full grid grid-cols-2 gap-2 text-[11px] text-slate-300">
+        <div class="bg-[#18181b] p-2 rounded border border-white/5 flex justify-between">
+          <span class="text-slate-400">Drift Vector:</span>
+          <span id="left-drift-val" class="font-bold text-emerald-400">0.0%</span>
+        </div>
+        <div class="bg-[#18181b] p-2 rounded border border-white/5 flex justify-between">
+          <span class="text-slate-400">Circularity Err:</span>
+          <span id="left-circ-val" class="font-bold text-cyan-400">0.0%</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Stick Canvas -->
+    <div class="bg-[#08080a] border border-white/10 rounded-xl p-4 flex flex-col items-center space-y-3">
+      <div class="flex justify-between w-full text-xs text-slate-400 font-bold">
+        <span>RIGHT STICK (AXIS 2, 3)</span>
+        <span id="right-stick-coords" class="text-emerald-400">X: 0.00 | Y: 0.00</span>
+      </div>
+      <canvas id="right-stick-canvas" width="280" height="280" class="border border-white/10 rounded-lg bg-[#0e0e11]"></canvas>
+      <div class="w-full grid grid-cols-2 gap-2 text-[11px] text-slate-300">
+        <div class="bg-[#18181b] p-2 rounded border border-white/5 flex justify-between">
+          <span class="text-slate-400">Drift Vector:</span>
+          <span id="right-drift-val" class="font-bold text-emerald-400">0.0%</span>
+        </div>
+        <div class="bg-[#18181b] p-2 rounded border border-white/5 flex justify-between">
+          <span class="text-slate-400">Circularity Err:</span>
+          <span id="right-circ-val" class="font-bold text-cyan-400">0.0%</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Telemetry Details Card -->
+  <div id="gamepad-info-card" class="bg-[#08080a] border border-white/10 p-4 rounded-xl text-xs space-y-2 text-slate-300">
+    <div class="flex justify-between border-b border-white/5 pb-2">
+      <span class="text-slate-400">Detected Gamepad Model:</span>
+      <span id="gamepad-model-name" class="font-bold text-white">None (Press any button on Xbox, PlayStation DualSense, or Switch controller)</span>
+    </div>
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-[11px] pt-1">
+      <div>Mapping: <span id="gamepad-mapping" class="text-slate-400">--</span></div>
+      <div>Buttons: <span id="gamepad-buttons-count" class="text-slate-400">--</span></div>
+      <div>Axes: <span id="gamepad-axes-count" class="text-slate-400">--</span></div>
+      <div>Status: <span id="gamepad-health" class="text-emerald-400 font-bold">READY</span></div>
+    </div>
+  </div>
+</div>
+
+<script>
+  import { GamepadDriftEngine } from '../../engine/GamepadDriftEngine';
+
+  function initGamepadInspector() {
+    const statusBadge = document.getElementById('gamepad-status-badge');
+    const modelName = document.getElementById('gamepad-model-name');
+    const leftCanvas = document.getElementById('left-stick-canvas') as HTMLCanvasElement;
+    const rightCanvas = document.getElementById('right-stick-canvas') as HTMLCanvasElement;
+    
+    if (!leftCanvas || !rightCanvas) return;
+
+    const leftCtx = leftCanvas.getContext('2d');
+    const rightCtx = rightCanvas.getContext('2d');
+
+    const leftHistory: Array<{ x: number; y: number }> = [];
+    const rightHistory: Array<{ x: number; y: number }> = [];
+
+    function renderStick(
+      ctx: CanvasRenderingContext2D | null,
+      x: number,
+      y: number,
+      history: Array<{ x: number; y: number }>,
+      driftElemId: string,
+      circElemId: string,
+      coordElemId: string
+    ) {
+      if (!ctx) return;
+      const w = 280;
+      const h = 280;
+      const cx = w / 2;
+      const cy = h / 2;
+      const radius = 110;
+
+      ctx.clearRect(0, 0, w, h);
+
+      // Outer boundary circle
+      ctx.beginPath();
+      ctx.arc(cx, cy, radius, 0, Math.PI * 2);
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.15)';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+
+      // Dead-zone inner circle (10%)
+      ctx.beginPath();
+      ctx.arc(cx, cy, radius * 0.1, 0, Math.PI * 2);
+      ctx.strokeStyle = 'rgba(239, 68, 68, 0.4)';
+      ctx.lineWidth = 1;
+      ctx.setLineDash([4, 4]);
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      // Axis crosshairs
+      ctx.beginPath();
+      ctx.moveTo(cx - radius - 10, cy);
+      ctx.lineTo(cx + radius + 10, cy);
+      ctx.moveTo(cx, cy - radius - 10);
+      ctx.lineTo(cx, cy + radius + 10);
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.08)';
+      ctx.stroke();
+
+      // Plot historical trace points
+      history.push({ x, y });
+      if (history.length > 300) history.shift();
+
+      for (let i = 0; i < history.length; i++) {
+        const pt = history[i];
+        const px = cx + pt.x * radius;
+        const py = cy + pt.y * radius;
+        const alpha = (i / history.length) * 0.5;
+        ctx.fillStyle = `rgba(16, 185, 129, ${alpha})`;
+        ctx.beginPath();
+        ctx.arc(px, py, 2, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      // Current stick position dot
+      const px = cx + x * radius;
+      const py = cy + y * radius;
+      ctx.beginPath();
+      ctx.arc(px, py, 6, 0, Math.PI * 2);
+      ctx.fillStyle = '#10b981';
+      ctx.shadowColor = '#10b981';
+      ctx.shadowBlur = 10;
+      ctx.fill();
+      ctx.shadowBlur = 0;
+
+      // Metrics calculation
+      const drift = GamepadDriftEngine.calculateDriftOffset(x, y);
+      const circ = GamepadDriftEngine.calculateCircularityError(history);
+
+      const driftElem = document.getElementById(driftElemId);
+      const circElem = document.getElementById(circElemId);
+      const coordElem = document.getElementById(coordElemId);
+
+      if (driftElem) driftElem.textContent = `${(drift * 100).toFixed(1)}%`;
+      if (circElem) circElem.textContent = `${circ.toFixed(1)}%`;
+      if (coordElem) coordElem.textContent = `X: ${x.toFixed(2)} | Y: ${y.toFixed(2)}`;
+    }
+
+    function loop() {
+      const gamepads = navigator.getGamepads ? navigator.getGamepads() : [];
+      let activeGp = null;
+
+      for (const gp of gamepads) {
+        if (gp && gp.connected) {
+          activeGp = gp;
+          break;
+        }
+      }
+
+      if (activeGp) {
+        if (statusBadge) {
+          statusBadge.textContent = `ACTIVE: ${activeGp.id.slice(0, 24)}...`;
+          statusBadge.className = 'px-3 py-1 rounded-full bg-emerald-400/10 border border-emerald-400/30 text-emerald-400 text-xs font-bold';
+        }
+        if (modelName) modelName.textContent = activeGp.id;
+
+        const lx = activeGp.axes[0] || 0;
+        const ly = activeGp.axes[1] || 0;
+        const rx = activeGp.axes[2] || 0;
+        const ry = activeGp.axes[3] || 0;
+
+        renderStick(leftCtx, lx, ly, leftHistory, 'left-drift-val', 'left-circ-val', 'left-stick-coords');
+        renderStick(rightCtx, rx, ry, rightHistory, 'right-drift-val', 'right-circ-val', 'right-stick-coords');
+      } else {
+        renderStick(leftCtx, 0, 0, leftHistory, 'left-drift-val', 'left-circ-val', 'left-stick-coords');
+        renderStick(rightCtx, 0, 0, rightHistory, 'right-drift-val', 'right-circ-val', 'right-stick-coords');
+      }
+
+      requestAnimationFrame(loop);
+    }
+
+    window.addEventListener('gamepadconnected', () => {
+      if (statusBadge) {
+        statusBadge.textContent = 'GAMEPAD CONNECTED!';
+        statusBadge.className = 'px-3 py-1 rounded-full bg-emerald-400/10 border border-emerald-400/30 text-emerald-400 text-xs font-bold';
+      }
+    });
+
+    requestAnimationFrame(loop);
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initGamepadInspector);
+  } else {
+    initGamepadInspector();
+  }
+</script>

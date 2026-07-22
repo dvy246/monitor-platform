@@ -1,0 +1,43 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+import TvViewingDistanceInspector from '../../../components/diagnostics/TvViewingDistanceInspector.astro';
+import SEOHead from '../../../components/seo/SEOHead.astro';
+import SchemaGraph from '../../../components/seo/SchemaGraph.astro';
+import { TvViewingDistanceEngine } from '../../../engine/TvViewingDistanceEngine';
+
+export function getStaticPaths() {
+  const sizes = [50, 55, 65, 75, 85, 98, 120];
+
+  return sizes.map(size => {
+    const slug = `${size}-inch-tv`;
+    return {
+      params: { slug },
+      props: { size }
+    };
+  });
+}
+
+const { size } = Astro.props;
+const result = TvViewingDistanceEngine.calculateViewingDistance(size, '4K');
+
+const seoTitle = `${size} Inch TV Viewing Distance & Dimensions Calculator`;
+const seoDescription = `What is the optimal viewing distance for a ${size} inch 4K TV? THX recommends ${result.idealThxDistanceFeet} ft. Physical dimensions: ${result.dimensions.widthInches}" W × ${result.dimensions.heightInches}" H.`;
+---
+
+<Layout title={seoTitle} description={seoDescription} canonicalUrl={`https://monitortester.com/display-tests/tv-viewing-distance/${size}`}>
+
+  <div class="min-h-screen bg-[#08080a] text-slate-100 py-12 px-4">
+    <div class="max-w-5xl mx-auto space-y-12">
+      <section class="text-center space-y-4">
+        <div class="inline-block px-3 py-1 bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 rounded-full text-xs font-mono uppercase">
+          Display Specification
+        </div>
+        <h1 class="text-3xl sm:text-4xl font-black text-white tracking-tight">
+          {size} Inch TV Viewing Distance & Dimensions
+        </h1>
+      </section>
+
+      <TvViewingDistanceInspector initialDiagonal={size} />
+    </div>
+  </div>
+</Layout>

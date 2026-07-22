@@ -1,0 +1,56 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import RoomModeInspector from '../../components/diagnostics/RoomModeInspector.astro';
+import SEOHead from '../../components/seo/SEOHead.astro';
+import SchemaGraph from '../../components/seo/SchemaGraph.astro';
+
+const seoTitle = "Acoustic Room Mode & Subwoofer Standing Wave Calculator";
+const seoDescription = "Calculate 3D axial room mode frequencies, standing waves, and Schroeder cutoff frequency for home theater, subwoofer placement, and studio acoustics.";
+const canonicalUrl = "https://monitortester.com/benchmarks/room-mode-calculator";
+
+const faqs = [
+  {
+    question: "What are acoustic room modes and why do they cause boomy bass?",
+    answer: "Room modes are natural acoustic standing waves created when sound waves reflect between parallel room boundary walls. When sound wave frequencies match room dimensions, constructive interference creates intense bass peaks and nulls."
+  },
+  {
+    question: "What is the Schroeder Cutoff Frequency ($f_s$)?",
+    answer: "The Schroeder Cutoff Frequency marks the acoustic transition zone in a room. Below $f_s$ (typically 100Hz-250Hz), low frequencies behave as discrete standing wave modes; above $f_s$, sound behaves as diffuse specular reflections."
+  },
+  {
+    question: "How do I fix room mode bass nulls in my home theater?",
+    answer: "Bass nulls can be mitigated by moving seating away from room boundary midpoints, adding dual subwoofers at 1/4 and 3/4 wall lengths, or installing corner bass traps."
+  }
+];
+---
+
+<Layout title={seoTitle} description={seoDescription} canonicalUrl={canonicalUrl}>
+
+  <div class="min-h-screen bg-[#08080a] text-slate-100 py-12 px-4">
+    <div class="max-w-5xl mx-auto space-y-12">
+      <section class="text-center space-y-4">
+        <h1 class="text-4xl sm:text-5xl font-black text-white tracking-tight">
+          Acoustic Room Mode &amp; <span class="text-purple-400">Subwoofer Calculator</span>
+        </h1>
+        <p class="text-slate-400 max-w-2xl mx-auto text-base font-sans">
+          Calculate axial room mode frequencies, standing waves, and Schroeder cutoff boundaries for home theaters and audio studios.
+        </p>
+      </section>
+
+      <RoomModeInspector />
+
+      <!-- FAQ Section -->
+      <section class="space-y-6 bg-[#121215] p-6 sm:p-8 rounded-2xl border border-white/10 font-sans">
+        <h2 class="text-2xl font-bold text-white">Frequently Asked Questions</h2>
+        <div class="space-y-4">
+          {faqs.map(faq => (
+            <div class="p-4 rounded-xl bg-[#18181b] border border-white/5 space-y-2">
+              <h3 class="text-base font-bold text-purple-400">{faq.question}</h3>
+              <p class="text-slate-300 text-sm leading-relaxed">{faq.answer}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+    </div>
+  </div>
+</Layout>

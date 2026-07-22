@@ -2,6 +2,58 @@
 import Layout from '../../layouts/Layout.astro';
 import Breadcrumbs from '../../components/ui/Breadcrumbs.astro';
 import TestSwitcherBar from '../../components/ui/TestSwitcherBar.astro';
+import TestGuideModal from '../../components/ui/TestGuideModal.astro';
+import FAQSection from '../../components/ui/FAQSection.astro';
+
+const faqs = [
+  {
+    question: "What is the difference between a dead pixel and a stuck pixel?",
+    answer: "A dead pixel is a completely unpowered transistor state that remains permanently black across all background colors. A stuck pixel is a locked sub-pixel (Red, Green, or Blue) that remains permanently illuminated regardless of what image is rendered on screen."
+  },
+  {
+    question: "How do I test my monitor or TV for dead pixels online?",
+    answer: "Launch our free online Dead Pixel Test in fullscreen mode. Cycle through solid primary colors (Red, Green, Blue, White, Black, Gray). Inspect your display closely: dead pixels appear as fixed black dots, while stuck sub-pixels display a fixed color on contrasting backgrounds."
+  },
+  {
+    question: "Can dead pixels be fixed without replacing the screen?",
+    answer: "Stuck sub-pixels can sometimes be recovered using rapid sub-pixel color flashing tools or gentle physical pressure using a soft micro-fiber cloth over the affected coordinate. However, true dead black pixels (failed thin-film transistors) require panel replacement."
+  },
+  {
+    question: "How many dead pixels warrant a monitor RMA under ISO 9241-307?",
+    answer: "Under ISO 9241-307 Class I display standards (zero defect policy), even 1 dead pixel qualifies for replacement. Under Class II (standard consumer monitors), manufacturers allow up to 2 permanently bright pixels or 5 permanently dark sub-pixels per million pixels before approving an RMA."
+  },
+  {
+    question: "Why do dead pixels occur on LCD and OLED screens?",
+    answer: "Dead pixels occur during semiconductor fabrication or physical impact due to microscopic thin-film transistor (TFT) gate failure or broken indium tin oxide (ITO) trace contacts."
+  },
+  {
+    question: "How do I test for dead pixels on an OLED TV or smartphone?",
+    answer: "Open this webpage on your Smart TV browser, iPhone, or Android device. Tap or click fullscreen test mode. Observe pure black (OLED off) and solid white/red/green/blue slides to inspect for dark or stuck sub-pixels."
+  },
+  {
+    question: "What is a hot pixel vs a stuck pixel?",
+    answer: "A hot pixel is a sub-pixel permanently stuck at 100% white luminance. A stuck pixel is locked to a single primary color (Red, Green, or Blue)."
+  },
+  {
+    question: "Does manufacturer warranty cover 1 single dead pixel on a new monitor?",
+    answer: "Most manufacturers enforce ISO 9241-307 Class II guidelines requiring 3–5 dead pixels for an RMA unless the monitor is explicitly sold under a 'Zero Bright Pixel' guarantee (e.g. ASUS ROG, Dell UltraSharp)."
+  },
+  {
+    question: "Should I run a dead pixel test immediately after unboxing a new screen?",
+    answer: "Yes. Testing your display within the 14-day or 30-day retailer return window allows instant exchange without dealing with manufacturer RMA warranty limits."
+  },
+  {
+    question: "How does the Shift+Click defect pin marker tool work?",
+    answer: "While running the fullscreen test, press Shift + Click directly over any detected defect coordinate. Our engine drops a pulsing pin marker and logs exact pixel coordinates so you can photograph the issue for RMA documentation."
+  }
+];
+
+const guideSteps = [
+  "Click 'START FULLSCREEN TEST' or select a target color from the palette.",
+  "Look closely at your screen at native resolution across solid Red, Green, Blue, Black, and White backgrounds.",
+  "Dead pixels appear as permanently dark black dots. Stuck sub-pixels stay illuminated with a single color.",
+  "Shift + Click any defect location to mark its coordinates. Press ESC at any time to exit."
+];
 
 const breadcrumbItems = [
   { label: 'Display Suite', href: '/display-tests' },
@@ -36,16 +88,33 @@ const colors = [
 ---
 
 <Layout 
-  title="Dead Pixel & Screen Color Test — Free Fullscreen Monitor & Phone Tester | Monitor Test Hub"
-  description="Test any monitor, TV, phone, or tablet screen for dead pixels, stuck sub-pixels, and backlight bleed. Instant full-screen RGBW color cycling with zero app downloads."
+  title="Dead Pixel & Screen Color Test Online | Monitor Test Hub"
+  description="Test your screen for dead pixels, stuck sub-pixels, and backlight bleed. Instant fullscreen RGBW color cycling for monitors, TVs, and phones. Start free test!"
+  faqs={faqs}
 >
-  <main class="max-w-7xl mx-auto px-4 py-8 space-y-8">
+  <div class="max-w-7xl mx-auto px-4 py-8 space-y-8">
     <Breadcrumbs items={breadcrumbItems} />
 
+    <TestGuideModal 
+      testId="dead-pixel"
+      testTitle="Dead Pixel & Screen Color Test Guide"
+      steps={guideSteps}
+      fullscreenButtonId="btn-launch-deadpixel"
+    />
+
     <header class="space-y-3 border-b border-border-hairline pb-6">
-      <div class="flex items-center gap-2 text-status-pass text-xs font-mono font-bold uppercase tracking-wider">
-        <span class="w-2 h-2 rounded-full bg-status-pass led-glow-pass"></span>
-        ISO 9241-307 PIXEL DEFECT BENCHMARK
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-2 text-status-pass text-xs font-mono font-bold uppercase tracking-wider">
+          <span class="w-2 h-2 rounded-full bg-status-pass led-glow-pass"></span>
+          ISO 9241-307 PIXEL DEFECT BENCHMARK
+        </div>
+        <button
+          type="button"
+          onclick="window.openGuide_dead_pixel ? window.openGuide_dead_pixel() : null"
+          class="px-3 py-1.5 rounded-full bg-bg-surface border border-border-hairline text-slate-300 hover:text-white text-xs font-bold font-mono transition-all cursor-pointer hover:border-status-pass/40"
+        >
+          📖 How To Test
+        </button>
       </div>
       <h1 class="text-3xl sm:text-4xl font-extrabold text-text-primary tracking-tight font-mono">
         Dead Pixel & Screen Color Test
@@ -109,6 +178,29 @@ const colors = [
             START FULLSCREEN TEST
           </button>
         </div>
+      </div>
+
+      <!-- 30-Day Keep-Or-Return Panel Inspection Banner -->
+      <div class="mt-6 p-5 bg-bg-canvas rounded-xl border border-status-pass/30 flex flex-col sm:flex-row items-center justify-between gap-4 relative overflow-hidden">
+        <div class="space-y-1 text-center sm:text-left">
+          <div class="flex items-center gap-2 justify-center sm:justify-start text-[10px] font-bold text-status-pass uppercase tracking-widest">
+            <span class="w-2 h-2 rounded-full bg-status-pass led-glow-pass"></span>
+            30-DAY RETAILER RETURN WINDOW INSPECTOR
+          </div>
+          <h3 class="text-sm font-bold text-text-primary">Need Proof of Panel Condition for Return or Resale?</h3>
+          <p class="text-xs text-text-secondary font-sans max-w-xl">
+            Evaluate your display against ISO 9241-307 Class I–IV defect standards and generate a cryptographically signed SHA-256 Hardware Passport badge to attach to retailer returns or eBay/Reddit marketplace listings.
+          </p>
+        </div>
+
+        <button 
+          id="btn-launch-passport-from-deadpixel"
+          onclick="window.openHardwarePassport ? window.openHardwarePassport() : null"
+          class="px-4 py-2.5 rounded-lg bg-bg-surface text-status-pass font-bold text-xs border border-status-pass/40 hover:bg-status-pass/10 transition-colors whitespace-nowrap cursor-pointer flex items-center gap-1.5"
+        >
+          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+          GENERATE HARDWARE PASSPORT
+        </button>
       </div>
     </div>
 
@@ -217,8 +309,10 @@ const colors = [
       </div>
     </article>
 
+    <FAQSection faqs={faqs} />
+
     <TestSwitcherBar tests={displayTests} currentId="dead-pixel" />
-  </main>
+  </div>
 </Layout>
 
 <script>

@@ -1,0 +1,59 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import ApplianceEnergyInspector from '../../components/diagnostics/ApplianceEnergyInspector.astro';
+import SEOHead from '../../components/seo/SEOHead.astro';
+import SchemaGraph from '../../components/seo/SchemaGraph.astro';
+import { ApplianceEnergyEngine } from '../../engine/ApplianceEnergyEngine';
+import { useTranslations, localizeLink } from '../../utils/i18n';
+
+const { lang } = useTranslations(Astro.url.pathname);
+const states = ApplianceEnergyEngine.US_STATES;
+
+const seoTitle = "Appliance Electricity Cost Calculator (2026) — 50 US State kWh Rates";
+const seoDescription = "Calculate how much space heaters, air conditioners, gaming PCs, and home appliances cost to run monthly and annually across all 50 US states.";
+const canonicalUrl = "https://monitortester.com/display-tests/electricity-cost";
+---
+
+<Layout title={seoTitle} description={seoDescription} canonicalUrl={canonicalUrl}>
+
+  <div class="min-h-screen bg-[#08080a] text-slate-100 py-12 px-4 font-sans">
+    <div class="max-w-5xl mx-auto space-y-12">
+      <section class="text-center space-y-4">
+        <h1 class="text-4xl sm:text-5xl font-black text-white tracking-tight font-sans">
+          Appliance <span class="text-amber-400">Electricity Cost</span> Calculator
+        </h1>
+        <p class="text-slate-400 max-w-2xl mx-auto text-base">
+          Accurate power consumption and utility cost estimation auto-populated with EIA 2026 state electricity rates.
+        </p>
+      </section>
+
+      <ApplianceEnergyInspector />
+
+      <!-- 50 US States Electricity Cost Directory -->
+      <section class="space-y-6 bg-[#121215] p-6 sm:p-8 rounded-2xl border border-white/10">
+        <div class="border-b border-white/10 pb-4">
+          <h2 class="text-2xl font-bold text-white font-sans">50 US State Electricity Rates Directory</h2>
+          <p class="text-slate-400 text-sm mt-1">Select your US state to load official 2026 EIA residential kWh utility rates and localized cost estimates.</p>
+        </div>
+
+        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 font-mono text-xs">
+          {states.map(st => {
+            const slug = st.name.toLowerCase().replace(/\s+/g, '-');
+            const href = localizeLink(`/display-tests/electricity-cost/${slug}`, lang);
+            return (
+              <a
+                href={href}
+                class="p-2.5 rounded-xl bg-[#18181b] border border-white/5 hover:border-amber-400/50 hover:bg-amber-400/10 text-slate-300 hover:text-white transition-all flex flex-col justify-between group"
+              >
+                <div class="font-bold text-amber-400 text-xs font-sans truncate">{st.name}</div>
+                <div class="text-[11px] text-slate-400 group-hover:text-slate-200 font-mono mt-1">
+                  {st.rateCentsPerKwh}¢ / kWh
+                </div>
+              </a>
+            );
+          })}
+        </div>
+      </section>
+    </div>
+  </div>
+</Layout>

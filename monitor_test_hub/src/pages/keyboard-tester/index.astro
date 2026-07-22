@@ -1,0 +1,150 @@
+---
+import FAQSection from '../../components/ui/FAQSection.astro';
+import Layout from '../../layouts/Layout.astro';
+import KeyboardTesterCanvas from '../../components/diagnostics/KeyboardTesterCanvas.astro';
+import SEOHead from '../../components/seo/SEOHead.astro';
+import SchemaGraph from '../../components/seo/SchemaGraph.astro';
+import { useTranslations, localizeLink } from '../../utils/i18n';
+
+const { lang } = useTranslations(Astro.url.pathname);
+const canonicalUrl = lang === 'en'
+  ? "https://monitortester.com/keyboard-tester"
+  : `https://monitortester.com/${lang}/keyboard-tester`;
+
+
+const keyboardTools = [
+  { slug: 'mechanical-keyboard-test', name: 'Mechanical Keyboard Test', desc: 'Switch chatter & debounce timing' },
+  { slug: 'mac-keyboard-test', name: 'Mac Keyboard Test', desc: 'Apple Magic Keyboard & ⌘/⌥ modifiers' },
+  { slug: 'gaming-keyboard-test', name: 'Gaming Keyboard Test', desc: 'WASD anti-ghosting & 1000Hz NKRO' },
+  { slug: 'laptop-keyboard-test', name: 'Laptop Keyboard Test', desc: 'Notebook membrane matrix & Fn keys' },
+  { slug: '60-percent-keyboard-test', name: '60% Keyboard Test', desc: 'Compact layout & Fn layer combinations' },
+  { slug: 'wireless-bluetooth-keyboard-test', name: 'Wireless Bluetooth Test', desc: 'Packet loss & sleep wake-up latency' },
+  { slug: 'key-chatter-test', name: 'Key Chatter Test', desc: 'Microsecond double-typing analyzer' },
+  { slug: 'nkro-rollover-test', name: 'NKRO Rollover Test', desc: 'Simultaneous key press matrix' },
+  { slug: 'chromebook-keyboard-test', name: 'Chromebook Keyboard Test', desc: 'ChromeOS Everything key & media row' },
+  { slug: 'keyboard-test-speed', name: 'Keyboard Speed Test', desc: 'WPM & APM typing speedometer' },
+  { slug: 'blank-keyboard-test', name: 'Blank Keyboard Test', desc: 'Touch typing muscle memory trainer' },
+  { slug: 'keyboard-test-latency', name: 'Keyboard Latency Test', desc: 'Hardware delay & bounce profiler' },
+  { slug: 'switches', name: 'Mechanical Switch Directory', desc: 'Switch specs & Web Audio acoustics' }
+];
+
+const faqs = [
+  {
+    question: "What is keyboard switch chatter (debounce failure)?",
+    answer: "Keyboard chatter occurs when a mechanical switch keypress registers multiple times within a few milliseconds due to oxidized metallic leaf contacts, worn spring tolerances, or inadequate microsecond MCU debounce algorithms."
+  },
+  {
+    question: "What is the difference between 6KRO and N-Key Rollover (NKRO)?",
+    answer: "6KRO (6-Key Rollover) restricts USB HID reports to a maximum of 6 simultaneous key codes plus modifier keys. N-Key Rollover (NKRO) allows every single key on the keyboard matrix to be pressed simultaneously without key blocking or ghosting."
+  },
+  {
+    question: "How do I fix mechanical keyboard switch chatter (double typing)?",
+    answer: "Switch chatter can be resolved by increasing MCU debounce time software limits, cleaning contact leaves with 99% isopropyl alcohol, re-soldering cold joints, or hot-swapping defective Cherry MX/Gateron/Kailh switch stems."
+  },
+  {
+    question: "Why does my keyboard block certain 3-key gaming combinations?",
+    answer: "Cheap membrane keyboards use shared matrix traces. When WASD keys share internal electrical traces with Jump (Space) or Crouch (Ctrl), current backflow creates phantom key signals, causing key blocking."
+  },
+  {
+    question: "How does the interactive Web Audio switch sound synthesizer work?",
+    answer: "Our diagnostic suite uses client-side Web Audio API oscillator frequency ramps and noise transients to emulate physical mechanical switch clicks (Clicky Blue, Tactile Brown, and Linear Red) without audio lag."
+  },
+  {
+    question: "Can this tool test Mac Apple Magic Keyboards and Fn layer keys?",
+    answer: "Yes, our visual keyboard layout supports Apple Mac keyboard layouts, registering Command (⌘), Option (⌥), Control (⌃), and Fn layer function key inputs natively across macOS Safari and Chrome."
+  },
+  {
+    question: "What is APM and WPM typing velocity?",
+    answer: "Actions Per Minute (APM) measures raw physical keypress frequency per 60 seconds, while Words Per Minute (WPM) standardizes APM by dividing total keystrokes by 5 (the standard English word length)."
+  },
+  {
+    question: "How does the switch chatter debounce timing inspection work?",
+    answer: "The engine logs exact microsecond timestamp deltas between key release and immediate re-press (t_delta = t_press - t_release). If t_delta <= 35ms, it flags a switch chatter alert."
+  },
+  {
+    question: "How do I download a cryptographic Keyboard Health Certificate?",
+    answer: "Clicking 'Download Certificate' exports a standalone JSON Hardware Passport file containing full key matrix telemetry, tested key coverage, peak NKRO count, and switch chatter audit records."
+  },
+  {
+    question: "How do I test 60% compact layouts or function layer key combinations?",
+    answer: "Toggle the layout dropdown to '60% Mini' or 'Apple Mac'. Press your Fn key modifier along with target layer keys (Fn + 1-12) to verify microsecond keycode dispatch and matrix layer registration."
+  },
+  {
+    question: "Is this online keyboard test completely private and secure?",
+    answer: "Yes. 100% of keystroke processing, latency telemetry, and chatter logging executes client-side inside your browser sandbox. No keystrokes or sensitive input data are ever sent to any remote server."
+  }
+];
+
+const seoTitle = "Keyboard Tester Online | Switch Chatter & NKRO Test";
+const seoDescription = "Test mechanical & membrane keyboards for key ghosting, N-Key Rollover (NKRO), switch chatter double-typing, and APM speed. Free, 100% private browser test.";
+---
+
+<Layout title={seoTitle} description={seoDescription} faqs={faqs} canonicalUrl={canonicalUrl}>
+
+  <div class="py-10 px-4 sm:px-6 lg:px-8 space-y-12 bg-bg-canvas font-sans">
+    <section class="max-w-4xl mx-auto text-center space-y-4">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-status-pass/10 border border-status-pass/30 text-xs font-mono text-status-pass font-bold">
+        <span>USB HID SPECIFICATION COMPLIANT DIAGNOSTIC SUITE</span>
+      </div>
+      <h1 class="text-3xl sm:text-4xl font-extrabold font-mono tracking-tight text-text-primary">
+        Online Keyboard Tester &amp; Switch Chatter Matrix
+      </h1>
+      <p class="text-sm sm:text-base text-text-muted leading-relaxed max-w-2xl mx-auto">
+        Verify every key on your physical mechanical keyboard, detect switch chatter double-fire faults, test N-Key Rollover (NKRO) gaming combinations, and inspect key hold timing.
+      </p>
+    </section>
+
+    <!-- Main Visual Diagnostic Engine Component -->
+    <KeyboardTesterCanvas />
+
+    <!-- Keyboard Diagnostic Tools Directory -->
+    <section class="max-w-5xl mx-auto space-y-6 bg-bg-surface/80 border border-border-hairline rounded-2xl p-6 sm:p-8 backdrop-blur-xl">
+      <div class="border-b border-border-hairline pb-4">
+        <h2 class="text-2xl font-bold text-text-primary font-mono">Keyboard Diagnostics &amp; Matrix Directory</h2>
+        <p class="text-text-muted text-sm mt-1">Explore device-tailored keyboard inspection utilities, chatter analyzers, and layout rollover benchmarks.</p>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 font-mono text-xs">
+        {keyboardTools.map(tool => {
+          const href = localizeLink(`/keyboard-tester/${tool.slug}`, lang);
+          return (
+            <a
+              href={href}
+              class="p-3.5 rounded-xl bg-bg-canvas border border-border-hairline hover:border-status-pass/50 hover:bg-bg-elevated/80 text-text-secondary hover:text-text-primary transition-all flex items-center justify-between group font-sans"
+            >
+              <div class="space-y-1 truncate pr-2">
+                <div class="font-bold text-status-pass text-xs">{tool.name}</div>
+                <div class="text-[11px] text-text-muted group-hover:text-text-secondary truncate">{tool.desc}</div>
+              </div>
+              <span class="text-status-pass group-hover:translate-x-0.5 transition-transform text-xs shrink-0 font-mono">&rarr;</span>
+            </a>
+          );
+        })}
+      </div>
+    </section>
+
+    <!-- Articles & Technical Guide -->
+    <article class="max-w-5xl mx-auto space-y-8 bg-bg-surface/80 border border-border-hairline rounded-2xl p-6 sm:p-8 backdrop-blur-xl text-sm text-text-secondary leading-relaxed">
+      <div class="border-b border-border-hairline pb-4">
+        <h2 class="text-xl font-bold font-mono text-text-primary">Mechanical Keyboard Switch Chatter &amp; Diode Matrix Architecture</h2>
+        <p class="mt-2">
+          Modern keyboards arrange physical key switches in an intersecting grid of rows and columns polled by an onboard microcontroller unit (MCU). Standard membrane keyboards share electrical traces across key groups, leading to key ghosting or blocking when three or more adjacent keys are pressed. Mechanical keyboards resolve this by installing individual isolated diodes on every switch circuit, enabling N-Key Rollover (NKRO).
+        </p>
+      </div>
+
+      <div class="space-y-4">
+        <h2 class="text-xl font-bold font-mono text-text-primary">Frequently Asked Questions (10-Item Technical FAQ)</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {faqs.map(faq => (
+            <div class="p-4 rounded-xl bg-bg-canvas border border-border-hairline space-y-1.5">
+              <h3 class="font-bold text-text-primary font-mono text-xs sm:text-sm">{faq.question}</h3>
+              <p class="text-xs text-text-muted leading-relaxed">{faq.answer}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </article>
+    <FAQSection faqs={faqs} />
+</div>
+</Layout>
+

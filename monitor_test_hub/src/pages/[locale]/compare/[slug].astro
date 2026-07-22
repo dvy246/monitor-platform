@@ -1,0 +1,94 @@
+---
+import FAQSection from '../../../components/ui/FAQSection.astro';
+import Layout from '../../../layouts/Layout.astro';
+import { useTranslations, localizeLink } from '../../../utils/i18n';
+import { DeviceDatabase } from '../../../engine/DeviceDatabase';
+import { comparisonPairs } from '../../compare/index.astro';
+
+export function getStaticPaths() {
+  const locales = ['es', 'de', 'fr'];
+  const allDevs = DeviceDatabase.getAllDevices();
+  const paths: any[] = [];
+  locales.forEach((locale) => {
+    comparisonPairs.forEach((item) => {
+      const devA = DeviceDatabase.getDeviceBySlug(item.modelA) || allDevs[0];
+      const devB = DeviceDatabase.getDeviceBySlug(item.modelB) || allDevs[1];
+      paths.push({
+        params: { locale, slug: item.slug },
+        props: { pair: item, devA, devB }
+      });
+    });
+  });
+  return paths;
+}
+
+const { pair, devA, devB } = Astro.props;
+const { lang } = useTranslations(Astro.url.pathname);
+
+const faqs = [
+  {
+    question: `Which is better: ${devA.name} or ${devB.name}?`,
+    answer: `The ${devA.name} features a ${devA.refreshRateHz}Hz ${devA.displayTech} panel, whereas the ${devB.name} features a ${devB.refreshRateHz}Hz ${devB.displayTech} panel.`
+  }
+];
+
+const seoTitle = `${devA.name} vs ${devB.name} Comparison`;
+const seoDescription = `Side-by-side display comparison: ${devA.name} (${devA.refreshRateHz}Hz ${devA.displayTech}) vs ${devB.name} (${devB.refreshRateHz}Hz ${devB.displayTech}).`;
+---
+
+<Layout title={seoTitle} description={seoDescription} faqs={faqs}>
+  <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 font-mono">
+    <!-- Breadcrumbs -->
+    <div class="flex items-center space-x-2 text-xs text-text-muted mb-6">
+      <a href={localizeLink("/", lang)} class="hover:text-text-primary">Home</a>
+      <span>/</span>
+      <a href={localizeLink("/compare", lang)} class="hover:text-text-primary">Compare Displays</a>
+      <span>/</span>
+      <span class="text-emerald-400 font-bold">{devA.name} vs {devB.name}</span>
+    </div>
+
+    <!-- Direct Answer Block for AEO -->
+    <div itemScope itemType="https://schema.org/Answer" class="bg-bg-surface/80 border border-emerald-500/30 rounded-2xl p-6 mb-8 backdrop-blur-xl">
+      <h1 class="text-2xl font-bold text-text-primary mb-3 font-sans">{devA.name} vs {devB.name}</h1>
+      <p itemProp="text" class="text-sm text-text-secondary leading-relaxed font-sans">
+        Comparing the <strong>{devA.name}</strong> ({devA.refreshRateHz}Hz {devA.displayTech}) against the <strong>{devB.name}</strong> ({devB.refreshRateHz}Hz {devB.displayTech}).
+      </p>
+    </div>
+
+    <!-- Comparison Table -->
+    <div class="overflow-x-auto bg-bg-surface border border-border-hairline rounded-2xl p-6 mb-8">
+      <table class="w-full text-left text-sm font-sans">
+        <thead>
+          <tr class="border-b border-border-hairline text-text-muted text-xs uppercase tracking-wider font-mono">
+            <th class="py-3 px-4">Hardware Specification</th>
+            <th class="py-3 px-4 text-emerald-400 font-bold">{devA.name}</th>
+            <th class="py-3 px-4 text-cyan-400 font-bold">{devB.name}</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-border-hairline/60">
+          <tr>
+            <td class="py-3.5 px-4 text-text-muted font-mono text-xs">Screen Size &amp; Category</td>
+            <td class="py-3.5 px-4 font-semibold text-text-primary">{devA.screenSizeInches}" ({devA.category})</td>
+            <td class="py-3.5 px-4 font-semibold text-text-primary">{devB.screenSizeInches}" ({devB.category})</td>
+          </tr>
+          <tr>
+            <td class="py-3.5 px-4 text-text-muted font-mono text-xs">Panel Technology</td>
+            <td class="py-3.5 px-4 font-semibold text-emerald-400">{devA.displayTech}</td>
+            <td class="py-3.5 px-4 font-semibold text-cyan-400">{devB.displayTech}</td>
+          </tr>
+          <tr>
+            <td class="py-3.5 px-4 text-text-muted font-mono text-xs">Max Refresh Rate (Hz)</td>
+            <td class="py-3.5 px-4 font-semibold text-status-pass">{devA.refreshRateHz} Hz</td>
+            <td class="py-3.5 px-4 font-semibold text-status-pass">{devB.refreshRateHz} Hz</td>
+          </tr>
+          <tr>
+            <td class="py-3.5 px-4 text-text-muted font-mono text-xs">Pixel Density</td>
+            <td class="py-3.5 px-4 font-semibold text-text-primary">{devA.ppi} PPI</td>
+            <td class="py-3.5 px-4 font-semibold text-text-primary">{devB.ppi} PPI</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+  <FAQSection faqs={faqs} />
+</Layout>

@@ -1,0 +1,64 @@
+---
+import FAQSection from '../../../../components/ui/FAQSection.astro';
+import Layout from '../../../../layouts/Layout.astro';
+import KeyboardTesterCanvas from '../../../../components/diagnostics/KeyboardTesterCanvas.astro';
+import { useTranslations, localizeLink } from '../../../../utils/i18n';
+import { switchesList } from '../../../keyboard-tester/switches/index.astro';
+
+export function getStaticPaths() {
+  const locales = ['es', 'de', 'fr'];
+  const paths: any[] = [];
+  locales.forEach((locale) => {
+    switchesList.forEach((item) => {
+      paths.push({
+        params: { locale, slug: item.slug },
+        props: { switchData: item }
+      });
+    });
+  });
+  return paths;
+}
+
+const { switchData } = Astro.props;
+const { lang } = useTranslations(Astro.url.pathname);
+
+const faqs = [
+  {
+    question: `How do I test my ${switchData.name} switches for chatter?`,
+    answer: `Press your ${switchData.name} key repeatedly in our tester. Our high-resolution performance timers track the time delta between consecutive keydown events.`
+  },
+  {
+    question: `What is the expected bounce time for ${switchData.name}?`,
+    answer: `The official manufacturer spec for ${switchData.name} is a contact debounce threshold of ${switchData.bounceMs}.`
+  }
+];
+
+const seoTitle = `${switchData.name} Key Switch Chatter & Bounce Test`;
+const seoDescription = `Test your ${switchData.name} mechanical key switches for double typing and microsecond switch chatter (${switchData.bounceMs} debounce threshold).`;
+---
+
+<Layout title={seoTitle} description={seoDescription} faqs={faqs}>
+  <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 font-mono">
+    <!-- Breadcrumbs -->
+    <div class="flex items-center space-x-2 text-xs text-text-muted mb-6">
+      <a href={localizeLink("/", lang)} class="hover:text-text-primary">Home</a>
+      <span>/</span>
+      <a href={localizeLink("/keyboard-tester", lang)} class="hover:text-text-primary">Keyboard Tester</a>
+      <span>/</span>
+      <span class="text-cyan-400 font-bold">{switchData.name}</span>
+    </div>
+
+    <!-- Direct Answer Block for AEO -->
+    <div itemScope itemType="https://schema.org/Answer" class="bg-bg-surface/80 border border-cyan-500/30 rounded-2xl p-6 mb-8 backdrop-blur-xl">
+      <h1 class="text-2xl font-bold text-text-primary mb-3 font-sans">{switchData.name} Switch Bounce Test</h1>
+      <p itemProp="text" class="text-sm text-text-secondary leading-relaxed font-sans">
+        The {switchData.name} is a {switchData.type.toLowerCase()} mechanical switch requiring {switchData.force} of actuation force with a {switchData.travel} travel distance and a {switchData.bounceMs} bounce threshold.
+      </p>
+    </div>
+
+    <div class="mb-10">
+      <KeyboardTesterCanvas />
+    </div>
+  </section>
+  <FAQSection faqs={faqs} />
+</Layout>

@@ -4,20 +4,23 @@ import sitemap from '@astrojs/sitemap';
 
 // https://astro.build/config
 export default defineConfig({
-  site: 'https://monitortesthub.com',
+  site: 'https://monitortester.com',
   integrations: [
     sitemap({
-      filter: (page) => !page.includes('/cdn-cgi/') && !page.includes('/embed/'),
+      filter: (page) => !page.includes('/cdn-cgi/') && !page.includes('/embed/') && !page.includes('/404') && !page.includes('/500') && !page.includes('/badge.svg'),
       serialize(item) {
         const url = item.url;
-        if (url === 'https://monitortesthub.com/' || url.endsWith('/es/') || url.endsWith('/de/') || url.endsWith('/fr/')) {
+        if (url === 'https://monitortester.com/' || url.endsWith('/es/') || url.endsWith('/de/') || url.endsWith('/fr/')) {
           item.changefreq = 'daily';
           item.priority = 1.0;
         } else if (
           url.includes('/display-tests/') || 
           url.includes('/touch-tests/') || 
           url.includes('/input-tests/') || 
-          url.includes('/audio-tests/')
+          url.includes('/keyboard-tester/') ||
+          url.includes('/benchmarks/') ||
+          url.includes('/audio-tests/') ||
+          url.includes('/models/')
         ) {
           item.changefreq = 'daily';
           item.priority = 0.9;

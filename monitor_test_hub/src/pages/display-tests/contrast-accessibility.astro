@@ -1,0 +1,64 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import Breadcrumbs from '../../components/ui/Breadcrumbs.astro';
+import ApcaContrastInspector from '../../components/diagnostics/ApcaContrastInspector.astro';
+import SEOHead from '../../components/seo/SEOHead.astro';
+import SchemaGraph from '../../components/seo/SchemaGraph.astro';
+
+const breadcrumbItems = [
+  { label: 'Display Suite', href: '/display-tests' },
+  { label: 'APCA & Ambient Contrast' }
+];
+
+const seoTitle = "APCA Perceptual & Ambient Display Contrast Tool (W3C APCA 0.98G & WCAG 2.1)";
+const seoDescription = "Calculate W3C APCA 0.98G perceptual lightness contrast (Lc score), WCAG 2.1 ratios, font size recommendations, and physical Ambient Contrast Ratio (ACR) under glare.";
+const canonicalUrl = "https://monitortester.com/display-tests/contrast-accessibility";
+
+const faqs = [
+  {
+    question: "What is APCA lightness contrast (Lc score)?",
+    answer: "APCA (Advanced Perceptual Contrast Algorithm) 0.98G is the W3C candidate standard for perceptual contrast. Unlike legacy WCAG 2.1 4.5:1 ratios, APCA calculates contrast dynamically based on spatial frequency, font weight, background polarity, and human vision non-linearities."
+  },
+  {
+    question: "How does ambient room lighting affect display contrast?",
+    answer: "Room ambient illuminance (lux) reflects off screen surfaces, creating glare that elevates perceived black levels. Under 300 lux office lighting, a 1,000:1 IPS display can drop to an effective Ambient Contrast Ratio (ACR) of under 150:1."
+  },
+  {
+    question: "Why does dark mode white text cause haloing or astigmatic fatigue?",
+    answer: "Pure white text (#FFFFFF) on pitch-black canvas (#000000) creates high-luminance contrast edge clipping that worsens astigmatism halation. APCA recommends off-white text (#E2E8F0) on charcoal dark backgrounds (#121215)."
+  }
+];
+---
+
+<Layout title={seoTitle} description={seoDescription} canonicalUrl={canonicalUrl}>
+
+  <div class="max-w-7xl mx-auto px-4 py-8 space-y-8">
+    <Breadcrumbs items={breadcrumbItems} />
+
+    <header class="space-y-3 border-b border-border-hairline pb-6">
+      <div class="flex items-center gap-2 text-status-pass text-xs font-mono font-bold uppercase tracking-wider">
+        <span class="w-2 h-2 rounded-full bg-status-pass led-glow-pass"></span>
+        W3C APCA 0.98G — DISPLAY ERGONOMICS &amp; ACR CALCULATOR
+      </div>
+      <h1 class="text-3xl sm:text-4xl font-extrabold text-text-primary tracking-tight">APCA Perceptual &amp; Ambient Display Contrast Tool</h1>
+      <p class="text-sm text-text-secondary max-w-3xl">
+        Evaluate text readability using W3C APCA 0.98G perceptual lightness contrast ($L_c$ score), WCAG 2.1 relative luminance ratios, font size &amp; weight recommendations, and physical Ambient Contrast Ratio (ACR) under room glare.
+      </p>
+    </header>
+
+    <ApcaContrastInspector />
+
+    <!-- FAQ Section -->
+    <section class="space-y-6 bg-bg-surface p-6 sm:p-8 rounded-2xl border border-border-hairline font-sans">
+      <h2 class="text-2xl font-bold text-text-primary">Frequently Asked Questions</h2>
+      <div class="space-y-4">
+        {faqs.map(faq => (
+          <div class="p-4 rounded-xl bg-bg-canvas border border-border-hairline space-y-2 font-mono">
+            <h3 class="text-base font-bold text-amber-400">{faq.question}</h3>
+            <p class="text-text-secondary text-xs sm:text-sm leading-relaxed">{faq.answer}</p>
+          </div>
+        ))}
+      </div>
+    </section>
+  </div>
+</Layout>

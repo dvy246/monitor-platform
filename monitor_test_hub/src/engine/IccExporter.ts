@@ -25,6 +25,19 @@ export class IccExporter {
     return Math.round(val * 65536);
   }
 
+  public static generateSrgbProfileBinary(): Uint8Array {
+    return this.generateIccProfile({
+      profileName: 'sRGB D65 Gamma 2.2 Profile',
+      gamma: 2.2,
+      whitePoint: { x: 0.3127, y: 0.3290 },
+      primaries: {
+        red: { x: 0.64, y: 0.33 },
+        green: { x: 0.30, y: 0.60 },
+        blue: { x: 0.15, y: 0.06 }
+      }
+    });
+  }
+
   public static generateIccProfile(config: IIccExportConfig): Uint8Array {
     // Generate a minimal version 4 Display ICC Profile
     // Header (128 bytes) + Tag Count (4 bytes) + Tag Table (12 bytes * 5 tags) + Tag Data

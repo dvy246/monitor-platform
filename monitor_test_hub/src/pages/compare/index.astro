@@ -1,0 +1,98 @@
+---
+import FAQSection from '../../components/ui/FAQSection.astro';
+import Layout from '../../layouts/Layout.astro';
+import { useTranslations, localizeLink } from '../../utils/i18n';
+import { DeviceDatabase } from '../../engine/DeviceDatabase';
+
+const devices = DeviceDatabase.getAllDevices();
+
+const { lang } = useTranslations(Astro.url.pathname);
+
+export const comparisonPairs = [
+  { slug: 'alienware-aw3423dwf-vs-samsung-odyssey-oled-g9', modelA: 'alienware-aw3423dwf', modelB: 'samsung-odyssey-oled-g9', title: 'Alienware AW3423DWF vs Samsung Odyssey OLED G9' },
+  { slug: 'asus-rog-pg248qp-vs-benq-zowie-xl2566k', modelA: 'asus-rog-pg248qp', modelB: 'benq-zowie-xl2566k', title: 'ASUS ROG Swift PG248QP 540Hz vs BenQ Zowie XL2566K 360Hz' },
+  { slug: 'lg-27gr95qe-vs-asus-rog-pg32ucdm', modelA: 'lg-27gr95qe', modelB: 'asus-rog-pg32ucdm', title: 'LG 27GR95QE-B vs ASUS ROG Swift PG32UCDM 4K OLED' },
+  { slug: 'macbook-pro-m3-vs-ipad-pro-m4', modelA: 'macbook-pro-m3', modelB: 'ipad-pro-m4', title: 'MacBook Pro M3 Max Liquid Retina XDR vs iPad Pro M4 Tandem OLED' },
+  { slug: 'steam-deck-oled-vs-nintendo-switch-oled', modelA: 'steam-deck-oled', modelB: 'nintendo-switch-oled', title: 'Steam Deck OLED vs Nintendo Switch OLED' }
+];
+
+const faqs = [
+  {
+    question: 'How does Monitor Test Hub compare monitor models?',
+    answer: 'Monitor Test Hub compares monitors using client-side verified telemetry logs, ISO 9241-307 defect incidence rates, VSync frame pacing stability (P95 jitter ms), and panel technology parameters (QD-OLED vs WOLED vs Fast-IPS).'
+  },
+  {
+    question: 'Which display panel technology has lower burn-in risk?',
+    answer: 'Gen-3 QD-OLED and WOLED META panels feature hardware pixel-refresher mitigation and compensation algorithms that reduce sub-pixel luminance decay compared to Gen-1 OLED panels.'
+  },
+  {
+    question: 'What is the difference between QD-OLED and WOLED subpixel layouts?',
+    answer: 'QD-OLED uses a triangular RGB subpixel layout, whereas WOLED uses a four-subpixel RWBG (Red-White-Blue-Green) rectangular stripe layout.'
+  },
+  {
+    question: 'How does 540Hz E-TN compare to 240Hz 4K OLED for competitive gaming?',
+    answer: '540Hz E-TN delivers a lower frame interval (1.85ms) for extreme motion resolution, while 240Hz OLED provides 0.1ms GtG response times and superior contrast.'
+  },
+  {
+    question: 'What is ISO 9241-307 Class I vs Class II warranty criteria?',
+    answer: 'ISO 9241-307 Class I allows zero full bright/dead pixel defects, while Class II allows up to 2 full bright or 5 full dark defects per million pixels.'
+  },
+  {
+    question: 'How is display frame pacing jitter measured?',
+    answer: 'Frame pacing jitter is measured by tracking microsecond deltas between consecutive RequestAnimationFrame (rAF) callbacks relative to target VSync timing.'
+  },
+  {
+    question: 'Can I compare mobile screens and handheld consoles on Monitor Test Hub?',
+    answer: 'Yes, Monitor Test Hub supports handheld devices like Steam Deck OLED, Nintendo Switch OLED, iPad Pro M4 Tandem OLED, and flagship smartphones.'
+  },
+  {
+    question: 'What is Tandem OLED technology on modern tablets?',
+    answer: 'Tandem OLED stacks two self-emissive organic light layers in series to double peak luminance (up to 1600 nits) while improving panel power efficiency and lifespan.'
+  },
+  {
+    question: 'How do I submit my monitor telemetry to the comparison database?',
+    answer: 'Run any visual diagnostic test on Monitor Test Hub and click "Hardware Passport" to generate a cryptographically signed SHA-256 receipt for submission.'
+  },
+  {
+    question: 'Are Monitor Test Hub comparisons updated dynamically?',
+    answer: 'Yes, crowdsourced telemetry and defect incidence rates are updated continuously as verified community receipts are recorded.'
+  }
+];
+
+const seoTitle = "Display & Hardware Comparison Matrix | Monitor Test Hub";
+const seoDescription = "Compare gaming monitors, OLED displays, and high-refresh screens using crowdsourced SHA-256 telemetry, VSync frame pacing stability, and ISO 9241-307 defect stats.";
+---
+
+<Layout title={seoTitle} description={seoDescription} faqs={faqs}>
+  <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 font-mono">
+    <!-- Breadcrumbs -->
+    <div class="flex items-center space-x-2 text-xs text-text-muted mb-6">
+      <a href={localizeLink("/", lang)} class="hover:text-text-primary">Home</a>
+      <span>/</span>
+      <span class="text-emerald-400 font-bold">Compare Displays</span>
+    </div>
+
+    <!-- Direct Answer Block for AEO -->
+    <div itemScope itemType="https://schema.org/Answer" class="bg-bg-surface/80 border border-emerald-500/30 rounded-2xl p-6 mb-8 backdrop-blur-xl">
+      <h1 class="text-2xl font-bold text-text-primary mb-3 font-sans">Display &amp; Hardware Comparison Matrix</h1>
+      <p itemProp="text" class="text-sm text-text-secondary leading-relaxed font-sans">
+        Compare flagship gaming monitors, OLED panels, and high-refresh displays side-by-side using crowdsourced SHA-256 telemetry receipts. Evaluate real-world VSync refresh accuracy, P95 frame pacing jitter (1/FPS), ISO 9241-307 defect incidence rates, and subpixel geometry (QD-OLED vs WOLED).
+      </p>
+    </div>
+
+    <!-- Comparison Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      {comparisonPairs.map(pair => (
+        <a href={localizeLink(`/compare/${pair.slug}`, lang)} class="block p-6 bg-bg-surface border border-border-hairline hover:border-emerald-500/50 rounded-xl transition-all group">
+          <div class="flex justify-between items-center mb-3">
+            <span class="text-xs font-bold text-emerald-400 uppercase tracking-wider">Side-by-Side Benchmark</span>
+            <span class="text-xs font-bold px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-300 border border-emerald-500/30">VS</span>
+          </div>
+          <h2 class="text-lg font-bold text-text-primary group-hover:text-emerald-400 transition-colors font-sans">{pair.title}</h2>
+          <p class="text-xs text-text-muted mt-2">Telemetry audit: Refresh rate accuracy, P95 jitter, ISO 9241-307 defect rate, and subpixel geometry.</p>
+        </a>
+      ))}
+    </div>
+  </section>
+  <FAQSection faqs={faqs} />
+</Layout>

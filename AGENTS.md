@@ -12,9 +12,9 @@ This document serves as the primary technical guide and rules of engagement for 
 - **Framework**: [Astro v7](https://astro.build/) (`output: 'static'`)
 - **Styling**: Tailwind CSS v4 via `@tailwindcss/vite`
 - **Language**: TypeScript (`tsconfig.json`, strict mode)
-- **Engine Testing**: [Vitest](https://vitest.dev/) (218 unit & stress test cases across 40 test suites)
+- **Engine Testing**: [Vitest](https://vitest.dev/) (287 unit & stress test cases across 51 test suites, 100% PASS)
 - **E2E Testing**: [Playwright](https://playwright.dev/)
-- **SEO & Performance Audit**: Lighthouse CI (`@lhci/cli`), `@astrojs/sitemap` (812 static pages generated)
+- **SEO & Performance Audit**: Lighthouse CI (`@lhci/cli`), `@astrojs/sitemap` (2,699 static pages generated across 4 locales, canonical domain: `https://monitortester.com`)
 - **Hosting & Infrastructure**: Cloudflare Pages via Wrangler (`npm run deploy`)
 
 ### Repository Directory Layout
@@ -32,42 +32,54 @@ This document serves as the primary technical guide and rules of engagement for 
     ├── prd.md                               # Product Requirements Document
     ├── plan.md                              # Implementation milestones & plan
     ├── verify_docs.py                       # Automated documentation verification script (20/20 PASS)
+    ├── public/
+    │   └── data/telemetry.jsonl             # Pre-rendered open telemetry static JSONL dataset
     ├── src/
     │   ├── engine/                          # Decoupled TypeScript calculation & math engines
-    │   │   ├── HardwarePassportEngine.ts    # SHA-256 signed hardware receipt & health index engine
+    │   │   ├── RefreshRateEngine.ts         # Microsecond delta tracking, LTPO ProMotion detection, 540Hz+ reticle sweep engine
+    │   │   ├── HardwarePassportEngine.ts    # SHA-256 signed hardware receipt, badge generator & health index engine
+    │   │   ├── SubpixelFontEngine.ts        # OLED subpixel layout geometry (QD-OLED/WOLED) & ClearType fringing engine
+    │   │   ├── MouseFramePacingEngine.ts    # 8000Hz USB mouse polling vs rAF frame pacing jitter RFC 3550 telemetry engine
+    │   │   ├── HdrTestEngine.ts             # 10-bit PQ EOTF tone mapping & ABL window size evaluator (100k ops/sec)
+    │   │   ├── TouchEmiInspectorEngine.ts   # Mobile touch digitizer RMS vector line noise & charger EMI DSP engine
+    │   │   ├── GhostingInvadersEngine.ts    # Motion blur, MPRT & overdrive overshoot target discrimination engine
     │   │   ├── WhiteScreenEngine.ts         # Planckian locus Kelvin temperature & smudge grid engine
     │   │   ├── DeviceDatabase.ts            # Device hardware specs catalog & ISO 9241-307 RMA limits
     │   │   ├── MultiDisplaySync.ts          # Native BroadcastChannel peer window sync bus
     │   │   ├── InputLagEngine.ts            # Reaction time, hardware delay & polling stats
     │   │   ├── OledBurnInEngine.ts          # Burn-in risk model & sub-pixel degradation engine
-    │   │   ├── HdrTestEngine.ts             # 10-bit PQ EOTF tone mapping & ABL window size evaluator
     │   │   ├── TouchMatrixEngine.ts         # Multi-touch gesture & dead-zone matrix analyzer
     │   │   ├── VrrSweepEngine.ts            # Variable Refresh Rate stutter & tear engine (540Hz+)
     │   │   ├── IccExporter.ts               # Display calibration & binary ICC v4.3 profile exporter
-    │   │   └── *.test.ts                    # Vitest unit/stress/perf test suites (205 tests across 35 files)
+    │   │   └── *.test.ts                    # Vitest unit/stress/perf test suites (286 tests across 51 files)
     │   ├── pages/                           # Astro page routes
-    │   │   ├── index.astro                  # Homepage & real-time telemetry deck
+    │   │   ├── index.astro                  # Homepage & real-time telemetry deck (~950-word Helpful Content SEO suite)
+    │   │   ├── refresh-rate-test.astro      # Screen Refresh Rate & Hz Test suite (10-item FAQ + schema)
+    │   │   ├── monitor-color-calibration.astro # Monitor Color Calibration Suite (Gamma 2.2, ΔE00, ICC v4.3, 10-item FAQ)
     │   │   ├── [locale]/                    # Localized routes (es, de, fr)
-    │   │   ├── white-screen/                # Fullscreen white screen & fill lighting utility (/white-screen, /[color])
-    │   │   ├── display-tests/               # Visual tests (dead-pixel, dead-pixel-test/[slug], sub-pixel, uniformity, vrr, oled-burn-in, hdr-test, ppi-calculator, color-gamut)
-    │   │   ├── touch-tests/                 # Mobile touch tests (dead-zone, multi-touch, vector-precision, swipe-velocity, input-lag)
-    │   │   ├── input-lag-test/              # Programmatic input lag pSEO routes
-    │   │   ├── oled-burn-in-risk/           # Dynamic burn-in risk pSEO routes
-    │   │   ├── vrr-stutter-test/            # VRR tear & stutter pSEO routes
-    │   │   ├── touch-matrix/                # Touch matrix pSEO routes
-    │   │   ├── hdr-test/                    # HDR clipping pSEO routes
-    │   │   ├── arcade/                      # Interactive diagnostic micro-games (4 games)
+    │   │   ├── models/                      # Device Database Hub (/models) & Crowdsourced Per-Model Reports (/models/[slug])
+    │   │   ├── compare/                     # Display Comparison Engine (/compare & /compare/[slug])
+    │   │   ├── passport/                    # Hardware Passport receipt verification (/passport/[hash]) & dynamic SVG badge API
+    │   │   ├── embed/                       # Embeddable Iframe Widget badge endpoint (/embed/passport)
+    │   │   ├── white-screen/                # Fullscreen white screen & fill lighting utility (/white-screen, /[color], 10-item FAQ)
+    │   │   ├── display-tests/               # Visual tests (dead-pixel, return-window-checker/[slug], sub-pixel, uniformity, vrr, oled-burn-in, hdr-test, ppi-calculator, color-gamut)
+    │   │   ├── touch-tests/                 # Mobile touch tests (dead-zone, multi-touch, vector-precision, swipe-velocity, input-lag, 10-item FAQ)
+    │   │   ├── benchmarks/                  # High-rate mouse frame pacing, pc bottleneck, wire gauge & 3D cost calculators
+    │   │   ├── touch-matrix/                # Touch matrix & charger EMI inspector routes (/touch-matrix/charger-emi-inspector)
+    │   │   ├── keyboard-tester/             # Keyboard tester, switch chatter & key switch directory (/keyboard-tester/switches & /[slug], 10-item FAQ)
+    │   │   ├── arcade/                      # Interactive diagnostic micro-games (Ghosting Invaders, Lag Reflex, Color Alchemist, Touch Defusal)
     │   │   ├── about.astro                  # 600-word SEO & engineering standards overview
     │   │   ├── faq.astro                    # 12-item FAQ page with JSON-LD schema
     │   │   ├── contact.astro                # Client-side contact form
     │   │   ├── terms.astro                  # Terms & conditions page
     │   │   └── privacy.astro                # Privacy policy page
     │   ├── components/                      # UI, Diagnostic & Disclaimer components
-    │   │   ├── diagnostics/                 # WhiteScreenCanvas, DeviceDeadPixelInspector, HardwarePassportModal, etc.
+    │   │   ├── diagnostics/                 # RefreshRateInspector, DeviceDeadPixelInspector, HardwarePassportModal, ModelStatsCard, ModelTelemetryTable, etc.
+    │   │   ├── ui/                          # FloatingActionMenu (dark-glass FAB), FAQSection, TestGuideModal, Breadcrumbs, TestSwitcherBar
     │   │   ├── disclaimers/                 # Epilepsy, Ergonomics & Hardware Limitation warnings
     │   │   ├── seo/                         # SEOHead, SchemaGraph & Medical notice banners
     │   │   └── arcade/                      # Diagnostic game components
-    │   ├── layouts/                         # Layout templates (Layout.astro)
+    │   ├── layouts/                         # Layout templates (Layout.astro with Learning Guides Mega-Menu & FloatingActionMenu)
     │   ├── styles/                          # Global CSS & Tailwind rules
     │   ├── types/                           # Shared TypeScript interfaces & types
     │   └── utils/                           # i18n & routing helper functions
@@ -85,23 +97,23 @@ This document serves as the primary technical guide and rules of engagement for 
 | Task | Command | Description |
 | :--- | :--- | :--- |
 | **Development** | `npm run dev` | Start Astro local dev server (`http://localhost:4321`) |
-| **Build** | `npm run build` | Compile static production site to `./dist/` (812 static pages) |
+| **Build** | `TMPDIR=$PWD/.tmp npm run build` | Compile static production site to `./dist/` (2,699 static pages) |
 | **Preview** | `npm run preview` | Serve production build locally |
 
 ### Testing & Quality Assurance
 | Test Suite | Command | Notes |
 | :--- | :--- | :--- |
-| **Unit & Engine Tests** | `npm test` *(or `npx vitest run`)* | Runs all 205 `src/engine/*.test.ts` test cases across 35 test suites |
-| **Targeted Engine Test** | `npx vitest run src/engine/HardwarePassportEngine.test.ts` | Test specific engine module |
-| **Stress & Perf Tests** | `npx vitest run src/engine/HdrTestEngine.stress.test.ts` | Benchmark under 100,000-operation high load |
-| **Type Check** | `npx tsc --noEmit` | Strict TypeScript type verification |
+| **Unit & Engine Tests** | `TMPDIR=$PWD/.tmp npm test` *(or `npx vitest run`)* | Runs all 286 test cases across 51 test suites (100% PASS) |
+| **Targeted Engine Test** | `TMPDIR=$PWD/.tmp npx vitest run src/engine/HardwarePassportEngine.test.ts` | Test specific engine module |
+| **Stress & Perf Tests** | `TMPDIR=$PWD/.tmp npx vitest run src/engine/HdrTestEngine.stress.test.ts` | Benchmark under 100,000-operation high load |
+| **Type Check** | `npx tsc --noEmit` | Strict TypeScript type verification (0 errors) |
 | **E2E Integration** | `npx playwright test` | Runs Playwright tests in `tests/e2e/` |
 | **Doc Verification** | `python3 verify_docs.py` | Verifies PRD, Plan & Competitor report integrity (20/20 PASS) |
 
 ### Deployment
 | Destination | Command | Notes |
 | :--- | :--- | :--- |
-| **Cloudflare Pages Production** | `npm run deploy` | Builds site & deploys `./dist/` to `monitor-testing` project |
+| **Cloudflare Pages Production** | `TMPDIR=$PWD/.tmp npm run deploy` | Builds site & deploys `./dist/` to `monitor-testing` project |
 | **Cloudflare Pages Preview** | `npm run deploy:preview` | Builds site & deploys to preview branch |
 
 ---
@@ -211,3 +223,51 @@ Monitor Test Hub includes the following production features, pure-TypeScript cal
 - **Programmatic Device & Resolution Dead Pixel Inspector (`/display-tests/dead-pixel-test/[slug]`)**:
   - Device-tailored static pSEO routes for 8+ popular hardware models (MacBook Pro M3, Steam Deck OLED, iPhone 15 Pro, Nintendo Switch OLED, Alienware QD-OLED, iPad Pro M4, ASUS 540Hz ROG, 4K UHD Monitors).
   - Pre-configured target resolution, aspect ratio, PPI, subpixel matrix, and ISO 9241-307 class limits with manufacturer warranty RMA advice.
+
+### 5.8 High-Demand US Micro-Utility Diagnostic Engines & pSEO Taxonomy
+- **PC Bottleneck & FPS Estimator Engine (`/benchmarks/pc-bottleneck`, `/benchmarks/pc-bottleneck/[slug]`)**:
+  - Powered by `src/engine/PcBottleneckEngine.ts`.
+  - Resolution-aware (1080p, 1440p, 4K) CPU vs GPU component balance analyzer, transparent utilization ratio heuristics, upgrade path advisor, and game FPS estimators.
+  - Programmatic pSEO routes across CPU × GPU hardware pairings.
+- **Appliance Electricity Cost & Energy Calculator (`/display-tests/electricity-cost`, `/display-tests/electricity-cost/[slug]`)**:
+  - Powered by `src/engine/ApplianceEnergyEngine.ts`.
+  - 50 US State EIA residential rate auto-population database, 50+ appliance wattage presets, monthly/annual kWh cost breakdown, and seasonal usage models.
+  - Programmatic pSEO routes across all 50 US states.
+- **TV & Projector Viewing Distance & Room Calculator (`/display-tests/tv-viewing-distance`, `/display-tests/tv-viewing-distance/[slug]`)**:
+  - Powered by `src/engine/TvViewingDistanceEngine.ts`.
+  - SMPTE (30°/40° FOV) & THX (36° FOV) viewing angle optics, VESA 1-arcminute visual acuity 4K benefit thresholds, screen aspect ratios, and projector throw distance calculations.
+  - Programmatic pSEO routes across popular screen sizes (55", 65", 75", 85", 98", 120").
+- **NEC 2026 Electrical Wire Gauge & Voltage Drop Calculator (`/benchmarks/wire-gauge-calculator`, `/benchmarks/wire-gauge-calculator/[slug]`)**:
+  - Powered by `src/engine/WireGaugeEngine.ts`.
+  - NEC Table 310.16 conductor ampacity limits (Copper/Aluminum, 60°C/75°C/90°C), voltage drop formula $V_d = (2 \times K \times I \times L) / CM$, conduit fill ratios, and inline NEC 2026 citations.
+  - Programmatic pSEO routes across standard circuit amperages (15A, 20A, 30A, 50A, 100A, 200A).
+- **3D Printer Filament Cost & Material Estimator (`/benchmarks/3d-print-cost`, `/benchmarks/3d-print-cost/[slug]`)**:
+  - Powered by `src/engine/FilamentCostEngine.ts`.
+  - Material density calculations (PLA, ABS, PETG, TPU, Nylon, PC), power consumption, failure rate buffers, and "Etsy Commercial Retail Pricing" profit margin models.
+  - Programmatic pSEO routes across filament material types.
+
+### 5.9 Universal Keyboard Testing Ecosystem & Switch Chatter Suite
+- **Keyboard Diagnostic Suite & Switch Chatter Engine (`/keyboard-tester`, `/keyboard-tester/[slug]`)**:
+  - Powered by `src/engine/KeyboardTesterEngine.ts` and `KeyboardTesterCanvas.astro`.
+  - Interactive multi-layout key grid (ANSI 104, ISO 105, TKL 80%, 60% Mini, Apple Mac Layout), microsecond switch chatter/bounce timing analysis ($t_{\text{delta}} < 30\text{ms}$), NKRO gaming combo stress tests (WASD+Shift+Space, MOBA QWER+DF), real-time keypress heatmaps, APM/WPM typing speedometers, synthesized Web Audio switch sound feedback (Clicky Blue, Tactile Brown, Linear Red), and downloadable JSON hardware passport health certificates.
+  - Programmatic pSEO routes across 8 keyboard search targets (`mechanical-keyboard-test`, `mac-keyboard-test`, `gaming-keyboard-test`, `laptop-keyboard-test`, `60-percent-keyboard-test`, `wireless-bluetooth-keyboard-test`, `key-chatter-test`, `nkro-rollover-test`).
+
+### 5.10 Public Crowdsourced Per-Model Verified Results Database
+- **Per-Model Telemetry Database (`/models`, `/models/[slug]`)**:
+  - Powered by `DeviceDatabase.ts`, `HardwarePassportEngine.ts`, `ModelStatsCard.astro`, `ModelTelemetryTable.astro`, and `HardwarePassportModal.astro` contribution drawer.
+  - Aggregates cryptographically signed SHA-256 hardware passport receipts across 25 flagship displays (Samsung Odyssey OLED G95SC, Alienware AW3423DWF/AW2725DF, ASUS PG32UCDM/PG248QP 540Hz, LG 27GR95QE/32GS95UE, Steam Deck OLED, MacBook Pro M3, iPad Pro M4, Nintendo Switch OLED, iPhone 15 Pro, etc.).
+  - Displays sample volume, median VSync refresh rate ($240.0\text{ Hz}$), P95 frame pacing jitter ($0.42\text{ ms}$), ISO 9241-307 defect incidence breakdown, community health rating, and verified receipt ledger with direct links to `/passport/[hash]`.
+  - Programmatic pSEO routes generating 104 static HTML pages across 4 locales (`en`, `es`, `de`, `fr`).
+
+### 5.11 10-Item FAQ Architecture & Structured JSON-LD Schema
+- **10 Structured FAQs per Tool Page**: Every primary tool page features exactly 10 real-intent technical FAQs ("What is...", "How do I...", "Why does...", "When should...", "Can I...") for maximum search intent coverage and helpful content compliance.
+- **Dual-Layer Integration**:
+  - Passed to `<Layout faqs={faqs}>` for automatic `FAQPage` JSON-LD schema graph generation inside `<head>`.
+  - Rendered visually for human readers via `<FAQSection faqs={faqs} />` using accessible `<details>/<summary>` accordions with smooth hover transitions.
+
+### 5.12 Premium Floating Action Menu (FAB) & Mobile Safe Area Geometry
+- **Floating Action Menu (`FloatingActionMenu.astro`)**:
+  - Positioned at `bottom-5 right-5 sm:bottom-6 sm:right-6` with native mobile safe area insets (`env(safe-area-inset-bottom)` and `env(safe-area-inset-right)`).
+  - Styled with dark glassmorphic container (`bg-bg-surface/90 backdrop-blur-xl border border-border-hairline`), subtle green radial accent glow, and centered 2.5px SVG plus icon.
+  - Eliminates overlap with mobile browser bottom bars, system gesture bars, or main page content.
+

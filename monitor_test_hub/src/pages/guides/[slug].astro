@@ -15,7 +15,7 @@ export interface Props {
 }
 
 const { guide } = Astro.props;
-const canonicalUrl = `https://monitortesthub.com/guides/${guide.slug}`;
+const canonicalUrl = `https://monitortester.com/guides/${guide.slug}`;
 
 const articleSchema = {
   "@context": "https://schema.org",
@@ -35,7 +35,7 @@ const articleSchema = {
         "name": "Monitor Test Hub",
         "logo": {
           "@type": "ImageObject",
-          "url": "https://monitortesthub.com/favicon.svg"
+          "url": "https://monitortester.com/favicon.svg"
         }
       },
       "about": [
@@ -51,8 +51,8 @@ const articleSchema = {
       "@type": "BreadcrumbList",
       "@id": `${canonicalUrl}#breadcrumb`,
       "itemListElement": [
-        { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://monitortesthub.com" },
-        { "@type": "ListItem", "position": 2, "name": "Guides", "item": "https://monitortesthub.com/guides" },
+        { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://monitortester.com" },
+        { "@type": "ListItem", "position": 2, "name": "Guides", "item": "https://monitortester.com/guides" },
         { "@type": "ListItem", "position": 3, "name": guide.title, "item": canonicalUrl }
       ]
     }
@@ -131,7 +131,7 @@ const articleSchema = {
       </aside>
 
       <!-- Content Sections -->
-      <main class="lg:col-span-8 space-y-8 font-sans text-sm text-text-secondary leading-relaxed">
+      <div class="lg:col-span-8 space-y-8 font-sans text-sm text-text-secondary leading-relaxed">
         {guide.sections.map((sec, idx) => (
           <section id={sec.id} class="bg-bg-surface border border-border-hairline rounded-xl p-6 sm:p-8 space-y-4 shadow-specular-top">
             <h2 class="text-xl font-mono font-bold text-text-primary tracking-tight flex items-center gap-2">
@@ -157,7 +157,7 @@ const articleSchema = {
             Launch Tool
           </a>
         </div>
-      </main>
+      </div>
 
     </div>
   </div>

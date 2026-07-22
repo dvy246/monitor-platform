@@ -17,7 +17,12 @@ const { tests, currentId, class: className = '' } = Astro.props;
 
 <div class:list={["bg-bg-surface border border-border-hairline rounded-xl p-2 font-mono text-xs shadow-specular-top", className]}>
   <div class="flex items-center justify-between border-b border-border-hairline pb-2 mb-2 px-2 text-[10px] text-text-muted uppercase tracking-wider">
-    <span>SUITE NAVIGATOR</span>
+    <div class="flex items-center gap-1.5">
+      <svg class="w-3.5 h-3.5 text-status-pass" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+      </svg>
+      <span>SUITE NAVIGATOR</span>
+    </div>
     <span>QUICK SWITCH</span>
   </div>
   
