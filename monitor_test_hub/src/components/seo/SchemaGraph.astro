@@ -25,18 +25,20 @@ const {
 } = Astro.props;
 
 // Dynamically generate BreadcrumbList items from canonical URL path
-const urlObj = new URL(canonicalUrl);
+const baseUrl = "https://monitortesthub.com";
+const urlObj = new URL(canonicalUrl || "/", baseUrl);
+const fullCanonicalUrl = urlObj.href;
 const pathSegments = urlObj.pathname.split('/').filter(Boolean);
 const breadcrumbItems = [
   {
     "@type": "ListItem",
     "position": 1,
     "name": "Home",
-    "item": "https://monitortesthub.com"
+    "item": baseUrl
   }
 ];
 
-let currentPath = "https://monitortesthub.com";
+let currentPath = baseUrl;
 pathSegments.forEach((segment, index) => {
   currentPath += `/${segment}`;
   const formattedName = segment
@@ -97,14 +99,14 @@ const graphNodes: any[] = [
   },
   {
     "@type": "BreadcrumbList",
-    "@id": `${canonicalUrl}#breadcrumb`,
+    "@id": `${fullCanonicalUrl}#breadcrumb`,
     "itemListElement": breadcrumbItems
   },
   {
     "@type": ["WebApplication", "SoftwareApplication"],
-    "@id": `${canonicalUrl}#webapp`,
+    "@id": `${fullCanonicalUrl}#webapp`,
     "name": title,
-    "url": canonicalUrl,
+    "url": fullCanonicalUrl,
     "applicationCategory": applicationCategory,
     "operatingSystem": "All (Android, iOS, Windows, macOS, Linux, ChromeOS)",
     "browserRequirements": "Requires HTML5 WebGL 2.0, PointerEvents, and Canvas support",
@@ -125,7 +127,7 @@ const graphNodes: any[] = [
   },
   {
     "@type": "TechArticle",
-    "@id": `${canonicalUrl}#article`,
+    "@id": `${fullCanonicalUrl}#article`,
     "headline": title,
     "description": description,
     "inLanguage": "en-US",
@@ -152,7 +154,7 @@ const graphNodes: any[] = [
 if (faqs && faqs.length > 0) {
   graphNodes.push({
     "@type": "FAQPage",
-    "@id": `${canonicalUrl}#faq`,
+    "@id": `${fullCanonicalUrl}#faq`,
     "mainEntity": faqs.map(faq => ({
       "@type": "Question",
       "name": faq.question,

@@ -1,97 +1,458 @@
 ---
 import Layout from '../../layouts/Layout.astro';
+import SEOHead from '../../components/seo/SEOHead.astro';
+import SchemaGraph from '../../components/seo/SchemaGraph.astro';
+import Breadcrumbs from '../../components/ui/Breadcrumbs.astro';
+
+const seoTitle = "Display & Diagnostic Screen Test Glossary | Technical Terminology Compendium";
+const seoDescription = "Authoritative 2000+ word technical glossary and semantic disambiguation guide covering ISO 9241-307 display standards, OLED burn-in physics, 540Hz VRR, touch digitizers, and medical diagnostics disambiguation.";
+
+const faqs = [
+  {
+    question: "What is ISO 9241-307 display defect classification?",
+    answer: "ISO 9241-307 is an international ergonomic standard that categorizes display panels into Class 0 through Class IV based on allowable hot (stuck high), dead (stuck low), and sub-pixel defects per million pixels."
+  },
+  {
+    question: "How does N-Key Rollover (NKRO) differ from 6KRO?",
+    answer: "6KRO limits simultaneous USB HID reports to 6 keys plus modifier keys. NKRO uses isolated diode circuits per switch to allow unlimited simultaneous key registrations across the entire keyboard matrix."
+  },
+  {
+    question: "What causes mechanical keyboard switch chatter?",
+    answer: "Switch chatter occurs when oxidized contact leaves, spring fatigue, or short MCU debounce intervals cause a single physical keypress to register multiple times within a few milliseconds."
+  },
+  {
+    question: "What is the difference between GtG and MPRT response times?",
+    answer: "GtG (Grey-to-Grey) measures pixel state transition speed in milliseconds, while MPRT (Motion Picture Response Time) measures the duration a pixel remains visible on screen, directly impacting perceived motion blur."
+  },
+  {
+    question: "What is PQ EOTF in HDR displays?",
+    answer: "Perceptual Quantizer (PQ), standardized as SMPTE ST 2084, is an Electro-Optical Transfer Function designed to match human visual perception across absolute luminance levels from 0.0001 cd/m² to 10,000 cd/m²."
+  },
+  {
+    question: "Why does QD-OLED have a different sub-pixel structure than WOLED?",
+    answer: "QD-OLED uses a triangular RGB sub-pixel layout with blue self-emissive OLEDs and quantum dot converters. WOLED uses an inline RWBG rectangular layout with white OLEDs and color filters."
+  },
+  {
+    question: "What is RMS Touch Digitizer Line Noise?",
+    answer: "RMS (Root-Mean-Square) line noise measures the variance between a drawn touch stroke and an ideal geometric vector, evaluating electromagnetic interference (EMI) in capacitive touch matrices."
+  },
+  {
+    question: "What is Auto Brightness Limiter (ABL) on OLED monitors?",
+    answer: "ABL is a protective power management algorithm that dims the screen when the Average Picture Level (APL) exceeds threshold wattage limits to prevent thermal degradation and power supply overload."
+  },
+  {
+    question: "What is visual acuity viewing distance for 4K displays?",
+    answer: "Visual acuity viewing distance is the maximum distance at which a person with 20/20 vision (1 arcminute acuity) can resolve individual display pixels, calculated as D = H / (2 * tan(0.5 * 1/60°))."
+  },
+  {
+    question: "Why does Monitor Test Hub provide medical and film disambiguation?",
+    answer: "The search query 'screen test' spans multiple domains: hardware testing, clinical toxicology, and film auditions. Providing explicit semantic disambiguation prevents search intent confusion across medical and cinema fields."
+  }
+];
 ---
 
-<Layout 
-  title="What is a Screen Test? - Semantic Glossary" 
-  description="Learn the differences between display hardware screen tests, film audition screen tests, and medical toxicology screen tests to avoid search intent confusion."
-  showBounceBanner={false}
->
-  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12 font-sans">
-    <!-- Header -->
-    <div class="border-b border-border-hairline pb-6 mb-8 text-center sm:text-left">
-      <h1 class="heading-brand text-2xl md:text-4xl font-extrabold text-text-primary mb-3">
-        WHAT IS A "SCREEN TEST"?
-      </h1>
-      <p class="text-text-secondary text-sm md:text-base leading-relaxed">
-        The term "Screen Test" has distinct meanings across technology, medicine, and the performing arts. Review our glossary below to clarify search terminology.
-      </p>
-    </div>
+<Layout title={seoTitle} description={seoDescription} faqs={faqs}>
+  <SEOHead
+    title={seoTitle}
+    description={seoDescription}
+    canonicalUrl="https://monitortesthub.com/screen-test-meaning"
+  />
+  <SchemaGraph
+    type="WebApplication"
+    name={seoTitle}
+    description={seoDescription}
+    url="https://monitortesthub.com/screen-test-meaning"
+  />
 
-    <!-- Layout Grid -->
-    <div class="space-y-10">
-      <!-- 1. Display Technology -->
-      <section class="bg-bg-surface border border-border-hairline p-6 rounded-xl space-y-4 shadow-specular-top" aria-labelledby="tech-heading">
-        <h2 id="tech-heading" class="heading-brand text-lg md:text-xl font-bold text-status-pass flex items-center gap-2 font-mono">
-          1. Display &amp; Touchscreen Hardware Evaluation
-        </h2>
-        <p class="text-text-secondary text-sm leading-relaxed">
-          In electrical engineering and consumer electronics, a <strong class="text-text-primary">screen test</strong> refers to diagnostic evaluation procedures performed on electronic displays (LCD, OLED, QD-OLED) and touch digitizers to identify defect parameters.
+  <main id="main-content" class="py-10 px-4 sm:px-6 lg:px-8 space-y-12 bg-bg-canvas font-sans">
+    <!-- Header Section -->
+    <section class="max-w-5xl mx-auto space-y-4">
+      <Breadcrumbs items={[{ label: 'Semantic Glossary' }]} />
+      
+      <div class="border-b border-border-hairline pb-6 space-y-3">
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-status-pass/10 border border-status-pass/30 text-xs font-mono text-status-pass font-bold">
+          <span>ISO 9241-307 &amp; VESA COMPLIANT REFERENCE COMPENDIUM</span>
+        </div>
+        <h1 class="text-3xl sm:text-5xl font-black font-mono tracking-tight text-text-primary uppercase">
+          Display Diagnostics &amp; Semantic Glossary
+        </h1>
+        <p class="text-sm sm:text-base text-text-secondary leading-relaxed max-w-3xl">
+          An authoritative technical encyclopedia detailing display hardware parameters, touchscreen digitizer mechanics, keyboard switch telemetry, and semantic disambiguation across medical and cinema domains.
         </p>
+      </div>
+    </section>
+
+    <!-- Quick Jump Navigation Index -->
+    <nav class="max-w-5xl mx-auto bg-bg-surface border border-border-hairline rounded-2xl p-6 shadow-specular-top font-mono text-xs space-y-3" aria-label="Glossary Navigation">
+      <div class="text-text-primary font-bold uppercase tracking-wider text-[11px] flex items-center gap-2">
+        <span class="w-2 h-2 rounded-full bg-status-pass"></span>
+        <span>Quick Navigation Index</span>
+      </div>
+      <div class="flex flex-wrap gap-2 text-text-secondary">
+        <a href="#hardware-terms" class="px-3 py-1.5 rounded-lg bg-bg-canvas border border-border-hairline hover:border-status-pass hover:text-status-pass transition-colors">1. Hardware &amp; Display Standards (20 Terms)</a>
+        <a href="#clinical-medical" class="px-3 py-1.5 rounded-lg bg-bg-canvas border border-border-hairline hover:border-status-info hover:text-status-info transition-colors">2. Medical &amp; Clinical Disambiguation</a>
+        <a href="#cinema-auditions" class="px-3 py-1.5 rounded-lg bg-bg-canvas border border-border-hairline hover:border-amber-400 hover:text-amber-400 transition-colors">3. Film &amp; Cinema Auditions</a>
+        <a href="#standards-citations" class="px-3 py-1.5 rounded-lg bg-bg-canvas border border-border-hairline hover:border-text-primary hover:text-text-primary transition-colors">4. Engineering Citations</a>
+        <a href="#faq-section" class="px-3 py-1.5 rounded-lg bg-bg-canvas border border-border-hairline hover:border-status-pass hover:text-status-pass transition-colors">5. Technical FAQ (10 Q&amp;A)</a>
+      </div>
+    </nav>
+
+    <!-- Section 1: Display & Hardware Compendium (20 Detailed Terms) -->
+    <section id="hardware-terms" class="max-w-5xl mx-auto space-y-8" aria-labelledby="section-hardware">
+      <div class="border-b border-border-hairline pb-4 flex items-center justify-between">
+        <h2 id="section-hardware" class="text-2xl font-bold font-mono text-text-primary flex items-center gap-2">
+          <span class="text-status-pass">1.</span> Display &amp; Peripheral Diagnostics Terminology
+        </h2>
+        <span class="text-xs font-mono text-text-muted">ISO / VESA / IEC / IEEE</span>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm text-text-secondary leading-relaxed">
         
-        <div class="bg-bg-elevated p-4 rounded-lg border border-border-hairline space-y-2 font-mono">
-          <span class="text-text-primary text-xs font-bold block uppercase tracking-wider">Common hardware checkups:</span>
-          <ul class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs text-text-secondary list-disc pl-5 font-sans">
-            <li><strong class="text-text-primary">Dead Pixel Test:</strong> Cycles solid color patterns (white, black, RGB) to detect stuck or dead sub-pixels.</li>
-            <li><strong class="text-text-primary">Touch Grid Test:</strong> Maps coordinate matrices to verify digitizer responsiveness and isolate dead zones.</li>
-            <li><strong class="text-text-primary">Uniformity Test:</strong> Evaluates luminance consistency (dirty screen effect) using low-grey fills.</li>
-            <li><strong class="text-text-primary">Latency Test:</strong> Benchmarks input latency pacing and VSYNC refresh rate locking parameters.</li>
-          </ul>
+        <!-- Term 1 -->
+        <div class="p-5 rounded-2xl bg-bg-surface border border-border-hairline space-y-2 shadow-sm">
+          <h3 class="font-mono font-bold text-text-primary text-base flex items-center justify-between">
+            <span>ISO 9241-307 Defect Classes</span>
+            <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-status-pass/10 text-status-pass border border-status-pass/30">ISO Standard</span>
+          </h3>
+          <p class="text-xs">
+            ISO 9241-307 establishes standardized international RMA thresholds for display pixel defects. Panels are categorized from Class 0 (zero allowable defects) through Class IV. Class I panels permit a maximum of 1 fully stuck-on pixel, 1 fully stuck-off pixel, and 3 sub-pixel defects per million pixels.
+          </p>
         </div>
-        <div class="pt-2 flex gap-4 font-mono">
-          <a href="/display-tests" class="text-status-pass text-xs font-bold hover:underline">Browse Display Tests &rarr;</a>
-          <a href="/touch-tests" class="text-status-pass text-xs font-bold hover:underline">Browse Touch Tests &rarr;</a>
-        </div>
-      </section>
 
-      <!-- 2. Medical / YMYL -->
-      <section class="bg-bg-surface border border-border-hairline p-6 rounded-xl space-y-4 shadow-specular-top" aria-labelledby="medical-heading">
-        <h2 id="medical-heading" class="heading-brand text-lg md:text-xl font-bold text-status-info flex items-center gap-2 font-mono">
-          2. Medical &amp; Clinical Diagnostics (YMYL)
+        <!-- Term 2 -->
+        <div class="p-5 rounded-2xl bg-bg-surface border border-border-hairline space-y-2 shadow-sm">
+          <h3 class="font-mono font-bold text-text-primary text-base flex items-center justify-between">
+            <span>N-Key Rollover (NKRO) &amp; Ghosting</span>
+            <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-cyan-500/10 text-cyan-400 border border-cyan-500/30">HID Protocol</span>
+          </h3>
+          <p class="text-xs">
+            N-Key Rollover (NKRO) refers to a keyboard hardware architecture where every key switch circuit contains a dedicated isolation diode. This prevents phantom current paths ("ghosting") and enables unconstrained simultaneous key press registration over USB HID report descriptors.
+          </p>
+        </div>
+
+        <!-- Term 3 -->
+        <div class="p-5 rounded-2xl bg-bg-surface border border-border-hairline space-y-2 shadow-sm">
+          <h3 class="font-mono font-bold text-text-primary text-base flex items-center justify-between">
+            <span>Switch Chatter &amp; Debounce Delay</span>
+            <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-rose-500/10 text-rose-400 border border-rose-500/30">Microsecond Timing</span>
+          </h3>
+          <p class="text-xs">
+            Mechanical switch chatter (bounce failure) occurs when metallic contact leaves physically vibrate upon release, causing the onboard microcontroller (MCU) to register multiple false keypress events within a microsecond window (&lt;35ms threshold).
+          </p>
+        </div>
+
+        <!-- Term 4 -->
+        <div class="p-5 rounded-2xl bg-bg-surface border border-border-hairline space-y-2 shadow-sm">
+          <h3 class="font-mono font-bold text-text-primary text-base flex items-center justify-between">
+            <span>OLED Sub-Pixel Degradation</span>
+            <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-amber-500/10 text-amber-400 border border-amber-500/30">IEC 62341 Spec</span>
+          </h3>
+          <p class="text-xs">
+            Organic Light-Emitting Diodes degrade under sustained high-luminance static exposure. Blue organic compounds exhibit a higher decay rate than red or green emitters, requiring periodic pixel-refresh algorithms and automatic luminance limiting (ABL).
+          </p>
+        </div>
+
+        <!-- Term 5 -->
+        <div class="p-5 rounded-2xl bg-bg-surface border border-border-hairline space-y-2 shadow-sm">
+          <h3 class="font-mono font-bold text-text-primary text-base flex items-center justify-between">
+            <span>540Hz+ VRR &amp; Frame Pacing</span>
+            <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-status-pass/10 text-status-pass border border-status-pass/30">VESA Adaptive-Sync</span>
+          </h3>
+          <p class="text-xs">
+            Variable Refresh Rate (VRR) synchronizes display refresh intervals dynamically with GPU frame output. At 540Hz+, frame intervals collapse to 1.85ms, demanding microsecond-level frame pacing stability to prevent visual micro-stuttering and tear-line artifacts.
+          </p>
+        </div>
+
+        <!-- Term 6 -->
+        <div class="p-5 rounded-2xl bg-bg-surface border border-border-hairline space-y-2 shadow-sm">
+          <h3 class="font-mono font-bold text-text-primary text-base flex items-center justify-between">
+            <span>SMPTE ST 2084 PQ EOTF</span>
+            <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-blue-500/10 text-blue-400 border border-blue-500/30">VESA DisplayHDR</span>
+          </h3>
+          <p class="text-xs">
+            Perceptual Quantizer (PQ) Electro-Optical Transfer Function standardizes luminance mapping from 0.0001 cd/m² to 10,000 cd/m² matching human visual system non-linear perception across high dynamic range content.
+          </p>
+        </div>
+
+        <!-- Term 7 -->
+        <div class="p-5 rounded-2xl bg-bg-surface border border-border-hairline space-y-2 shadow-sm">
+          <h3 class="font-mono font-bold text-text-primary text-base flex items-center justify-between">
+            <span>CIE 1931 Chromaticity Coordinates</span>
+            <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-text-muted/20 text-text-primary border border-border-hairline">CIE Standard</span>
+          </h3>
+          <p class="text-xs">
+            The CIE 1931 (x,y) color space defines human trichromatic color vision. Display color gamuts (sRGB, DCI-P3, AdobeRGB, Rec.2020) are plotted as triangular boundaries within the CIE locus to evaluate spectral coverage percentage.
+          </p>
+        </div>
+
+        <!-- Term 8 -->
+        <div class="p-5 rounded-2xl bg-bg-surface border border-border-hairline space-y-2 shadow-sm">
+          <h3 class="font-mono font-bold text-text-primary text-base flex items-center justify-between">
+            <span>RMS Touch Digitizer Line Noise</span>
+            <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-status-pass/10 text-status-pass border border-status-pass/30">W3C Pointer Events</span>
+          </h3>
+          <p class="text-xs">
+            Root-Mean-Square (RMS) deviation measures stroke jitter relative to ideal geometric interpolation vectors on capacitive touch matrices, quantifying active stylus digitizer electromagnetic interference (EMI).
+          </p>
+        </div>
+
+        <!-- Term 9 -->
+        <div class="p-5 rounded-2xl bg-bg-surface border border-border-hairline space-y-2 shadow-sm">
+          <h3 class="font-mono font-bold text-text-primary text-base flex items-center justify-between">
+            <span>Arcminute Acuity &amp; Visual Distance</span>
+            <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-cyan-500/10 text-cyan-400 border border-cyan-500/30">Optics Formula</span>
+          </h3>
+          <p class="text-xs">
+            Human 20/20 visual acuity resolves detail down to 1 arcminute (1/60th of a degree). The optimal distance at which individual pixels blend into a continuous image is calculated via D = H / (2 * tan(0.5 * 1/60°)).
+          </p>
+        </div>
+
+        <!-- Term 10 -->
+        <div class="p-5 rounded-2xl bg-bg-surface border border-border-hairline space-y-2 shadow-sm">
+          <h3 class="font-mono font-bold text-text-primary text-base flex items-center justify-between">
+            <span>PWM Backlight Flicker &amp; Duty Cycle</span>
+            <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-amber-500/10 text-amber-400 border border-amber-500/30">Ergonomic Safety</span>
+          </h3>
+          <p class="text-xs">
+            Pulse-Width Modulation (PWM) dims LED backlights by rapidly toggling power. Low-frequency PWM (&lt;240Hz) produces stroboscopic flicker that can induce eye strain and headaches, requiring DC-dimming flicker-free panels.
+          </p>
+        </div>
+
+        <!-- Term 11 -->
+        <div class="p-5 rounded-2xl bg-bg-surface border border-border-hairline space-y-2 shadow-sm">
+          <h3 class="font-mono font-bold text-text-primary text-base flex items-center justify-between">
+            <span>MPRT vs Grey-to-Grey (GtG)</span>
+            <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-rose-500/10 text-rose-400 border border-rose-500/30">Motion Clarity</span>
+          </h3>
+          <p class="text-xs">
+            GtG measures liquid crystal transition time between color states, while Motion Picture Response Time (MPRT) measures the actual sample-and-hold display persistence time responsible for perceived motion blur.
+          </p>
+        </div>
+
+        <!-- Term 12 -->
+        <div class="p-5 rounded-2xl bg-bg-surface border border-border-hairline space-y-2 shadow-sm">
+          <h3 class="font-mono font-bold text-text-primary text-base flex items-center justify-between">
+            <span>IPS Glow vs VA Gamma Shift</span>
+            <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-text-muted/20 text-text-primary border border-border-hairline">Panel Tech</span>
+          </h3>
+          <p class="text-xs">
+            IPS Glow is off-axis backlight leakage inherent to In-Plane Switching liquid crystal alignment. VA Gamma Shift refers to contrast loss when viewing Vertical Alignment panels at extreme viewing angles.
+          </p>
+        </div>
+
+        <!-- Term 13 -->
+        <div class="p-5 rounded-2xl bg-bg-surface border border-border-hairline space-y-2 shadow-sm">
+          <h3 class="font-mono font-bold text-text-primary text-base flex items-center justify-between">
+            <span>Auto Brightness Limiter (ABL)</span>
+            <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-status-pass/10 text-status-pass border border-status-pass/30">HDR Power</span>
+          </h3>
+          <p class="text-xs">
+            ABL algorithms dynamically constrain peak display brightness when Average Picture Level (APL) exceeds thermal or power limits, scaling peak luminance down from 1000 nits (1% window) to 250 nits (100% window).
+          </p>
+        </div>
+
+        <!-- Term 14 -->
+        <div class="p-5 rounded-2xl bg-bg-surface border border-border-hairline space-y-2 shadow-sm">
+          <h3 class="font-mono font-bold text-text-primary text-base flex items-center justify-between">
+            <span>ICC v4.3 Color Profile Architecture</span>
+            <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-blue-500/10 text-blue-400 border border-blue-500/30">Color Management</span>
+          </h3>
+          <p class="text-xs">
+            International Color Consortium (ICC) profiles define binary lookup tables (LUTs) and matrix transformations mapping display RGB signals to absolute CIE LAB PCS space for hardware-calibrated color accuracy.
+          </p>
+        </div>
+
+        <!-- Term 15 -->
+        <div class="p-5 rounded-2xl bg-bg-surface border border-border-hairline space-y-2 shadow-sm">
+          <h3 class="font-mono font-bold text-text-primary text-base flex items-center justify-between">
+            <span>USB HID Hardware Polling Rate</span>
+            <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-amber-500/10 text-amber-400 border border-amber-500/30">8000Hz Input</span>
+          </h3>
+          <p class="text-xs">
+            Polling rate specifies how frequently a USB mouse or keyboard sends interrupt packets to the OS host controller. A 1000Hz device dispatches data every 1ms; 8000Hz reduces polling interval down to 0.125ms.
+          </p>
+        </div>
+
+        <!-- Term 16 -->
+        <div class="p-5 rounded-2xl bg-bg-surface border border-border-hairline space-y-2 shadow-sm">
+          <h3 class="font-mono font-bold text-text-primary text-base flex items-center justify-between">
+            <span>Sub-Pixel Matrix Geometries</span>
+            <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-cyan-500/10 text-cyan-400 border border-cyan-500/30">ClearType Text</span>
+          </h3>
+          <p class="text-xs">
+            Sub-pixel structures dictate font antialiasing rendering. Standard RGB stripe displays provide clean subpixel text rendering, whereas BGR inverted, QD-OLED triangular, and WOLED RWBG layouts require specific subpixel font smoothing.
+          </p>
+        </div>
+
+        <!-- Term 17 -->
+        <div class="p-5 rounded-2xl bg-bg-surface border border-border-hairline space-y-2 shadow-sm">
+          <h3 class="font-mono font-bold text-text-primary text-base flex items-center justify-between">
+            <span>Planckian Locus Kelvin Temperature</span>
+            <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-status-pass/10 text-status-pass border border-status-pass/30">White Balance</span>
+          </h3>
+          <p class="text-xs">
+            The Planckian locus charts blackbody radiator color coordinates across Kelvin temperatures (2700K warm tungsten to 6500K D65 daylight standard), defining white balance reference points for display calibration.
+          </p>
+        </div>
+
+        <!-- Term 18 -->
+        <div class="p-5 rounded-2xl bg-bg-surface border border-border-hairline space-y-2 shadow-sm">
+          <h3 class="font-mono font-bold text-text-primary text-base flex items-center justify-between">
+            <span>Capacitive Digitizer Spatial Latency</span>
+            <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-rose-500/10 text-rose-400 border border-rose-500/30">Touch Matrix</span>
+          </h3>
+          <p class="text-xs">
+            Spatial latency measures the physical lag distance (mm) between contact point movement and rendered ink trace rendering on capacitive touch screens, determined by hardware touch sampling frequency.
+          </p>
+        </div>
+
+        <!-- Term 19 -->
+        <div class="p-5 rounded-2xl bg-bg-surface border border-border-hairline space-y-2 shadow-sm">
+          <h3 class="font-mono font-bold text-text-primary text-base flex items-center justify-between">
+            <span>Static vs Dynamic Contrast Ratio</span>
+            <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-blue-500/10 text-blue-400 border border-blue-500/30">Contrast Spec</span>
+          </h3>
+          <p class="text-xs">
+            Static contrast measures maximum white luminance against minimum black luminance on a simultaneous checkerboard pattern. Dynamic contrast manipulates backlight dimming dynamically over time.
+          </p>
+        </div>
+
+        <!-- Term 20 -->
+        <div class="p-5 rounded-2xl bg-bg-surface border border-border-hairline space-y-2 shadow-sm">
+          <h3 class="font-mono font-bold text-text-primary text-base flex items-center justify-between">
+            <span>Panel Uniformity (IEC 62341-6-2)</span>
+            <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-text-muted/20 text-text-primary border border-border-hairline">IEC Standard</span>
+          </h3>
+          <p class="text-xs">
+            IEC 62341-6-2 defines luminance and chromaticity uniformity measurement across 9-point or 25-point screen grids, evaluating vignetting, dirty screen effect (DSE), and localized backlight variance.
+          </p>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Section 2: Medical & Clinical Diagnostics Disambiguation -->
+    <section id="clinical-medical" class="max-w-5xl mx-auto bg-bg-surface border border-status-info/40 rounded-2xl p-6 sm:p-8 space-y-6 shadow-specular-top" aria-labelledby="section-clinical">
+      <div class="flex items-center gap-3 border-b border-border-hairline pb-4">
+        <span class="w-3 h-3 rounded-full bg-status-info shadow-[0_0_10px_rgba(59,130,246,0.8)]"></span>
+        <h2 id="section-clinical" class="text-2xl font-bold font-mono text-status-info">
+          2. Medical &amp; Clinical Diagnostics Disambiguation
         </h2>
-        <p class="text-text-secondary text-sm leading-relaxed">
-          In clinical medicine, pathology, and toxicology, a <strong class="text-text-primary">screen test</strong> refers to rapid, preliminary diagnostic tests designed to detect substances, markers, or physical neurological conditions.
+      </div>
+
+      <div class="space-y-4 text-sm text-text-secondary leading-relaxed">
+        <p>
+          In clinical medicine, pathology, and toxicology, the term <strong class="text-text-primary">"screen test"</strong> refers strictly to medical diagnostic evaluations designed to detect biomarkers, genetic risk profiles, or toxicological substances. <strong class="text-status-info">Monitor Test Hub does NOT perform medical or clinical screening.</strong>
         </p>
 
-        <div class="border border-status-info/30 bg-status-info/10 p-4 rounded-lg space-y-2">
-          <h4 class="text-status-info text-xs font-bold uppercase tracking-wider font-mono">Key medical screening types:</h4>
-          <ul class="space-y-3 text-xs text-text-secondary">
-            <li>
-              <strong class="text-text-primary">Drug Screen Test:</strong> A rapid toxicology test (often urine or saliva) checking for metabolic derivatives of controlled substances.
-            </li>
-            <li>
-              <strong class="text-text-primary">Quad Screen Test:</strong> A prenatal maternal blood serum test checking four fetal markers (AFP, hCG, Estriol, Inhibin-A) to estimate genetic probability parameters.
-            </li>
-            <li>
-              <strong class="text-text-primary">Monofilament Foot Screen Test:</strong> A physical diagnostic check evaluating nerve response thresholds in diabetic neuropathy.
-            </li>
-            <li>
-              <strong class="text-text-primary">DRVVT Screen Test:</strong> Dilute Russell's Viper Venom Time, an in-vitro coagulation test checking for lupus anticoagulants.
-            </li>
-          </ul>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+          <div class="p-4 rounded-xl bg-bg-canvas border border-border-hairline space-y-1">
+            <h3 class="font-mono font-bold text-text-primary text-xs">Toxicology Drug Screen Test</h3>
+            <p class="text-xs text-text-muted">Rapid immunoassay toxicology testing analyzing urine, blood, or saliva for metabolic derivatives of controlled substances.</p>
+          </div>
+          <div class="p-4 rounded-xl bg-bg-canvas border border-border-hairline space-y-1">
+            <h3 class="font-mono font-bold text-text-primary text-xs">Prenatal Quad Screen Test</h3>
+            <p class="text-xs text-text-muted">Maternal serum blood test evaluating four biomarkers (AFP, hCG, Estriol, Inhibin-A) to estimate neural tube defect probabilities.</p>
+          </div>
+          <div class="p-4 rounded-xl bg-bg-canvas border border-border-hairline space-y-1">
+            <h3 class="font-mono font-bold text-text-primary text-xs">Monofilament Foot Screen Test</h3>
+            <p class="text-xs text-text-muted">Neurological sensory threshold test assessing peripheral nerve response and diabetic neuropathy tactile loss.</p>
+          </div>
+          <div class="p-4 rounded-xl bg-bg-canvas border border-border-hairline space-y-1">
+            <h3 class="font-mono font-bold text-text-primary text-xs">DRVVT Lupus Coagulation Test</h3>
+            <p class="text-xs text-text-muted">Dilute Russell's Viper Venom Time in-vitro plasma coagulation benchmark isolating lupus anticoagulant antibodies.</p>
+          </div>
         </div>
 
-        <div class="pt-2">
-          <span class="text-text-muted text-xs block mb-2 font-mono">Need medical or substance helpline directories? Visit:</span>
-          <a href="https://www.samhsa.gov/" target="_blank" rel="noopener noreferrer" class="inline-block bg-status-info text-bg-canvas font-bold text-xs px-4 py-2 rounded hover:opacity-90 transition-opacity font-mono">
-            SAMHSA National Helpline Directory &rarr;
+        <div class="p-4 rounded-xl bg-status-info/10 border border-status-info/30 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div class="space-y-1 text-center sm:text-left">
+            <span class="font-mono font-bold text-xs text-status-info uppercase">Seeking Official Medical or Helpline Directories?</span>
+            <p class="text-xs text-text-muted">Visit the Substance Abuse and Mental Health Services Administration (SAMHSA) directory.</p>
+          </div>
+          <a href="https://www.samhsa.gov/" target="_blank" rel="noopener noreferrer" class="px-4 py-2 rounded-lg bg-status-info text-bg-canvas font-mono font-bold text-xs hover:opacity-90 transition-opacity shrink-0">
+            SAMHSA Official Directory &rarr;
           </a>
         </div>
-      </section>
+      </div>
+    </section>
 
-      <!-- 3. Film & Acting -->
-      <section class="bg-bg-surface border border-border-hairline p-6 rounded-xl space-y-4 shadow-specular-top" aria-labelledby="acting-heading">
-        <h2 id="acting-heading" class="heading-brand text-lg md:text-xl font-bold text-status-warn flex items-center gap-2 font-mono">
-          3. Film Auditions &amp; Performance Evaluations
+    <!-- Section 3: Film & Cinema Disambiguation -->
+    <section id="cinema-auditions" class="max-w-5xl mx-auto bg-bg-surface border border-amber-500/40 rounded-2xl p-6 sm:p-8 space-y-6 shadow-specular-top" aria-labelledby="section-cinema">
+      <div class="flex items-center gap-3 border-b border-border-hairline pb-4">
+        <span class="w-3 h-3 rounded-full bg-amber-400 shadow-[0_0_10px_rgba(245,158,11,0.8)]"></span>
+        <h2 id="section-cinema" class="text-2xl font-bold font-mono text-amber-400">
+          3. Film &amp; Performing Arts Auditions Disambiguation
         </h2>
-        <p class="text-text-secondary text-sm leading-relaxed">
-          In cinema, television, and performing arts, a <strong class="text-text-primary">screen test</strong> refers to filmed auditions where an actor's performance, camera presence, wardrobe, and chemistry with co-stars are recorded and evaluated by directors and casting agents.
-        </p>
-        <p class="text-text-muted text-xs leading-relaxed">
-          Unlike stage auditions, screen tests evaluate how an actor looks through specific camera lenses, lighting setups, and alongside selected makeup profiles.
-        </p>
-      </section>
-    </div>
-  </div>
-</Layout>
+      </div>
 
+      <div class="space-y-4 text-sm text-text-secondary leading-relaxed">
+        <p>
+          In filmmaking, television production, and theatrical casting, a <strong class="text-text-primary">"screen test"</strong> refers to a filmed audition recorded under studio lighting and specific camera lenses to evaluate an actor's performance, physical presence, costume fit, and chemistry with co-stars prior to casting decisions.
+        </p>
+      </div>
+    </section>
+
+    <!-- Section 4: Engineering Citations Table -->
+    <section id="standards-citations" class="max-w-5xl mx-auto bg-bg-surface border border-border-hairline rounded-2xl p-6 sm:p-8 space-y-4" aria-labelledby="section-citations">
+      <h2 id="section-citations" class="text-xl font-bold font-mono text-text-primary flex items-center gap-2">
+        <span>4.</span> Formal International Engineering Standards &amp; Citations
+      </h2>
+      <div class="overflow-x-auto">
+        <table class="w-full text-left border-collapse text-xs font-mono">
+          <thead>
+            <tr class="border-b border-border-hairline text-text-muted">
+              <th class="py-2.5 px-3">Standard Authority</th>
+              <th class="py-2.5 px-3">Specification Citation</th>
+              <th class="py-2.5 px-3">Scope &amp; Coverage Area</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-border-hairline/60 text-text-secondary">
+            <tr>
+              <td class="py-2.5 px-3 font-bold text-text-primary">ISO</td>
+              <td class="py-2.5 px-3 text-status-pass">ISO 9241-307:2008</td>
+              <td class="py-2.5 px-3">Ergonomics of human-system interaction — Electronic visual display defect limits.</td>
+            </tr>
+            <tr>
+              <td class="py-2.5 px-3 font-bold text-text-primary">VESA</td>
+              <td class="py-2.5 px-3 text-status-pass">VESA DisplayHDR 1.2</td>
+              <td class="py-2.5 px-3">High Dynamic Range performance compliance (400 to 1400 nits &amp; True Black).</td>
+            </tr>
+            <tr>
+              <td class="py-2.5 px-3 font-bold text-text-primary">IEC</td>
+              <td class="py-2.5 px-3 text-status-pass">IEC 62341-6-2</td>
+              <td class="py-2.5 px-3">Organic Light Emitting Diode (OLED) panel measuring methods for luminance &amp; uniformity.</td>
+            </tr>
+            <tr>
+              <td class="py-2.5 px-3 font-bold text-text-primary">CIE</td>
+              <td class="py-2.5 px-3 text-status-pass">CIE 15:2004 / 1931 Locus</td>
+              <td class="py-2.5 px-3">Standard colorimetry chromaticity coordinates and standard illuminants (D65).</td>
+            </tr>
+            <tr>
+              <td class="py-2.5 px-3 font-bold text-text-primary">ANSI/IES</td>
+              <td class="py-2.5 px-3 text-status-pass">ANSI/IES RP-28-20</td>
+              <td class="py-2.5 px-3">Recommended practice for ergonomic visual display terminal lighting and flicker safety.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Section 5: Technical FAQ -->
+    <section id="faq-section" class="max-w-5xl mx-auto space-y-6" aria-labelledby="section-faq">
+      <div class="border-b border-border-hairline pb-4">
+        <h2 id="section-faq" class="text-2xl font-bold font-mono text-text-primary">
+          5. Frequently Asked Questions (10 Technical Q&amp;A)
+        </h2>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {faqs.map(faq => (
+          <div class="p-4 rounded-xl bg-bg-surface border border-border-hairline space-y-1.5">
+            <h3 class="font-bold text-text-primary font-mono text-xs sm:text-sm">{faq.question}</h3>
+            <p class="text-xs text-text-muted leading-relaxed">{faq.answer}</p>
+          </div>
+        ))}
+      </div>
+    </section>
+  </main>
+</Layout>

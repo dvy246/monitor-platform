@@ -1,0 +1,106 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import KeyboardTesterCanvas from '../../components/diagnostics/KeyboardTesterCanvas.astro';
+import SEOHead from '../../components/seo/SEOHead.astro';
+import SchemaGraph from '../../components/seo/SchemaGraph.astro';
+
+export function getStaticPaths() {
+  const keyboardCategories = [
+    {
+      slug: 'mechanical-keyboard-test',
+      title: 'Mechanical Keyboard Test | Switch Chatter & Debounce Checker',
+      h1: 'Mechanical Keyboard Switch & Chatter Diagnostic Tool',
+      description: 'Benchmark mechanical switches (Cherry MX, Gateron, Kailh, Razer) for microsecond chatter double-typing, key spring actuation, and individual diode isolation.',
+      badge: 'MECHANICAL SWITCH SPECIFIC BENCHMARK'
+    },
+    {
+      slug: 'mac-keyboard-test',
+      title: 'Mac Keyboard Tester | Apple Magic Keyboard & Command Key Test',
+      h1: 'Apple Mac & Magic Keyboard Diagnostic Tester',
+      description: 'Online test tool for Apple Mac keyboards, Magic Keyboards, and MacBook Pro scissor/butterfly switches. Verifies Command (⌘), Option (⌥), and Fn keys.',
+      badge: 'APPLE MACOS KEYBOARD MATRIX'
+    },
+    {
+      slug: 'gaming-keyboard-test',
+      title: 'Gaming Keyboard Test | WASD Ghosting & 1000Hz NKRO Matrix',
+      h1: 'Gaming Keyboard Anti-Ghosting & WASD Matrix Benchmark',
+      description: 'Test gaming keyboard WASD anti-ghosting, 1000Hz polling rate latency, and multi-key simultaneous skill combinations for CS2, Valorant, Fortnite, and League of Legends.',
+      badge: 'ESPORTS GAMING KEYBOARD MATRIX'
+    },
+    {
+      slug: 'laptop-keyboard-test',
+      title: 'Laptop Keyboard Test | Dead Key Matrix & Function Key Checker',
+      h1: 'Laptop & Notebook Keyboard Dead Key Diagnostic Tool',
+      description: 'Check laptop keys for dead membrane contacts, liquid damage short circuits, and Fn layer key combination registration. Works on Windows, ChromeOS, and macOS.',
+      badge: 'NOTEBOOK MEMBRANE MATRIX'
+    },
+    {
+      slug: '60-percent-keyboard-test',
+      title: '60% Keyboard Tester | Compact Layer & Fn Combination Test',
+      h1: '60% & 65% Compact Keyboard Layer Diagnostic Tool',
+      description: 'Benchmark 60%, 65%, and 75% compact mechanical keyboards. Test FN layer arrow keys, function key toggles, and custom keymap rebindings.',
+      badge: '60% / 65% COMPACT LAYOUT SPEC'
+    },
+    {
+      slug: 'wireless-bluetooth-keyboard-test',
+      title: 'Wireless Bluetooth Keyboard Test | Packet Loss & Latency Checker',
+      h1: 'Wireless & Bluetooth Keyboard Latency Diagnostic Tool',
+      description: 'Test 2.4GHz wireless and Bluetooth keyboards for connection dropouts, key repetition delays, battery sleep wake-up latency, and packet loss jitter.',
+      badge: '2.4GHz & BLUETOOTH HID SPEC'
+    },
+    {
+      slug: 'key-chatter-test',
+      title: 'Keyboard Switch Chatter Test | Double-Typing Debounce Analyzer',
+      h1: 'Keyboard Switch Chatter & Double-Fire Diagnostic Tool',
+      description: 'Detect mechanical switch metallic leaf chatter, double-typing faults, and key bounce errors with microsecond timestamp analysis. Identifies failing switches.',
+      badge: 'MICROSECOND DEBOUNCE TIMING ANALYZER'
+    },
+    {
+      slug: 'nkro-rollover-test',
+      title: 'NKRO Rollover Test | Simultaneous Key Press & Anti-Ghosting',
+      h1: 'N-Key Rollover (NKRO) & Simultaneous Key Matrix Benchmark',
+      description: 'Verify 6KRO vs NKRO simultaneous key press limits on your physical keyboard. Test USB HID report protocols and key blocking diode matrix limits.',
+      badge: 'USB HID REPORT PROTOCOL NKRO MATRIX'
+    }
+  ];
+
+  return keyboardCategories.map(cat => ({
+    params: { slug: cat.slug },
+    props: { cat }
+  }));
+}
+
+const cat = Astro.props.cat || keyboardCategories[0];
+const canonicalUrl = `https://monitortesthub.com/keyboard-tester/${cat.slug}`;
+---
+
+<Layout title={cat.title} description={cat.description}>
+  <SEOHead
+    title={cat.title}
+    description={cat.description}
+    canonicalUrl={canonicalUrl}
+  />
+  <SchemaGraph
+    type="WebApplication"
+    name={cat.title}
+    description={cat.description}
+    url={canonicalUrl}
+  />
+
+  <main id="main-content" class="py-10 px-4 sm:px-6 lg:px-8 space-y-12 bg-bg-canvas">
+    <section class="max-w-4xl mx-auto text-center space-y-4">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-status-pass/10 border border-status-pass/30 text-xs font-mono text-status-pass font-bold">
+        <span>{cat.badge}</span>
+      </div>
+      <h1 class="text-3xl sm:text-4xl font-extrabold font-mono tracking-tight text-text-primary">
+        {cat.h1}
+      </h1>
+      <p class="text-sm sm:text-base text-text-muted leading-relaxed max-w-2xl mx-auto">
+        {cat.description}
+      </p>
+    </section>
+
+    <!-- Main Visual Diagnostic Engine Component -->
+    <KeyboardTesterCanvas />
+  </main>
+</Layout>

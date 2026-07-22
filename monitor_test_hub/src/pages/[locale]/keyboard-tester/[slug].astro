@@ -1,0 +1,41 @@
+---
+export function getStaticPaths() {
+  const locales = ['es', 'de', 'fr'];
+  const slugs = [
+    'mechanical-keyboard-test',
+    'mac-keyboard-test',
+    'gaming-keyboard-test',
+    'laptop-keyboard-test',
+    '60-percent-keyboard-test',
+    'wireless-bluetooth-keyboard-test',
+    'key-chatter-test',
+    'nkro-rollover-test'
+  ];
+
+  const paths = [];
+
+  for (const locale of locales) {
+    for (const slug of slugs) {
+      paths.push({
+        params: { locale, slug },
+        props: {
+          cat: {
+            slug,
+            title: 'Keyboard Diagnostic Suite',
+            h1: 'Keyboard Diagnostic Tool',
+            description: 'Test your mechanical or membrane keyboard for key ghosting, N-Key Rollover (NKRO), and switch chatter.',
+            badge: 'KEYBOARD DIAGNOSTIC BENCHMARK'
+          }
+        }
+      });
+    }
+  }
+
+  return paths;
+}
+
+import BasePage from '../../keyboard-tester/[slug].astro';
+const { cat } = Astro.props;
+---
+
+<BasePage cat={cat} />
