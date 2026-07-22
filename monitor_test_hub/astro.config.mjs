@@ -7,9 +7,46 @@ export default defineConfig({
   site: 'https://monitortesthub.com',
   integrations: [
     sitemap({
-      changefreq: 'weekly',
-      priority: 0.8,
-      filter: (page) => !page.includes('/cdn-cgi/')
+      filter: (page) => !page.includes('/cdn-cgi/') && !page.includes('/embed/'),
+      serialize(item) {
+        const url = item.url;
+        if (url === 'https://monitortesthub.com/' || url.endsWith('/es/') || url.endsWith('/de/') || url.endsWith('/fr/')) {
+          item.changefreq = 'daily';
+          item.priority = 1.0;
+        } else if (
+          url.includes('/display-tests/') || 
+          url.includes('/touch-tests/') || 
+          url.includes('/input-tests/') || 
+          url.includes('/audio-tests/')
+        ) {
+          item.changefreq = 'daily';
+          item.priority = 0.9;
+        } else if (
+          url.includes('/white-screen/') || 
+          url.includes('/touch-matrix/') || 
+          url.includes('/guides/') || 
+          url.includes('/vrr-stutter-test/') || 
+          url.includes('/oled-burn-in-risk/') || 
+          url.includes('/hdr-test/') || 
+          url.includes('/input-lag-test/') ||
+          url.includes('/arcade/')
+        ) {
+          item.changefreq = 'weekly';
+          item.priority = 0.8;
+        } else if (
+          url.includes('/terms') || 
+          url.includes('/privacy') || 
+          url.includes('/contact') || 
+          url.includes('/about')
+        ) {
+          item.changefreq = 'monthly';
+          item.priority = 0.3;
+        } else {
+          item.changefreq = 'weekly';
+          item.priority = 0.7;
+        }
+        return item;
+      }
     })
   ],
   i18n: {

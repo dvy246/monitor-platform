@@ -13,24 +13,26 @@ const { items, class: className = '' } = Astro.props;
 ---
 
 <nav aria-label="Breadcrumb navigation" class:list={["font-mono text-xs text-text-secondary py-2", className]}>
-  <ol class="flex items-center gap-2 flex-wrap">
-    <li>
-      <a href="/" class="hover:text-text-primary transition-colors flex items-center gap-1">
-        <span>HUB</span>
+  <ol itemscope itemtype="https://schema.org/BreadcrumbList" class="flex items-center gap-2 flex-wrap">
+    <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+      <a itemprop="item" href="/" class="hover:text-text-primary transition-colors flex items-center gap-1">
+        <span itemprop="name">HUB</span>
       </a>
+      <meta itemprop="position" content="1" />
     </li>
     {items.map((item, index) => (
-      <li class="flex items-center gap-2">
-        <span class="text-text-muted font-bold">/</span>
+      <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem" class="flex items-center gap-2">
+        <span class="text-text-muted font-bold" aria-hidden="true">/</span>
         {item.href && index < items.length - 1 ? (
-          <a href={item.href} class="hover:text-text-primary transition-colors">
-            {item.label}
+          <a itemprop="item" href={item.href} class="hover:text-text-primary transition-colors">
+            <span itemprop="name">{item.label}</span>
           </a>
         ) : (
-          <span class="text-text-primary font-semibold" aria-current="page">
+          <span itemprop="name" class="text-text-primary font-semibold" aria-current="page">
             {item.label}
           </span>
         )}
+        <meta itemprop="position" content={String(index + 2)} />
       </li>
     ))}
   </ol>

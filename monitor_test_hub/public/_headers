@@ -1,2 +1,5 @@
+https://*.pages.dev/*
+  X-Robots-Tag: noindex, nofollow
+
 https://monitor-testing.pages.dev/*
-  X-Robots-Tag:noindex
+  X-Robots-Tag: noindex, nofollow

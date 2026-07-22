@@ -1,10 +1,28 @@
 ---
+export interface FAQItem {
+  question: string;
+  answer: string;
+}
+
 export interface Props {
   title: string;
   description: string;
   canonicalUrl: string;
+  faqs?: FAQItem[];
+  authorName?: string;
+  authorUrl?: string;
+  applicationCategory?: string;
 }
-const { title, description, canonicalUrl } = Astro.props;
+
+const {
+  title,
+  description,
+  canonicalUrl,
+  faqs = [],
+  authorName = "Monitor Test Hub Engineering Team",
+  authorUrl = "https://monitortesthub.com/about",
+  applicationCategory = "DeveloperApplication"
+} = Astro.props;
 
 // Dynamically generate BreadcrumbList items from canonical URL path
 const urlObj = new URL(canonicalUrl);
@@ -33,86 +51,122 @@ pathSegments.forEach((segment, index) => {
   });
 });
 
+const graphNodes: any[] = [
+  {
+    "@type": "Organization",
+    "@id": "https://monitortesthub.com/#organization",
+    "name": "Monitor Test Hub",
+    "url": "https://monitortesthub.com",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://monitortesthub.com/favicon.svg",
+      "width": 512,
+      "height": 512
+    },
+    "sameAs": [
+      "https://github.com/dvy246/monitor-platform",
+      "https://twitter.com/monitortesthub"
+    ]
+  },
+  {
+    "@type": "Person",
+    "@id": `${authorUrl}#author`,
+    "name": authorName,
+    "url": authorUrl,
+    "worksFor": {
+      "@id": "https://monitortesthub.com/#organization"
+    }
+  },
+  {
+    "@type": "WebSite",
+    "@id": "https://monitortesthub.com/#website",
+    "url": "https://monitortesthub.com",
+    "name": "Monitor Test Hub",
+    "description": "Unified Web-Native Display Calibration, OLED Burn-In, 540Hz VRR, and Mobile Touch Matrix Diagnostic Suite",
+    "publisher": {
+      "@id": "https://monitortesthub.com/#organization"
+    },
+    "potentialAction": {
+      "@type": "SearchAction",
+      "target": {
+        "@type": "EntryPoint",
+        "urlTemplate": "https://monitortesthub.com/display-tests/?q={search_term_string}"
+      },
+      "query-input": "required name=search_term_string"
+    }
+  },
+  {
+    "@type": "BreadcrumbList",
+    "@id": `${canonicalUrl}#breadcrumb`,
+    "itemListElement": breadcrumbItems
+  },
+  {
+    "@type": ["WebApplication", "SoftwareApplication"],
+    "@id": `${canonicalUrl}#webapp`,
+    "name": title,
+    "url": canonicalUrl,
+    "applicationCategory": applicationCategory,
+    "operatingSystem": "All (Android, iOS, Windows, macOS, Linux, ChromeOS)",
+    "browserRequirements": "Requires HTML5 WebGL 2.0, PointerEvents, and Canvas support",
+    "author": {
+      "@id": `${authorUrl}#author`
+    },
+    "publisher": {
+      "@id": "https://monitortesthub.com/#organization"
+    },
+    "about": {
+      "@type": "Thing",
+      "name": "Display Calibration, Mobile Touch Digitizer, and Hardware Testing",
+      "sameAs": [
+        "https://en.wikipedia.org/wiki/Display_calibration",
+        "https://www.wikidata.org/wiki/Q1156824"
+      ]
+    }
+  },
+  {
+    "@type": "TechArticle",
+    "@id": `${canonicalUrl}#article`,
+    "headline": title,
+    "description": description,
+    "inLanguage": "en-US",
+    "author": {
+      "@id": `${authorUrl}#author`
+    },
+    "publisher": {
+      "@id": "https://monitortesthub.com/#organization"
+    },
+    "datePublished": "2026-07-22T00:00:00Z",
+    "dateModified": "2026-07-22T00:00:00Z",
+    "about": [
+      { "@type": "Thing", "name": "Touchscreen", "sameAs": "https://en.wikipedia.org/wiki/Touchscreen" },
+      { "@type": "Thing", "name": "OLED", "sameAs": "https://en.wikipedia.org/wiki/OLED" },
+      { "@type": "Thing", "name": "Display Calibration", "sameAs": "https://en.wikipedia.org/wiki/Display_calibration" }
+    ],
+    "medicalAudience": {
+      "@type": "MedicalAudience",
+      "audienceType": "None - Non-Medical Hardware Diagnostic Tool"
+    }
+  }
+];
+
+if (faqs && faqs.length > 0) {
+  graphNodes.push({
+    "@type": "FAQPage",
+    "@id": `${canonicalUrl}#faq`,
+    "mainEntity": faqs.map(faq => ({
+      "@type": "Question",
+      "name": faq.question,
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": faq.answer
+      }
+    }))
+  });
+}
+
 const schemaGraph = {
   "@context": "https://schema.org",
-  "@graph": [
-    {
-      "@type": "Organization",
-      "@id": "https://monitortesthub.com/#organization",
-      "name": "Monitor Test Hub",
-      "url": "https://monitortesthub.com",
-      "logo": "https://monitortesthub.com/favicon.svg",
-      "sameAs": [
-        "https://github.com/monitortesthub",
-        "https://twitter.com/monitortesthub"
-      ]
-    },
-    {
-      "@type": "WebSite",
-      "@id": "https://monitortesthub.com/#website",
-      "url": "https://monitortesthub.com",
-      "name": "Monitor Test Hub",
-      "description": "Unified Web-Native Display Calibration, OLED Burn-In, 540Hz VRR, and Mobile Touch Matrix Diagnostic Suite",
-      "publisher": {
-        "@id": "https://monitortesthub.com/#organization"
-      },
-      "potentialAction": {
-        "@type": "SearchAction",
-        "target": {
-          "@type": "EntryPoint",
-          "urlTemplate": "https://monitortesthub.com/display-tests/?q={search_term_string}"
-        },
-        "query-input": "required name=search_term_string"
-      }
-    },
-    {
-      "@type": "BreadcrumbList",
-      "@id": `${canonicalUrl}#breadcrumb`,
-      "itemListElement": breadcrumbItems
-    },
-    {
-      "@type": "WebApplication",
-      "@id": `${canonicalUrl}#webapp`,
-      "name": title,
-      "url": canonicalUrl,
-      "applicationCategory": "DeveloperApplication",
-      "operatingSystem": "All (Android, iOS, Windows, macOS, Linux)",
-      "browserRequirements": "Requires HTML5 WebGL 2.0, PointerEvents, and Canvas support",
-      "about": {
-        "@type": "Thing",
-        "name": "Display Calibration, Mobile Touch Digitizer, and Hardware Testing",
-        "sameAs": [
-          "https://en.wikipedia.org/wiki/Display_calibration",
-          "https://www.wikidata.org/wiki/Q1156824"
-        ]
-      }
-    },
-    {
-      "@type": "TechArticle",
-      "@id": `${canonicalUrl}#article`,
-      "headline": title,
-      "description": description,
-      "inLanguage": "en-US",
-      "author": {
-        "@type": "Organization",
-        "name": "Monitor Test Hub Engineering Team",
-        "url": "https://monitortesthub.com/about"
-      },
-      "publisher": {
-        "@id": "https://monitortesthub.com/#organization"
-      },
-      "datePublished": "2026-07-22T00:00:00Z",
-      "dateModified": "2026-07-22T00:00:00Z",
-      "about": [
-        { "@type": "Thing", "name": "Touchscreen", "sameAs": "https://en.wikipedia.org/wiki/Touchscreen" },
-        { "@type": "Thing", "name": "OLED", "sameAs": "https://en.wikipedia.org/wiki/OLED" }
-      ],
-      "medicalAudience": {
-        "@type": "MedicalAudience",
-        "audienceType": "None - Non-Medical Hardware Diagnostic Tool"
-      }
-    }
-  ]
+  "@graph": graphNodes
 };
 ---
 <script type="application/ld+json" set:html={JSON.stringify(schemaGraph)} />

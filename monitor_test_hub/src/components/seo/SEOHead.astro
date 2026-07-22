@@ -8,6 +8,7 @@ export interface Props {
   ogImage?: string;
   ogType?: string;
   noindex?: boolean;
+  faqs?: Array<{ question: string; answer: string }>;
 }
 
 const {
@@ -17,6 +18,7 @@ const {
   ogImage = 'https://monitortesthub.com/og-image.png',
   ogType = 'website',
   noindex = false,
+  faqs = [],
 } = Astro.props;
 
 // Hreflang: compute alternate URLs for all supported locales
@@ -81,5 +83,5 @@ const hreflangs = supportedLocales.map((locale) => ({
 <meta property="twitter:image" content={ogImage} />
 
 <!-- Schema Graph -->
-<SchemaGraph title={title} description={description} canonicalUrl={canonicalUrl} />
+<SchemaGraph title={title} description={description} canonicalUrl={canonicalUrl} faqs={faqs} />
 
