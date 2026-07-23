@@ -81,20 +81,59 @@ const waterEjectFaqs = [
     <section class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-4">
       <h2 class="text-xl font-bold font-mono text-text-primary">What problem are you having?</h2>
       <p class="text-sm text-text-muted">Select your issue to get specific help</p>
-      <div class="flex flex-wrap items-center justify-center gap-3">
-        <span class="px-4 py-2 rounded-lg bg-bg-surface border border-border-hairline text-sm font-bold text-text-primary shadow-specular-top">Muffled Sound</span>
-        <span class="px-4 py-2 rounded-lg bg-bg-surface border border-border-hairline text-sm font-bold text-text-primary shadow-specular-top">Low Volume</span>
-        <span class="px-4 py-2 rounded-lg bg-bg-surface border border-border-hairline text-sm font-bold text-text-primary shadow-specular-top">No Sound</span>
-        <span class="px-4 py-2 rounded-lg bg-status-pass/10 border border-status-pass/30 text-sm font-bold text-status-pass shadow-specular-top ring-1 ring-status-pass/50">Call Speaker Issue</span>
+      
+      <div class="flex flex-wrap items-center justify-center gap-3" id="problem-selector">
+        <button data-issue="muffled" class="issue-btn px-4 py-2 rounded-lg bg-bg-surface border border-border-hairline text-sm font-bold text-text-primary shadow-specular-top hover:bg-bg-elevated transition-colors">Muffled Sound</button>
+        <button data-issue="low" class="issue-btn px-4 py-2 rounded-lg bg-bg-surface border border-border-hairline text-sm font-bold text-text-primary shadow-specular-top hover:bg-bg-elevated transition-colors">Low Volume</button>
+        <button data-issue="none" class="issue-btn px-4 py-2 rounded-lg bg-bg-surface border border-border-hairline text-sm font-bold text-text-primary shadow-specular-top hover:bg-bg-elevated transition-colors">No Sound</button>
+        <button data-issue="call" class="issue-btn px-4 py-2 rounded-lg bg-status-pass/10 border border-status-pass/30 text-sm font-bold text-status-pass shadow-specular-top ring-1 ring-status-pass/50 hover:bg-status-pass/20 transition-colors">Call Speaker Issue</button>
       </div>
-      <div class="mt-4 p-4 rounded-xl bg-status-info/10 border border-status-info/30 text-left max-w-2xl mx-auto flex items-start gap-3">
+
+      <div class="mt-4 p-4 rounded-xl bg-status-info/10 border border-status-info/30 text-left max-w-2xl mx-auto flex items-start gap-3 transition-opacity duration-300" id="solution-container">
         <svg class="w-6 h-6 text-status-info shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
         <div>
           <h4 class="font-bold text-status-info text-sm mb-1">Recommended Solution</h4>
-          <p class="text-xs text-text-secondary leading-relaxed">Call speakers (earpiece) are delicate. Place your device face-down on a soft cloth. Let gravity help water drain. Avoid inserting anything into the speaker opening. Use the <strong class="text-text-primary">Call Speaker Eject</strong> preset above.</p>
+          <p class="text-xs text-text-secondary leading-relaxed" id="solution-text">Call speakers (earpiece) are delicate. Place your device face-down on a soft cloth. Let gravity help water drain. Avoid inserting anything into the speaker opening. Use the <strong class="text-text-primary">Call Speaker Eject</strong> preset above.</p>
         </div>
       </div>
     </section>
+
+    <script>
+      const solutions = {
+        'muffled': 'Water is trapped against the speaker membrane. Use the <strong class="text-text-primary">165Hz Water Eject Sound</strong> preset above for 30 seconds at maximum volume to expel droplets.',
+        'low': 'Water or dirt is blocking the speaker mesh. Run the water eject tool first. If the device is completely dry but still quiet, switch to our <strong class="text-text-primary">Speaker Cleaner Tool</strong> to dislodge dust.',
+        'none': 'If you hear absolutely nothing even at max volume, the speaker circuitry may have shorted. Power off the device immediately and let it air dry for 24-48 hours before testing again. Do not charge it.',
+        'call': 'Call speakers (earpiece) are delicate. Place your device face-down on a soft cloth. Let gravity help water drain. Avoid inserting anything into the speaker opening. Use the <strong class="text-text-primary">Call Speaker Eject</strong> preset above.'
+      };
+
+      const buttons = document.querySelectorAll('.issue-btn');
+      const solutionText = document.getElementById('solution-text');
+      const solutionContainer = document.getElementById('solution-container');
+
+      buttons.forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          const target = e.currentTarget as HTMLButtonElement;
+          const issue = target.getAttribute('data-issue');
+          
+          // Reset all buttons to inactive styling
+          buttons.forEach(b => {
+            b.className = 'issue-btn px-4 py-2 rounded-lg bg-bg-surface border border-border-hairline text-sm font-bold text-text-primary shadow-specular-top hover:bg-bg-elevated transition-colors';
+          });
+
+          // Set active styling on clicked button
+          target.className = 'issue-btn px-4 py-2 rounded-lg bg-status-pass/10 border border-status-pass/30 text-sm font-bold text-status-pass shadow-specular-top ring-1 ring-status-pass/50 hover:bg-status-pass/20 transition-colors';
+
+          // Update text with fade effect
+          if (solutionContainer && solutionText && issue && solutions[issue]) {
+            solutionContainer.style.opacity = '0';
+            setTimeout(() => {
+              solutionText.innerHTML = solutions[issue];
+              solutionContainer.style.opacity = '1';
+            }, 150);
+          }
+        });
+      });
+    </script>
 
     <!-- Deep Technical Information & SEO Suite -->
     <section class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12 text-text-secondary text-sm leading-relaxed">
