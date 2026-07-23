@@ -1,0 +1,136 @@
+---
+/**
+ * ToolControlsCard.astro
+ * Standardized precision control panel exposing tuning sliders for:
+ * Opacity, Brightness, Animation Speed, Grid Size, Gamma, Contrast, Refresh Speed.
+ */
+interface Props {
+  class?: string;
+}
+
+const { class: className = '' } = Astro.props;
+
+const controls = [
+  { id: 'brightness', label: 'Brightness', min: 10, max: 100, step: 1, default: 100, unit: '%', icon: 'M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z' },
+  { id: 'opacity', label: 'Opacity', min: 10, max: 100, step: 1, default: 100, unit: '%', icon: 'M15 12a3 3 0 11-6 0 3 3 0 016 0z M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z' },
+  { id: 'speed', label: 'Animation Speed', min: 0.1, max: 3.0, step: 0.1, default: 1.0, unit: 'x', icon: 'M13 10V3L4 14h7v7l9-11h-7z' },
+  { id: 'grid', label: 'Grid Size', min: 8, max: 64, step: 8, default: 32, unit: ' px', icon: 'M4 6a2 2 0 012-2h12a2 2 0 012 2v12a2 2 0 01-2 2H6a2 2 0 01-2-2V6zm4 8h8M8 10h8' },
+  { id: 'gamma', label: 'Gamma', min: 1.8, max: 2.6, step: 0.1, default: 2.2, unit: '', icon: 'M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10' },
+  { id: 'contrast', label: 'Contrast', min: 50, max: 150, step: 5, default: 100, unit: '%', icon: 'M12 2v20a10 10 0 100-20z' },
+  { id: 'refresh', label: 'Refresh Speed', min: 30, max: 240, step: 15, default: 60, unit: ' Hz', icon: 'M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15' }
+];
+---
+
+<div class:list={["bg-[#0d0d12]/90 border border-white/10 rounded-3xl p-5 sm:p-6 space-y-4 shadow-[0_20px_50px_rgba(0,0,0,0.5)] backdrop-blur-2xl font-sans select-none hover:border-white/20 transition-all duration-300 relative overflow-hidden group", className]}>
+  <!-- Top ambient Emerald Glow -->
+  <div class="absolute -top-12 -left-12 w-32 h-32 bg-emerald-500/10 rounded-full blur-2xl pointer-events-none group-hover:bg-emerald-500/20 transition-all duration-500"></div>
+
+  <!-- Header -->
+  <div class="flex items-center justify-between border-b border-white/10 pb-3.5 relative z-10">
+    <div class="flex items-center gap-3">
+      <div class="w-10 h-10 rounded-2xl bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center text-emerald-400 shadow-[inset_0_1px_1px_rgba(255,255,255,0.2)] shrink-0">
+        <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"/>
+        </svg>
+      </div>
+      <div>
+        <h3 class="text-base font-bold text-white tracking-tight">Tool Controls</h3>
+        <p class="text-[11px] text-zinc-400 font-mono">Precision Tuning Deck</p>
+      </div>
+    </div>
+    <button
+      id="ctrl-reset-all-btn"
+      type="button"
+      class="text-[11px] font-mono text-emerald-400 hover:text-emerald-300 bg-emerald-500/10 hover:bg-emerald-500/20 px-3 py-1 rounded-full border border-emerald-500/30 transition-all cursor-pointer"
+    >
+      Reset All
+    </button>
+  </div>
+
+  <!-- 7 Tuning Sliders Grid -->
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5 font-mono text-xs text-zinc-300 relative z-10">
+    {controls.map(c => (
+      <div class="space-y-2 bg-[#14141c] p-3.5 rounded-2xl border border-white/[0.08] hover:border-white/20 transition-all">
+        <div class="flex items-center justify-between">
+          <label for={`ctrl-${c.id}`} class="text-zinc-400 font-bold uppercase text-[10px] flex items-center gap-1.5">
+            <svg class="w-3.5 h-3.5 text-emerald-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d={c.icon}/>
+            </svg>
+            <span>{c.label}</span>
+          </label>
+          <span id={`val-${c.id}`} class="text-emerald-400 font-bold bg-emerald-500/10 px-2 py-0.5 rounded-md border border-emerald-500/20 tabular-nums">
+            {c.default}{c.unit}
+          </span>
+        </div>
+        <input 
+          id={`ctrl-${c.id}`} 
+          type="range" 
+          min={c.min} 
+          max={c.max} 
+          step={c.step} 
+          value={c.default} 
+          data-unit={c.unit}
+          data-control-id={c.id}
+          class="tool-control-slider w-full h-1.5 bg-zinc-800 rounded-lg appearance-none cursor-pointer accent-emerald-400 focus:outline-none focus:ring-2 focus:ring-emerald-400/50" 
+        />
+      </div>
+    ))}
+  </div>
+</div>
+
+<script>
+  function initToolControlsCard() {
+    const sliders = document.querySelectorAll('.tool-control-slider') as NodeListOf<HTMLInputElement>;
+    const resetAllBtn = document.getElementById('ctrl-reset-all-btn');
+
+    sliders.forEach(slider => {
+      slider.addEventListener('input', (e) => {
+        const input = e.target as HTMLInputElement;
+        const id = input.getAttribute('data-control-id');
+        const unit = input.getAttribute('data-unit') || '';
+        const valEl = document.getElementById(`val-${id}`);
+        
+        let formattedVal = input.value;
+        if (id === 'speed' || id === 'gamma') {
+          formattedVal = Number(input.value).toFixed(1);
+        }
+
+        if (valEl) valEl.textContent = `${formattedVal}${unit}`;
+
+        window.dispatchEvent(new CustomEvent('dt-control-change', {
+          detail: { controlId: id, value: Number(input.value) }
+        }));
+      });
+    });
+
+    resetAllBtn?.addEventListener('click', () => {
+      const defaults: Record<string, { val: number; fmt: string }> = {
+        brightness: { val: 100, fmt: '100%' },
+        opacity: { val: 100, fmt: '100%' },
+        speed: { val: 1.0, fmt: '1.0x' },
+        grid: { val: 32, fmt: '32 px' },
+        gamma: { val: 2.2, fmt: '2.2' },
+        contrast: { val: 100, fmt: '100%' },
+        refresh: { val: 60, fmt: '60 Hz' }
+      };
+
+      sliders.forEach(slider => {
+        const id = slider.getAttribute('data-control-id') || '';
+        if (defaults[id]) {
+          slider.value = String(defaults[id].val);
+          const valEl = document.getElementById(`val-${id}`);
+          if (valEl) valEl.textContent = defaults[id].fmt;
+          window.dispatchEvent(new CustomEvent('dt-control-change', {
+            detail: { controlId: id, value: defaults[id].val }
+          }));
+        }
+      });
+    });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initToolControlsCard);
+  } else {
+    initToolControlsCard();
+  }
+</script>

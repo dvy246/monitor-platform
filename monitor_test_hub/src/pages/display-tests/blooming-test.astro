@@ -1,0 +1,100 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import Breadcrumbs from '../../components/ui/Breadcrumbs.astro';
+import FAQSection from '../../components/ui/FAQSection.astro';
+import TestSwitcherBar from '../../components/ui/TestSwitcherBar.astro';
+import BloomingTestInspector from '../../components/diagnostics/BloomingTestInspector.astro';
+import StepWorkflowSection from '../../components/ui/StepWorkflowSection.astro';
+import PanelTypeBreakdownSection from '../../components/ui/PanelTypeBreakdownSection.astro';
+import MasterBentoDiagnosticSuite from '../../components/diagnostics/MasterBentoDiagnosticSuite.astro';
+
+
+
+const faqs = [
+  {
+    question: "What is display blooming (halo effect) in FALD and mini-LED panels?",
+    answer: "Blooming occurs when bright HDR highlights spill light into adjacent local dimming zones that are attempting to display dark backgrounds, creating a visible glowing halo."
+  },
+  {
+    question: "Why does blooming occur around high-contrast HDR highlights?",
+    answer: "Because individual local dimming zones cover thousands of pixels. When a small bright object (like a white star or subtitle) spans across a zone boundary, the entire backlight zone behind the dark background must illuminate."
+  },
+  {
+    question: "How does dimming zone count (e.g. 576 vs 1152 vs 2304 zones) affect halo intensity?",
+    answer: "Higher zone density reduces the physical area of each dimming zone, dramatically tightening halos around bright objects and minimizing perceived blooming."
+  },
+  {
+    question: "Does OLED panel technology suffer from blooming artifacts?",
+    answer: "No. OLED pixels are individually self-emissive and control brightness down to single subpixels, eliminating local dimming halos completely."
+  },
+  {
+    question: "How do local dimming algorithm response speed and aggressiveness impact blooming?",
+    answer: "Aggressive dimming algorithms suppress halos by lowering peak highlight brightness, while fast response algorithms prevent halo trailing behind fast-moving bright targets."
+  },
+  {
+    question: "Can subtitle blooming be reduced on mini-LED monitors and TVs?",
+    answer: "Yes, changing subtitle color to gray or translucent white and placing subtitles within designated lower black letterbox bars reduces local dimming halo intensity."
+  },
+  {
+    question: "What viewing angle shifts make mini-LED blooming more severe off-axis?",
+    answer: "Viewing mini-LED displays off-center increases perceived halo size because LCD panel off-axis light leakage allows backlight zone illumination to bleed into dark adjacent pixels."
+  },
+  {
+    question: "How does peak HDR nit brightness (e.g. 1000 nits) scale blooming visibility?",
+    answer: "Higher peak nit highlights increase contrast ratio between bright text and dark backgrounds, making blooming halos more visually prominent in dark room environments."
+  },
+  {
+    question: "What is the difference between static blooming and dynamic motion blooming?",
+    answer: "Static blooming affects fixed text and logos. Dynamic motion blooming occurs when glowing halos trail behind moving objects across dimming zone boundaries."
+  },
+  {
+    question: "How do IPS contrast ratios affect blooming halo size compared to VA panels?",
+    answer: "IPS panels have lower native static contrast (1000:1 vs VA 3000:1), making halo light leakage more visible through dark pixels surrounding mini-LED zones."
+  }
+];
+
+const breadcrumbs = [
+  { label: 'Display Tests', href: '/display-tests/dead-pixel' },
+  { label: 'Blooming & Halo Test' }
+];
+
+const testSwitcherItems = [
+  { id: 'blooming', label: 'Blooming & Halo Test', href: '/display-tests/blooming-test', active: true },
+  { id: 'flicker', label: 'PWM Flicker Test', href: '/display-tests/flicker-test' },
+  { id: 'aspect-ratio', label: 'Aspect Ratio Calculator', href: '/display-tests/aspect-ratio-calculator' },
+  { id: 'rgb-channel', label: 'RGB Channel Test', href: '/display-tests/rgb-channel-test' },
+  { id: 'uniformity', label: 'OLED 5% Uniformity', href: '/display-tests/uniformity' },
+  { id: 'hdr', label: 'HDR ST 2084 PQ', href: '/display-tests/hdr-test' }
+];
+
+
+
+
+---
+
+<Layout
+  title="Mini-LED Blooming & Local Dimming Halo Test"
+  description="Test your Mini-LED, OLED, or FALD monitor for blooming light bleed and local dimming halo artifacts with moving bright targets and HDR subtitle simulation."
+  faqs={faqs}
+>
+  <main id="main-content" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+    <Breadcrumbs items={breadcrumbs} />
+    
+    <TestSwitcherBar tests={testSwitcherItems} currentId="blooming" />
+    <BloomingTestInspector />
+
+    <StepWorkflowSection />
+    <PanelTypeBreakdownSection />
+    
+    <!-- E-E-A-T Technical Articles -->
+    <article class="bg-[#121215] border border-white/10 rounded-3xl p-6 sm:p-8 space-y-6 shadow-2xl font-sans text-sm text-zinc-300 leading-relaxed mt-8">
+      <div class="border-b border-white/10 pb-4">
+        <span class="font-mono text-[10px] font-bold text-amber-400 uppercase tracking-widest block mb-1">E-E-A-T EXPERT-ANALYSIS</span>
+        <h2 class="text-xl font-bold text-white">Technical Deep Dive &amp; Display Methodology</h2>
+      </div>
+      <p>Our testing methodology aligns with VESA, SMPTE, and ISO standards for display metrology. This diagnostic tool utilizes raw web APIs (Canvas, WebGL, CSS Color Level 4) to ensure bit-perfect rendering, bypassing OS-level compression and scaling where possible.</p>
+    </article>
+
+    <FAQSection faqs={faqs} title="Mini-LED Blooming &amp; Halo Test FAQs" />
+  </main>
+</Layout>

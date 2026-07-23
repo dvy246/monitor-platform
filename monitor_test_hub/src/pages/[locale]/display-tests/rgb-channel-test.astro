@@ -1,0 +1,14 @@
+---
+import BasePage from '../../display-tests/rgb-channel-test.astro';
+
+
+export function getStaticPaths() {
+  return [
+    { params: { locale: 'es' } },
+    { params: { locale: 'de' } },
+    { params: { locale: 'fr' } }
+  ];
+}
+---
+
+<BasePage />

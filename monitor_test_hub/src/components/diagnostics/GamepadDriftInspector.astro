@@ -21,16 +21,18 @@
     <div class="bg-[#08080a] border border-white/10 rounded-xl p-4 flex flex-col items-center space-y-3">
       <div class="flex justify-between w-full text-xs text-slate-400 font-bold">
         <span>LEFT STICK (AXIS 0, 1)</span>
-        <span id="left-stick-coords" class="text-emerald-400">X: 0.00 | Y: 0.00</span>
+        <span id="inspector-left-stick-coords" class="text-emerald-400">X: 0.00 | Y: 0.00</span>
       </div>
-      <canvas id="left-stick-canvas" width="280" height="280" class="border border-white/10 rounded-lg bg-[#0e0e11]"></canvas>
-      <div class="w-full grid grid-cols-2 gap-2 text-[11px] text-slate-300">
-        <div class="bg-[#18181b] p-2 rounded border border-white/5 flex justify-between">
+      <div class="w-full max-w-[280px] aspect-square flex items-center justify-center">
+        <canvas id="left-stick-canvas" class="border border-white/10 rounded-lg bg-[#0e0e11] w-full h-full block select-none"></canvas>
+      </div>
+      <div class="w-full grid grid-cols-1 xs:grid-cols-2 gap-2 text-[11px] text-slate-300">
+        <div class="bg-[#18181b] p-2 rounded border border-white/5 flex justify-between items-center">
           <span class="text-slate-400">Drift Vector:</span>
           <span id="left-drift-val" class="font-bold text-emerald-400">0.0%</span>
         </div>
-        <div class="bg-[#18181b] p-2 rounded border border-white/5 flex justify-between">
-          <span class="text-slate-400">Circularity Err:</span>
+        <div class="bg-[#18181b] p-2 rounded border border-white/5 flex justify-between items-center">
+          <span class="text-slate-400">Circ. Error:</span>
           <span id="left-circ-val" class="font-bold text-cyan-400">0.0%</span>
         </div>
       </div>
@@ -40,16 +42,18 @@
     <div class="bg-[#08080a] border border-white/10 rounded-xl p-4 flex flex-col items-center space-y-3">
       <div class="flex justify-between w-full text-xs text-slate-400 font-bold">
         <span>RIGHT STICK (AXIS 2, 3)</span>
-        <span id="right-stick-coords" class="text-emerald-400">X: 0.00 | Y: 0.00</span>
+        <span id="inspector-right-stick-coords" class="text-emerald-400">X: 0.00 | Y: 0.00</span>
       </div>
-      <canvas id="right-stick-canvas" width="280" height="280" class="border border-white/10 rounded-lg bg-[#0e0e11]"></canvas>
-      <div class="w-full grid grid-cols-2 gap-2 text-[11px] text-slate-300">
-        <div class="bg-[#18181b] p-2 rounded border border-white/5 flex justify-between">
+      <div class="w-full max-w-[280px] aspect-square flex items-center justify-center">
+        <canvas id="right-stick-canvas" class="border border-white/10 rounded-lg bg-[#0e0e11] w-full h-full block select-none"></canvas>
+      </div>
+      <div class="w-full grid grid-cols-1 xs:grid-cols-2 gap-2 text-[11px] text-slate-300">
+        <div class="bg-[#18181b] p-2 rounded border border-white/5 flex justify-between items-center">
           <span class="text-slate-400">Drift Vector:</span>
           <span id="right-drift-val" class="font-bold text-emerald-400">0.0%</span>
         </div>
-        <div class="bg-[#18181b] p-2 rounded border border-white/5 flex justify-between">
-          <span class="text-slate-400">Circularity Err:</span>
+        <div class="bg-[#18181b] p-2 rounded border border-white/5 flex justify-between items-center">
+          <span class="text-slate-400">Circ. Error:</span>
           <span id="right-circ-val" class="font-bold text-cyan-400">0.0%</span>
         </div>
       </div>
@@ -89,6 +93,7 @@
     const rightHistory: Array<{ x: number; y: number }> = [];
 
     function renderStick(
+      canvasEl: HTMLCanvasElement,
       ctx: CanvasRenderingContext2D | null,
       x: number,
       y: number,
@@ -97,12 +102,21 @@
       circElemId: string,
       coordElemId: string
     ) {
-      if (!ctx) return;
-      const w = 280;
-      const h = 280;
+      if (!ctx || !canvasEl.parentElement) return;
+      const rect = canvasEl.parentElement.getBoundingClientRect();
+      const displaySize = Math.min(rect.width || 280, 280);
+      const dpr = window.devicePixelRatio || 1;
+      canvasEl.width = Math.floor(displaySize * dpr);
+      canvasEl.height = Math.floor(displaySize * dpr);
+      canvasEl.style.width = displaySize + 'px';
+      canvasEl.style.height = displaySize + 'px';
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+      const w = displaySize;
+      const h = displaySize;
       const cx = w / 2;
       const cy = h / 2;
-      const radius = 110;
+      const radius = displaySize * (110 / 280);
 
       ctx.clearRect(0, 0, w, h);
 
@@ -193,11 +207,11 @@
         const rx = activeGp.axes[2] || 0;
         const ry = activeGp.axes[3] || 0;
 
-        renderStick(leftCtx, lx, ly, leftHistory, 'left-drift-val', 'left-circ-val', 'left-stick-coords');
-        renderStick(rightCtx, rx, ry, rightHistory, 'right-drift-val', 'right-circ-val', 'right-stick-coords');
+        renderStick(leftCanvas, leftCtx, lx, ly, leftHistory, 'left-drift-val', 'left-circ-val', 'inspector-left-stick-coords');
+        renderStick(rightCanvas, rightCtx, rx, ry, rightHistory, 'right-drift-val', 'right-circ-val', 'inspector-right-stick-coords');
       } else {
-        renderStick(leftCtx, 0, 0, leftHistory, 'left-drift-val', 'left-circ-val', 'left-stick-coords');
-        renderStick(rightCtx, 0, 0, rightHistory, 'right-drift-val', 'right-circ-val', 'right-stick-coords');
+        renderStick(leftCanvas, leftCtx, 0, 0, leftHistory, 'left-drift-val', 'left-circ-val', 'inspector-left-stick-coords');
+        renderStick(rightCanvas, rightCtx, 0, 0, rightHistory, 'right-drift-val', 'right-circ-val', 'inspector-right-stick-coords');
       }
 
       requestAnimationFrame(loop);

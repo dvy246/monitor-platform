@@ -1,18 +1,74 @@
 ---
 import Layout from '../../layouts/Layout.astro';
 import GhostingInvaders from '../../components/arcade/GhostingInvaders.astro';
+import HardwareLimitationNotice from '../../components/disclaimers/HardwareLimitationNotice.astro';
 import EpilepsyWarning from '../../components/disclaimers/EpilepsyWarning.astro';
+import StepWorkflowSection from '../../components/ui/StepWorkflowSection.astro';
+import PanelTypeBreakdownSection from '../../components/ui/PanelTypeBreakdownSection.astro';
+import FAQSection from '../../components/ui/FAQSection.astro';
+
+const faqs = [
+  {
+    question: "What is display ghosting and motion blur trailing?",
+    answer: "Ghosting occurs when liquid crystals in LCD panels take longer to transition between gray states (GtG response time) than the frame refresh period, leaving visible trailing smears behind moving objects."
+  },
+  {
+    question: "What is inverse ghosting (overdrive overshoot corona)?",
+    answer: "Inverse ghosting occurs when monitor pixel overdrive voltage is set too aggressively, causing liquid crystals to overshoot target gray levels and creating bright trailing halos (coronas)."
+  },
+  {
+    question: "How does Ghosting Invaders test panel motion response?",
+    answer: "Ghosting Invaders moves target reticles across dark-gray and light-gray background channels at configurable speeds (960 px/s to 3840 px/s), allowing visual comparison of trailing artifacts."
+  },
+  {
+    question: "What is MPRT (Motion Picture Response Time) vs GtG (Gray-to-Gray)?",
+    answer: "GtG measures how fast pixels switch colors; MPRT measures how long a pixel remains visible on screen during a frame, governing sample-and-hold motion blur."
+  },
+  {
+    question: "How do OLED panels eliminate pixel ghosting?",
+    answer: "OLED self-emissive sub-pixels switch states almost instantaneously (<0.1ms GtG), eliminating liquid crystal rise/fall delays and smearing."
+  },
+  {
+    question: "What overdrive setting should I select on my gaming monitor?",
+    answer: "Select a 'Medium' or 'Fast' overdrive profile that minimizes trailing blur without introducing bright white/cyan inverse ghosting coronas."
+  },
+  {
+    question: "Does Variable Refresh Rate (G-Sync/FreeSync) increase ghosting at low FPS?",
+    answer: "Without variable overdrive tuning, lower FPS under VRR causes liquid crystals to overshoot target brightness levels, producing increased inverse ghosting."
+  },
+  {
+    question: "How does Black Frame Insertion (BFI) / DyAc reduce motion blur?",
+    answer: "BFI strobes the monitor backlight off during pixel state transitions, clearing human eye retinal persistence blur for CRT-like motion clarity."
+  },
+  {
+    question: "Why do VA panels suffer from 'dark smearing' in games?",
+    answer: "VA liquid crystals have extremely slow response times when transitioning from pure black (0% luminance) to dark gray (5-10% luminance), causing dark smearing."
+  },
+  {
+    question: "How do I export my Ghosting Invaders motion test report?",
+    answer: "Click 'Export Passport' to save your verified motion response and overshoot evaluation report."
+  }
+];
+
+const seoTitle = "Ghosting Invaders — Motion Blur & Overdrive Overshoot Arcade Benchmark";
+const seoDescription = "Evaluate display Gray-to-Gray (GtG) response time, motion blur trailing, and pixel overdrive inverse ghosting with Ghosting Invaders.";
 ---
 
 <Layout 
-  title="Ghosting Invaders Game" 
-  description="Control a pursuit camera reticle to visually examine gray-to-gray transition ghosting trailing blur and overdrive coronas in our motion benchmark."
+  title={seoTitle} 
+  description={seoDescription}
+  faqs={faqs}
 >
-  <div class="py-4">
+  <div class="py-8 px-4 max-w-7xl mx-auto space-y-12 font-sans">
     <GhostingInvaders />
     
-    <div class="max-w-4xl mx-auto px-4">
+    <StepWorkflowSection />
+    <PanelTypeBreakdownSection />
+
+    <div class="max-w-4xl mx-auto">
       <EpilepsyWarning />
     </div>
+
+    <FAQSection faqs={faqs} title="Ghosting Invaders FAQs" />
   </div>
 </Layout>

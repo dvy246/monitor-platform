@@ -1,0 +1,153 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import Breadcrumbs from '../../components/ui/Breadcrumbs.astro';
+import FAQSection from '../../components/ui/FAQSection.astro';
+import { useTranslations, localizeLink } from '../../utils/i18n';
+
+
+const { lang } = useTranslations(Astro.url.pathname);
+
+const breadcrumbs = [
+  { label: 'Device Guides', href: localizeLink('/guides', lang) },
+  { label: 'Mobile & Smartphone Screen Test' }
+];
+
+const faqs = [
+  { question: "How do I test a used smartphone screen for hidden OLED burn-in?", answer: "Open our OLED Burn-In Inspector on your mobile browser, enter Fullscreen mode, and cycle through solid Red, Green, Blue, and 50% Gray canvases. Look closely at the top status bar (clock/battery icons) and bottom navigation bar area for ghosted outlines." },
+  { question: "How does the mobile multi-touch digitizer matrix test work?", answer: "Launch the Touch Matrix Grid tool on your smartphone or iPad. Drag your finger across all 100+ matrix cells to ensure every touch coordinate registers. Uncolored cells indicate uncalibrated touch dead-zones." },
+  { question: "What is digitizer RMS line noise and charger EMI interference?", answer: "Cheap third-party USB phone chargers emit high Electromagnetic Interference (EMI), causing your touch screen to register erratic erratic touch phantom inputs. Our RMS Vector Line Noise Inspector measures drawing precision against ideal straight lines to detect charger noise." },
+  { question: "Why do some OLED smartphones cause eye strain and headaches?", answer: "Many smartphones (including iPhone and Samsung Galaxy models) use low-frequency PWM backlight dimming (typically 240Hz-480Hz). At low brightness levels, rapid ON/OFF strobing can trigger eye strain and migraines in sensitive users." },
+  { question: "How do I test touch screen sampling rate (Hz) vs display refresh rate?", answer: "Display refresh rate (e.g. 120Hz ProMotion) dictates how many images the screen renders per second, while touch sampling rate (e.g. 240Hz-480Hz) measures how frequently the digitizer scans for finger inputs." },
+  { question: "Can a cracked glass layer affect multi-touch matrix responsiveness?", answer: "Yes. Hairline cracks in the outer Gorilla Glass layer can disrupt the capacitive ITO (Indium Tin Oxide) grid underneath, leading to dead touch zones or ghost touches." },
+  { question: "What is the difference between Super AMOLED, LTPO OLED, and IPS LCD phone screens?", answer: "IPS LCD uses an LED backlight with lower contrast (~1500:1). Super AMOLED offers individual self-emitting pixels. LTPO OLED allows dynamic refresh rates scaling from 1Hz up to 120Hz to conserve battery." },
+  { question: "How do I test swipe gesture velocity and fling inertia?", answer: "Use our Gesture Kinematics tool: swipe rapidly across the screen to measure instantaneous velocity (in px/ms and mm/s) and evaluate browser gesture dispatch performance." },
+  { question: "Can I generate a smartphone hardware diagnostic certificate?", answer: "Yes. Completing our touch matrix and display tests generates an immutable SHA-256 signed Hardware Passport receipt verifying screen resolution, refresh rate, and touch digitizer health." },
+  { question: "Does applying a thick tempered glass screen protector reduce touch precision?", answer: "Thick or improperly installed screen protectors can introduce capacitive offset voltage, reducing touch sensitivity. Test touch precision before and after applying protectors." }
+];
+
+
+
+---
+
+<Layout
+  title="Mobile & Smartphone Screen Test Guide: OLED Burn-In & Touch Matrix"
+  description="Comprehensive smartphone & mobile screen testing guide. OLED burn-in detection, 10-point multi-touch matrix, digitizer RMS line noise, PWM flicker sensitivity, and used phone buying advice."
+  faqs={faqs}
+>
+  <main id="main-content" class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-12 font-sans">
+    <Breadcrumbs items={breadcrumbs} />
+
+    <!-- Guide Header -->
+    <header class="space-y-4 text-center max-w-3xl mx-auto">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-500/10 border border-purple-500/30 text-xs font-mono text-purple-400 font-bold uppercase tracking-wider">
+        <svg class="w-4 h-4 text-purple-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
+        <span>MOBILE &amp; SMARTPHONE HARDWARE GUIDE</span>
+      </div>
+      <h1 class="text-3xl sm:text-4xl font-extrabold text-text-primary tracking-tight font-mono">
+        Mobile &amp; Smartphone Screen Test: OLED Burn-In &amp; Touch Matrix
+      </h1>
+      <p class="text-sm sm:text-base text-text-secondary leading-relaxed">
+        Master mobile screen inspection. Detect OLED status bar burn-in, evaluate 10-point multi-touch matrices, measure digitizer charger EMI noise, and verify 120Hz LTPO refresh rates.
+      </p>
+    </header>
+
+    <!-- Custom Inline SVG Visual Diagram -->
+    <section class="p-6 rounded-2xl bg-bg-surface border border-border-hairline space-y-4 shadow-xl">
+      <h2 class="text-lg font-bold font-mono text-text-primary flex items-center gap-2">
+        <svg class="w-5 h-5 text-purple-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
+        <span>Smartphone Touch Digitizer &amp; OLED Burn-In Diagram</span>
+      </h2>
+
+      <div class="w-full flex justify-center py-4 bg-bg-canvas rounded-xl border border-border-hairline">
+        <svg class="w-full max-w-md h-auto" viewBox="0 0 400 500" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <!-- Smartphone Outer Chassis -->
+          <rect x="80" y="20" width="240" height="460" rx="36" fill="#121215" stroke="#a855f7" stroke-width="3"/>
+          <rect x="95" y="45" width="210" height="410" rx="20" fill="#08080a" stroke="#27272a" stroke-width="2"/>
+          <!-- Dynamic Island / Notch -->
+          <rect x="160" y="55" width="80" height="18" rx="9" fill="#18181b"/>
+          <!-- Status Bar Burn-In Ghosting Area -->
+          <rect x="95" y="45" width="210" height="35" rx="4" fill="#a855f7" fill-opacity="0.15" stroke="#a855f7" stroke-dasharray="3 3"/>
+          <text x="110" y="68" fill="#c084fc" font-family="monospace" font-size="10" font-weight="bold">Status Bar Burn-In Zone</text>
+          <!-- Touch Matrix Grid Nodes -->
+          <g stroke="#3f3f46" stroke-width="1">
+            <line x1="95" y1="150" x2="305" y2="150"/>
+            <line x1="95" y1="230" x2="305" y2="230"/>
+            <line x1="95" y1="310" x2="305" y2="310"/>
+            <line x1="95" y1="390" x2="305" y2="390"/>
+            <line x1="165" y1="95" x2="165" y2="445"/>
+            <line x1="235" y1="95" x2="235" y2="445"/>
+          </g>
+          <!-- Multi-Touch Touch Contacts -->
+          <circle cx="165" cy="230" r="16" fill="#a855f7" fill-opacity="0.3" stroke="#a855f7" stroke-width="2"/>
+          <circle cx="165" cy="230" r="4" fill="#ffffff"/>
+          <text x="185" y="234" fill="#ffffff" font-family="monospace" font-size="10">Touch Point #1</text>
+          <!-- Dead Touch Zone -->
+          <rect x="235" y="310" width="70" height="80" fill="#ef4444" fill-opacity="0.2" stroke="#ef4444" stroke-width="2"/>
+          <text x="242" y="355" fill="#ef4444" font-family="monospace" font-size="10" font-weight="bold">Dead Zone</text>
+          <!-- Bottom Gesture Home Bar -->
+          <rect x="160" y="442" width="80" height="4" rx="2" fill="#ffffff"/>
+        </svg>
+      </div>
+    </section>
+
+    <!-- 8-Step Mobile Inspection Workflow -->
+    <section class="space-y-6">
+      <h2 class="text-2xl font-bold font-mono text-text-primary border-b border-border-hairline pb-3">
+        8-Step Smartphone Testing Workflow
+      </h2>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 font-sans text-sm">
+        <div class="p-4 rounded-xl bg-bg-surface border border-border-hairline space-y-2">
+          <span class="text-xs font-mono font-bold text-purple-400 px-2 py-0.5 rounded bg-purple-500/10 border border-purple-500/30">STEP 1</span>
+          <h3 class="font-bold text-text-primary">Status Bar OLED Burn-In Sweep</h3>
+          <p class="text-text-muted text-xs leading-relaxed">Launch the <a href={localizeLink("/display-tests/oled-burn-in", lang)} class="text-purple-400 hover:underline">OLED Burn-In Inspector</a> in Fullscreen and inspect the top status bar and bottom nav bar areas on solid red and cyan canvases.</p>
+        </div>
+
+        <div class="p-4 rounded-xl bg-bg-surface border border-border-hairline space-y-2">
+          <span class="text-xs font-mono font-bold text-purple-400 px-2 py-0.5 rounded bg-purple-500/10 border border-purple-500/30">STEP 2</span>
+          <h3 class="font-bold text-text-primary">10-Point Touch Matrix Grid Scan</h3>
+          <p class="text-text-muted text-xs leading-relaxed">Open the <a href={localizeLink("/touch-tests/dead-zone", lang)} class="text-purple-400 hover:underline">Touch Matrix Grid</a> and paint all matrix squares across the phone display to identify uncalibrated dead-zones.</p>
+        </div>
+
+        <div class="p-4 rounded-xl bg-bg-surface border border-border-hairline space-y-2">
+          <span class="text-xs font-mono font-bold text-purple-400 px-2 py-0.5 rounded bg-purple-500/10 border border-purple-500/30">STEP 3</span>
+          <h3 class="font-bold text-text-primary">Multi-Touch Pointer Event Counter</h3>
+          <p class="text-text-muted text-xs leading-relaxed">Test maximum digitizer touch contacts with our <a href={localizeLink("/touch-tests/multi-touch", lang)} class="text-purple-400 hover:underline">Multi-Touch Counter</a>, placing all 10 fingers on screen simultaneously.</p>
+        </div>
+
+        <div class="p-4 rounded-xl bg-bg-surface border border-border-hairline space-y-2">
+          <span class="text-xs font-mono font-bold text-purple-400 px-2 py-0.5 rounded bg-purple-500/10 border border-purple-500/30">STEP 4</span>
+          <h3 class="font-bold text-text-primary">Charger EMI RMS Line Noise Test</h3>
+          <p class="text-text-muted text-xs leading-relaxed">Plug in your charger and use the <a href={localizeLink("/touch-tests/vector-precision", lang)} class="text-purple-400 hover:underline">RMS Vector Line Precision</a> tool to check for erratic touch noise caused by poor power supply filtering.</p>
+        </div>
+
+        <div class="p-4 rounded-xl bg-bg-surface border border-border-hairline space-y-2">
+          <span class="text-xs font-mono font-bold text-purple-400 px-2 py-0.5 rounded bg-purple-500/10 border border-purple-500/30">STEP 5</span>
+          <h3 class="font-bold text-text-primary">120Hz LTPO ProMotion Refresh Test</h3>
+          <p class="text-text-muted text-xs leading-relaxed">Navigate to <a href={localizeLink("/refresh-rate-test", lang)} class="text-purple-400 hover:underline">Refresh Rate Test</a> to verify dynamic LTPO refresh scaling between 60Hz and 120Hz during user interaction.</p>
+        </div>
+
+        <div class="p-4 rounded-xl bg-bg-surface border border-border-hairline space-y-2">
+          <span class="text-xs font-mono font-bold text-purple-400 px-2 py-0.5 rounded bg-purple-500/10 border border-purple-500/30">STEP 6</span>
+          <h3 class="font-bold text-text-primary">PWM Dimming Flicker Inspection</h3>
+          <p class="text-text-muted text-xs leading-relaxed">Set brightness to 20% and use our <a href={localizeLink("/display-tests/flicker-test", lang)} class="text-purple-400 hover:underline">PWM Flicker Inspector</a> to measure pulse frequency and eye safety risk.</p>
+        </div>
+
+        <div class="p-4 rounded-xl bg-bg-surface border border-border-hairline space-y-2">
+          <span class="text-xs font-mono font-bold text-purple-400 px-2 py-0.5 rounded bg-purple-500/10 border border-purple-500/30">STEP 7</span>
+          <h3 class="font-bold text-text-primary">Swipe Gesture Velocity Tracker</h3>
+          <p class="text-text-muted text-xs leading-relaxed">Use the <a href={localizeLink("/touch-tests/swipe-velocity", lang)} class="text-purple-400 hover:underline">Swipe Velocity Tracker</a> to benchmark fling gesture kinetics and browser dispatch overhead.</p>
+        </div>
+
+        <div class="p-4 rounded-xl bg-bg-surface border border-border-hairline space-y-2">
+          <span class="text-xs font-mono font-bold text-purple-400 px-2 py-0.5 rounded bg-purple-500/10 border border-purple-500/30">STEP 8</span>
+          <h3 class="font-bold text-text-primary">Dead Pixel &amp; Subpixel Inspection</h3>
+          <p class="text-text-muted text-xs leading-relaxed">Run the <a href={localizeLink("/display-tests/dead-pixel", lang)} class="text-purple-400 hover:underline">Dead Pixel Test</a> to verify zero bright or dark subpixels across high-density PPI mobile displays.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <FAQSection faqs={faqs} title="Mobile Screen Testing FAQs" />
+  </main>
+</Layout>

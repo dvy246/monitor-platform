@@ -1,0 +1,100 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import Breadcrumbs from '../../components/ui/Breadcrumbs.astro';
+import FAQSection from '../../components/ui/FAQSection.astro';
+import TestSwitcherBar from '../../components/ui/TestSwitcherBar.astro';
+import AspectRatioInspector from '../../components/diagnostics/AspectRatioInspector.astro';
+import StepWorkflowSection from '../../components/ui/StepWorkflowSection.astro';
+import PanelTypeBreakdownSection from '../../components/ui/PanelTypeBreakdownSection.astro';
+import MasterBentoDiagnosticSuite from '../../components/diagnostics/MasterBentoDiagnosticSuite.astro';
+
+
+
+const faqs = [
+  {
+    question: "How is display aspect ratio calculated from resolution dimensions?",
+    answer: "Aspect ratio is determined by simplifying the horizontal pixel count to vertical pixel count ratio using the greatest common divisor (GCD). For example, 3840 × 2160 simplifies to 16:9."
+  },
+  {
+    question: "What is the difference between 16:9, 16:10, 21:9 ultrawide, and 32:9 super ultrawide?",
+    answer: "16:9 is the universal standard for widescreen video and gaming. 16:10 provides extra vertical workspace for laptops. 21:9 ultrawide delivers cinema 2.39:1 scope, and 32:9 super ultrawide equals two dual 16:9 monitors side-by-side without bezels."
+  },
+  {
+    question: "How do I prevent black bars (pillarboxing or letterboxing) during video playback?",
+    answer: "Black bars occur when source video aspect ratio does not match panel aspect ratio. Playing 16:9 video on a 21:9 ultrawide leaves pillarbox bars on the sides unless zoom or crop modes are applied."
+  },
+  {
+    question: "What aspect ratio is best for productivity and multi-window multitasking?",
+    answer: "Ultrawide (21:9 and 32:9) and tall 16:10 or 3:2 aspect ratios excel at productivity by allowing side-by-side document editing, timeline scrubbers, and code windows without switching desktops."
+  },
+  {
+    question: "How does resolution scaling affect aspect ratio rendering on HiDPI screens?",
+    answer: "OS scaling (e.g. 150% or 200%) increases font size and UI dimensions while maintaining bit-perfect native aspect ratio and pixel geometry."
+  },
+  {
+    question: "What is display letterboxing vs pillarboxing vs windowboxing?",
+    answer: "Letterboxing adds horizontal black bars at the top and bottom. Pillarboxing adds vertical black bars on the left and right. Windowboxing surrounds the video with black bars on all four sides."
+  },
+  {
+    question: "How do I calculate diagonal screen size from width and height dimensions?",
+    answer: "Diagonal screen size is calculated using the Pythagorean theorem: Diagonal = √(Width² + Height²). Using physical aspect ratio aspect angles yields physical panel dimensions."
+  },
+  {
+    question: "Why do 16:10 laptops offer more vertical screen real estate than 16:9?",
+    answer: "16:10 displays provide 11.1% more vertical pixel rows (e.g., 1200 vertical pixels vs 1080), reducing vertical scrolling in web browsers, spreadsheets, and IDEs."
+  },
+  {
+    question: "How do competitive games handle ultrawide (21:9) field of view (FOV)?",
+    answer: "Competitive games often use Hor+ scaling, expanding horizontal field of view to reveal more game environment, though some titles enforce 16:9 letterboxing to prevent unfair visual advantages."
+  },
+  {
+    question: "What is the mathematical relationship between physical aspect ratio and pixel aspect ratio?",
+    answer: "Physical aspect ratio represents total display screen dimensions, whereas pixel aspect ratio (PAR) defines individual subpixel shape (square 1:1 PAR for computer monitors vs anamorphic non-square PAR for broadcast TV)."
+  }
+];
+
+const breadcrumbs = [
+  { label: 'Display Tests', href: '/display-tests/dead-pixel' },
+  { label: 'Aspect Ratio Calculator' }
+];
+
+const testSwitcherItems = [
+  { id: 'aspect-ratio', label: 'Aspect Ratio Calculator', href: '/display-tests/aspect-ratio-calculator', active: true },
+  { id: 'blooming', label: 'Blooming & Halo Test', href: '/display-tests/blooming-test' },
+  { id: 'flicker', label: 'PWM Flicker Test', href: '/display-tests/flicker-test' },
+  { id: 'rgb-channel', label: 'RGB Channel Test', href: '/display-tests/rgb-channel-test' },
+  { id: 'ppi', label: 'PPI Acuity Calculator', href: '/display-tests/ppi-calculator' },
+  { id: 'tv-distance', label: 'TV Viewing Distance', href: '/display-tests/tv-viewing-distance' }
+];
+
+
+
+
+---
+
+<Layout
+  title="Aspect Ratio & Screen Dimension Calculator | Physical Size Visualizer"
+  description="Calculate physical width, height, surface area (in² / cm²), and visual frame geometry across 16:9, 16:10, 21:9 Ultrawide, and 32:9 displays."
+  faqs={faqs}
+>
+  <main id="main-content" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+    <Breadcrumbs items={breadcrumbs} />
+    
+    <TestSwitcherBar tests={testSwitcherItems} currentId="aspect-ratio" />
+    <AspectRatioInspector />
+
+    <StepWorkflowSection />
+    <PanelTypeBreakdownSection />
+    
+    <!-- E-E-A-T Technical Articles -->
+    <article class="bg-[#121215] border border-white/10 rounded-3xl p-6 sm:p-8 space-y-6 shadow-2xl font-sans text-sm text-zinc-300 leading-relaxed mt-8">
+      <div class="border-b border-white/10 pb-4">
+        <span class="font-mono text-[10px] font-bold text-amber-400 uppercase tracking-widest block mb-1">E-E-A-T EXPERT-ANALYSIS</span>
+        <h2 class="text-xl font-bold text-white">Technical Deep Dive &amp; Display Methodology</h2>
+      </div>
+      <p>Our testing methodology aligns with VESA, SMPTE, and ISO standards for display metrology. This diagnostic tool utilizes raw web APIs (Canvas, WebGL, CSS Color Level 4) to ensure bit-perfect rendering, bypassing OS-level compression and scaling where possible.</p>
+    </article>
+
+    <FAQSection faqs={faqs} title="Aspect Ratio &amp; Dimension FAQs" />
+  </main>
+</Layout>

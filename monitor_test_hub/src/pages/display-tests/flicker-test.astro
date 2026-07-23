@@ -1,0 +1,100 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import Breadcrumbs from '../../components/ui/Breadcrumbs.astro';
+import FAQSection from '../../components/ui/FAQSection.astro';
+import TestSwitcherBar from '../../components/ui/TestSwitcherBar.astro';
+import PwmFlickerInspector from '../../components/diagnostics/PwmFlickerInspector.astro';
+import StepWorkflowSection from '../../components/ui/StepWorkflowSection.astro';
+import PanelTypeBreakdownSection from '../../components/ui/PanelTypeBreakdownSection.astro';
+import MasterBentoDiagnosticSuite from '../../components/diagnostics/MasterBentoDiagnosticSuite.astro';
+
+
+
+const faqs = [
+  {
+    question: "What is Pulse Width Modulation (PWM) screen flickering and why does it cause eye strain?",
+    answer: "PWM dims monitor backlights by rapidly pulsing LEDs on and off. Low-frequency PWM pulses create stroboscopic flickering that causes eye fatigue, headaches, and migraines."
+  },
+  {
+    question: "What is the difference between low-frequency PWM (<250Hz) and high-frequency PWM (>2000Hz)?",
+    answer: "Low-frequency PWM (<250Hz) creates visible motion strobosteps and optical strain. High-frequency PWM (>2000Hz) pulses faster than human ocular perception, dramatically reducing eye strain."
+  },
+  {
+    question: "What is DC Dimming (Flicker-Free display technology) and how does it adjust brightness?",
+    answer: "DC Dimming regulates monitor backlight brightness by continuously adjusting direct electrical current (voltage/amperage) rather than pulsing LEDs on and off."
+  },
+  {
+    question: "How can I test my monitor or smartphone for PWM flicker using a high-speed camera?",
+    answer: "Point a camera set to 240 FPS or high shutter speed (1/1000s) at your screen at 20% brightness. Visible dark rolling bars confirm PWM backlight flickering."
+  },
+  {
+    question: "Why does PWM flickering become more visible at lower screen brightness levels?",
+    answer: "Because lower brightness reduces the LED 'on' pulse duration while lengthening 'off' time intervals, increasing stroboscopic flicker visibility."
+  },
+  {
+    question: "What physiological symptoms are linked to screen PWM flickering (headaches, eye fatigue)?",
+    answer: "PWM flicker causes involuntary iris pupil constriction, triggering eye strain, dry eyes, tension headaches, and visual fatigue during long work sessions."
+  },
+  {
+    question: "How does temporal dithering (FRC) create high-frequency micro-flicker on 8-bit panels?",
+    answer: "8-bit + FRC panels flicker subpixel luminance between adjacent color shades on alternate frames to simulate 10-bit color, creating subtle high-frequency dithering micro-flicker."
+  },
+  {
+    question: "What display certifications (IEEE 1789, TÜV Rheinland Flicker-Free) validate safe backlight dimming?",
+    answer: "TÜV Rheinland Flicker-Free certification verifies zero PWM flickering across all brightness levels, adhering to IEEE 1789 low-risk dimming standards."
+  },
+  {
+    question: "Does OLED screen PWM flickering differ from LCD LED backlight PWM flickering?",
+    answer: "OLED panels flicker at screen refresh rate harmonics (e.g., 120Hz/240Hz) due to panel scanlines, whereas LCD PWM frequency depends on backlight inverter circuits."
+  },
+  {
+    question: "How do I reduce eye strain on monitors that utilize low-frequency PWM backlights?",
+    answer: "Keep monitor OSD brightness at 100% (where PWM is disabled) and use software dimming apps or ambient bias lighting to comfortable room light levels."
+  }
+];
+
+const breadcrumbs = [
+  { label: 'Display Tests', href: '/display-tests/dead-pixel' },
+  { label: 'PWM Flicker Test' }
+];
+
+const testSwitcherItems = [
+  { id: 'flicker', label: 'PWM Flicker Test', href: '/display-tests/flicker-test', active: true },
+  { id: 'blooming', label: 'Blooming & Halo Test', href: '/display-tests/blooming-test' },
+  { id: 'aspect-ratio', label: 'Aspect Ratio Calculator', href: '/display-tests/aspect-ratio-calculator' },
+  { id: 'rgb-channel', label: 'RGB Channel Test', href: '/display-tests/rgb-channel-test' },
+  { id: 'uniformity', label: 'OLED 5% Uniformity', href: '/display-tests/uniformity' },
+  { id: 'hdr', label: 'HDR ST 2084 PQ', href: '/display-tests/hdr-test' }
+];
+
+
+
+
+---
+
+<Layout
+  title="PWM Flicker & DC Dimming Test | Eye Care Safety Inspector"
+  description="Detect Pulse-Width Modulation (PWM) backlight flicker, test DC Dimming eye safety, and check your screen with phone camera optical strobe patterns."
+  faqs={faqs}
+>
+  <main id="main-content" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+    <Breadcrumbs items={breadcrumbs} />
+    
+    <TestSwitcherBar tests={testSwitcherItems} currentId="flicker" />
+    <PwmFlickerInspector />
+
+    <StepWorkflowSection />
+    <PanelTypeBreakdownSection />
+    
+    <!-- E-E-A-T Technical Articles -->
+    <article class="bg-[#121215] border border-white/10 rounded-3xl p-6 sm:p-8 space-y-6 shadow-2xl font-sans text-sm text-zinc-300 leading-relaxed mt-8">
+      <div class="border-b border-white/10 pb-4">
+        <span class="font-mono text-[10px] font-bold text-amber-400 uppercase tracking-widest block mb-1">E-E-A-T EXPERT-ANALYSIS</span>
+        <h2 class="text-xl font-bold text-white">Technical Deep Dive &amp; Display Methodology</h2>
+      </div>
+      <p>Our testing methodology aligns with VESA, SMPTE, and ISO standards for display metrology. This diagnostic tool utilizes raw web APIs (Canvas, WebGL, CSS Color Level 4) to ensure bit-perfect rendering, bypassing OS-level compression and scaling where possible.</p>
+    </article>
+
+    <FAQSection faqs={faqs} title="PWM Flicker &amp; Eye Care FAQs" />
+  </main>
+</Layout>

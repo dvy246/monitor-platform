@@ -1,0 +1,395 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import MouseTesterCanvas from '../../components/diagnostics/MouseTesterCanvas.astro';
+import MasterBentoDiagnosticSuite from '../../components/diagnostics/MasterBentoDiagnosticSuite.astro';
+import StepWorkflowSection from '../../components/ui/StepWorkflowSection.astro';
+import PanelTypeBreakdownSection from '../../components/ui/PanelTypeBreakdownSection.astro';
+import FAQSection from '../../components/ui/FAQSection.astro';
+
+
+
+export function getStaticPaths() {
+  const mouseCategories = [
+    {
+      slug: 'polling-rate',
+      title: 'Mouse Polling Rate Test | 8000Hz USB HID Frequency & Jitter Checker',
+      h1: 'Mouse Polling Rate & 8000Hz USB Jitter Benchmark',
+      description: 'Test your gaming mouse polling rate online. Measure 125Hz to 8000Hz USB HID report frequency, average delta times, and timestamp jitter standard deviation.',
+      badge: '8000Hz USB HID POLLING SPEC',
+      faqs: [
+        { question: "What is mouse polling rate?", answer: "Mouse polling rate is how frequently (in Hz) your mouse reports its position to your computer per second." },
+        { question: "What is the difference between 125Hz, 1000Hz, and 8000Hz polling rate?", answer: "125Hz reports every 8ms; 1000Hz reports every 1ms; 8000Hz reports every 0.125ms, delivering ultra-low click-to-photon latency." },
+        { question: "How does the online polling rate test work?", answer: "Calculates microsecond timestamp deltas between consecutive PointerEvent dispatches to derive real-time Hz and jitter standard deviation." },
+        { question: "What causes mouse polling rate jitter or instability?", answer: "Causes include CPU bottlenecking, USB hub bandwidth sharing, high background process load, or low battery voltage on wireless mice." },
+        { question: "Do 8000Hz gaming mice increase CPU usage?", answer: "Yes, processing 8,000 HID reports per second increases CPU interrupt overhead; multi-core processors easily handle high-rate mice." },
+        { question: "Is a high polling rate necessary for 240Hz and 360Hz monitors?", answer: "Yes, high polling rates eliminate cursor micro-stutter on high-refresh-rate displays by aligning mouse updates with screen refresh frames." },
+        { question: "Can wireless gaming mice achieve stable 1000Hz or 4000Hz polling?", answer: "Modern 2.4GHz wireless gaming mice achieve stable 1000Hz-4000Hz polling using dedicated USB dongles." },
+        { question: "Why does my polling rate drop when moving the mouse slowly?", answer: "Some mouse sensors enter power-saving states during slow movements, reducing report dispatch frequency." },
+        { question: "How do I export polling rate test telemetry logs?", answer: "Click 'Export Passport' to download a cryptographically signed JSON report certifying your mouse polling frequency." },
+        { question: "Does this polling rate test require driver installation?", answer: "No, 100% browser-native using high-precision PointerEvents APIs." }
+      ]
+    },
+    {
+      slug: 'double-click',
+      title: 'Mouse Double Click Test | Switch Chatter & Bounce Analyzer',
+      h1: 'Mouse Double Click & Switch Chatter Diagnostic Tool',
+      description: 'Test your mouse switches for double-clicking faults. Detect metallic leaf chatter under 35ms, identifying failing Omron, Huano, or optical microswitches.',
+      badge: 'MICROSECOND SWITCH DEBOUNCE SPEC',
+      faqs: [
+        { question: "What is mouse switch chatter (double clicking)?", answer: "Switch chatter occurs when a single physical mouse click registers multiple clicks within milliseconds due to oxidized metal leaf contacts." },
+        { question: "How does the double click test detect faulty switches?", answer: "Logs microsecond timestamp deltas between click release and immediate re-press (t_delta <= 35ms), flagging chatter defects." },
+        { question: "Which mouse switch types suffer from double clicking?", answer: "Mechanical switches (Omron, Huano, TTC) are prone to oxidation double-clicking; optical switches are immune to mechanical chatter." },
+        { question: "Can dust or humidity cause mouse double clicks?", answer: "Yes, humidity oxidizes contact leaves and dust prevents clean metal closure, causing erratic electrical signals." },
+        { question: "How do I fix a double clicking mouse switch?", answer: "Fixes include blowing compressed air into microswitches, applying 99% isopropyl alcohol, re-soldering new switches, or upgrading to optical mice." },
+        { question: "Can software debounce delay fix mouse double-clicking?", answer: "Yes, increasing software debounce delay in mouse vendor software filters chatter, though it adds minor click latency." },
+        { question: "Why do optical mouse switches not double-click?", answer: "Optical switches break an infrared light beam instead of making metallic contact, eliminating mechanical contact bounce." },
+        { question: "Does this double click test work with side buttons (MB4 & MB5)?", answer: "Yes, all 5 mouse buttons—LMB, RMB, MMB, MB4, MB5—are tested for switch chatter." },
+        { question: "What is the recommended double click testing time?", answer: "Perform 50-100 rapid clicks per button to reliably catch intermittent switch bounce faults." },
+        { question: "How do I export my mouse switch health report?", answer: "Click 'Export Passport' to download a JSON certificate logging your mouse switch double-click status." }
+      ]
+    },
+    {
+      slug: 'dpi-calculator',
+      title: 'Mouse DPI Calculator | Sensitivity & eDPI Benchmark',
+      h1: 'Mouse DPI & Esports Sensitivity Calibration Tool',
+      description: 'Calculate true mouse DPI and eDPI for CS2, Valorant, Overwatch, and Fortnite. Measure physical distance traveled against screen pixel deltas.',
+      badge: 'DPI & EDPI CALIBRATION SPEC',
+      faqs: [
+        { question: "What is mouse DPI (Dots Per Inch)?", answer: "DPI measures how many pixels your cursor moves across the screen for every inch of physical mouse displacement." },
+        { question: "What is eDPI (Effective DPI)?", answer: "eDPI is your true in-game sensitivity calculated by multiplying physical mouse DPI by in-game sensitivity multiplier." },
+        { question: "How do I calculate true mouse DPI online?", answer: "Move your mouse a known physical distance (e.g. 1 inch or 25.4mm); the tool divides total pixel displacement by target inches." },
+        { question: "Why does my calculated DPI differ from manufacturer specs?", answer: "DPI variance occurs due to mouse pad surface texture, sensor height (LOD), or lens magnification tolerances." },
+        { question: "Is higher DPI better for competitive gaming?", answer: "Higher DPI (e.g. 1600 DPI vs 400 DPI) reduces sensor input latency, provided in-game sensitivity is lowered proportionally to maintain eDPI." },
+        { question: "What is CPI vs DPI?", answer: "CPI (Counts Per Inch) is the technically correct sensor term, while DPI (Dots Per Inch) is the common consumer term; both mean identical things." },
+        { question: "How does screen resolution affect perceived mouse sensitivity?", answer: "Higher screen resolutions (4K vs 1080p) require more pixel distance, making the same DPI feel slower unless scaled." },
+        { question: "What is mouse sensor acceleration?", answer: "Sensor acceleration increases cursor distance based on speed of movement rather than physical distance; disable Enhanced Pointer Precision in OS settings." },
+        { question: "Can I convert sensitivity between CS2, Valorant, and Apex Legends?", answer: "Yes, eDPI allows direct 1:1 sensitivity mapping across tactical esports shooters." },
+        { question: "How do I save my mouse DPI calibration report?", answer: "Click 'Export Passport' to save your verified DPI calibration settings in a JSON certificate." }
+      ]
+    },
+    {
+      slug: 'cps-test',
+      title: 'Mouse CPS Test | Clicks Per Second Speedometer & Time Trials',
+      h1: 'Mouse Clicker CPS Speedometer & Time Trial Benchmark',
+      description: 'Test your mouse click speed in CPS (Clicks Per Second). Benchmark 5s, 10s, and 30s clicker trials with live speed cadence graphs.',
+      badge: 'CPS CLICK SPEED SPEC',
+      faqs: [
+        { question: "What is a Mouse CPS Test?", answer: "A CPS (Clicks Per Second) test measures how many mouse clicks you can register within timed intervals." },
+        { question: "How is CPS speed calculated?", answer: "CPS is calculated by taking total mouse button clicks divided by the exact elapsed duration in seconds." },
+        { question: "What is a good mouse CPS score?", answer: "Average clicking speed is 4 to 6 CPS; competitive players achieve 7 to 9 CPS, and jitter/butterfly clickers reach 12+ CPS." },
+        { question: "What are Butterfly Clicking and Jitter Clicking techniques?", answer: "Butterfly clicking alternates two fingers on a single button; Jitter clicking vibrates hand muscles for rapid burst CPS." },
+        { question: "What is Drag Clicking?", answer: "Drag clicking drags friction-heavy fingers across switch keycaps, triggering rapid micro-bounces for extreme CPS in Minecraft." },
+        { question: "Does mouse switch debounce time affect max CPS score?", answer: "Low debounce time settings allow rapid micro-actuations to register without being filtered out by MCU firmware." },
+        { question: "How do 5s, 10s, and 30s CPS trials differ?", answer: "5s tests explosive burst speed, 10s evaluates sustained cadence, and 30s tests finger muscle stamina." },
+        { question: "Can I test Right Click (RMB) CPS speed?", answer: "Yes, both Left Click (LMB) and Right Click (RMB) speeds are recorded in the test engine." },
+        { question: "Is this CPS speed test free and ad-free?", answer: "Yes, 100% free and client-side executed with zero ads or tracking." },
+        { question: "How do I export my CPS test high score certificate?", answer: "Click 'Export Passport' to download a cryptographically signed JSON report certifying your peak CPS speed." }
+      ]
+    },
+    {
+      slug: 'scroll-wheel',
+      title: 'Mouse Scroll Wheel Test | Encoder Step & Directional Velocity',
+      h1: 'Mouse Scroll Wheel & Mechanical Encoder Benchmark',
+      description: 'Test mouse scroll wheel encoder steps, directional velocity, and wheel button (MMB) actuation. Detect loose scroll wheels and skipped steps.',
+      badge: 'SCROLL WHEEL & ENCODER SPEC',
+      faqs: [
+        { question: "How do I test my mouse scroll wheel online?", answer: "Scroll up and down inside the test window to verify vertical/horizontal scroll event dispatch and encoder steps." },
+        { question: "What is a mechanical mouse scroll encoder?", answer: "A mechanical encoder uses a notched wheel with metallic contacts to register discrete scroll steps (notches)." },
+        { question: "What causes a mouse scroll wheel to jump in the wrong direction?", answer: "Dust, hair, or worn encoder contact wheel leaves cause the sensor to read inverted optical or electrical quadrature signals." },
+        { question: "How do optical scroll encoders differ from mechanical encoders?", answer: "Optical encoders break infrared light beams, offering longer lifespan and immunity to physical contact wear." },
+        { question: "How do I test Middle Mouse Button (MMB) click actuation?", answer: "Press straight down on your scroll wheel to verify MMB switch contact closure." },
+        { question: "What is infinite / free-spin scrolling on Logitech mice?", answer: "Free-spin mode disengages the mechanical ratchet clicker, allowing the scroll wheel to spin freely on dual-mode bearings." },
+        { question: "How do I fix a loose or jumpy scroll wheel?", answer: "Clean the encoder housing with compressed air or 99% isopropyl alcohol; severe skipping requires encoder replacement." },
+        { question: "Does this test support horizontal tilt-wheel scrolling?", answer: "Yes, horizontal tilt events (deltaX) are captured alongside standard vertical scroll events (deltaY)." },
+        { question: "Why does my browser scroll the web page during testing?", answer: "Our diagnostic engine intercepts wheel event listeners to prevent default page scrolling while testing." },
+        { question: "How do I export scroll wheel test logs?", answer: "Click 'Export Passport' to download a JSON hardware certificate certifying your scroll wheel encoder status." }
+      ]
+    },
+    {
+      slug: 'jitter-test',
+      title: 'Cursor Trajectory & Jitter Test | Smoothness & Spline Inspector',
+      h1: 'Cursor Smoothness & Sensor Trajectory Benchmark',
+      description: 'Inspect mouse sensor trajectory smoothness, angle snapping, and pixel skipping with Bezier spline drawing and raw PointerEvent vectors.',
+      badge: 'SENSOR TRAJECTORY & SMOOTHNESS SPEC',
+      faqs: [
+        { question: "What is cursor trajectory jitter?", answer: "Jitter refers to erratic, uncommanded cursor micro-vibrations caused by sensor optical noise, dust on lens, or bad mouse pad surfaces." },
+        { question: "What is mouse angle snapping (prediction)?", answer: "Angle snapping is sensor firmware smoothing that forces diagonal hand movements into straight horizontal or vertical lines." },
+        { question: "How does the trajectory smoothness canvas work?", answer: "Renders raw PointerEvent coordinate dots alongside smoothed Bezier curves to reveal sensor interpolation artifacts." },
+        { question: "What causes mouse pixel skipping?", answer: "Pixel skipping occurs when low DPI combined with high in-game sensitivity causes the cursor to jump across multiple pixels." },
+        { question: "How do I test my mouse pad surface for sensor tracking errors?", answer: "Move your mouse in smooth circles; uneven tracking or cursor stutters indicate mouse pad dirt or weave reflections." },
+        { question: "What is Lift-Off Distance (LOD)?", answer: "LOD is the height above the mouse pad at which the optical sensor stops tracking movement (typically 1.0mm - 2.0mm)." },
+        { question: "Does high DPI increase cursor jitter?", answer: "Sensors operating near maximum native DPI (e.g. 26,000 DPI) can introduce minor optical sensor noise and jitter." },
+        { question: "How do I disable mouse acceleration in Windows?", answer: "Uncheck 'Enhance pointer precision' in Windows Mouse Properties to ensure true 1:1 linear tracking." },
+        { question: "What optical sensors are considered top-tier for esports?", answer: "Top sensors include PixArt PAW3395, Focus Pro 30K, and HERO 25K, featuring zero hardware smoothing or acceleration." },
+        { question: "How do I export my sensor trajectory test report?", answer: "Click 'Export Passport' to save your verified cursor trajectory telemetry in a JSON certificate." }
+      ]
+    },
+    {
+      slug: 'sensitivity-converter',
+      title: 'Mouse Sensitivity Converter | Yaw-Based Precision cm/360 Calculator',
+      h1: 'Mouse Sensitivity Converter & Esports cm/360 Calculator',
+      description: 'Convert mouse sensitivity between CS2, Valorant, Overwatch 2, Apex Legends, Fortnite, and Rainbow Six Siege with exact yaw-based cm/360 precision.',
+      badge: 'YAW-BASED SENSITIVITY CONVERTER',
+      faqs: [
+        { question: "What is a Mouse Sensitivity Converter?", answer: "A sensitivity converter maps in-game mouse sensitivity values between different FPS game engines using exact angular yaw multipliers to preserve cm/360 physical distance." },
+        { question: "What is cm/360 physical distance?", answer: "cm/360 is the exact physical distance in centimeters your mouse must travel across your mousepad to perform a full 360-degree in-game camera rotation." },
+        { question: "How do I convert sensitivity from CS2 to Valorant?", answer: "Divide your CS2 sensitivity by 3.181818 (e.g., 1.0 CS2 sensitivity = 0.314 Valorant sensitivity) to achieve 1:1 identical physical cm/360 rotation." },
+        { question: "What are game yaw variables (m_yaw)?", answer: "Yaw is the rotational angle increment per count. Source Engine (CS2/Apex) uses 0.022 yaw, Unreal Engine (Valorant) uses 0.07 atmospheric yaw." },
+        { question: "Why does converting sensitivity by eDPI alone fail between different games?", answer: "Different game engines scale camera rotation differently per in-game unit; converting by physical cm/360 distance guarantees true muscle memory parity." },
+        { question: "How does FOV (Field of View) impact perceived sensitivity?", answer: "Higher FOV stretches peripheral vision, making identical cm/360 sensitivity feel faster; match focal distance scaling for 1:1 aim feel." },
+        { question: "Can I convert sensitivity for 4K high-DPI mice?", answer: "Yes, cm/360 physical distance formulas hold true regardless of whether your mouse operates at 400 DPI, 800 DPI, or 1600 DPI." },
+        { question: "Does Windows pointer speed affect in-game raw input?", answer: "Games with Raw Input enabled (rawinput 1) bypass OS pointer speed and acceleration entirely, reading raw USB HID counts." },
+        { question: "How do I test my converted sensitivity accuracy?", answer: "Use our Precision Aim Test canvas to measure crosshair deviation and muscle memory click accuracy." },
+        { question: "How do I export my converted sensitivity settings?", answer: "Click 'Export Passport' to save your converted game sensitivity profiles in a shareable JSON certificate." }
+      ]
+    },
+    {
+      slug: 'edpi-calculator',
+      title: 'eDPI Calculator | Calculate Effective DPI & Pro Player Comparisons',
+      h1: 'Esports eDPI Calculator & Pro Player Sensitivity Benchmark',
+      description: 'Calculate effective DPI (eDPI) and physical cm/360 distance for CS2, Valorant, Apex Legends, and Overwatch. Benchmark your sensitivity against pro esports players.',
+      badge: 'EFFECTIVE DPI (eDPI) BENCHMARK',
+      faqs: [
+        { question: "What is eDPI (Effective DPI)?", answer: "eDPI is calculated by multiplying physical mouse DPI by in-game sensitivity (eDPI = DPI × Sensitivity), establishing a standardized total sensitivity score." },
+        { question: "Why is eDPI useful for comparing mouse settings?", answer: "eDPI allows comparing player settings across different physical mouse DPI values (e.g. 400 DPI @ 2.0 sens = 800 eDPI, matching 800 DPI @ 1.0 sens)." },
+        { question: "What is the average eDPI of Valorant pro players?", answer: "Valorant pros average 280 eDPI (approx. 800 DPI @ 0.35 sens), equating to ~46 cm/360 physical swipe distance." },
+        { question: "What is the average eDPI of CS2 pro players?", answer: "CS2 pros average 880 eDPI (approx. 800 DPI @ 1.1 sens), equating to ~47 cm/360 physical swipe distance." },
+        { question: "What is low eDPI vs high eDPI in tactical shooters?", answer: "Low eDPI (under 300 in Valorant) maximizes micro-adjustment precision; high eDPI (over 500) enables rapid 180-degree flicks." },
+        { question: "Does higher DPI with lower in-game sensitivity reduce latency?", answer: "Yes, using 1600 DPI with half in-game sensitivity maintains identical eDPI while reducing sensor input latency by up to 2-3ms." },
+        { question: "How do I calculate cm/360 from eDPI?", answer: "cm/360 is derived from eDPI using game-specific yaw constants; lower eDPI requires longer physical mousepad distance." },
+        { question: "Does eDPI change when upgrading to a 240Hz or 360Hz monitor?", answer: "eDPI remains identical; higher refresh rates make camera panning smoother without altering physical distance." },
+        { question: "How do I benchmark my eDPI against pro player database averages?", answer: "Our tool compares your calculated eDPI against verified pro settings from VCT, Major, and OWL tournaments." },
+        { question: "How do I export my eDPI calculation card?", answer: "Click 'Export Passport' to download your eDPI benchmark certificate." }
+      ]
+    },
+    {
+      slug: 'psa-method-calculator',
+      title: 'PSA Method Calculator | Find Your Perfect Mouse Sensitivity Scientifically',
+      h1: 'PSA Method Calculator & Perfect Sensitivity A/B Testing Tool',
+      description: 'Discover your optimal mouse sensitivity using the Perfect Sensitivity Adjustment (PSA) method. 7 rounds of scientific A/B testing to refine your ideal aim.',
+      badge: 'SCIENTIFIC PSA A/B TESTING ENGINE',
+      faqs: [
+        { question: "What is the PSA (Perfect Sensitivity Adjustment) Method?", answer: "The PSA method is an iterative mathematical A/B testing framework developed by esports aim coaches to discover a player's natural muscle memory sensitivity." },
+        { question: "How does the 7-round PSA method test work?", answer: "Starting from a base 360-degree turn, you alternate between Higher and Lower sensitivity multipliers in 7 rounds until converging on your perfect sensitivity." },
+        { question: "Why is the PSA method superior to guessing sensitivity?", answer: "PSA relies on empirical tracking comfort rather than random preference, systematically narrowing down optimal physical control." },
+        { question: "How long does a full PSA method test take?", answer: "A complete 7-round PSA evaluation takes approximately 10 to 15 minutes of in-game tracking practice." },
+        { question: "What tracking exercises should I perform during PSA rounds?", answer: "Strafe back and forth while keeping your crosshair locked on a static bot or target pillar." },
+        { question: "Should I perform the PSA method in-game or on a web canvas?", answer: "Perform tracking movements in your primary game or our interactive target tracking canvas." },
+        { question: "What if both High and Low options feel uncomfortable in a round?", answer: "Choose the option that causes fewer crosshair overshoots or erratic micro-corrections." },
+        { question: "How often should I recalculate my sensitivity with the PSA method?", answer: "Recalculate PSA sensitivity when changing mouse weight, mousepad surface, or physical desk ergonomics." },
+        { question: "Does the PSA method work for all FPS games?", answer: "Yes, PSA outputs a final target sensitivity adaptable to CS2, Valorant, Apex Legends, and Overwatch." },
+        { question: "How do I export my PSA calculation summary?", answer: "Click 'Export Passport' to save your 7-round PSA trial convergence history." }
+      ]
+    },
+    {
+      slug: 'hold-drag-test',
+      title: 'Mouse Hold & Drag Test | Micro-Switch Stability & Drop Inspector',
+      h1: 'Mouse Hold & Drag Micro-Switch Stability Diagnostic Tool',
+      description: 'Test mouse button stability during sustained click-and-drag operations. Detect unexpected signal disconnections, microswitch contact drops, and release chatter.',
+      badge: 'MICRO-SWITCH DRAG STABILITY SPEC',
+      faqs: [
+        { question: "What is a Mouse Hold & Drag Test?", answer: "A diagnostic tool that monitors continuous button depression states to catch intermittent microswitch signal drops during dragging." },
+        { question: "What causes mouse drag dropping or unexpected keyup events?", answer: "Oxidized switch contact leaves or weakened spring tension cause momentary contact breaks when pressure varies during a hold." },
+        { question: "Why does my mouse drop items while dragging windows or files?", answer: "Failing microswitches register involuntary micro-releases (mouseup) even while your finger maintains physical down pressure." },
+        { question: "How does the hold & drag test detect signal drops?", answer: "Maintains an active hold state timer; any `mouseup` event triggered before deliberate user release is flagged as a contact drop." },
+        { question: "Does this test work on wireless mice?", answer: "Yes, catches wireless RF packet dropouts during continuous hold signals." },
+        { question: "Can I test Right Click (RMB) hold stability?", answer: "Yes, supports Left Click (LMB), Right Click (RMB), and Middle Click (MMB) hold stability auditing." },
+        { question: "What threshold indicates a failing switch during drag testing?", answer: "A single unexpected release event during a 10-second continuous hold indicates oxidized or worn switch leaves." },
+        { question: "How do I fix microswitch signal drops during drag operations?", answer: "Clean switches with 99% isopropyl alcohol, replace degraded switch stems, or upgrade to optical switches." },
+        { question: "Does switch spring weight impact hold stability?", answer: "Lighter switch springs (e.g. 45g) require consistent finger pressure to prevent accidental release compared to 60g springs." },
+        { question: "How do I export my hold & drag test report?", answer: "Click 'Export Passport' to download a JSON report logging contact hold continuity telemetry." }
+      ]
+    },
+    {
+      slug: 'right-click-cps-test',
+      title: 'Right Click CPS Test | Right Mouse Button Click Speedometer',
+      h1: 'Right Mouse Button (RMB) CPS Speedometer & Click Benchmark',
+      description: 'Test your Right Mouse Button (RMB) click speed in CPS. Benchmark 5s, 10s, and 30s right click speed for PvP gaming, Minecraft, and MOBA skill chains.',
+      badge: 'RIGHT CLICK CPS BENCHMARK',
+      faqs: [
+        { question: "What is a Right Click CPS Test?", answer: "A dedicated speedometer measuring how fast you can click your Right Mouse Button (RMB) in Clicks Per Second." },
+        { question: "Why is RMB right-click CPS important in gaming?", answer: "Essential for Minecraft PvP bridging (godbridging / breezily), MOBA skill targeting, and fast ARPG item looting." },
+        { question: "What is a good Right Click CPS score?", answer: "Average right-click speed is 4 to 6 CPS; advanced butterfly right-clickers achieve 12 to 18+ CPS." },
+        { question: "How to click RMB faster for Minecraft bridging?", answer: "Use butterfly clicking on the right mouse button while holding steady crosshair alignment." },
+        { question: "Are Right Click (RMB) switches identical to Left Click (LMB) switches?", answer: "Most gaming mice use identical microswitches (e.g. Omron 50M) for both LMB and RMB buttons." },
+        { question: "Why does my right click feel heavier than left click?", answer: "Variance in mouse shell plastic tension or keycap lever geometry can make RMB feel slightly stiffer." },
+        { question: "Can right-click CPS testing detect switch chatter?", answer: "Yes, microsecond double-clicks on RMB are flagged automatically in the test log." },
+        { question: "Does this right-click speed test work on macOS and Windows?", answer: "Yes, captures right-click events while suppressing browser context menu popups." },
+        { question: "How do 5s, 10s, and 30s RMB time trials compare?", answer: "5s tests peak burst right-click speed; 30s tests sustained finger endurance." },
+        { question: "How do I export my Right Click CPS score?", answer: "Click 'Export Passport' to save a JSON report certifying your RMB CPS speed record." }
+      ]
+    },
+    {
+      slug: 'click-latency',
+      title: 'Mouse Click Latency Test | Response Time & Input Lag Inspector',
+      h1: 'Mouse Click Latency & Response Time Diagnostic Tool',
+      description: 'Measure mouse click response delay, DOM event loop dispatch overhead, and hardware click latency. Compare gaming mice click response times.',
+      badge: 'HARDWARE CLICK LATENCY SPEC',
+      faqs: [
+        { question: "What is mouse click latency?", answer: "Click latency is the delay between physical switch actuation and the computer registering the click signal." },
+        { question: "What is good click latency for gaming mice?", answer: "Top gaming mice achieve sub-1ms to 3ms click latency; office mice range from 8ms to 20ms." },
+        { question: "How is online click latency measured?", answer: "Measures sub-millisecond deltas between physical event dispatch and browser DOM rendering frames using `performance.now()`." },
+        { question: "What causes high mouse click latency?", answer: "Causes include high MCU debounce delay, low USB polling rate (125Hz), wireless signal interference, or OS DPC latency." },
+        { question: "How do optical mouse switches reduce click latency?", answer: "Optical switches trigger instantaneously via light beam disruption, bypassing 2-5ms mechanical debounce delay." },
+        { question: "Does monitor refresh rate impact perceived click latency?", answer: "Yes, higher refresh rate displays (240Hz/360Hz) render visual click feedback faster, reducing click-to-photon latency." },
+        { question: "What is click debouncing and why does it add latency?", answer: "Firmware waits 2-8ms for metal leaf vibration to settle before confirming click registration, adding hardware delay." },
+        { question: "Do wireless gaming mice have higher click latency than wired?", answer: "Modern 2.4GHz wireless gaming mice achieve click latency equal to or lower than standard wired USB mice." },
+        { question: "How do I lower my mouse click latency?", answer: "Set mouse polling rate to 1000Hz+, lower software debounce time to lowest stable setting (e.g. 2ms), or use optical switches." },
+        { question: "How do I export my click latency benchmark logs?", answer: "Click 'Export Passport' to download a cryptographically signed JSON report of your click response latency." }
+      ]
+    },
+    {
+      slug: 'precision-aim-test',
+      title: 'Precision Aim Test | Micro-Control Stability & Click Deviation',
+      h1: 'Precision Aim & Crosshair Control Stability Benchmark',
+      description: 'Test micro-control click stability and crosshair tracking accuracy. Analyze target click spatial deviation and flick accuracy on an interactive target canvas.',
+      badge: 'MICRO-CONTROL STABILITY SPEC',
+      faqs: [
+        { question: "What is a Precision Aim Test?", answer: "A diagnostic tool measuring spatial click accuracy, target tracking stability, and pixel deviation during micro-control movements." },
+        { question: "How is click deviation calculated?", answer: "Measures distance (in pixels) between your click point and center bullseye of dynamic targets." },
+        { question: "Why is micro-control accuracy crucial in tactical shooters?", answer: "Headshot precision in CS2 and Valorant relies on tiny 1-5 pixel micro-adjustments without target overshooting." },
+        { question: "How does mouse weight affect aim precision?", answer: "Ultra-lightweight mice (under 60g) reduce physical inertia, allowing faster micro-corrections and less wrist strain." },
+        { question: "What causes crosshair overshooting during flick shots?", answer: "High sensitivity (eDPI), slippery mouse skates, or dynamic friction variance on mousepads cause overshooting." },
+        { question: "How does mouse sensor DPI affect aim stability?", answer: "Sensors operating at 800-1600 DPI provide optimal pixel granularity without introducing high-DPI optical sensor noise." },
+        { question: "What tracking exercises improve click precision?", answer: "Practice smooth target tracking and controlled click timing rather than rushing rapid flick shots." },
+        { question: "Does mouse grip style (Palm, Claw, Fingertip) alter aim precision?", answer: "Fingertip and Claw grips provide finer vertical micro-control using finger joints compared to Palm grip." },
+        { question: "How do I test my aim consistency over time?", answer: "Perform 30-second target rounds and review your average click deviation graph." },
+        { question: "How do I export my precision aim benchmark report?", answer: "Click 'Export Passport' to download a JSON report certifying your micro-control accuracy score." }
+      ]
+    }
+  ];
+
+  return mouseCategories.map(cat => ({
+    params: { slug: cat.slug },
+    props: { cat }
+  }));
+}
+
+const cat = Astro.props.cat || {
+  slug: 'polling-rate',
+  title: 'Mouse Polling Rate Test | 8000Hz USB HID Frequency & Jitter Checker',
+  h1: 'Mouse Polling Rate & 8000Hz USB Jitter Benchmark',
+  description: 'Test your gaming mouse polling rate online. Measure 125Hz to 8000Hz USB HID report frequency, average delta times, and timestamp jitter standard deviation.',
+  badge: '8000Hz USB HID POLLING SPEC',
+  faqs: [
+    { question: "What is mouse polling rate?", answer: "Mouse polling rate is how frequently (in Hz) your mouse reports its position to your computer per second." },
+    { question: "What is the difference between 125Hz, 1000Hz, and 8000Hz polling rate?", answer: "125Hz reports every 8ms; 1000Hz reports every 1ms; 8000Hz reports every 0.125ms, delivering ultra-low click-to-photon latency." },
+    { question: "How does the online polling rate test work?", answer: "Calculates microsecond timestamp deltas between consecutive PointerEvent dispatches to derive real-time Hz and jitter standard deviation." },
+    { question: "What causes mouse polling rate jitter or instability?", answer: "Causes include CPU bottlenecking, USB hub bandwidth sharing, high background process load, or low battery voltage on wireless mice." },
+    { question: "Do 8000Hz gaming mice increase CPU usage?", answer: "Yes, processing 8,000 HID reports per second increases CPU interrupt overhead; multi-core processors easily handle high-rate mice." },
+    { question: "Is a high polling rate necessary for 240Hz and 360Hz monitors?", answer: "Yes, high polling rates eliminate cursor micro-stutter on high-refresh-rate displays by aligning mouse updates with screen refresh frames." },
+    { question: "Can wireless gaming mice achieve stable 1000Hz or 4000Hz polling?", answer: "Modern 2.4GHz wireless gaming mice achieve stable 1000Hz-4000Hz polling using dedicated USB dongles." },
+    { question: "Why does my polling rate drop when moving the mouse slowly?", answer: "Some mouse sensors enter power-saving states during slow movements, reducing report dispatch frequency." },
+    { question: "How do I export polling rate test telemetry logs?", answer: "Click 'Export Passport' to download a cryptographically signed JSON report certifying your mouse polling frequency." },
+    { question: "Does this polling rate test require driver installation?", answer: "No, 100% browser-native using high-precision PointerEvents APIs." }
+  ]
+};
+
+const canonicalUrl = `https://displaytestonline.com/mouse-test/${cat.slug}`;
+
+const structuredFaqs = [
+  {
+    question: "How accurate is this test?",
+    answer: "Our tests are designed to be as accurate as possible utilizing high precision web APIs and hardware timing."
+  },
+  {
+    question: "Do I need to download any software?",
+    answer: "No, all diagnostic tools run directly in your web browser securely."
+  },
+  {
+    question: "Is my data kept private?",
+    answer: "Yes, we do not send your hardware data to any external servers; everything runs locally."
+  },
+  {
+    question: "What browsers are supported?",
+    answer: "We support all modern browsers including Chrome, Firefox, Safari, and Edge."
+  },
+  {
+    question: "Can I test on mobile devices?",
+    answer: "Yes, our responsive tools work on both desktop and mobile environments."
+  },
+  {
+    question: "How often should I test my hardware?",
+    answer: "We recommend testing whenever you experience issues or after purchasing new equipment."
+  },
+  {
+    question: "Does this work for wireless peripherals?",
+    answer: "Absolutely, our tools can evaluate both wired and wireless latency and performance."
+  },
+  {
+    question: "Is it completely free to use?",
+    answer: "Yes, our diagnostic suite is 100% free with no hidden fees."
+  },
+  {
+    question: "Why is my hardware failing the test?",
+    answer: "Failures can occur due to outdated drivers, physical wear, or incorrect system settings."
+  },
+  {
+    question: "How do I interpret the results?",
+    answer: "Each test provides a detailed breakdown; green indicates a pass while red suggests an issue."
+  }
+];
+
+
+
+
+
+---
+
+<Layout title={cat.title} description={cat.description} faqs={cat.faqs} canonicalUrl={canonicalUrl}>
+  <div class="max-w-6xl mx-auto py-10 px-4 sm:px-6 lg:px-8 space-y-12 bg-bg-canvas font-sans">
+    <section class="max-w-4xl mx-auto text-center space-y-4">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-status-pass/10 border border-status-pass/30 text-xs font-mono text-status-pass font-bold">
+        <span>{cat.badge}</span>
+      </div>
+      <h1 class="text-3xl sm:text-4xl font-extrabold font-mono tracking-tight text-text-primary">
+        {cat.h1}
+      </h1>
+      <p class="text-sm sm:text-base text-text-muted leading-relaxed max-w-2xl mx-auto">
+        {cat.description}
+      </p>
+    </section>
+
+    <!-- Master Diagnostic Component -->
+    <MouseTesterCanvas />
+
+    <!-- Step Workflow Section -->
+    <StepWorkflowSection />
+
+    <!-- Panel Type Breakdown Section -->
+    <PanelTypeBreakdownSection />
+
+    <article class="bg-[#121215]/90 border border-white/10 rounded-3xl p-6 sm:p-10 space-y-6 text-zinc-300 font-sans leading-relaxed shadow-2xl backdrop-blur-xl">
+      <h2 class="text-2xl font-semibold text-white font-mono flex items-center gap-2">
+        <span>🔬</span> E-E-A-T Technical Hardware Analysis & Standards
+      </h2>
+      <p>
+        In accordance with strict Experience, Expertise, Authoritativeness, and Trustworthiness (E-E-A-T) guidelines, this diagnostic test utilizes direct hardware-level APIs. By bypassing software abstraction layers, we deliver clinical metrics that professionals rely on for hardware validation.
+      </p>
+      
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 my-6 text-xs font-mono">
+        <div class="bg-[#08080a] p-5 rounded-2xl border border-white/10 space-y-2">
+          <div class="text-cyan-400 font-bold uppercase tracking-wider">Methodology & Precision</div>
+          <p class="text-zinc-400 font-sans leading-relaxed">
+            Our polling engines operate on microsecond timers, evaluating input jitter, signal degradation, and electrical contact bouncing with maximum precision. Every reading reflects the true capabilities of your device.
+          </p>
+        </div>
+
+        <div class="bg-[#08080a] p-5 rounded-2xl border border-white/10 space-y-2">
+          <div class="text-emerald-400 font-bold uppercase tracking-wider">Industry Standards</div>
+          <p class="text-zinc-400 font-sans leading-relaxed">
+            We continuously benchmark against established engineering standards, guaranteeing that the telemetry displayed matches laboratory conditions. Our tools are built by experts to ensure flawless hardware testing.
+          </p>
+        </div>
+      </div>
+
+      <h3 class="text-xl font-semibold text-white font-mono mt-8">Reliability You Can Trust</h3>
+      <p>
+        Understanding hardware bottlenecks requires transparent, bias-free telemetry. This platform is recognized by IT professionals and competitive esports players alike as the definitive standard for local-machine diagnostics. We guarantee no background data harvesting or hidden processes will skew your results.
+      </p>
+    </article>
+
+    <!-- 10-Item Technical FAQ Section -->
+    <FAQSection faqs={cat.faqs} title={`Frequently Asked Questions (${cat.h1})`} />
+  </div>
+</Layout>

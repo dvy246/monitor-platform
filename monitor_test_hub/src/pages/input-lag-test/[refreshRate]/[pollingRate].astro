@@ -3,6 +3,10 @@ import Layout from '../../../layouts/Layout.astro';
 import Breadcrumbs from '../../../components/ui/Breadcrumbs.astro';
 import InputLagSniper from '../../../components/diagnostics/InputLagSniper.astro';
 import HardwareLimitationNotice from '../../../components/disclaimers/HardwareLimitationNotice.astro';
+import StepWorkflowSection from '../../../components/ui/StepWorkflowSection.astro';
+import PanelTypeBreakdownSection from '../../../components/ui/PanelTypeBreakdownSection.astro';
+import FAQSection from '../../../components/ui/FAQSection.astro';
+import MasterBentoDiagnosticSuite from '../../../components/diagnostics/MasterBentoDiagnosticSuite.astro';
 import {
   getAllRefreshRates,
   getAllPollingRates,
@@ -81,9 +85,52 @@ const schemaGraph = {
     }
   ]
 };
+
+const faqs = [
+  {
+    question: `What is the click latency floor for a ${refreshInfo.hz}Hz monitor with a ${pollingInfo.hz}Hz mouse?`,
+    answer: `The baseline hardware delay floor is approximately ${bottleneck.totalBaselineHardwareDelayMs.toFixed(2)}ms, consisting of a ${refreshInfo.framePeriodMs}ms frame period and a ${pollingInfo.pollPeriodMs}ms mouse polling interval.`
+  },
+  {
+    question: `How does a ${refreshInfo.hz}Hz refresh rate impact click-to-photon latency?`,
+    answer: `A ${refreshInfo.hz}Hz display presents a new frame every ${refreshInfo.framePeriodMs}ms, capping frame rendering delay.`
+  },
+  {
+    question: `Why is a ${pollingInfo.hz}Hz mouse polling rate recommended for high-refresh gaming?`,
+    answer: `A ${pollingInfo.hz}Hz polling rate transmits cursor coordinates every ${pollingInfo.pollPeriodMs}ms to minimize input jitter.`
+  },
+  {
+    question: "What is display input lag vs reaction time?",
+    answer: "Input lag measures physical device and display pipeline processing delay, whereas reaction time measures human neurological response speed."
+  },
+  {
+    question: "How does VSync affect input lag test results?",
+    answer: "VSync buffers completed frames until vertical refresh intervals, adding 16ms to 50ms of additional delay."
+  },
+  {
+    question: "What is Nvidia Reflex / AMD Anti-Lag technology?",
+    answer: "Nvidia Reflex and AMD Anti-Lag dynamically synchronize CPU draw calls with the GPU render queue to eliminate buffering bottlenecks."
+  },
+  {
+    question: "How do display scaling settings affect latency?",
+    answer: "Display scaling (especially TV motion smoothing) adds scaler processing delay. Enabling 'Game Mode' bypasses post-processing filters."
+  },
+  {
+    question: "Does OLED pixel response time lower input lag?",
+    answer: "Yes, OLED subpixel transitions occur in under 0.1ms (GtG), virtually eliminating liquid crystal rise/fall delays."
+  },
+  {
+    question: "What is the average visual reaction time for gamers?",
+    answer: "Human visual reaction time averages 180ms-240ms. Combined with system latency, total reaction scores typically range from 190ms to 250ms."
+  },
+  {
+    question: "How do I export my input lag benchmark certificate?",
+    answer: "Click 'Export Passport' in the diagnostic scope to save a cryptographically signed hardware latency certificate."
+  }
+];
 ---
 
-<Layout title={pageTitle} description={metaDescription}>
+<Layout title={pageTitle} description={metaDescription} faqs={faqs}>
   <script type="application/ld+json" set:html={JSON.stringify(schemaGraph)} />
 
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
@@ -186,8 +233,13 @@ const schemaGraph = {
       </div>
     </section>
 
+    <StepWorkflowSection />
+    <PanelTypeBreakdownSection />
+
     <div class="max-w-4xl mx-auto">
       <HardwareLimitationNotice />
     </div>
+
+    <FAQSection faqs={faqs} title={`${refreshInfo.hz}Hz Display + ${pollingInfo.hz}Hz Mouse FAQs`} />
   </div>
 </Layout>

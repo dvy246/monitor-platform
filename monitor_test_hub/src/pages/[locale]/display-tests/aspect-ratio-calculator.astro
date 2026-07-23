@@ -1,0 +1,14 @@
+---
+import BasePage from '../../display-tests/aspect-ratio-calculator.astro';
+
+
+export function getStaticPaths() {
+  return [
+    { params: { locale: 'es' } },
+    { params: { locale: 'de' } },
+    { params: { locale: 'fr' } }
+  ];
+}
+---
+
+<BasePage />

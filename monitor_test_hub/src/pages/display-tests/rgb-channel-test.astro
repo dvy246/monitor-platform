@@ -1,0 +1,100 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import Breadcrumbs from '../../components/ui/Breadcrumbs.astro';
+import FAQSection from '../../components/ui/FAQSection.astro';
+import TestSwitcherBar from '../../components/ui/TestSwitcherBar.astro';
+import RgbChannelInspector from '../../components/diagnostics/RgbChannelInspector.astro';
+import StepWorkflowSection from '../../components/ui/StepWorkflowSection.astro';
+import PanelTypeBreakdownSection from '../../components/ui/PanelTypeBreakdownSection.astro';
+import MasterBentoDiagnosticSuite from '../../components/diagnostics/MasterBentoDiagnosticSuite.astro';
+
+
+
+const faqs = [
+  {
+    question: "What is an RGB channel isolation test and how does it evaluate display subpixel color purity?",
+    answer: "RGB channel testing illuminates pure Red (#FF0000), Green (#00FF00), and Blue (#0000FF) solid screens to isolate individual subpixel performance."
+  },
+  {
+    question: "How do I test individual Red, Green, and Blue subpixel channels for dead or stuck subpixels?",
+    answer: "Cycle solid Red, Green, and Blue backgrounds in fullscreen mode. Unlit spots on a Red screen pinpoint dead Red subpixels; bright blue spots on Black reveal stuck Blue subpixels."
+  },
+  {
+    question: "What is RGB channel crosstalk or color bleeding in display panels?",
+    answer: "RGB crosstalk occurs when electrical voltage bleeds into adjacent subpixel channels, causing color contamination along high-contrast edges."
+  },
+  {
+    question: "How do OSD Red, Green, and Blue gain controls adjust display color balance?",
+    answer: "Adjusting individual OSD RGB gain sliders controls the physical amplification of Red, Green, and Blue subpixels to tune white balance to D65 (6500K)."
+  },
+  {
+    question: "How do QD-OLED subpixel layouts (Triangular RGB) differ from standard LCD RGB Stripe subpixels?",
+    answer: "LCDs use parallel vertical RGB stripes. Gen-1/Gen-2 QD-OLED uses a triangular subpixel layout, which can cause slight green/magenta edge fringing on high-contrast text."
+  },
+  {
+    question: "Why does inspecting pure Red, Green, and Blue screens reveal subpixel transistor defects?",
+    answer: "Because each solid color pattern activates only one specific subpixel transistor per pixel, isolating individual gate failures."
+  },
+  {
+    question: "How does GPU color depth (8-bit vs 10-bit) map integer values across RGB channels?",
+    answer: "8-bit maps 256 discrete levels per channel (0-255). 10-bit maps 1,024 levels per channel (0-1023), dramatically improving channel accuracy."
+  },
+  {
+    question: "What causes chromatic aberration or color fringing along high-contrast text edges?",
+    answer: "Subpixel font antialiasing (like Windows ClearType) assumes standard RGB stripe layout. Non-standard layouts cause visible red/blue chromatic edge halos."
+  },
+  {
+    question: "How do camera sensors capture RGB subpixel patterns during macro photography?",
+    answer: "Smartphone macro lenses or microscope probes capture raw Bayer pattern subpixel layouts, revealing physical QD-OLED or WOLED subpixel geometry."
+  },
+  {
+    question: "Why is bit-perfect RGB channel rendering essential for digital color calibration?",
+    answer: "Uncompressed bit-perfect RGB channel rendering prevents GPU color scaling distortions, ensuring accurate baseline measurements."
+  }
+];
+
+const breadcrumbs = [
+  { label: 'Display Tests', href: '/display-tests/dead-pixel' },
+  { label: 'RGB Channel Test' }
+];
+
+const testSwitcherItems = [
+  { id: 'rgb-channel', label: 'RGB Channel Test', href: '/display-tests/rgb-channel-test', active: true },
+  { id: 'blooming', label: 'Blooming & Halo Test', href: '/display-tests/blooming-test' },
+  { id: 'flicker', label: 'PWM Flicker Test', href: '/display-tests/flicker-test' },
+  { id: 'aspect-ratio', label: 'Aspect Ratio Calculator', href: '/display-tests/aspect-ratio-calculator' },
+  { id: 'sub-pixel', label: 'Sub-Pixel Layout Reticle', href: '/display-tests/sub-pixel' },
+  { id: 'color-gamut', label: 'Color Gamut CIE 1931', href: '/display-tests/color-gamut' }
+];
+
+
+
+
+---
+
+<Layout
+  title="RGB Primary Channel Isolate & Balance Test | Subpixel Inspector"
+  description="Isolate pure Red (255,0,0), Green (0,255,0), and Blue (0,0,255) subpixel channels to inspect stuck subpixels, additive color balance, and white point bias."
+  faqs={faqs}
+>
+  <main id="main-content" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+    <Breadcrumbs items={breadcrumbs} />
+    
+    <TestSwitcherBar tests={testSwitcherItems} currentId="rgb-channel" />
+    <RgbChannelInspector />
+
+    <StepWorkflowSection />
+    <PanelTypeBreakdownSection />
+    
+    <!-- E-E-A-T Technical Articles -->
+    <article class="bg-[#121215] border border-white/10 rounded-3xl p-6 sm:p-8 space-y-6 shadow-2xl font-sans text-sm text-zinc-300 leading-relaxed mt-8">
+      <div class="border-b border-white/10 pb-4">
+        <span class="font-mono text-[10px] font-bold text-amber-400 uppercase tracking-widest block mb-1">E-E-A-T EXPERT-ANALYSIS</span>
+        <h2 class="text-xl font-bold text-white">Technical Deep Dive &amp; Display Methodology</h2>
+      </div>
+      <p>Our testing methodology aligns with VESA, SMPTE, and ISO standards for display metrology. This diagnostic tool utilizes raw web APIs (Canvas, WebGL, CSS Color Level 4) to ensure bit-perfect rendering, bypassing OS-level compression and scaling where possible.</p>
+    </article>
+
+    <FAQSection faqs={faqs} title="RGB Subpixel Channel FAQs" />
+  </main>
+</Layout>

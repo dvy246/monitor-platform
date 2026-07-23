@@ -1,0 +1,161 @@
+---
+// InteractiveDiagnosticAdvisor.astro
+---
+<div class="diagnostic-advisor-container bg-bg-surface border border-border-hairline rounded-2xl p-4 sm:p-8 space-y-6 shadow-2xl shadow-black/80 font-sans max-w-4xl mx-auto w-full max-w-full overflow-hidden">
+  <div class="border-b border-border-hairline pb-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+    <div class="flex items-center gap-3">
+      <div class="w-10 h-10 rounded-xl bg-status-pass/10 border border-status-pass/30 flex items-center justify-center text-status-pass shrink-0">
+        <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg>
+      </div>
+      <div>
+        <h3 class="text-lg font-bold text-text-primary">Interactive Diagnostic Assistant</h3>
+        <p class="text-xs text-text-muted">Answer 2 quick questions to find your exact test and troubleshooting path</p>
+      </div>
+    </div>
+    <span class="px-2.5 py-1 rounded-md bg-status-pass/10 border border-status-pass/30 text-status-pass font-mono text-[10px] font-bold">100% Client-Side Engine</span>
+  </div>
+
+  <!-- Step 1: Select Device Type -->
+  <div id="advisor-step-1" class="space-y-4">
+    <label class="block text-xs font-mono font-bold text-text-secondary uppercase tracking-wider">
+      Step 1: What hardware are you testing today?
+    </label>
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+      <button data-device="monitor" class="dev-btn bg-bg-elevated hover:bg-bg-surface border border-border-hairline p-3 rounded-xl text-left transition-all cursor-pointer min-h-[44px] hover:border-status-pass flex flex-col justify-between">
+        <span class="text-xs font-bold text-text-primary">Desktop / Monitor</span>
+        <span class="text-[10px] text-text-muted">LCD, OLED, Gaming</span>
+      </button>
+      <button data-device="laptop" class="dev-btn bg-bg-elevated hover:bg-bg-surface border border-border-hairline p-3 rounded-xl text-left transition-all cursor-pointer min-h-[44px] hover:border-status-pass flex flex-col justify-between">
+        <span class="text-xs font-bold text-text-primary">Laptop / MacBook</span>
+        <span class="text-[10px] text-text-muted">Retina, ProMotion</span>
+      </button>
+      <button data-device="mobile" class="dev-btn bg-bg-elevated hover:bg-bg-surface border border-border-hairline p-3 rounded-xl text-left transition-all cursor-pointer min-h-[44px] hover:border-status-pass flex flex-col justify-between">
+        <span class="text-xs font-bold text-text-primary">Phone / Tablet</span>
+        <span class="text-[10px] text-text-muted">iPhone, Android, iPad</span>
+      </button>
+      <button data-device="peripheral" class="dev-btn bg-bg-elevated hover:bg-bg-surface border border-border-hairline p-3 rounded-xl text-left transition-all cursor-pointer min-h-[44px] hover:border-status-pass flex flex-col justify-between">
+        <span class="text-xs font-bold text-text-primary">Peripherals &amp; Audio</span>
+        <span class="text-[10px] text-text-muted">Keyboard, Mouse, Mic</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Step 2: Select Symptom / Goal -->
+  <div id="advisor-step-2" class="hidden space-y-4 pt-2 border-t border-border-hairline">
+    <label class="block text-xs font-mono font-bold text-text-secondary uppercase tracking-wider">
+      Step 2: What issue or diagnostic goal are you facing?
+    </label>
+    <div id="symptom-options" class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+      <!-- Options dynamically populated by JS -->
+    </div>
+  </div>
+
+  <!-- Step 3: Diagnostic Recommendation & Path -->
+  <div id="advisor-result" class="hidden bg-black/60 border border-status-pass/40 p-5 rounded-xl space-y-4">
+    <div class="flex items-center gap-2 text-status-pass font-mono text-xs font-bold uppercase tracking-wider">
+      <span class="w-2 h-2 rounded-full bg-status-pass animate-pulse"></span>
+      <span>Recommended Diagnostic Path</span>
+    </div>
+    
+    <div class="space-y-1">
+      <h4 id="rec-title" class="text-lg font-bold text-text-primary"></h4>
+      <p id="rec-desc" class="text-xs text-text-secondary leading-relaxed"></p>
+    </div>
+
+    <div class="flex flex-wrap items-center gap-3 pt-2">
+      <a id="rec-link" href="#" class="px-5 py-2.5 rounded-xl bg-status-pass hover:bg-emerald-400 text-black font-extrabold text-xs transition-colors cursor-pointer min-h-[44px] flex items-center justify-center font-mono">
+        Launch Recommended Tool &rarr;
+      </a>
+      <button id="btn-reset-advisor" class="px-4 py-2.5 rounded-xl bg-bg-elevated hover:bg-bg-surface text-text-secondary text-xs border border-border-hairline cursor-pointer min-h-[44px]">
+        Start Over
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+  interface ISymptom {
+    label: string;
+    sub: string;
+    toolTitle: string;
+    toolDesc: string;
+    toolHref: string;
+  }
+
+  const symptomsMap: Record<string, ISymptom[]> = {
+    monitor: [
+      { label: 'Black spot or stuck color dot', sub: 'Dead pixels, subpixel defects', toolTitle: 'Dead Pixel & Subpixel Inspector', toolDesc: 'Scan your screen across 11 solid RGBW colors to isolate dead pixels, stuck subpixels, and evaluate ISO 9241-307 RMA return compliance.', toolHref: '/display-tests/dead-pixel' },
+      { label: 'Uneven dark gray, vignetting or OLED wear', sub: 'OLED burn-in, banding', toolTitle: 'OLED Burn-In & Uniformity Analyzer', toolDesc: 'Run 5% and 10% near-black gray patterns to check for static image retention and panel wear.', toolHref: '/display-tests/oled-burn-in' },
+      { label: 'Screen tearing, stutter or low Hz', sub: 'Refresh rate, VSync, FreeSync', toolTitle: '540Hz+ VRR Refresh Rate Test', toolDesc: 'Measure exact hardware Hz, frame pacing jitter, and test G-Sync/FreeSync tear-free motion.', toolHref: '/refresh-rate-test' },
+      { label: 'Washed out colors or improper gamma', sub: 'Color calibration, Gamma 2.2', toolTitle: 'Monitor Color Calibration & ICC Exporter', toolDesc: 'Calibrate gamma steps, test ΔE00 color accuracy, and export binary ICC v4.3 color profiles.', toolHref: '/monitor-color-calibration' }
+    ],
+    laptop: [
+      { label: 'Inspect new laptop screen before return window ends', sub: 'Unboxing QA checklist', toolTitle: 'New Laptop Screen Inspection Suite', toolDesc: 'Run an 8-step diagnostic workflow checking dead pixels, backlight bleed, and resolution PPI.', toolHref: '/guides/laptop-screen-test' },
+      { label: 'Keyboard key missing presses or double typing', sub: 'Switch chatter, key bounce', toolTitle: 'Keyboard Switch Chatter & NKRO Tester', toolDesc: 'Test ANSI/ISO key layout, detect key bounce chatter (under 30ms), and run rollover stress tests.', toolHref: '/keyboard-tester' },
+      { label: 'Trackpad gesture or mouse cursor stutter', sub: 'Polling rate, click chatter', toolTitle: 'Mouse Polling Rate & Chatter Profiler', toolDesc: 'Measure 8000Hz USB polling rates, click latency, and double-click chatter.', toolHref: '/mouse-test' }
+    ],
+    mobile: [
+      { label: 'Touchscreen not responding in certain areas', sub: 'Digitizer dead-zones', toolTitle: 'Touch Matrix Grid & Dead-Zone Analyzer', toolDesc: 'Drag across active contact grid to map uncalibrated digitizer dead-zones.', toolHref: '/touch-tests/dead-zone' },
+      { label: 'Ghost touches or erratic swipe lines', sub: 'Charger EMI noise', toolTitle: 'Touch Digitizer EMI & Line Precision Inspector', toolDesc: 'Measure RMS vector deviation and test charger electrical noise disruption.', toolHref: '/touch-matrix/charger-emi-inspector' }
+    ],
+    peripheral: [
+      { label: 'Microphone too quiet or static background noise', sub: 'Noise floor, gain dBFS', toolTitle: 'Online Microphone Gain & Noise Floor Test', toolDesc: 'Measure decibel meters (dBFS), FFT spectrum noise floor, and test instant 3s voice loopback.', toolHref: '/sound-test/microphone-test' },
+      { label: 'Webcam feed blurry, 30fps drop, or poor lighting', sub: 'Webcam FPS, fill light', toolTitle: 'Webcam & Camera Diagnostic Scope', toolDesc: 'Measure 1080p/4K sensor resolution, rVFC FPS frame rate, and adjust Virtual Fill Light Studio.', toolHref: '/webcam-test' },
+      { label: 'Controller stick drifting or improper centering', sub: 'Gamepad stick drift', toolTitle: 'Gamepad Stick Drift & Polling Rate Suite', toolDesc: 'Test DualSense, Xbox, and Switch Pro analog circularity error % and HID polling rate.', toolHref: '/controller-test' }
+    ]
+  };
+
+  let selectedDevice = 'monitor';
+
+  const step2 = document.getElementById('advisor-step-2') as HTMLDivElement;
+  const symptomContainer = document.getElementById('symptom-options') as HTMLDivElement;
+  const resultContainer = document.getElementById('advisor-result') as HTMLDivElement;
+  const recTitle = document.getElementById('rec-title') as HTMLHeadingElement;
+  const recDesc = document.getElementById('rec-desc') as HTMLParagraphElement;
+  const recLink = document.getElementById('rec-link') as HTMLAnchorElement;
+  const btnReset = document.getElementById('btn-reset-advisor') as HTMLButtonElement;
+
+  document.querySelectorAll('.dev-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      document.querySelectorAll('.dev-btn').forEach(b => b.classList.remove('border-status-pass', 'bg-status-pass/10'));
+      const target = e.currentTarget as HTMLButtonElement;
+      target.classList.add('border-status-pass', 'bg-status-pass/10');
+      selectedDevice = target.dataset.device || 'monitor';
+      renderSymptoms(selectedDevice);
+    });
+  });
+
+  function renderSymptoms(deviceKey: string) {
+    const list = symptomsMap[deviceKey] || symptomsMap.monitor;
+    symptomContainer.innerHTML = list.map((item, idx) => `
+      <button data-idx="${idx}" class="sym-btn bg-bg-elevated hover:bg-bg-surface border border-border-hairline p-3 rounded-xl text-left transition-all cursor-pointer min-h-[44px] hover:border-status-pass flex flex-col justify-between">
+        <span class="text-xs font-bold text-text-primary">${item.label}</span>
+        <span class="text-[10px] text-text-muted">${item.sub}</span>
+      </button>
+    `).join('');
+
+    step2.classList.remove('hidden');
+    resultContainer.classList.add('hidden');
+
+    document.querySelectorAll('.sym-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const idx = Number((e.currentTarget as HTMLButtonElement).dataset.idx);
+        showRecommendation(list[idx]);
+      });
+    });
+  }
+
+  function showRecommendation(item: ISymptom) {
+    recTitle.textContent = item.toolTitle;
+    recDesc.textContent = item.toolDesc;
+    recLink.href = item.toolHref;
+    resultContainer.classList.remove('hidden');
+    resultContainer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+
+  btnReset?.addEventListener('click', () => {
+    step2.classList.add('hidden');
+    resultContainer.classList.add('hidden');
+    document.querySelectorAll('.dev-btn').forEach(b => b.classList.remove('border-status-pass', 'bg-status-pass/10'));
+  });
+</script>

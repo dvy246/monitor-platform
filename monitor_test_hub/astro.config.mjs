@@ -4,13 +4,13 @@ import sitemap from '@astrojs/sitemap';
 
 // https://astro.build/config
 export default defineConfig({
-  site: 'https://monitortester.com',
+  site: 'https://displaytestonline.com',
   integrations: [
     sitemap({
       filter: (page) => !page.includes('/cdn-cgi/') && !page.includes('/embed/') && !page.includes('/404') && !page.includes('/500') && !page.includes('/badge.svg'),
       serialize(item) {
         const url = item.url;
-        if (url === 'https://monitortester.com/' || url.endsWith('/es/') || url.endsWith('/de/') || url.endsWith('/fr/')) {
+        if (url === 'https://displaytestonline.com/' || url.endsWith('/es/') || url.endsWith('/de/') || url.endsWith('/fr/')) {
           item.changefreq = 'daily';
           item.priority = 1.0;
         } else if (
@@ -59,8 +59,19 @@ export default defineConfig({
       prefixDefaultLocale: false
     }
   },
+  build: {
+    concurrency: 1,
+    inlineStylesheets: 'always'
+  },
   vite: {
-    plugins: [tailwindcv4()]
+    plugins: [tailwindcv4()],
+    build: {
+      rollupOptions: {
+        output: {
+          manualChunks: () => 'shared'
+        }
+      }
+    }
   },
   output: 'static'
 });

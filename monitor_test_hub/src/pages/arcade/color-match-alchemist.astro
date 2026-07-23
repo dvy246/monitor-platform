@@ -2,17 +2,72 @@
 import Layout from '../../layouts/Layout.astro';
 import ColorMatchAlchemist from '../../components/arcade/ColorMatchAlchemist.astro';
 import HardwareLimitationNotice from '../../components/disclaimers/HardwareLimitationNotice.astro';
+import StepWorkflowSection from '../../components/ui/StepWorkflowSection.astro';
+import PanelTypeBreakdownSection from '../../components/ui/PanelTypeBreakdownSection.astro';
+import FAQSection from '../../components/ui/FAQSection.astro';
+
+const faqs = [
+  {
+    question: "What is CIEDE2000 (ΔE00) color difference?",
+    answer: "CIEDE2000 (ΔE00) is the international standard mathematical formula for measuring human eye perceptual color differences. ΔE < 1.0 is imperceptible to the human eye, ΔE 1.0-2.0 requires trained observation, and ΔE > 3.0 is easily visible."
+  },
+  {
+    question: "How does Color Match Alchemist evaluate monitor color accuracy?",
+    answer: "The game challenges you to discriminate target colors against distractors with progressively tighter ΔE00 color delta steps, testing your display's gamma curve and color depth performance."
+  },
+  {
+    question: "What color gamut coverage is recommended for low ΔE scores?",
+    answer: "Wide color gamut displays covering 99% DCI-P3 or 100% sRGB with 10-bit color depth (1.07 billion colors) render smooth color gradients without banding, allowing lower ΔE discrimination."
+  },
+  {
+    question: "Why do TN panels perform worse in color discrimination games?",
+    answer: "TN panels feature narrow viewing angles and 6-bit + FRC dithering, causing color shifts across the screen surface that distort subtle ΔE color deltas."
+  },
+  {
+    question: "How does screen brightness and room lighting affect color perception?",
+    answer: "Uncalibrated ambient lighting and excessive display brightness distort eye contrast adaptation; testing under 120 cd/m² D65 daylight conditions yields optimal results."
+  },
+  {
+    question: "What is 8-bit vs 10-bit color depth banding?",
+    answer: "8-bit displays render 256 shades per channel (16.7M colors), producing visible step banding in subtle gradients. 10-bit renders 1024 shades per channel (1.07B colors) for smooth transitions."
+  },
+  {
+    question: "Can ICC color calibration profiles improve game scores?",
+    answer: "Yes. Loading a hardware-calibrated ICC profile corrects non-linear gamma curves and RGB balance, aligning monitor output with sRGB/DCI-P3 target color spaces."
+  },
+  {
+    question: "How does OLED contrast ratio enhance color discrimination?",
+    answer: "OLED self-emissive pixels achieve infinite contrast and true black levels, preventing backlight glow from washing out subtle dark color shades."
+  },
+  {
+    question: "Is this test suitable for graphic designers and photographers?",
+    answer: "Yes, Color Match Alchemist provides an empirical gamified assessment of your monitor's color discrimination capabilities for color-critical workflows."
+  },
+  {
+    question: "How do I export my Color Match Alchemist score certificate?",
+    answer: "Click 'Export Passport' to save your achieved ΔE score and color accuracy health index in a JSON hardware certificate."
+  }
+];
+
+const seoTitle = "Color Match Alchemist — CIEDE2000 ΔE00 Color Discrimination Game";
+const seoDescription = "Test your monitor color accuracy and human eye color discrimination with CIEDE2000 (ΔE00) mathematical color difference steps.";
 ---
 
 <Layout 
-  title="Color Match Alchemist Game" 
-  description="Select matching colors under dynamically decreasing Delta-E thresholds to evaluate screen color resolution."
+  title={seoTitle} 
+  description={seoDescription}
+  faqs={faqs}
 >
-  <div class="py-4">
+  <div class="py-8 px-4 max-w-7xl mx-auto space-y-12 font-sans">
     <ColorMatchAlchemist />
     
-    <div class="max-w-4xl mx-auto px-4">
+    <StepWorkflowSection />
+    <PanelTypeBreakdownSection />
+
+    <div class="max-w-4xl mx-auto">
       <HardwareLimitationNotice />
     </div>
+
+    <FAQSection faqs={faqs} title="Color Match Alchemist FAQs" />
   </div>
 </Layout>

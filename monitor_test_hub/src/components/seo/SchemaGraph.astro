@@ -21,13 +21,13 @@ const {
   canonicalUrl,
   faqs = [],
   authorName = "Monitor Test Hub Engineering Team",
-  authorUrl = "https://monitortester.com/about",
+  authorUrl = "https://displaytestonline.com/about",
   applicationCategory = "DeveloperApplication",
   items = []
 } = Astro.props;
 
 // Dynamically generate BreadcrumbList items from canonical URL path
-const baseUrl = "https://monitortester.com";
+const baseUrl = "https://displaytestonline.com";
 const urlObj = new URL(canonicalUrl || "/", baseUrl);
 const fullCanonicalUrl = urlObj.href;
 const pathSegments = urlObj.pathname.split('/').filter(Boolean);
@@ -36,7 +36,7 @@ const breadcrumbItems = [
     "@type": "ListItem",
     "position": 1,
     "name": "Home",
-    "item": "https://monitortester.com"
+    "item": "https://displaytestonline.com"
   }
 ];
 
@@ -51,19 +51,19 @@ pathSegments.forEach((segment, index) => {
     "@type": "ListItem",
     "position": index + 2,
     "name": cleanLabel,
-    "item": `https://monitortester.com${currentPath}`
+    "item": `https://displaytestonline.com${currentPath}`
   });
 });
 
 const graphNodes: any[] = [
   {
     "@type": "Organization",
-    "@id": "https://monitortester.com/#organization",
+    "@id": "https://displaytestonline.com/#organization",
     "name": "Monitor Test Hub",
-    "url": "https://monitortester.com",
+    "url": "https://displaytestonline.com",
     "logo": {
       "@type": "ImageObject",
-      "url": "https://monitortester.com/favicon.svg",
+      "url": "https://displaytestonline.com/favicon.svg",
       "width": 512,
       "height": 512
     },
@@ -78,23 +78,23 @@ const graphNodes: any[] = [
     "name": authorName,
     "url": authorUrl,
     "worksFor": {
-      "@id": "https://monitortester.com/#organization"
+      "@id": "https://displaytestonline.com/#organization"
     }
   },
   {
     "@type": "WebSite",
-    "@id": "https://monitortester.com/#website",
-    "url": "https://monitortester.com",
+    "@id": "https://displaytestonline.com/#website",
+    "url": "https://displaytestonline.com",
     "name": "Monitor Test Hub",
     "description": "Unified Web-Native Display Calibration, OLED Burn-In, 540Hz VRR, and Mobile Touch Matrix Diagnostic Suite",
     "publisher": {
-      "@id": "https://monitortester.com/#organization"
+      "@id": "https://displaytestonline.com/#organization"
     },
     "potentialAction": {
       "@type": "SearchAction",
       "target": {
         "@type": "EntryPoint",
-        "urlTemplate": "https://monitortester.com/display-tests/?q={search_term_string}"
+        "urlTemplate": "https://displaytestonline.com/display-tests/?q={search_term_string}"
       },
       "query-input": "required name=search_term_string"
     }
@@ -126,7 +126,7 @@ if (!isNonToolPage) {
       "@id": `${authorUrl}#author`
     },
     "publisher": {
-      "@id": "https://monitortester.com/#organization"
+      "@id": "https://displaytestonline.com/#organization"
     },
     "about": {
       "@type": "Thing",
@@ -149,7 +149,7 @@ graphNodes.push({
     "@id": `${authorUrl}#author`
   },
   "publisher": {
-    "@id": "https://monitortester.com/#organization"
+    "@id": "https://displaytestonline.com/#organization"
   },
   "datePublished": "2026-07-22T00:00:00Z",
   "dateModified": "2026-07-22T00:00:00Z",

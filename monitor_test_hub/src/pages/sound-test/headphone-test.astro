@@ -1,0 +1,132 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import AudioTesterCanvas from '../../components/diagnostics/AudioTesterCanvas.astro';
+import FAQSection from '../../components/ui/FAQSection.astro';
+import Breadcrumbs from '../../components/ui/Breadcrumbs.astro';
+import MasterBentoDiagnosticSuite from '../../components/diagnostics/MasterBentoDiagnosticSuite.astro';
+import StepWorkflowSection from '../../components/ui/StepWorkflowSection.astro';
+import PanelTypeBreakdownSection from '../../components/ui/PanelTypeBreakdownSection.astro';
+
+
+const title = "Headphone & Earbud Sound Test";
+const description = "Test headphone stereo channel separation, left/right driver balance, 20Hz-20kHz frequency response, and driver phase inversion online.";
+
+const faqs = [
+  {
+    question: "How do I test if my left and right headphone earcups are reversed?",
+    answer: "Our stereo balance test plays an isolated tone in the left earcup, then the right. If sound emits from the wrong side, swap your earcup orientation or check your 3.5mm audio jack wiring."
+  },
+  {
+    question: "What is headphone driver frequency response (20Hz to 20kHz)?",
+    answer: "Frequency response describes how accurately headphone drivers reproduce deep sub-bass (20Hz), mid-range vocals (1kHz), and high-frequency treble (20kHz)."
+  },
+  {
+    question: "What causes static crackling or distortion in headphone drivers?",
+    answer: "Static crackling is caused by damaged voice coils, hair or debris trapped against the driver diaphragm, worn cable wiring, or excessive amplifier volume distortion."
+  },
+  {
+    question: "What is headphone acoustic phase inversion?",
+    answer: "Phase inversion occurs when one driver cone moves inward while the other moves outward. Out-of-phase headphones destroy low-end bass response and make center vocals sound hollow."
+  },
+  {
+    question: "How do open-back headphones differ from closed-back headphones in soundstage?",
+    answer: "Open-back headphones allow air to pass through perforated earcups, producing a wider, natural soundstage. Closed-back headphones isolate sound, boosting bass response and passive noise isolation."
+  },
+  {
+    question: "Why does my Bluetooth headphone volume sound quiet on Windows or Mac?",
+    answer: "Ensure your operating system volume and headphone hardware volume controls are turned up, and verify that absolute volume sync is enabled in OS audio settings."
+  },
+  {
+    question: "How do planar magnetic drivers differ from dynamic headphone drivers?",
+    answer: "Dynamic drivers use a moving voice coil attached to a cone diaphragm. Planar magnetic drivers use an ultra-thin flat membrane suspended between magnets, delivering lower distortion and lightning-fast transient response."
+  },
+  {
+    question: "What is headphone impedance (Ohms) and sensitivity (dB/mW)?",
+    answer: "Impedance (e.g. 32Ω vs 250Ω) measures electrical resistance. Low-impedance headphones play loud on smartphones; high-impedance studio headphones require dedicated headphone amplifiers."
+  },
+  {
+    question: "How do I clean my earbud grilles to restore lost volume?",
+    answer: "Use a dry soft-bristled brush or specialized audio cleaning putty to gently remove wax buildup from earbud mesh screens without pushing debris inward."
+  },
+  {
+    question: "Does uncompressed Web Audio provide better testing than YouTube videos?",
+    answer: "Yes. Web Audio API generates uncompressed pure 64-bit mathematical sine waves directly in browser RAM, bypassing YouTube lossy audio compression artifacts."
+  }
+];
+
+const breadcrumbs = [
+  { label: 'Home', href: '/' },
+  { label: 'Sound Test', href: '/sound-test' },
+  { label: title, href: '#' }
+];
+---
+
+<Layout title={title} description={description} faqs={faqs}>
+  <div  font-sans">
+    <Breadcrumbs items={breadcrumbs} />
+
+    <!-- Hero Header Deck -->
+    <header class="relative w-full rounded-3xl border border-white/10 bg-[#121215]/90 backdrop-blur-xl p-6 sm:p-8 md:p-10 shadow-2xl space-y-4 overflow-hidden group select-none">
+      <div class="absolute -top-24 -left-24 w-72 h-72 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none group-hover:bg-emerald-500/15 transition-all duration-500"></div>
+      <div class="absolute -bottom-24 -right-24 w-72 h-72 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none group-hover:bg-cyan-500/15 transition-all duration-500"></div>
+
+      <div class="relative z-10 space-y-3 max-w-3xl min-w-0 w-full">
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-emerald-400 text-xs font-mono font-bold tracking-wide flex-wrap shadow-inner">
+          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shrink-0"></span>
+          <span>AES17 HEADPHONE ACOUSTIC METRICS</span>
+        </div>
+        <h1 class="text-3xl sm:text-5xl font-extrabold text-white tracking-tight font-sans break-words min-w-0">
+          {title}
+        </h1>
+        <p class="text-sm sm:text-base text-zinc-300 font-sans leading-relaxed min-w-0">
+          Test your headphones and earbuds for left/right channel orientation, driver volume matching, 20Hz-20kHz frequency sweeps, and acoustic phase inversion.
+        </p>
+      </div>
+    </header>
+
+    <!-- Main Diagnostic Instrument -->
+    <div class="rounded-3xl border border-white/10 bg-[#121215]/90 backdrop-blur-xl p-4 sm:p-6 shadow-2xl">
+      <AudioTesterCanvas />
+    </div>
+
+    <!-- 3-Step Workflow Protocol -->
+    <StepWorkflowSection />
+
+    <!-- Panel Technology Breakdown -->
+    <PanelTypeBreakdownSection />
+
+    <!-- Article Section -->
+    <article class="bg-[#121215] border border-white/10 rounded-3xl p-6 sm:p-8 space-y-6 shadow-2xl font-sans text-sm text-zinc-300 leading-relaxed">
+      <div class="border-b border-white/10 pb-4 font-mono">
+        <span class="text-xs font-bold text-emerald-400 uppercase tracking-widest block mb-1">ACOUSTIC DRIVER PERFORMANCE</span>
+        <h2 class="text-2xl font-bold text-white">Headphone Frequency Response, Stereo Balance &amp; Phase</h2>
+      </div>
+
+      <p>
+        Accurate stereo imaging and linear frequency response are essential for critical listening, music production, and competitive gaming. Our suite evaluates driver balance, channel separation, and frequency response under AES17 digital audio guidelines.
+      </p>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 font-mono text-xs my-4">
+        <div class="bg-[#08080a] p-5 rounded-2xl border border-white/10 space-y-2">
+          <span class="text-cyan-400 text-[10px] uppercase font-bold block">Channel Balance</span>
+          <strong class="text-white block text-sm">L / R Isolation</strong>
+          <p class="font-sans text-[11px] text-zinc-400 leading-relaxed">Verifies zero channel crosstalk and equal left/right earcup volume matching.</p>
+        </div>
+        <div class="bg-[#08080a] p-5 rounded-2xl border border-white/10 space-y-2">
+          <span class="text-emerald-400 text-[10px] uppercase font-bold block">20Hz – 20kHz Sweep</span>
+          <strong class="text-white block text-sm">Linear Response</strong>
+          <p class="font-sans text-[11px] text-zinc-400 leading-relaxed">Scans full audible spectrum to detect driver rattling and frequency nulls.</p>
+        </div>
+        <div class="bg-[#08080a] p-5 rounded-2xl border border-white/10 space-y-2">
+          <span class="text-amber-400 text-[10px] uppercase font-bold block">Phase Alignment</span>
+          <strong class="text-white block text-sm">Driver Polarity</strong>
+          <p class="font-sans text-[11px] text-zinc-400 leading-relaxed">Confirms matching diaphragm motion direction to preserve bass and center soundstage.</p>
+        </div>
+      </div>
+    </article>
+
+    <!-- 10 Structured FAQs Component -->
+    <FAQSection faqs={faqs} title="Headphone & Earbud FAQs" />
+
+  </div>
+</Layout>

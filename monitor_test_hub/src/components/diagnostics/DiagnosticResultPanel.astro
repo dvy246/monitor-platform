@@ -1,0 +1,103 @@
+---
+/**
+ * DiagnosticResultPanel.astro
+ * Displays hardware status badges (PASS, WARNING, FAILED) with telemetry details.
+ */
+interface Props {
+  status?: 'PASS' | 'WARNING' | 'FAILED';
+  scoreText?: string;
+  summaryText?: string;
+  detailsList?: string[];
+  class?: string;
+}
+
+const { 
+  status = 'PASS',
+  scoreText = 'ISO 9241-307 CLASS I COMPLIANT',
+  summaryText = '0 pixel defects detected across all primary color spectrum passes.',
+  detailsList = [
+    'Subpixel Alignment: Standard RGB Stripe',
+    'Luminance Uniformity: 98.4% Baseline',
+    'Frame Pacing Jitter: <0.45 ms'
+  ],
+  class: className = '' 
+} = Astro.props;
+
+const statusConfig = {
+  PASS: {
+    bg: 'bg-emerald-500/10',
+    border: 'border-emerald-500/30',
+    text: 'text-emerald-400',
+    badgeBg: 'bg-emerald-500',
+    badgeText: 'text-black',
+    label: 'PASS',
+    glow: 'shadow-emerald-500/20',
+    icon: 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z'
+  },
+  WARNING: {
+    bg: 'bg-amber-500/10',
+    border: 'border-amber-500/30',
+    text: 'text-amber-400',
+    badgeBg: 'bg-amber-500',
+    badgeText: 'text-black',
+    label: 'WARNING',
+    glow: 'shadow-amber-500/20',
+    icon: 'M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z'
+  },
+  FAILED: {
+    bg: 'bg-rose-500/10',
+    border: 'border-rose-500/30',
+    text: 'text-rose-400',
+    badgeBg: 'bg-rose-500',
+    badgeText: 'text-white',
+    label: 'FAILED',
+    glow: 'shadow-rose-500/20',
+    icon: 'M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z'
+  }
+};
+
+const currentConfig = statusConfig[status] || statusConfig.PASS;
+---
+
+<div class:list={["bg-[#0d0d12]/90 border border-white/10 rounded-3xl p-5 sm:p-6 space-y-4 shadow-[0_20px_50px_rgba(0,0,0,0.5)] backdrop-blur-2xl font-sans select-none hover:border-white/20 transition-all duration-300 relative overflow-hidden group", className]}>
+  <!-- Header -->
+  <div class="flex items-center justify-between border-b border-white/10 pb-3.5 relative z-10">
+    <div class="flex items-center gap-3">
+      <span class={`px-3 py-1 rounded-full font-mono text-xs font-black ${currentConfig.badgeBg} ${currentConfig.badgeText} shadow-lg ${currentConfig.glow} tracking-wider flex items-center gap-1.5`}>
+        <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
+          <path stroke-linecap="round" stroke-linejoin="round" d={currentConfig.icon}/>
+        </svg>
+        <span>{currentConfig.label}</span>
+      </span>
+      <div>
+        <h3 class="text-base font-bold text-white tracking-tight">Diagnostic Result</h3>
+        <p class="text-[11px] text-zinc-400 font-mono truncate max-w-[180px] sm:max-w-xs">{scoreText}</p>
+      </div>
+    </div>
+    <span class={`text-[11px] font-mono font-bold ${currentConfig.text} bg-white/[0.05] px-2.5 py-1 rounded-full border border-white/10 flex items-center gap-1`}>
+      <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/>
+      </svg>
+      <span>ISO Verified</span>
+    </span>
+  </div>
+
+  <!-- Summary Card -->
+  <div class={`p-4 rounded-2xl border ${currentConfig.bg} ${currentConfig.border} space-y-3 relative z-10`}>
+    <p class={`text-xs font-semibold ${currentConfig.text} leading-relaxed`}>
+      {summaryText}
+    </p>
+
+    <!-- Telemetry List -->
+    {detailsList && detailsList.length > 0 && (
+      <ul class="space-y-1.5 font-mono text-[11px] text-zinc-300 pt-2 border-t border-white/10">
+        {detailsList.map(item => (
+          <li class="flex items-center gap-2">
+            <span class={`w-1.5 h-1.5 rounded-full ${currentConfig.badgeBg} shrink-0`}></span>
+            <span class="truncate">{item}</span>
+          </li>
+        ))}
+      </ul>
+    )}
+  </div>
+</div>

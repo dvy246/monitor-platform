@@ -9,56 +9,141 @@ const { lang = 'en' } = Astro.props;
 const contactHref = localizeLink('/contact', lang);
 ---
 
-<div id="floating-fab-container" class="fixed bottom-5 right-5 sm:bottom-6 sm:right-6 z-50 font-mono text-xs select-none pb-[env(safe-area-inset-bottom,0px)] pr-[env(safe-area-inset-right,0px)]">
+<div 
+  id="floating-fab-container" 
+  class="fixed bottom-[calc(1rem+env(safe-area-inset-bottom,0px))] right-[calc(1rem+env(safe-area-inset-right,0px))] sm:bottom-6 sm:right-6 z-50 font-mono text-xs select-none transition-all duration-300 transform-gpu flex flex-col items-end pointer-events-none"
+>
   <!-- Toast Feedback Popup -->
   <div 
     id="fab-toast" 
-    class="opacity-0 pointer-events-none transition-all duration-300 transform translate-y-2 mb-3 bg-bg-surface/95 backdrop-blur-xl border border-status-pass/50 text-text-primary px-4 py-2.5 rounded-xl shadow-2xl flex items-center gap-2.5 max-w-xs text-[11px] font-sans"
+    class="opacity-0 pointer-events-none transition-all duration-300 transform translate-y-2 mb-3 bg-[#12121a]/95 backdrop-blur-2xl border border-emerald-500/50 text-white px-4 py-3 rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.8)] flex items-center gap-3 max-w-xs text-xs font-sans"
   >
-    <span class="w-2 h-2 rounded-full bg-status-pass led-glow-pass shrink-0"></span>
-    <span id="fab-toast-message">Link copied to clipboard!</span>
+    <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse shrink-0 shadow-[0_0_8px_rgba(52,211,153,0.8)]"></span>
+    <span id="fab-toast-message" class="font-medium leading-tight">Link copied to clipboard!</span>
   </div>
 
-  <!-- Expanded Action Items Stack -->
+  <!-- Expanded Action Items Stack (8 Actions) -->
   <div 
     id="fab-menu" 
-    class="opacity-0 pointer-events-none scale-95 origin-bottom-right transition-all duration-200 ease-[cubic-bezier(0.16,1,0.3,1)] flex flex-col items-end gap-2.5 mb-3"
+    class="opacity-0 pointer-events-none scale-95 origin-bottom-right transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] flex flex-col items-end gap-2 mb-3 max-h-[75vh] overflow-y-auto pr-1"
   >
-    <!-- Bookmark Button -->
+    <!-- 1. Fullscreen Button -->
     <button 
-      id="btn-fab-bookmark" 
+      id="btn-fab-fullscreen" 
       type="button"
-      class="group flex items-center gap-2.5 bg-bg-surface/95 backdrop-blur-xl border border-border-hairline hover:border-status-pass px-3.5 py-2 rounded-xl text-text-primary shadow-2xl hover:bg-bg-elevated transition-all cursor-pointer font-mono"
-      title="Bookmark Monitor Test Hub (Ctrl+D / Cmd+D)"
+      class="group flex items-center gap-3 bg-[#0d0d12]/95 backdrop-blur-2xl border border-white/15 hover:border-blue-400 px-4 py-2.5 min-h-[44px] rounded-2xl text-white shadow-[0_10px_30px_rgba(0,0,0,0.8)] hover:bg-[#161622] transition-all cursor-pointer font-sans"
+      title="Toggle Fullscreen Test Mode (F)"
     >
-      <span class="text-[11px] font-bold text-text-secondary group-hover:text-status-pass transition-colors">Bookmark Site</span>
-      <span class="w-7 h-7 rounded-lg bg-status-pass/10 border border-status-pass/30 text-status-pass flex items-center justify-center font-bold text-sm">
-        📌
+      <span class="text-xs font-bold text-zinc-300 group-hover:text-blue-400 transition-colors">Fullscreen</span>
+      <span class="w-7 h-7 rounded-xl bg-blue-500/15 border border-blue-500/30 text-blue-400 flex items-center justify-center font-bold text-xs shrink-0 shadow-inner">
+        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M3 8V5a2 2 0 012-2h3m11 0h3a2 2 0 012 2v3m0 11v3a2 2 0 01-2 2h-3m-11 0H5a2 2 0 01-2-2v-3"/>
+        </svg>
       </span>
     </button>
 
-    <!-- Share Button -->
+    <!-- 2. Reset Button -->
+    <button 
+      id="btn-fab-reset" 
+      type="button"
+      class="group flex items-center gap-3 bg-[#0d0d12]/95 backdrop-blur-2xl border border-white/15 hover:border-amber-400 px-4 py-2.5 min-h-[44px] rounded-2xl text-white shadow-[0_10px_30px_rgba(0,0,0,0.8)] hover:bg-[#161622] transition-all cursor-pointer font-sans"
+      title="Reset All Diagnostic Controls (R)"
+    >
+      <span class="text-xs font-bold text-zinc-300 group-hover:text-amber-400 transition-colors">Reset Defaults</span>
+      <span class="w-7 h-7 rounded-xl bg-amber-500/15 border border-amber-500/30 text-amber-400 flex items-center justify-center font-bold text-xs shrink-0 shadow-inner">
+        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+        </svg>
+      </span>
+    </button>
+
+    <!-- 3. Share Button -->
     <button 
       id="btn-fab-share" 
       type="button"
-      class="group flex items-center gap-2.5 bg-bg-surface/95 backdrop-blur-xl border border-border-hairline hover:border-cyan-400 px-3.5 py-2 rounded-xl text-text-primary shadow-2xl hover:bg-bg-elevated transition-all cursor-pointer font-mono"
-      title="Share Monitor Test Hub"
+      class="group flex items-center gap-3 bg-[#0d0d12]/95 backdrop-blur-2xl border border-white/15 hover:border-cyan-400 px-4 py-2.5 min-h-[44px] rounded-2xl text-white shadow-[0_10px_30px_rgba(0,0,0,0.8)] hover:bg-[#161622] transition-all cursor-pointer font-sans"
+      title="Share Monitor Diagnostic Suite"
     >
-      <span class="text-[11px] font-bold text-text-secondary group-hover:text-cyan-400 transition-colors">Share</span>
-      <span class="w-7 h-7 rounded-lg bg-cyan-400/10 border border-cyan-400/30 text-cyan-400 flex items-center justify-center font-bold text-sm">
-        📤
+      <span class="text-xs font-bold text-zinc-300 group-hover:text-cyan-400 transition-colors">Share Suite</span>
+      <span class="w-7 h-7 rounded-xl bg-cyan-500/15 border border-cyan-500/30 text-cyan-400 flex items-center justify-center font-bold text-xs shrink-0 shadow-inner">
+        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"/>
+        </svg>
       </span>
     </button>
 
-    <!-- Contact Us Link -->
+    <!-- 4. Download Report Button -->
+    <button 
+      id="btn-fab-download" 
+      type="button"
+      class="group flex items-center gap-3 bg-[#0d0d12]/95 backdrop-blur-2xl border border-white/15 hover:border-emerald-400 px-4 py-2.5 min-h-[44px] rounded-2xl text-white shadow-[0_10px_30px_rgba(0,0,0,0.8)] hover:bg-[#161622] transition-all cursor-pointer font-sans"
+      title="Download Diagnostic Report / Screenshot"
+    >
+      <span class="text-xs font-bold text-zinc-300 group-hover:text-emerald-400 transition-colors">Download Report</span>
+      <span class="w-7 h-7 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 flex items-center justify-center font-bold text-xs shrink-0 shadow-inner">
+        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+        </svg>
+      </span>
+    </button>
+
+    <!-- 5. Settings Button -->
+    <button 
+      id="btn-fab-settings" 
+      type="button"
+      class="group flex items-center gap-3 bg-[#0d0d12]/95 backdrop-blur-2xl border border-white/15 hover:border-purple-400 px-4 py-2.5 min-h-[44px] rounded-2xl text-white shadow-[0_10px_30px_rgba(0,0,0,0.8)] hover:bg-[#161622] transition-all cursor-pointer font-sans"
+      title="Open Hardware Tuning Settings"
+    >
+      <span class="text-xs font-bold text-zinc-300 group-hover:text-purple-400 transition-colors">Settings</span>
+      <span class="w-7 h-7 rounded-xl bg-purple-500/15 border border-purple-500/30 text-purple-400 flex items-center justify-center font-bold text-xs shrink-0 shadow-inner">
+        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
+          <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+        </svg>
+      </span>
+    </button>
+
+    <!-- 6. Toggle Theme Button -->
+    <button 
+      id="btn-fab-theme" 
+      type="button"
+      class="group flex items-center gap-3 bg-[#0d0d12]/95 backdrop-blur-2xl border border-white/15 hover:border-yellow-400 px-4 py-2.5 min-h-[44px] rounded-2xl text-white shadow-[0_10px_30px_rgba(0,0,0,0.8)] hover:bg-[#161622] transition-all cursor-pointer font-sans"
+      title="Toggle Ambient Dark/Light Display Theme"
+    >
+      <span class="text-xs font-bold text-zinc-300 group-hover:text-yellow-400 transition-colors">Toggle Theme</span>
+      <span class="w-7 h-7 rounded-xl bg-yellow-500/15 border border-yellow-500/30 text-yellow-400 flex items-center justify-center font-bold text-xs shrink-0 shadow-inner">
+        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/>
+        </svg>
+      </span>
+    </button>
+
+    <!-- 7. Bookmark Button -->
+    <button 
+      id="btn-fab-bookmark" 
+      type="button"
+      class="group flex items-center gap-3 bg-[#0d0d12]/95 backdrop-blur-2xl border border-white/15 hover:border-rose-400 px-4 py-2.5 min-h-[44px] rounded-2xl text-white shadow-[0_10px_30px_rgba(0,0,0,0.8)] hover:bg-[#161622] transition-all cursor-pointer font-sans"
+      title="Bookmark Monitor Test Hub (Ctrl+D / Cmd+D)"
+    >
+      <span class="text-xs font-bold text-zinc-300 group-hover:text-rose-400 transition-colors">Bookmark Site</span>
+      <span class="w-7 h-7 rounded-xl bg-rose-500/15 border border-rose-500/30 text-rose-400 flex items-center justify-center font-bold text-xs shrink-0 shadow-inner">
+        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"/>
+        </svg>
+      </span>
+    </button>
+
+    <!-- 8. Contact Us Link -->
     <a 
       href={contactHref} 
-      class="group flex items-center gap-2.5 bg-bg-surface/95 backdrop-blur-xl border border-border-hairline hover:border-purple-400 px-3.5 py-2 rounded-xl text-text-primary shadow-2xl hover:bg-bg-elevated transition-all cursor-pointer font-mono"
-      title="Contact Engineering Team"
+      class="group flex items-center gap-3 bg-[#0d0d12]/95 backdrop-blur-2xl border border-white/15 hover:border-teal-400 px-4 py-2.5 min-h-[44px] rounded-2xl text-white shadow-[0_10px_30px_rgba(0,0,0,0.8)] hover:bg-[#161622] transition-all cursor-pointer font-sans pointer-events-auto"
+      title="Contact Engineering Support"
     >
-      <span class="text-[11px] font-bold text-text-secondary group-hover:text-purple-400 transition-colors">Contact Us</span>
-      <span class="w-7 h-7 rounded-lg bg-purple-400/10 border border-purple-400/30 text-purple-400 flex items-center justify-center font-bold text-sm">
-        💬
+      <span class="text-xs font-bold text-zinc-300 group-hover:text-teal-400 transition-colors">Contact Us</span>
+      <span class="w-7 h-7 rounded-xl bg-teal-500/15 border border-teal-500/30 text-teal-400 flex items-center justify-center font-bold text-xs shrink-0 shadow-inner">
+        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
+        </svg>
       </span>
     </a>
   </div>
@@ -68,12 +153,12 @@ const contactHref = localizeLink('/contact', lang);
     id="btn-fab-toggle" 
     type="button"
     aria-label="Quick Actions Menu"
-    class="w-12 h-12 sm:w-13 sm:h-13 rounded-2xl bg-bg-surface/90 backdrop-blur-xl border border-border-hairline hover:border-status-pass text-text-primary hover:text-status-pass shadow-[0_10px_30px_rgba(0,0,0,0.8),0_0_15px_rgba(5,150,105,0.15)] active:scale-95 transition-all duration-300 flex items-center justify-center cursor-pointer group relative overflow-hidden"
+    class="w-13 h-13 sm:w-14 sm:h-14 min-h-[52px] min-w-[52px] rounded-3xl bg-[#0d0d12]/95 backdrop-blur-2xl border border-white/20 hover:border-emerald-400 text-white hover:text-emerald-400 shadow-[0_15px_35px_rgba(0,0,0,0.8),0_0_20px_rgba(52,211,153,0.2)] active:scale-95 transition-all duration-300 flex items-center justify-center cursor-pointer group relative overflow-hidden shrink-0 pointer-events-auto"
   >
-    <div class="absolute inset-0 bg-radial from-status-pass/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+    <div class="absolute inset-0 bg-radial from-emerald-500/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
     <svg 
       id="fab-plus-icon" 
-      class="w-5 h-5 sm:w-6 sm:h-6 transition-transform duration-300 transform relative z-10" 
+      class="w-6 h-6 transition-transform duration-300 transform relative z-10 block" 
       fill="none" 
       viewBox="0 0 24 24" 
       stroke="currentColor" 
@@ -81,7 +166,7 @@ const contactHref = localizeLink('/contact', lang);
     >
       <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
     </svg>
-    <span class="sr-only">Quick Actions Menu (Bookmark, Share, Contact)</span>
+    <span class="sr-only">Quick Diagnostic Actions Menu</span>
   </button>
 </div>
 
@@ -91,13 +176,20 @@ const contactHref = localizeLink('/contact', lang);
     const fabToggle = document.getElementById('btn-fab-toggle');
     const fabMenu = document.getElementById('fab-menu');
     const plusIcon = document.getElementById('fab-plus-icon');
-    const btnBookmark = document.getElementById('btn-fab-bookmark');
-    const btnShare = document.getElementById('btn-fab-share');
     const toast = document.getElementById('fab-toast');
     const toastMsg = document.getElementById('fab-toast-message');
 
+    const btnFullscreen = document.getElementById('btn-fab-fullscreen');
+    const btnReset = document.getElementById('btn-fab-reset');
+    const btnShare = document.getElementById('btn-fab-share');
+    const btnDownload = document.getElementById('btn-fab-download');
+    const btnSettings = document.getElementById('btn-fab-settings');
+    const btnTheme = document.getElementById('btn-fab-theme');
+    const btnBookmark = document.getElementById('btn-fab-bookmark');
+
     let isOpen = false;
     let toastTimeout: ReturnType<typeof setTimeout> | null = null;
+    let lastScrollY = window.scrollY;
 
     function showToast(message: string) {
       if (!toast || !toastMsg) return;
@@ -117,35 +209,69 @@ const contactHref = localizeLink('/contact', lang);
 
       if (isOpen) {
         fabMenu?.classList.remove('opacity-0', 'pointer-events-none', 'scale-95');
-        fabMenu?.classList.add('opacity-100', 'scale-100');
+        fabMenu?.classList.add('opacity-100', 'scale-100', 'pointer-events-auto');
         plusIcon?.classList.add('rotate-45');
       } else {
-        fabMenu?.classList.remove('opacity-100', 'scale-100');
+        fabMenu?.classList.remove('opacity-100', 'scale-100', 'pointer-events-auto');
         fabMenu?.classList.add('opacity-0', 'pointer-events-none', 'scale-95');
         plusIcon?.classList.remove('rotate-45');
       }
     }
 
-    fabToggle?.addEventListener('click', (e) => {
-      e.stopPropagation();
-      toggleMenu();
-    });
+    function handleFullscreenChange() {
+      const isFullscreen = !!(document.fullscreenElement || (document as any).webkitFullscreenElement);
+      if (fabContainer) {
+        if (isFullscreen) {
+          fabContainer.classList.add('!hidden');
+        } else {
+          fabContainer.classList.remove('!hidden');
+        }
+      }
+    }
 
-    btnBookmark?.addEventListener('click', (e) => {
-      e.stopPropagation();
-      const isMac = navigator.platform.toUpperCase().indexOf('MAC') >= 0;
-      const shortcut = isMac ? '⌘+D' : 'Ctrl+D';
-      
-      // Copy current URL to clipboard as fallback/convenience
-      navigator.clipboard.writeText(window.location.href).then(() => {
-        showToast(`Press ${shortcut} to bookmark | Link copied!`);
-      }).catch(() => {
-        showToast(`Press ${shortcut} to bookmark this page`);
+    document.addEventListener('fullscreenchange', handleFullscreenChange);
+    document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
+
+    window.addEventListener('scroll', () => {
+      const currentScrollY = window.scrollY;
+      if (window.innerWidth < 640 && fabContainer && !isOpen) {
+        if (currentScrollY > lastScrollY && currentScrollY > 150) {
+          fabContainer.classList.add('opacity-40');
+        } else {
+          fabContainer.classList.remove('opacity-40');
+        }
+      }
+      lastScrollY = currentScrollY;
+    }, { passive: true });
+
+    if (fabToggle) {
+      fabToggle.addEventListener('click', (e) => {
+        e.stopPropagation();
+        toggleMenu();
       });
+    }
 
+    // 1. Fullscreen
+    btnFullscreen?.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const target = document.querySelector('[data-fullscreen-target="true"]') || document.documentElement;
+      if (!document.fullscreenElement) {
+        target.requestFullscreen().catch(() => {});
+      } else {
+        document.exitFullscreen().catch(() => {});
+      }
       toggleMenu(false);
     });
 
+    // 2. Reset
+    btnReset?.addEventListener('click', (e) => {
+      e.stopPropagation();
+      window.dispatchEvent(new CustomEvent('dt-reset'));
+      showToast('All diagnostic controls reset to defaults');
+      toggleMenu(false);
+    });
+
+    // 3. Share
     btnShare?.addEventListener('click', (e) => {
       e.stopPropagation();
       const shareData = {
@@ -163,6 +289,44 @@ const contactHref = localizeLink('/contact', lang);
           showToast('Failed to copy link.');
         });
       }
+      toggleMenu(false);
+    });
+
+    // 4. Download Report
+    btnDownload?.addEventListener('click', (e) => {
+      e.stopPropagation();
+      window.dispatchEvent(new CustomEvent('dt-download-report'));
+      showToast('Preparing diagnostic report export...');
+      toggleMenu(false);
+    });
+
+    // 5. Settings
+    btnSettings?.addEventListener('click', (e) => {
+      e.stopPropagation();
+      window.dispatchEvent(new CustomEvent('dt-toggle-settings'));
+      showToast('Hardware tuning settings opened');
+      toggleMenu(false);
+    });
+
+    // 6. Toggle Theme
+    btnTheme?.addEventListener('click', (e) => {
+      e.stopPropagation();
+      window.dispatchEvent(new CustomEvent('dt-toggle-theme'));
+      showToast('Display background theme toggled');
+      toggleMenu(false);
+    });
+
+    // 7. Bookmark
+    btnBookmark?.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const isMac = navigator.platform.toUpperCase().indexOf('MAC') >= 0;
+      const shortcut = isMac ? '⌘+D' : 'Ctrl+D';
+      
+      navigator.clipboard.writeText(window.location.href).then(() => {
+        showToast(`Press ${shortcut} to bookmark | Link copied!`);
+      }).catch(() => {
+        showToast(`Press ${shortcut} to bookmark this page`);
+      });
 
       toggleMenu(false);
     });

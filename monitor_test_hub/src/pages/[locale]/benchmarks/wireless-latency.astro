@@ -1,4 +1,6 @@
 ---
+import BasePage from '../../benchmarks/wireless-latency.astro';
+
 export function getStaticPaths() {
   return [
     { params: { locale: 'es' } },
@@ -6,6 +8,5 @@ export function getStaticPaths() {
     { params: { locale: 'fr' } }
   ];
 }
-import BasePage from '../../benchmarks/wireless-latency.astro';
 ---
 <BasePage />

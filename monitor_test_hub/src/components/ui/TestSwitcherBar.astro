@@ -23,7 +23,9 @@ const { tests, currentId, class: className = '' } = Astro.props;
       </svg>
       <span>SUITE NAVIGATOR</span>
     </div>
-    <span>QUICK SWITCH</span>
+    <a href="/display-testing-guide" class="text-status-pass font-bold hover:underline flex items-center gap-1">
+      <span>Master Guide &amp; Decision Tree &rarr;</span>
+    </a>
   </div>
   
   <div class="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none" role="tablist" aria-label="Test suite switcher">

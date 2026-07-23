@@ -60,3 +60,66 @@ export function evaluateMicSnr(
     clarityRating
   };
 }
+
+/**
+ * Computes an overall Microphone Health & Clarity Index (0 - 100)
+ */
+export function calculateAudioHealthScore(
+  noiseFloorDbfs: number,
+  snrDb: number,
+  hasClipping: boolean,
+  sampleRate: number = 48000
+): number {
+  let score = 100;
+
+  // 1. Noise Floor Penalty (Ideal: <= -60 dBFS)
+  if (noiseFloorDbfs > -40) score -= 30;
+  else if (noiseFloorDbfs > -50) score -= 15;
+  else if (noiseFloorDbfs > -60) score -= 5;
+
+  // 2. SNR Penalty (Ideal: >= 45 dB)
+  if (snrDb < 25) score -= 35;
+  else if (snrDb < 35) score -= 20;
+  else if (snrDb < 45) score -= 10;
+
+  // 3. Clipping Overshoot Penalty
+  if (hasClipping) score -= 20;
+
+  // 4. Low Sample Rate Penalty (e.g. 16kHz telephony / narrow Bluetooth profile)
+  if (sampleRate < 44100) score -= 15;
+
+  return Math.max(0, Math.min(100, Math.round(score)));
+}
+
+/**
+ * Validates hardware sample rate suitability for studio broadcast vs VoIP
+ */
+export function evaluateSampleRateQuality(sampleRate: number): {
+  category: 'STUDIO_BROADCAST' | 'STANDARD_AUDIO' | 'NARROWBAND_TELEPHONY';
+  description: string;
+} {
+  if (sampleRate >= 48000) {
+    return {
+      category: 'STUDIO_BROADCAST',
+      description: '48kHz+ High-Fidelity Studio & Video Standard',
+    };
+  } else if (sampleRate >= 44100) {
+    return {
+      category: 'STANDARD_AUDIO',
+      description: '44.1kHz Compact Disc Audio Standard',
+    };
+  } else {
+    return {
+      category: 'NARROWBAND_TELEPHONY',
+      description: 'Low-Bandwidth Telephony or HSP/HFP Bluetooth Profile',
+    };
+  }
+}
+
+export class MicNoiseFloorEngine {
+  public static calculateDbfsFromSamples = calculateDbfsFromSamples;
+  public static evaluateMicSnr = evaluateMicSnr;
+  public static calculateAudioHealthScore = calculateAudioHealthScore;
+  public static evaluateSampleRateQuality = evaluateSampleRateQuality;
+}
+

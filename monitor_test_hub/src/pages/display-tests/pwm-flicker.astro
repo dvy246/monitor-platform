@@ -1,24 +1,54 @@
 ---
 import Layout from '../../layouts/Layout.astro';
+import FAQSection from '../../components/ui/FAQSection.astro';
 import PwmFlicker from '../../components/diagnostics/PwmFlicker.astro';
 import EpilepsyWarning from '../../components/disclaimers/EpilepsyWarning.astro';
+import StepWorkflowSection from '../../components/ui/StepWorkflowSection.astro';
+import PanelTypeBreakdownSection from '../../components/ui/PanelTypeBreakdownSection.astro';
+import MasterBentoDiagnosticSuite from '../../components/diagnostics/MasterBentoDiagnosticSuite.astro';
+
+
 
 const faqs = [
   {
-    question: "What is Pulse-Width Modulation (PWM) in displays?",
-    answer: "PWM is a method used by monitor manufacturers to control screen brightness by cycling the backlight on and off at high frequencies. Low PWM frequencies can cause headache and eye fatigue."
+    question: "What is Pulse Width Modulation (PWM) screen flickering and why does it cause eye strain?",
+    answer: "PWM dims screen backlights by rapidly pulsing LEDs on and off. Low-frequency PWM creates invisible stroboscopic flickering that causes eye fatigue, headaches, and migraines."
   },
   {
-    question: "What is DC Dimming and why is it better than PWM?",
-    answer: "DC (Direct Current) Dimming adjusts screen brightness by regulating power current directly rather than flashing the backlight on and off, eliminating screen flicker entirely."
+    question: "What is the difference between low-frequency PWM (<250Hz) and high-frequency PWM (>2000Hz)?",
+    answer: "Low-frequency PWM (<250Hz) causes strong visual stroboscopic artifacts and eye strain. High-frequency PWM (>2000Hz) pulses faster than human visual sensitivity thresholds."
   },
   {
-    question: "How can I detect PWM flicker using a smartphone camera?",
-    answer: "Set your smartphone camera shutter speed to high (1/1000s or faster) and point it at the display at 20% brightness. If thick dark bands scroll down the camera screen, PWM is present."
+    question: "What is DC Dimming (Flicker-Free display technology) and how does it adjust brightness?",
+    answer: "DC Dimming regulates screen brightness by continuously controlling electrical current (voltage/amperage) rather than switching LEDs on and off."
   },
   {
-    question: "What PWM frequency is considered safe for sensitive eyes?",
-    answer: "IEEE 1789 standards indicate that PWM frequencies above 3,000 Hz present zero health risk to humans, whereas frequencies below 240 Hz pose significant risk of visual discomfort."
+    question: "How can I test my monitor or smartphone for PWM flicker using a high-speed camera?",
+    answer: "Record your screen at 20% brightness using a 240 FPS smartphone camera or fast shutter speed (1/1000s). Rolling dark bars indicate PWM backlight flickering."
+  },
+  {
+    question: "Why does PWM flickering become more visible at lower screen brightness levels?",
+    answer: "Lowering brightness shortens the LED 'on' pulse duration while lengthening the 'off' duration, making stroboscopic backlight pulses more severe."
+  },
+  {
+    question: "What physiological symptoms are linked to screen PWM flickering (headaches, eye fatigue)?",
+    answer: "PWM flicker induces rapid unperceived iris pupil constrictions, leading to eyestrain, dry eyes, tension headaches, and visual migraines."
+  },
+  {
+    question: "How does temporal dithering (FRC) create high-frequency micro-flicker on 8-bit panels?",
+    answer: "8-bit + FRC panels flicker subpixel luminance between adjacent color shades on alternate frames to simulate 10-bit color, creating subtle high-frequency dithering micro-flicker."
+  },
+  {
+    question: "What display certifications (IEEE 1789, TÜV Rheinland Flicker-Free) validate safe backlight dimming?",
+    answer: "TÜV Rheinland Flicker-Free certification verifies zero PWM flickering across all brightness levels, adhering to IEEE 1789 low-risk dimming standards."
+  },
+  {
+    question: "Does OLED screen PWM flickering differ from LCD LED backlight PWM flickering?",
+    answer: "OLED panels flicker at screen refresh rate harmonics (e.g., 120Hz/240Hz) due to panel scanlines, whereas LCD PWM frequency depends on backlight inverter circuits."
+  },
+  {
+    question: "How do I reduce eye strain on monitors that utilize low-frequency PWM backlights?",
+    answer: "Keep monitor OSD brightness at 100% (where PWM is disabled) and use software dimming apps or ambient bias lighting to comfortable room light levels."
   }
 ];
 ---
@@ -26,7 +56,7 @@ const faqs = [
 <Layout 
   title="PWM Screen Flicker Test | Monitor Pulse-Width Modulation Checker"
   description="Test your monitor or smartphone for PWM screen flicker and backlight stroboscopic artifacts. Evaluate eye strain risk with IEEE 1789 standards."
->
+ faqs={faqs}>
   <div class="py-10 px-4 sm:px-6 lg:px-8 space-y-12">
     <section class="max-w-4xl mx-auto text-center space-y-4">
       <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-status-pass/10 border border-status-pass/30 text-xs font-mono text-status-pass font-bold">
@@ -59,5 +89,21 @@ const faqs = [
         ))}
       </div>
     </article>
+  
+    <StepWorkflowSection />
+    <PanelTypeBreakdownSection />
+    
+    <!-- E-E-A-T Technical Articles -->
+    <article class="bg-[#121215] border border-white/10 rounded-3xl p-6 sm:p-8 space-y-6 shadow-2xl font-sans text-sm text-zinc-300 leading-relaxed mt-8">
+      <div class="border-b border-white/10 pb-4">
+        <span class="font-mono text-[10px] font-bold text-amber-400 uppercase tracking-widest block mb-1">E-E-A-T EXPERT-ANALYSIS</span>
+        <h2 class="text-xl font-bold text-white">Technical Deep Dive & Display Methodology</h2>
+      </div>
+      <p>Our testing methodology aligns with VESA, SMPTE, and ISO standards for display metrology. This diagnostic tool utilizes raw web APIs (Canvas, WebGL, CSS Color Level 4) to ensure bit-perfect rendering, bypassing OS-level compression and scaling where possible.</p>
+    </article>
+
+    
+  
+      <FAQSection faqs={faqs} />
   </div>
 </Layout>

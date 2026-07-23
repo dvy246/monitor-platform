@@ -1,0 +1,311 @@
+---
+// AudioTesterCanvas.astro — Interactive Web Audio API Generator & Visualizer
+export interface Props {
+  mode?: 'tone' | 'sweep' | 'stereo' | 'mic' | 'hearing' | 'latency' | 'bass';
+  initialFreq?: number;
+}
+
+const { mode = 'tone', initialFreq = 440 } = Astro.props;
+---
+
+<div class="audio-tester-container p-4 sm:p-6 bg-bg-surface border border-border-hairline rounded-2xl w-full max-w-full overflow-hidden shadow-2xl font-mono text-xs space-y-4">
+  <!-- Header Bar & Status Indicator -->
+  <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-border-hairline pb-3">
+    <div class="flex items-center gap-2">
+      <span id="audio-led" class="w-2.5 h-2.5 rounded-full bg-status-pass/50 shadow-xs"></span>
+      <span class="font-bold text-text-primary uppercase tracking-wider text-xs sm:text-sm">WEB AUDIO SYNTHESIZER &amp; SPECTRUM SCOPE</span>
+    </div>
+    <div class="flex items-center gap-2 text-[10px] bg-bg-canvas px-3 py-1 rounded-full border border-border-hairline font-mono-tech">
+      <span id="audio-status-text" class="text-text-muted">ENGINE: IDLE (CLICK PLAY TO START)</span>
+    </div>
+  </div>
+
+  <!-- Real-Time FFT Visualizer Canvas -->
+  <div class="relative bg-black rounded-xl overflow-hidden border border-border-hairline h-48 sm:h-60 w-full flex items-center justify-center group">
+    <canvas id="audio-visualizer-canvas" class="w-full h-full block cursor-pointer"></canvas>
+    
+    <!-- Canvas Telemetry HUD Overlay -->
+    <div class="absolute top-3 left-3 flex items-center gap-2 pointer-events-none text-[10px] bg-black/80 px-2.5 py-1 rounded border border-white/10 text-white font-mono">
+      <span>FREQ: <strong id="hud-freq-display" class="text-status-pass">440 Hz</strong></span>
+      <span>|</span>
+      <span>VOL: <strong id="hud-vol-display" class="text-cyan-400">80%</strong></span>
+    </div>
+
+    <div class="absolute top-3 right-3 text-[10px] bg-black/80 px-2.5 py-1 rounded border border-white/10 text-zinc-400 font-mono pointer-events-none">
+      W3C WEB AUDIO API 48kHz
+    </div>
+  </div>
+
+  <!-- Interactive Controls Deck -->
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 pt-2">
+    <!-- Play / Stop Master Toggle -->
+    <button
+      id="btn-play-tone"
+      type="button"
+      class="w-full bg-status-pass hover:bg-emerald-400 text-black px-5 py-3 rounded-xl font-bold transition-all cursor-pointer shadow-specular-top min-h-[44px] flex items-center justify-center gap-2"
+    >
+      <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+      <span id="btn-play-label">PLAY TEST TONE</span>
+    </button>
+
+    <!-- 20Hz-20kHz Frequency Sweep -->
+    <button
+      id="btn-sweep-freq"
+      type="button"
+      class="w-full bg-bg-elevated hover:bg-bg-surface text-text-primary px-5 py-3 rounded-xl font-bold transition-all border border-border-hairline cursor-pointer min-h-[44px] flex items-center justify-center gap-2"
+    >
+      <svg class="w-4 h-4 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+      <span>20Hz–20kHz SWEEP</span>
+    </button>
+
+    <!-- Stereo Channel Test: Left -->
+    <button
+      id="btn-test-left"
+      type="button"
+      class="w-full bg-bg-elevated hover:bg-bg-surface text-text-primary px-4 py-3 rounded-xl font-medium transition-all border border-border-hairline cursor-pointer min-h-[44px] flex items-center justify-center gap-1.5"
+    >
+      <span>🔊 LEFT CHANNEL</span>
+    </button>
+
+    <!-- Stereo Channel Test: Right -->
+    <button
+      id="btn-test-right"
+      type="button"
+      class="w-full bg-bg-elevated hover:bg-bg-surface text-text-primary px-4 py-3 rounded-xl font-medium transition-all border border-border-hairline cursor-pointer min-h-[44px] flex items-center justify-center gap-1.5"
+    >
+      <span>RIGHT CHANNEL 🔊</span>
+    </button>
+  </div>
+
+  <!-- Real-Time Sliders: Frequency & Volume -->
+  <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-bg-canvas p-4 rounded-xl border border-border-hairline">
+    <div class="space-y-1.5">
+      <div class="flex justify-between text-[11px] font-bold text-text-secondary">
+        <span>FREQUENCY SELECTOR</span>
+        <span id="slider-freq-val" class="text-status-pass font-mono">440 Hz</span>
+      </div>
+      <input
+        id="slider-freq"
+        type="range"
+        min="20"
+        max="12000"
+        step="1"
+        value={initialFreq}
+        class="w-full cursor-pointer accent-status-pass"
+      />
+    </div>
+
+    <div class="space-y-1.5">
+      <div class="flex justify-between text-[11px] font-bold text-text-secondary">
+        <span>OUTPUT GAIN / VOLUME</span>
+        <span id="slider-vol-val" class="text-cyan-400 font-mono">80%</span>
+      </div>
+      <input
+        id="slider-vol"
+        type="range"
+        min="0"
+        max="100"
+        step="1"
+        value="80"
+        class="w-full cursor-pointer accent-cyan-400"
+      />
+    </div>
+  </div>
+</div>
+
+<script>
+  function initAudioEngine() {
+    const canvas = document.getElementById('audio-visualizer-canvas') as HTMLCanvasElement;
+    const playBtn = document.getElementById('btn-play-tone') as HTMLButtonElement;
+    const sweepBtn = document.getElementById('btn-sweep-freq') as HTMLButtonElement;
+    const leftBtn = document.getElementById('btn-test-left') as HTMLButtonElement;
+    const rightBtn = document.getElementById('btn-test-right') as HTMLButtonElement;
+    const freqSlider = document.getElementById('slider-freq') as HTMLInputElement;
+    const volSlider = document.getElementById('slider-vol') as HTMLInputElement;
+    
+    const freqValEl = document.getElementById('slider-freq-val');
+    const volValEl = document.getElementById('slider-vol-val');
+    const hudFreqEl = document.getElementById('hud-freq-display');
+    const hudVolEl = document.getElementById('hud-vol-display');
+    const statusTextEl = document.getElementById('audio-status-text');
+    const ledEl = document.getElementById('audio-led');
+    const playLabelEl = document.getElementById('btn-play-label');
+
+    if (!canvas || !playBtn) return;
+
+    const ctx = canvas.getContext('2d');
+    let audioCtx: AudioContext | null = null;
+    let osc: OscillatorNode | null = null;
+    let gainNode: GainNode | null = null;
+    let pannerNode: StereoPannerNode | null = null;
+    let analyser: AnalyserNode | null = null;
+    let isPlaying = false;
+    let animId = 0;
+
+    function resizeCanvas() {
+      if (!canvas) return;
+      const rect = canvas.getBoundingClientRect();
+      const dpr = window.devicePixelRatio || 1;
+      canvas.width = rect.width * dpr;
+      canvas.height = rect.height * dpr;
+    }
+
+    resizeCanvas();
+    window.addEventListener('resize', resizeCanvas);
+
+    function initContext() {
+      if (!audioCtx) {
+        const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
+        audioCtx = new AudioContextClass();
+        gainNode = audioCtx.createGain();
+        analyser = audioCtx.createAnalyser();
+        analyser.fftSize = 128;
+        
+        if (audioCtx.createStereoPanner) {
+          pannerNode = audioCtx.createStereoPanner();
+          gainNode.connect(pannerNode);
+          pannerNode.connect(analyser);
+        } else {
+          gainNode.connect(analyser);
+        }
+
+        analyser.connect(audioCtx.destination);
+      }
+      if (audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+    }
+
+    function startTone(frequency = Number(freqSlider?.value || 440), pan = 0) {
+      initContext();
+      if (!audioCtx || !gainNode) return;
+
+      if (osc) {
+        try { osc.stop(); osc.disconnect(); } catch (e) {}
+      }
+
+      osc = audioCtx.createOscillator();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(frequency, audioCtx.currentTime);
+
+      if (pannerNode) {
+        pannerNode.pan.setValueAtTime(pan, audioCtx.currentTime);
+      }
+
+      const vol = Number(volSlider?.value || 80) / 100 * 0.3; // Limit max amplitude to 30% for ear protection
+      gainNode.gain.setValueAtTime(vol, audioCtx.currentTime);
+
+      osc.connect(gainNode);
+      osc.start();
+      isPlaying = true;
+
+      updateUIState(true, `${frequency} Hz Active`);
+      drawVisualizer();
+    }
+
+    function stopTone() {
+      if (osc) {
+        try { osc.stop(); osc.disconnect(); } catch (e) {}
+        osc = null;
+      }
+      isPlaying = false;
+      updateUIState(false, 'ENGINE: IDLE');
+    }
+
+    function updateUIState(active: boolean, message: string) {
+      if (statusTextEl) statusTextEl.textContent = message;
+      if (ledEl) {
+        ledEl.className = active 
+          ? 'w-2.5 h-2.5 rounded-full bg-status-pass led-glow-pass animate-pulse' 
+          : 'w-2.5 h-2.5 rounded-full bg-status-pass/50 shadow-xs';
+      }
+      if (playLabelEl) {
+        playLabelEl.textContent = active ? 'STOP TONE' : 'PLAY TEST TONE';
+      }
+      if (playBtn) {
+        playBtn.className = active 
+          ? 'w-full bg-red-500 hover:bg-red-400 text-white px-5 py-3 rounded-xl font-bold transition-all cursor-pointer shadow-specular-top min-h-[44px] flex items-center justify-center gap-2'
+          : 'w-full bg-status-pass hover:bg-emerald-400 text-black px-5 py-3 rounded-xl font-bold transition-all cursor-pointer shadow-specular-top min-h-[44px] flex items-center justify-center gap-2';
+      }
+    }
+
+    // Canvas FFT Oscilloscope Animation
+    function drawVisualizer() {
+      if (!ctx || !canvas) return;
+      const width = canvas.width;
+      const height = canvas.height;
+
+      ctx.clearRect(0, 0, width, height);
+
+      if (analyser && isPlaying) {
+        const bufferLength = analyser.frequencyBinCount;
+        const dataArray = new Uint8Array(bufferLength);
+        analyser.getByteFrequencyData(dataArray);
+
+        const barWidth = (width / bufferLength) * 2;
+        let x = 0;
+
+        for (let i = 0; i < bufferLength; i++) {
+          const barHeight = (dataArray[i] / 255) * height;
+          ctx.fillStyle = `rgba(16, 185, 129, ${0.4 + (barHeight / height) * 0.6})`;
+          ctx.fillRect(x, height - barHeight, barWidth - 1, barHeight);
+          x += barWidth;
+        }
+      } else {
+        // Render Idle Flat Line
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.15)';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(0, height / 2);
+        ctx.lineTo(width, height / 2);
+        ctx.stroke();
+      }
+
+      if (isPlaying) {
+        animId = requestAnimationFrame(drawVisualizer);
+      }
+    }
+
+    // Event Handlers
+    playBtn.addEventListener('click', () => {
+      if (isPlaying) stopTone();
+      else startTone();
+    });
+
+    sweepBtn?.addEventListener('click', () => {
+      startTone(20);
+      if (!audioCtx || !osc) return;
+      const now = audioCtx.currentTime;
+      osc.frequency.exponentialRampToValueAtTime(15000, now + 5);
+      if (statusTextEl) statusTextEl.textContent = 'SWEEPING: 20Hz → 15kHz (5s)';
+      setTimeout(() => { if (isPlaying) stopTone(); }, 5000);
+    });
+
+    leftBtn?.addEventListener('click', () => startTone(440, -1.0));
+    rightBtn?.addEventListener('click', () => startTone(440, 1.0));
+
+    freqSlider?.addEventListener('input', (e) => {
+      const freq = Number((e.target as HTMLInputElement).value);
+      if (freqValEl) freqValEl.textContent = `${freq} Hz`;
+      if (hudFreqEl) hudFreqEl.textContent = `${freq} Hz`;
+      if (osc && audioCtx) {
+        osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+      }
+    });
+
+    volSlider?.addEventListener('input', (e) => {
+      const vol = Number((e.target as HTMLInputElement).value);
+      if (volValEl) volValEl.textContent = `${vol}%`;
+      if (hudVolEl) hudVolEl.textContent = `${vol}%`;
+      if (gainNode && audioCtx) {
+        gainNode.gain.setValueAtTime((vol / 100) * 0.3, audioCtx.currentTime);
+      }
+    });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initAudioEngine);
+  } else {
+    initAudioEngine();
+  }
+</script>

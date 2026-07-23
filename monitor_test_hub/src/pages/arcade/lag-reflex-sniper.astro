@@ -2,17 +2,72 @@
 import Layout from '../../layouts/Layout.astro';
 import LagReflexSniper from '../../components/arcade/LagReflexSniper.astro';
 import HardwareLimitationNotice from '../../components/disclaimers/HardwareLimitationNotice.astro';
+import StepWorkflowSection from '../../components/ui/StepWorkflowSection.astro';
+import PanelTypeBreakdownSection from '../../components/ui/PanelTypeBreakdownSection.astro';
+import FAQSection from '../../components/ui/FAQSection.astro';
+
+const faqs = [
+  {
+    question: "What is human reaction time vs display input lag?",
+    answer: "Human reaction time averages 180ms to 250ms for visual stimuli. Display input lag adds 1ms to 20ms of hardware signal processing delay before visual targets appear on screen."
+  },
+  {
+    question: "How does monitor refresh rate (60Hz vs 240Hz vs 540Hz) affect reaction time?",
+    answer: "Higher refresh rates display visual target updates up to 14.8ms sooner (1.85ms frame period at 540Hz vs 16.67ms at 60Hz), improving human reflex response times."
+  },
+  {
+    question: "How does high-resolution microsecond timing work in Lag Reflex Sniper?",
+    answer: "Our timing engine uses performance.now() high-resolution DOM timers to measure click latencies down to fractional microsecond deltas."
+  },
+  {
+    question: "Does mouse polling rate (1000Hz vs 8000Hz) improve sniper scores?",
+    answer: "8000Hz polling rate dispatches click events every 0.125ms compared to 1.0ms at 1000Hz, reducing input dispatch jitter."
+  },
+  {
+    question: "What causes click input latency in web browsers?",
+    answer: "Browser main thread queue blocking, OS Compositor VSync alignment, and GPU queue depth add input latency before pointer events trigger."
+  },
+  {
+    question: "How can I lower my overall gaming latency stack?",
+    answer: "Enable Nvidia Reflex / AMD Anti-Lag, use fullscreen mode, disable VSync, connect wired 1000Hz+ mice, and set monitors to fast overdrive profiles."
+  },
+  {
+    question: "Why does target placement distance affect reaction time?",
+    answer: "Peripheral visual targets require saccadic eye movement and motor control adjustments, increasing total click latency over stationary targets."
+  },
+  {
+    question: "Does wireless mouse latency impact reflex reaction scores?",
+    answer: "Modern 2.4GHz wireless gaming mice achieve sub-1ms wireless latency, performing on par with top-tier wired mice."
+  },
+  {
+    question: "What is click-to-photon latency?",
+    answer: "Click-to-photon latency measures total delay from physical switch contact closure down to screen pixel light emission."
+  },
+  {
+    question: "How do I export my Lag Reflex Sniper benchmark card?",
+    answer: "Click 'Export Passport' to save your average reaction time, standard deviation, and system latency score in a JSON hardware passport."
+  }
+];
+
+const seoTitle = "Lag Reflex Sniper — Human Reaction Time & Display Input Latency Arcade Benchmark";
+const seoDescription = "Test your human visual reaction time combined with system display input lag using microsecond performance.now() timers.";
 ---
 
 <Layout 
-  title="Lag Reflex Sniper Game" 
-  description="Click target indicators at high speeds to calculate browser DOM input latency and estimate USB HID polling rates."
+  title={seoTitle} 
+  description={seoDescription}
+  faqs={faqs}
 >
-  <div class="py-4">
+  <div class="py-8 px-4 max-w-7xl mx-auto space-y-12 font-sans">
     <LagReflexSniper />
     
-    <div class="max-w-4xl mx-auto px-4">
+    <StepWorkflowSection />
+    <PanelTypeBreakdownSection />
+
+    <div class="max-w-4xl mx-auto">
       <HardwareLimitationNotice />
     </div>
+
+    <FAQSection faqs={faqs} title="Lag Reflex Sniper FAQs" />
   </div>
 </Layout>

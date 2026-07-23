@@ -167,7 +167,7 @@ const {
   </div>
 
   <!-- Interactive Touch Canvas Surface Container (Fixed min-height for CLS = 0.000) -->
-  <div class="relative min-h-[480px] md:min-h-[560px] h-[60dvh] rounded-2xl border border-border-hairline overflow-hidden bg-[#08080a] light:bg-[#f8fafc] shadow-2xl transition-colors">
+  <div class="relative h-[320px] sm:h-[460px] w-full max-w-full rounded-2xl border border-border-hairline overflow-hidden bg-[#08080a] shadow-2xl transition-colors">
     <canvas
       id="touch-matrix-canvas"
       class="w-full h-full block select-none touch-none focus:outline-none focus:ring-2 focus:ring-status-pass"
@@ -261,6 +261,21 @@ const {
     canvas.addEventListener('pointermove', handlePointerMove);
     canvas.addEventListener('pointerup', handlePointerUp);
     canvas.addEventListener('pointercancel', handlePointerUp);
+
+    window.addEventListener('resize', handleResize);
+    if (typeof ResizeObserver !== 'undefined' && canvas.parentElement) {
+      if (resizeObserver) resizeObserver.disconnect();
+      resizeObserver = new ResizeObserver(() => handleResize());
+      resizeObserver.observe(canvas.parentElement);
+    }
+
+    document.addEventListener('astro:before-swap', () => {
+      if (resizeObserver) {
+        resizeObserver.disconnect();
+        resizeObserver = null;
+      }
+      window.removeEventListener('resize', handleResize);
+    }, { once: true });
 
     // Keyboard support for accessibility
     canvas.addEventListener('keydown', (e: KeyboardEvent) => {
@@ -362,12 +377,21 @@ const {
     }
   }
 
+  let resizeObserver: ResizeObserver | null = null;
+
   function handleResize() {
     if (!canvas || !canvas.parentElement) return;
     const rect = canvas.parentElement.getBoundingClientRect();
     const dpr = window.devicePixelRatio || 1;
-    canvas.width = (rect.width || 800) * dpr;
-    canvas.height = (rect.height || 600) * dpr;
+    const width = rect.width || 800;
+    const height = rect.height || 600;
+    canvas.width = Math.floor(width * dpr);
+    canvas.height = Math.floor(height * dpr);
+    canvas.style.width = width + 'px';
+    canvas.style.height = height + 'px';
+    if (ctx) {
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    }
     draw();
   }
 

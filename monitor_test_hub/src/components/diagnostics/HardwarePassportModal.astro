@@ -103,7 +103,7 @@
 
       <!-- Verification Hash Box -->
       <div class="bg-bg-canvas border border-border-hairline rounded-lg p-3 space-y-1">
-        <div class="flex justify-between text-[10px] text-text-muted">
+        <div class="flex flex-col sm:flex-row justify-between gap-1 text-[10px] text-text-muted">
           <span>RECEIPT SHA-256 SIGNATURE</span>
           <span id="passport-timestamp">2026-07-22 00:30 UTC</span>
         </div>
@@ -184,7 +184,7 @@
               <span class="w-2 h-2 rounded-full bg-status-pass led-glow-pass"></span>
               PASSPORT SUCCESSFULLY CONTRIBUTED!
             </div>
-            <p class="text-[10px] text-text-muted font-mono">Signature Hash: <span id="contrib-hash-link" class="text-text-primary">a4f8b92c103e57f1</span></p>
+            <p class="text-[10px] text-text-muted font-mono">Signature Hash: <span id="contrib-hash-link" class="text-text-primary break-all">a4f8b92c103e57f1</span></p>
             <a 
               id="contrib-model-link"
               href="/models/alienware-qd-oled" 
@@ -199,7 +199,7 @@
 
     <!-- Modal Footer Actions -->
     <div class="px-6 py-4 border-t border-border-hairline bg-bg-elevated flex flex-wrap gap-3 items-center justify-between">
-      <span class="text-[10px] text-text-muted">Certified by Monitor Test Hub Hardware API</span>
+      <span class="text-[10px] text-text-muted">Certified by Display Test Online Hardware API</span>
       <div class="flex flex-wrap gap-2">
         <button 
           id="passport-copy-markdown" 
@@ -346,7 +346,7 @@
 
     copyMarkdownBtn?.addEventListener('click', () => {
       if (!currentPassportData) return;
-      const md = `### Monitor Test Hub — Verified Hardware Passport
+      const md = `### Display Test Online — Verified Hardware Passport
 | Parameter | Diagnostic Telemetry |
 | :--- | :--- |
 | **Health Index** | **${currentPassportData.healthScore} / 100** |
@@ -355,7 +355,7 @@
 | **Color Depth** | ${currentPassportData.colorDepth}-bit (${currentPassportData.hdrSupport}) |
 | **SHA-256 Signature** | \`${currentPassportData.signatureHash}\` |
 
-*Verified via [Monitor Test Hub](https://monitortester.com/passport/${currentPassportData.signatureHash})*`;
+*Verified via [Display Test Online](https://displaytestonline.com/passport/${currentPassportData.signatureHash})*`;
 
       navigator.clipboard.writeText(md).then(() => {
         if (copyMarkdownBtn) {

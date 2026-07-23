@@ -3,7 +3,7 @@
 ## 1. Observation
 A complete, non-destructive audit of page routes, metadata, canonical declarations, JSON-LD schemas, internationalization, and Google Search Quality Rater Guidelines was performed on `/Users/divyyadav/newws/monitor_test_hub`.
 Key empirical observations:
-- `public/robots.txt` points to `https://monitortesthub.com/sitemap-index.xml`, whereas `astro.config.mjs`, `@astrojs/sitemap`, and 62+ codebase files specify `https://monitortester.com`.
+- `public/robots.txt` points to `https://monitortesthub.com/sitemap-index.xml`, whereas `astro.config.mjs`, `@astrojs/sitemap`, and 62+ codebase files specify `https://displaytestonline.com`.
 - 28 page routes invoke `<SEOHead>` and `<SchemaGraph>` inside their body templates while already being wrapped in `<Layout>`, creating duplicate `<title>`, `<meta description>`, `<link rel="canonical">`, and double JSON-LD schema injections into DOM.
 - 27 page routes declare `faqs` in props/state (generating `FAQPage` schema in `<head>`), but DO NOT render `<FAQSection />` in visible page HTML.
 - Localized pages (`/es/`, `/de/`, `/fr/`) render 100% untranslated English metadata and headings.

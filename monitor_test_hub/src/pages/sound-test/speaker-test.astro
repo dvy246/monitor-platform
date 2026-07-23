@@ -1,0 +1,132 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import AudioTesterCanvas from '../../components/diagnostics/AudioTesterCanvas.astro';
+import FAQSection from '../../components/ui/FAQSection.astro';
+import Breadcrumbs from '../../components/ui/Breadcrumbs.astro';
+import MasterBentoDiagnosticSuite from '../../components/diagnostics/MasterBentoDiagnosticSuite.astro';
+import StepWorkflowSection from '../../components/ui/StepWorkflowSection.astro';
+import PanelTypeBreakdownSection from '../../components/ui/PanelTypeBreakdownSection.astro';
+
+
+const title = "Speaker Stereo Channel & Frequency Response Test";
+const description = "Test laptop and desktop speakers online. Check left/right channel separation, 20Hz-20kHz frequency response sweeps, and speaker phase alignment.";
+
+const faqs = [
+  {
+    question: "How do I test left and right stereo speaker channel orientation?",
+    answer: "Our stereo balance test plays an isolated tone exclusively in the left speaker, then the right. If sound emits from the wrong side, your speaker cables or OS channel assignments are swapped."
+  },
+  {
+    question: "What is a 20Hz to 20kHz frequency response sweep?",
+    answer: "A logarithmic frequency sweep smoothly transitions through the entire human hearing range, allowing you to test speaker driver crossover handoffs, bass extension, and treble clarity."
+  },
+  {
+    question: "What is speaker phase inversion and how do I detect it?",
+    answer: "Speaker phase inversion occurs when one speaker driver pushes outward while the other pulls inward (due to reversed + and - wiring). Out-of-phase speakers cancel out bass and collapse the stereo soundstage."
+  },
+  {
+    question: "Why do my laptop speakers rattle or buzz during heavy bass playback?",
+    answer: "Laptop speaker rattling is caused by loose internal plastic chassis components, blown speaker driver surrounds, or excessive equalizer gain boosting low frequencies."
+  },
+  {
+    question: "What is the difference between active powered speakers and passive speakers?",
+    answer: "Active speakers feature built-in power amplifiers and connect directly to DACs or computers. Passive speakers require an external audio receiver or amplifier to power the drivers."
+  },
+  {
+    question: "How does room acoustic placement affect speaker bass response?",
+    answer: "Placing speakers close to room corners or walls boosts low frequencies through boundary loading, but can introduce boomy standing wave resonances."
+  },
+  {
+    question: "What is the ideal angle and height for studio monitor speaker placement?",
+    answer: "Studio monitors should form an equilateral triangle with your seating position, angled at 60° inward with tweeters positioned at ear level."
+  },
+  {
+    question: "Why does sound leak into both speakers during a left-channel test?",
+    answer: "Channel crosstalk can occur if your operating system has 'Mono Audio' enabled in Accessibility settings or if your audio cable jack is not fully seated."
+  },
+  {
+    question: "How do coaxial speaker drivers differ from standard 2-way speakers?",
+    answer: "Coaxial drivers position the high-frequency tweeter directly in the center of the mid-bass woofer cone, creating a single point-source phase alignment."
+  },
+  {
+    question: "Why use browser Web Audio sine sweeps instead of compressed YouTube videos?",
+    answer: "Web Audio API generates uncompressed pure 64-bit mathematical sine waves directly in RAM, avoiding lossy audio compression phase distortions."
+  }
+];
+
+const breadcrumbs = [
+  { label: 'Home', href: '/' },
+  { label: 'Sound Test', href: '/sound-test' },
+  { label: title, href: '#' }
+];
+---
+
+<Layout title={title} description={description} faqs={faqs}>
+  <div  font-sans">
+    <Breadcrumbs items={breadcrumbs} />
+
+    <!-- Hero Header Deck -->
+    <header class="relative w-full rounded-3xl border border-white/10 bg-[#121215]/90 backdrop-blur-xl p-6 sm:p-8 md:p-10 shadow-2xl space-y-4 overflow-hidden group select-none">
+      <div class="absolute -top-24 -left-24 w-72 h-72 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none group-hover:bg-emerald-500/15 transition-all duration-500"></div>
+      <div class="absolute -bottom-24 -right-24 w-72 h-72 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none group-hover:bg-cyan-500/15 transition-all duration-500"></div>
+
+      <div class="relative z-10 space-y-3 max-w-3xl min-w-0 w-full">
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-emerald-400 text-xs font-mono font-bold tracking-wide flex-wrap shadow-inner">
+          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shrink-0"></span>
+          <span>AES17 ELECTROACOUSTIC SPEAKER METRICS</span>
+        </div>
+        <h1 class="text-3xl sm:text-5xl font-extrabold text-white tracking-tight font-sans break-words min-w-0">
+          {title}
+        </h1>
+        <p class="text-sm sm:text-base text-zinc-300 font-sans leading-relaxed min-w-0">
+          Test desktop, laptop, and studio monitor speakers for stereo channel separation, left/right driver volume balance, 20Hz-20kHz frequency response, and phase wiring inversion.
+        </p>
+      </div>
+    </header>
+
+    <!-- Main Diagnostic Instrument -->
+    <div class="rounded-3xl border border-white/10 bg-[#121215]/90 backdrop-blur-xl p-4 sm:p-6 shadow-2xl">
+      <AudioTesterCanvas />
+    </div>
+
+    <!-- 3-Step Workflow Protocol -->
+    <StepWorkflowSection />
+
+    <!-- Panel Technology Breakdown -->
+    <PanelTypeBreakdownSection />
+
+    <!-- Article Section -->
+    <article class="bg-[#121215] border border-white/10 rounded-3xl p-6 sm:p-8 space-y-6 shadow-2xl font-sans text-sm text-zinc-300 leading-relaxed">
+      <div class="border-b border-white/10 pb-4 font-mono">
+        <span class="text-xs font-bold text-emerald-400 uppercase tracking-widest block mb-1">ACOUSTIC TRANSDUCER DIAGNOSTICS</span>
+        <h2 class="text-2xl font-bold text-white">Stereo Separation, Frequency Sweeps &amp; Speaker Phase</h2>
+      </div>
+
+      <p>
+        Stereo soundstages rely on precise driver volume matching, uncompressed signal playback, and correct acoustic phase alignment. Our test suite utilizes AES17 digital audio guidelines to evaluate transducer performance across full-range frequency sweeps.
+      </p>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 font-mono text-xs my-4">
+        <div class="bg-[#08080a] p-5 rounded-2xl border border-white/10 space-y-2">
+          <span class="text-cyan-400 text-[10px] uppercase font-bold block">Stereo Imaging</span>
+          <strong class="text-white block text-sm">Channel Separation</strong>
+          <p class="font-sans text-[11px] text-zinc-400 leading-relaxed">Verifies isolated left and right audio channels without crosstalk or center drift.</p>
+        </div>
+        <div class="bg-[#08080a] p-5 rounded-2xl border border-white/10 space-y-2">
+          <span class="text-emerald-400 text-[10px] uppercase font-bold block">Logarithmic Sweep</span>
+          <strong class="text-white block text-sm">20Hz to 20kHz</strong>
+          <p class="font-sans text-[11px] text-zinc-400 leading-relaxed">Continuous pure sine sweep to test woofers, midranges, and tweeters.</p>
+        </div>
+        <div class="bg-[#08080a] p-5 rounded-2xl border border-white/10 space-y-2">
+          <span class="text-amber-400 text-[10px] uppercase font-bold block">Polarity Check</span>
+          <strong class="text-white block text-sm">Phase Alignment</strong>
+          <p class="font-sans text-[11px] text-zinc-400 leading-relaxed">Detects reversed speaker wiring (+) and (-) polarity to preserve bass response.</p>
+        </div>
+      </div>
+    </article>
+
+    <!-- 10 Structured FAQs Component -->
+    <FAQSection faqs={faqs} title="Speaker Diagnostic FAQs" />
+
+  </div>
+</Layout>

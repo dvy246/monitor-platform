@@ -4,6 +4,9 @@ import Breadcrumbs from '../../components/ui/Breadcrumbs.astro';
 import WirelessLatencyInspector from '../../components/diagnostics/WirelessLatencyInspector.astro';
 import SEOHead from '../../components/seo/SEOHead.astro';
 import SchemaGraph from '../../components/seo/SchemaGraph.astro';
+import StepWorkflowSection from '../../components/ui/StepWorkflowSection.astro';
+import PanelTypeBreakdownSection from '../../components/ui/PanelTypeBreakdownSection.astro';
+import FAQSection from '../../components/ui/FAQSection.astro';
 
 const breadcrumbItems = [
   { label: 'Benchmarks', href: '/benchmarks' },
@@ -12,7 +15,7 @@ const breadcrumbItems = [
 
 const seoTitle = "Wireless Audio & Peripheral Latency Tool (Bluetooth vs 2.4GHz RF)";
 const seoDescription = "Profile wireless Bluetooth audio codecs (AAC, SBC, aptX LL, LDAC, LC3) and 2.4GHz RF dongle input latency with multi-layer systemic breakdown, lip-sync offsets, and Web Audio API hardware timers.";
-const canonicalUrl = "https://monitortester.com/benchmarks/wireless-latency";
+const canonicalUrl = "https://displaytestonline.com/benchmarks/wireless-latency";
 
 const faqs = [
   {
@@ -26,13 +29,41 @@ const faqs = [
   {
     question: "Is 2.4GHz RF better than Bluetooth for gaming?",
     answer: "Yes. 2.4GHz RF dongles utilize uncompressed audio transmission streams with fixed buffer sizes, yielding systemic latency under 20ms—over 6x faster than standard Bluetooth AAC/SBC."
+  },
+  {
+    question: "What is aptX Low Latency (aptX LL) and LC3 codec?",
+    answer: "aptX LL achieves ~32ms latency; LE Audio LC3 codec reduces latency down to 20-30ms while maintaining lower bitrate energy consumption."
+  },
+  {
+    question: "How does monitor refresh rate affect audio-visual lip-sync delay?",
+    answer: "Higher display refresh rates (e.g. 240Hz vs 60Hz) render visual flash frames 12.5ms faster, reducing perceived click-to-audio synchronization deltas."
+  },
+  {
+    question: "What causes wireless 2.4GHz audio stutter and packet drops?",
+    answer: "Wi-Fi routers operating on 2.4GHz channels (1, 6, 11), USB 3.0 port RF interference, or physical obstacles block line-of-sight signal transmission."
+  },
+  {
+    question: "What is LDAC audio codec latency?",
+    answer: "Sony LDAC prioritizes high bitrate audio quality (990 kbps) for Hi-Res audio, but incurs 150ms-200ms latency, making it unsuitable for competitive gaming."
+  },
+  {
+    question: "Does Windows OS WASAPI audio buffer add latency?",
+    answer: "Windows Shared Audio engine buffers add 10ms-25ms system overhead unless Exclusive WASAPI or ASIO low-latency drivers are engaged."
+  },
+  {
+    question: "Can I use wired 3.5mm headphones for 0ms audio latency?",
+    answer: "Analog 3.5mm wired connections eliminate wireless encoding, buffering, and RF packet transmission delays, delivering true 0ms wireless latency."
+  },
+  {
+    question: "How do I export my wireless audio latency test report?",
+    answer: "Click 'Export Passport' to save your verified wireless audio latency telemetry in a JSON report."
   }
 ];
 ---
 
-<Layout title={seoTitle} description={seoDescription} canonicalUrl={canonicalUrl}>
+<Layout title={seoTitle} description={seoDescription} faqs={faqs} canonicalUrl={canonicalUrl}>
 
-  <div class="max-w-7xl mx-auto px-4 py-8 space-y-8">
+  <div class="max-w-7xl mx-auto px-4 py-8 space-y-8 font-sans">
     <Breadcrumbs items={breadcrumbItems} />
 
     <header class="space-y-3 border-b border-border-hairline pb-6">
@@ -48,17 +79,9 @@ const faqs = [
 
     <WirelessLatencyInspector />
 
-    <!-- FAQ Section -->
-    <section class="space-y-6 bg-bg-surface p-6 sm:p-8 rounded-2xl border border-border-hairline font-sans">
-      <h2 class="text-2xl font-bold text-text-primary">Frequently Asked Questions</h2>
-      <div class="space-y-4">
-        {faqs.map(faq => (
-          <div class="p-4 rounded-xl bg-bg-canvas border border-border-hairline space-y-2 font-mono">
-            <h3 class="text-base font-bold text-amber-400">{faq.question}</h3>
-            <p class="text-text-secondary text-xs sm:text-sm leading-relaxed">{faq.answer}</p>
-          </div>
-        ))}
-      </div>
-    </section>
+    <StepWorkflowSection />
+    <PanelTypeBreakdownSection />
+
+    <FAQSection faqs={faqs} title="Wireless Audio & Latency FAQs" />
   </div>
 </Layout>

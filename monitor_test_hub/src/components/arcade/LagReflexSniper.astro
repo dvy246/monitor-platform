@@ -69,10 +69,15 @@
 
     const resize = () => {
       const rect = canvas.parentElement?.getBoundingClientRect();
-      canvas.width = (rect?.width || 800) * (window.devicePixelRatio || 1);
-      canvas.height = (rect?.height || 500) * (window.devicePixelRatio || 1);
+      canvas.width = Math.round((rect?.width || 800) * (window.devicePixelRatio || 1));
+      canvas.height = Math.round((rect?.height || 500) * (window.devicePixelRatio || 1));
       draw();
     };
+
+    if (typeof ResizeObserver !== 'undefined' && canvas.parentElement) {
+      const ro = new ResizeObserver(() => resize());
+      ro.observe(canvas.parentElement);
+    }
 
     window.addEventListener('resize', resize);
     resize();

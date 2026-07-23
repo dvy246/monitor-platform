@@ -1,0 +1,263 @@
+---
+// WebcamTesterCanvas.astro
+---
+<div class="webcam-tester-container bg-bg-surface border border-border-hairline rounded-2xl p-3 sm:p-6 space-y-4 sm:space-y-6 shadow-2xl shadow-black/80 font-sans max-w-4xl mx-auto w-full max-w-full overflow-hidden">
+  <!-- Device Selector & Control Header -->
+  <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4 pb-4 border-b border-border-hairline/60 w-full min-w-0">
+    <div class="flex items-center gap-3 min-w-0">
+      <div class="w-10 h-10 rounded-xl bg-status-pass/10 border border-status-pass/30 flex items-center justify-center text-status-pass shrink-0">
+        <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+      </div>
+      <div class="min-w-0 flex-1">
+        <h2 class="text-base sm:text-lg font-bold text-text-primary truncate">Camera &amp; Webcam Diagnostic Scope</h2>
+        <p class="text-[11px] sm:text-xs text-text-muted truncate">Real-time FPS delta tracking &amp; resolution telemetry</p>
+      </div>
+    </div>
+
+    <!-- Camera Dropdown -->
+    <div class="w-full sm:w-auto">
+      <select id="camera-select" class="w-full bg-bg-elevated text-text-primary text-xs font-mono px-3 py-2.5 rounded-xl border border-border-hairline focus:outline-none focus:border-status-pass transition-colors cursor-pointer min-h-[44px]">
+        <option value="">Detecting Cameras...</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Video Feed Canvas Deck -->
+  <div class="relative bg-black rounded-xl overflow-hidden border border-border-hairline/80 aspect-video sm:aspect-auto min-h-[220px] sm:min-h-[400px] flex items-center justify-center group w-full max-w-full">
+    <!-- Standby Overlay -->
+    <div id="cam-standby" class="absolute inset-0 flex flex-col items-center justify-center p-4 sm:p-6 text-center z-10 bg-black/90">
+      <div class="w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-status-pass/10 border border-status-pass/30 flex items-center justify-center text-status-pass mb-3 sm:mb-4 animate-pulse shrink-0">
+        <svg class="w-6 h-6 sm:w-8 sm:h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+      </div>
+      <h3 class="text-base sm:text-xl font-bold text-text-primary mb-1 sm:mb-2">Tap Below to Start Camera Test</h3>
+      <p class="text-[11px] sm:text-xs text-text-muted max-w-md mb-4 sm:mb-6 leading-tight">Your camera stream is processed strictly 100% inside local browser memory. Zero video is recorded or uploaded.</p>
+      <button id="btn-start-cam" class="bg-status-pass hover:bg-emerald-400 text-black font-extrabold px-6 sm:px-8 py-3 rounded-xl font-mono text-xs sm:text-sm transition-all cursor-pointer shadow-lg shadow-status-pass/20 hover:scale-105 active:scale-95 min-h-[44px] flex items-center justify-center">
+        START WEBCAM TEST
+      </button>
+    </div>
+
+    <!-- Live Video Element -->
+    <video id="webcam-video" autoplay playsinline muted class="w-full h-full object-contain max-h-[500px] transition-transform duration-200 max-w-full"></video>
+
+    <!-- Floating Live HUD Overlay -->
+    <div id="cam-hud" class="hidden absolute top-2 sm:top-4 left-2 sm:left-4 right-2 sm:right-4 flex items-center justify-between pointer-events-none z-20">
+      <div class="flex items-center gap-1.5 sm:gap-2 px-2.5 py-1 rounded-lg bg-black/80 backdrop-blur-md border border-white/10 text-[10px] sm:text-xs font-mono text-white">
+        <span class="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-status-pass animate-ping"></span>
+        <span id="hud-res">0x0</span>
+        <span class="text-text-muted">|</span>
+        <span id="hud-fps" class="text-status-pass font-bold">0.0 FPS</span>
+      </div>
+
+      <div class="px-2.5 py-1 rounded-lg bg-black/80 backdrop-blur-md border border-white/10 text-[10px] sm:text-xs font-mono text-emerald-400 font-bold">
+        <span id="hud-score">HEALTH: --/100</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Interactive Controls Toolbar -->
+  <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5 pt-1 w-full">
+    <div class="grid grid-cols-3 sm:flex sm:flex-wrap items-center gap-2 w-full sm:w-auto">
+      <button id="btn-mirror" disabled class="px-3 sm:px-4 py-2.5 rounded-xl bg-bg-elevated hover:bg-bg-surface text-text-primary text-xs font-semibold border border-border-hairline transition-colors cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-1.5 min-h-[44px]">
+        <svg class="w-4 h-4 text-cyan-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/></svg>
+        <span class="truncate">Mirror</span>
+      </button>
+
+      <button id="btn-snapshot" disabled class="px-3 sm:px-4 py-2.5 rounded-xl bg-bg-elevated hover:bg-bg-surface text-text-primary text-xs font-semibold border border-border-hairline transition-colors cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-1.5 min-h-[44px]">
+        <svg class="w-4 h-4 text-purple-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+        <span class="truncate">Photo</span>
+      </button>
+
+      <button id="btn-fill-light" class="px-3 sm:px-4 py-2.5 rounded-xl bg-bg-elevated hover:bg-bg-surface text-text-primary text-xs font-semibold border border-border-hairline transition-colors cursor-pointer flex items-center justify-center gap-1.5 min-h-[44px]">
+        <svg class="w-4 h-4 text-amber-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+        <span class="truncate">Fill Light</span>
+      </button>
+    </div>
+
+    <div class="w-full sm:w-auto">
+      <button id="btn-stop-cam" disabled class="w-full sm:w-auto px-4 py-2.5 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 text-xs font-bold border border-rose-500/30 transition-colors cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed min-h-[44px] flex items-center justify-center">
+        Stop Camera
+      </button>
+    </div>
+  </div>
+
+  <!-- Virtual Fill Light Studio Drawer (Modal) -->
+  <div id="fill-light-modal" class="hidden fixed inset-0 z-50 bg-white transition-colors flex flex-col justify-between p-6">
+    <div class="flex items-center justify-between text-black font-mono text-xs font-bold">
+      <span>WEBCAM VIRTUAL FILL LIGHT STUDIO</span>
+      <button id="btn-close-fill" class="px-4 py-2 rounded-lg bg-black text-white cursor-pointer hover:bg-zinc-800">
+        Close Fill Light (Esc)
+      </button>
+    </div>
+
+    <div class="text-center space-y-4 max-w-xl mx-auto text-black">
+      <h3 class="text-3xl font-extrabold font-sans">Adjust Fill Light Temperature</h3>
+      <p class="text-xs font-mono text-zinc-700">Position this screen in front of your face during video calls or webcam checks.</p>
+      
+      <div class="space-y-2 pt-4">
+        <div class="flex justify-between text-xs font-mono font-bold">
+          <span>2700K Warm Tungsten</span>
+          <span id="kelvin-val">5000K</span>
+          <span>6500K Daylight D65</span>
+        </div>
+        <input id="webcam-kelvin-slider" type="range" min="2700" max="6500" value="5000" class="w-full cursor-pointer" />
+      </div>
+    </div>
+
+    <div class="text-center text-[10px] font-mono text-zinc-600">
+      Press F or Esc to toggle full screen fill light
+    </div>
+  </div>
+</div>
+
+<script>
+  import { WebcamDiagnosticsEngine } from '../../engine/WebcamDiagnosticsEngine';
+
+  let currentStream: MediaStream | null = null;
+  let isMirrored = false;
+  let frameTimestamps: number[] = [];
+  let animFrameId: number | null = null;
+  let lastFrameTime = performance.now();
+
+  const video = document.getElementById('webcam-video') as HTMLVideoElement;
+  const cameraSelect = document.getElementById('camera-select') as HTMLSelectElement;
+  const btnStart = document.getElementById('btn-start-cam') as HTMLButtonElement;
+  const btnStop = document.getElementById('btn-stop-cam') as HTMLButtonElement;
+  const btnMirror = document.getElementById('btn-mirror') as HTMLButtonElement;
+  const btnSnapshot = document.getElementById('btn-snapshot') as HTMLButtonElement;
+  const btnFillLight = document.getElementById('btn-fill-light') as HTMLButtonElement;
+  const btnCloseFill = document.getElementById('btn-close-fill') as HTMLButtonElement;
+  const fillModal = document.getElementById('fill-light-modal') as HTMLDivElement;
+  const kelvinSlider = document.getElementById('webcam-kelvin-slider') as HTMLInputElement;
+  const kelvinVal = document.getElementById('kelvin-val') as HTMLSpanElement;
+  const standby = document.getElementById('cam-standby') as HTMLDivElement;
+  const hud = document.getElementById('cam-hud') as HTMLDivElement;
+  const hudRes = document.getElementById('hud-res') as HTMLSpanElement;
+  const hudFps = document.getElementById('hud-fps') as HTMLSpanElement;
+  const hudScore = document.getElementById('hud-score') as HTMLSpanElement;
+
+  // Enumerate cameras
+  async function populateCameras() {
+    try {
+      const devices = await navigator.mediaDevices.enumerateDevices();
+      const videoDevices = devices.filter(d => d.kind === 'videoinput');
+      cameraSelect.innerHTML = videoDevices.length
+        ? videoDevices.map((d, i) => `<option value="${d.deviceId}">${d.label || `Camera ${i + 1}`}</option>`).join('')
+        : '<option value="">Default Camera</option>';
+    } catch (e) {
+      cameraSelect.innerHTML = '<option value="">Default Camera</option>';
+    }
+  }
+
+  // Start Stream
+  async function startWebcam(deviceId?: string) {
+    if (currentStream) stopWebcam();
+
+    try {
+      const constraints: MediaStreamConstraints = {
+        video: deviceId ? { deviceId: { exact: deviceId } } : { width: { ideal: 1920 }, height: { ideal: 1080 } }
+      };
+
+      currentStream = await navigator.mediaDevices.getUserMedia(constraints);
+      video.srcObject = currentStream;
+
+      video.onloadedmetadata = () => {
+        video.play();
+        standby.classList.add('hidden');
+        hud.classList.remove('hidden');
+        btnStop.disabled = false;
+        btnMirror.disabled = false;
+        btnSnapshot.disabled = false;
+        populateCameras();
+        startFpsLoop();
+      };
+    } catch (err) {
+      alert('Could not access camera. Please allow camera permissions in your browser settings.');
+    }
+  }
+
+  // Stop Stream
+  function stopWebcam() {
+    if (currentStream) {
+      currentStream.getTracks().forEach(t => t.stop());
+      currentStream = null;
+    }
+    video.srcObject = null;
+    standby.classList.remove('hidden');
+    hud.classList.add('hidden');
+    btnStop.disabled = true;
+    btnMirror.disabled = true;
+    btnSnapshot.disabled = true;
+    if (animFrameId) cancelAnimationFrame(animFrameId);
+  }
+
+  // FPS Loop
+  function startFpsLoop() {
+    const loop = () => {
+      const now = performance.now();
+      const delta = now - lastFrameTime;
+      lastFrameTime = now;
+
+      if (delta > 0) {
+        const instantFps = 1000 / delta;
+        frameTimestamps.push(now);
+        if (frameTimestamps.length > 30) frameTimestamps.shift();
+
+        const avgFps = Number((30000 / (now - (frameTimestamps[0] || now - 1000))).toFixed(1));
+        const w = video.videoWidth || 1920;
+        const h = video.videoHeight || 1080;
+        
+        hudRes.textContent = `${w}x${h}`;
+        hudFps.textContent = `${avgFps} FPS`;
+
+        const score = WebcamDiagnosticsEngine.calculateHealthScore(w, h, avgFps);
+        hudScore.textContent = `HEALTH: ${score}/100`;
+      }
+
+      animFrameId = requestAnimationFrame(loop);
+    };
+    animFrameId = requestAnimationFrame(loop);
+  }
+
+  // Listeners
+  btnStart?.addEventListener('click', () => startWebcam(cameraSelect.value));
+  btnStop?.addEventListener('click', stopWebcam);
+  cameraSelect?.addEventListener('change', () => startWebcam(cameraSelect.value));
+
+  btnMirror?.addEventListener('click', () => {
+    isMirrored = !isMirrored;
+    video.style.transform = isMirrored ? 'scaleX(-1)' : 'scaleX(1)';
+  });
+
+  btnSnapshot?.addEventListener('click', () => {
+    if (!video.videoWidth) return;
+    const canvas = document.createElement('canvas');
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    const ctx = canvas.getContext('2d');
+    if (ctx) {
+      if (isMirrored) {
+        ctx.translate(canvas.width, 0);
+        ctx.scale(-1, 1);
+      }
+      ctx.drawImage(video, 0, 0);
+      const link = document.createElement('a');
+      link.download = `webcam-snapshot-${Date.now()}.png`;
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+    }
+  });
+
+  btnFillLight?.addEventListener('click', () => fillModal.classList.remove('hidden'));
+  btnCloseFill?.addEventListener('click', () => fillModal.classList.add('hidden'));
+
+  kelvinSlider?.addEventListener('input', (e) => {
+    const k = Number((e.target as HTMLInputElement).value);
+    kelvinVal.textContent = `${k}K`;
+    // Simple RGB warm-to-cool Kelvin approximation
+    if (k <= 3500) fillModal.style.backgroundColor = '#fff3e0';
+    else if (k <= 5000) fillModal.style.backgroundColor = '#ffffff';
+    else fillModal.style.backgroundColor = '#f0f8ff';
+  });
+
+  populateCameras();
+</script>

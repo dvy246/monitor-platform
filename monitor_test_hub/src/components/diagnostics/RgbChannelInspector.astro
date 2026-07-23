@@ -1,0 +1,125 @@
+---
+---
+
+<div class="w-full max-w-5xl mx-auto p-4 md:p-6 bg-[#121215] border border-white/10 rounded-2xl shadow-2xl text-slate-100 font-sans space-y-6">
+  <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 border-b border-white/10">
+    <div>
+      <div class="flex items-center gap-2 text-status-pass text-xs font-mono uppercase tracking-widest mb-1">
+        <span class="w-2 h-2 rounded-full bg-status-pass animate-pulse"></span>
+        <span>Colorimetry Subpixel Isolate Engine</span>
+      </div>
+      <h2 class="text-2xl md:text-3xl font-black text-white tracking-tight">RGB Primary Channel Isolate &amp; Balance Test</h2>
+      <p class="text-sm text-slate-400 mt-1">Independent Red, Green, and Blue subpixel channel isolation, white balance bias, and chromaticity tint testing.</p>
+    </div>
+    
+    <div class="flex items-center gap-2">
+      <button id="rgb-fs-btn" class="px-4 py-2 bg-status-pass hover:bg-emerald-600 text-bg-canvas font-mono font-bold text-xs rounded-xl transition-all shadow-lg flex items-center gap-2">
+        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3 8V5a2 2 0 012-2h3m11 0h3a2 2 0 012 2v3m0 11v3a2 2 0 01-2 2h-3m-11 0H5a2 2 0 01-2-2v-3"/></svg>
+        <span>ENTER FULLSCREEN TEST</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- RGB Sliders & Channel Isolators -->
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-4 font-mono text-xs">
+    <div class="bg-bg-surface p-4 rounded-xl border border-border-hairline space-y-2">
+      <label class="text-red-400 font-bold uppercase tracking-wider flex justify-between">
+        <span>Red Subpixel (R)</span>
+        <span id="rgb-r-val">255</span>
+      </label>
+      <input id="rgb-r-slider" type="range" min="0" max="255" value="255" class="w-full accent-red-500 cursor-pointer" />
+    </div>
+
+    <div class="bg-bg-surface p-4 rounded-xl border border-border-hairline space-y-2">
+      <label class="text-emerald-400 font-bold uppercase tracking-wider flex justify-between">
+        <span>Green Subpixel (G)</span>
+        <span id="rgb-g-val">0</span>
+      </label>
+      <input id="rgb-g-slider" type="range" min="0" max="255" value="0" class="w-full accent-emerald-500 cursor-pointer" />
+    </div>
+
+    <div class="bg-bg-surface p-4 rounded-xl border border-border-hairline space-y-2">
+      <label class="text-blue-400 font-bold uppercase tracking-wider flex justify-between">
+        <span>Blue Subpixel (B)</span>
+        <span id="rgb-b-val">0</span>
+      </label>
+      <input id="rgb-b-slider" type="range" min="0" max="255" value="0" class="w-full accent-blue-500 cursor-pointer" />
+    </div>
+  </div>
+
+  <!-- Preset Quick Switchers -->
+  <div class="flex items-center gap-2 flex-wrap font-mono text-xs">
+    <button data-rgb="255,0,0" class="px-3 py-1.5 rounded-lg bg-red-500/20 text-red-400 border border-red-500/40 font-bold hover:bg-red-500/30 transition-colors">Pure Red (255,0,0)</button>
+    <button data-rgb="0,255,0" class="px-3 py-1.5 rounded-lg bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 font-bold hover:bg-emerald-500/30 transition-colors">Pure Green (0,255,0)</button>
+    <button data-rgb="0,0,255" class="px-3 py-1.5 rounded-lg bg-blue-500/20 text-blue-400 border border-blue-500/40 font-bold hover:bg-blue-500/30 transition-colors">Pure Blue (0,0,255)</button>
+    <button data-rgb="255,255,0" class="px-3 py-1.5 rounded-lg bg-yellow-500/20 text-yellow-400 border border-yellow-500/40 font-bold hover:bg-yellow-500/30 transition-colors">Yellow (255,255,0)</button>
+    <button data-rgb="0,255,255" class="px-3 py-1.5 rounded-lg bg-cyan-500/20 text-cyan-400 border border-cyan-500/40 font-bold hover:bg-cyan-500/30 transition-colors">Cyan (0,255,255)</button>
+    <button data-rgb="255,0,255" class="px-3 py-1.5 rounded-lg bg-pink-500/20 text-pink-400 border border-pink-500/40 font-bold hover:bg-pink-500/30 transition-colors">Magenta (255,0,255)</button>
+  </div>
+
+  <!-- Interactive Color Canvas Container -->
+  <div class="relative w-full aspect-video rounded-xl border border-border-hairline shadow-2xl transition-colors duration-150 flex items-center justify-center" id="rgb-canvas-container" style="background-color: rgb(255, 0, 0);">
+    <div data-fullscreen-hide="true" class="p-4 rounded-xl bg-bg-surface/90 backdrop-blur-md border border-border-hairline font-mono text-center space-y-1">
+      <div id="rgb-hex-display" class="text-2xl font-black text-text-primary">#FF0000</div>
+      <div id="rgb-dec-display" class="text-xs text-text-muted">RGB(255, 0, 0)</div>
+    </div>
+  </div>
+</div>
+
+<script>
+  let rSlider = document.getElementById('rgb-r-slider') as HTMLInputElement;
+  let gSlider = document.getElementById('rgb-g-slider') as HTMLInputElement;
+  let bSlider = document.getElementById('rgb-b-slider') as HTMLInputElement;
+  let rVal = document.getElementById('rgb-r-val');
+  let gVal = document.getElementById('rgb-g-val');
+  let bVal = document.getElementById('rgb-b-val');
+  let hexDisplay = document.getElementById('rgb-hex-display');
+  let decDisplay = document.getElementById('rgb-dec-display');
+  let container = document.getElementById('rgb-canvas-container');
+  let fsBtn = document.getElementById('rgb-fs-btn');
+
+  function updateColor() {
+    let r = parseInt(rSlider ? rSlider.value : '255');
+    let g = parseInt(gSlider ? gSlider.value : '0');
+    let b = parseInt(bSlider ? bSlider.value : '0');
+
+    if (rVal) rVal.textContent = String(r);
+    if (gVal) gVal.textContent = String(g);
+    if (bVal) bVal.textContent = String(b);
+
+    let hexR = r.toString(16).padStart(2, '0').toUpperCase();
+    let hexG = g.toString(16).padStart(2, '0').toUpperCase();
+    let hexB = b.toString(16).padStart(2, '0').toUpperCase();
+    let hexStr = `#${hexR}${hexG}${hexB}`;
+
+    if (hexDisplay) hexDisplay.textContent = hexStr;
+    if (decDisplay) decDisplay.textContent = `RGB(${r}, ${g}, ${b})`;
+    if (container) container.style.backgroundColor = `rgb(${r}, ${g}, ${b})`;
+  }
+
+  if (rSlider) rSlider.addEventListener('input', updateColor);
+  if (gSlider) gSlider.addEventListener('input', updateColor);
+  if (bSlider) bSlider.addEventListener('input', updateColor);
+
+  document.querySelectorAll('[data-rgb]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      let rgb = (btn as HTMLElement).dataset.rgb?.split(',').map(Number);
+      if (rgb && rSlider && gSlider && bSlider) {
+        rSlider.value = String(rgb[0]);
+        gSlider.value = String(rgb[1]);
+        bSlider.value = String(rgb[2]);
+        updateColor();
+      }
+    });
+  });
+
+  if (fsBtn && container) {
+    fsBtn.addEventListener('click', () => {
+      if (document.fullscreenElement) {
+        document.exitFullscreen();
+      } else {
+        container?.requestFullscreen();
+      }
+    });
+  }
+</script>

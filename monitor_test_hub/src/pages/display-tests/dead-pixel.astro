@@ -375,6 +375,8 @@ const colors = [
   function closeTest() {
     if (!overlay) return;
     overlay.classList.add('hidden');
+    document.body.style.overflow = '';
+    document.body.classList.remove('overflow-hidden');
     if (document.fullscreenElement) {
       document.exitFullscreen().catch(() => {});
     }
