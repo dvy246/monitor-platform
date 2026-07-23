@@ -562,6 +562,14 @@ const homepageFaqSchema = {
 
     engine.start();
 
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) {
+        engine.stop();
+      } else {
+        engine.start();
+      }
+    });
+
     // Device route optimization
     const smartCta = document.getElementById('smart-hero-cta') as HTMLAnchorElement;
     if (smartCta && ('ontouchstart' in window || navigator.maxTouchPoints > 0) && window.innerWidth < 768) {
