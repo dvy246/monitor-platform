@@ -7,32 +7,36 @@ const { t, lang } = useTranslations(Astro.url.pathname);
 
 const homepageFaqs = [
   {
-    q: 'What is a monitor test?',
-    a: 'A monitor test is a web-native diagnostic check designed to evaluate the physical condition, color accuracy, panel uniformity, pixel integrity, and refresh rate performance of any computer screen, smartphone, laptop, or smart TV.'
+    q: 'What is a display test?',
+    a: 'A display test is a web-native diagnostic check designed to evaluate panel condition, color accuracy, backlight uniformity, pixel integrity, and refresh rate performance (Hz) across computer monitors, laptops, smartphones, and Smart TVs.'
   },
   {
-    q: 'How do I test dead pixels?',
+    q: 'How do I run a dead pixel test?',
     a: 'To test for dead pixels, launch our free online Dead Pixel Test. It cycles your display through full-screen solid primary colors (Red, Green, Blue, White, Black). Inspect your panel closely: dead pixels remain dark black dots, while stuck sub-pixels display a fixed color regardless of background.'
   },
   {
-    q: 'How do I test touch screen responsiveness?',
-    a: 'Open our Touch Screen Test suite on your smartphone, tablet, or touch laptop. Drag across the touch matrix grid to illuminate active contact points, verify 10-finger multi-touch limits, map dead-zones, and test digitizer line jitter.'
+    q: 'How do I test my screen refresh rate (Hz)?',
+    a: 'Our Refresh Rate Test uses W3C performance.now() microsecond hardware timestamps to measure your display rate (Hz) and inter-frame pacing jitter in real time. It detects 60Hz, 144Hz, 240Hz, and 540Hz+ gaming monitors as well as Apple ProMotion and Android LTPO dynamic scaling.'
   },
   {
-    q: 'How do I check monitor refresh rate?',
-    a: 'Our Refresh Rate Test uses W3C performance.now() microsecond hardware timestamps to measure your display rate (Hz) and inter-frame jitter in real time. It detects 60Hz, 144Hz, 240Hz, and 540Hz+ gaming monitors as well as mobile Apple ProMotion and Android LTPO dynamic scaling.'
+    q: 'How do I test a touchscreen digitizer for dead zones?',
+    a: 'Open our Touch Screen Test suite on your smartphone, tablet, or touch laptop. Drag across the touch matrix grid to illuminate active contact points, verify 10-finger multi-touch limits, map dead-zones, and evaluate digitizer line noise.'
   },
   {
-    q: 'What is OLED burn in?',
-    a: 'OLED burn-in is static image retention caused by unequal degradation of organic light-emitting sub-pixels when static UI elements (like taskbars, logos, or HUDs) remain on screen for extended periods. Our OLED test uses 5% and 10% near-black gray patterns to detect early sub-pixel wear.'
+    q: 'How do I test my microphone and webcam online?',
+    a: 'Use our online Microphone Test and Webcam Test suites to verify decibel levels (dBFS), instant 3-second audio loopback playback, camera sensor resolution (1080p/4K), real-time FPS frame rates, and virtual fill lighting.'
   },
   {
-    q: 'Is Display Test Online 100% free?',
-    a: 'Yes. Display Test Online is 100% free with zero paywalls, subscriptions, advertisements, or software downloads required. All calculations run strictly client-side inside your browser.'
+    q: 'How do I test keyboard switch chatter and mouse polling rate?',
+    a: 'Our Keyboard Tester benchmarks N-Key Rollover (NKRO) and microsecond switch chatter bounce timing, while our Mouse Test profiler measures 8000Hz USB polling rates, click latency, and double-click chatter.'
   },
   {
-    q: 'Does Display Test Online work on phones and Smart TVs?',
-    a: 'Yes. Display Test Online is fully responsive and compatible with iPhones, Android smartphones, iPads, MacBooks, Windows PCs, Linux workstations, ChromeOS devices, and Smart TVs (including Samsung Tizen and LG webOS).'
+    q: 'What causes OLED burn-in?',
+    a: 'OLED burn-in is static image retention caused by unequal degradation of organic light-emitting sub-pixels when static UI elements (like taskbars or HUDs) remain on screen at high brightness. Our OLED test uses 5% and 10% dark-gray patterns to detect sub-pixel wear.'
+  },
+  {
+    q: 'Is Display Test Online 100% free and private?',
+    a: 'Yes. Display Test Online is 100% free with zero paywalls, zero ads, and zero software downloads required. All video decoding, audio DSP, and rendering execute strictly client-side inside your browser.'
   }
 ];
 
