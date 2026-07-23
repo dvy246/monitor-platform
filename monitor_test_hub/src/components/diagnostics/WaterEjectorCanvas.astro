@@ -1,9 +1,15 @@
 ---
 import { useTranslations } from '../../utils/i18n';
 const { t } = useTranslations(Astro.url.pathname);
+
+export interface Props {
+  defaultMode?: 'water-sweep' | 'dust-blower' | 'crackle-test';
+}
+
+const { defaultMode = 'water-sweep' } = Astro.props;
 ---
 
-<div class="w-full max-w-5xl mx-auto space-y-8 font-sans">
+<div class="w-full max-w-5xl mx-auto space-y-8 font-sans" id="water-ejector-wrapper" data-default-mode={defaultMode}>
 
   <!-- Section 1: Choose Your Device Selection Grid -->
   <div class="space-y-4">
@@ -317,8 +323,11 @@ const { t } = useTranslations(Astro.url.pathname);
 
     if (!btnToggle || !btnLabel || !freqReadout) return;
 
+    const wrapper = document.getElementById('water-ejector-wrapper');
+    const defaultModeStr = wrapper?.getAttribute('data-default-mode');
+
     let currentPreset: DevicePreset = 'mobile';
-    let currentMode: DiagnosticMode = 'water-sweep';
+    let currentMode: DiagnosticMode = (defaultModeStr as DiagnosticMode) || 'water-sweep';
     let currentTarget: EjectTarget = 'all';
 
     const engine = new AudioDiagnosticEngine(
@@ -377,6 +386,18 @@ const { t } = useTranslations(Astro.url.pathname);
     });
 
     // Diagnostic Mode Selector Buttons
+    function updateModeUI(mode: DiagnosticMode) {
+      document.querySelectorAll('.mode-btn').forEach((b) => {
+        b.classList.remove('border-status-pass/50', 'bg-status-pass/10', 'text-text-primary');
+        b.classList.add('border-border-hairline', 'bg-bg-canvas', 'text-text-secondary');
+      });
+      const targetBtn = document.querySelector(`.mode-btn[data-mode="${mode}"]`);
+      if (targetBtn) {
+        targetBtn.classList.remove('border-border-hairline', 'bg-bg-canvas', 'text-text-secondary');
+        targetBtn.classList.add('border-status-pass/50', 'bg-status-pass/10', 'text-text-primary');
+      }
+    }
+
     document.querySelectorAll('.mode-btn').forEach((btn) => {
       btn.addEventListener('click', (e) => {
         const targetBtn = e.currentTarget as HTMLElement;
@@ -384,18 +405,16 @@ const { t } = useTranslations(Astro.url.pathname);
         if (!mode) return;
 
         currentMode = mode;
-        document.querySelectorAll('.mode-btn').forEach((b) => {
-          b.classList.remove('border-status-pass/50', 'bg-status-pass/10', 'text-text-primary');
-          b.classList.add('border-border-hairline', 'bg-bg-canvas', 'text-text-secondary');
-        });
-        targetBtn.classList.remove('border-border-hairline', 'bg-bg-canvas', 'text-text-secondary');
-        targetBtn.classList.add('border-status-pass/50', 'bg-status-pass/10', 'text-text-primary');
+        updateModeUI(mode);
 
         if (engine.active) {
           startEject();
         }
       });
     });
+
+    // Initialize mode UI
+    updateModeUI(currentMode);
 
     // Channel Target Buttons
     const channelGroup = document.getElementById('channel-target-group');
