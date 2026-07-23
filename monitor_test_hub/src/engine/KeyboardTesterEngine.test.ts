@@ -116,4 +116,24 @@ describe('KeyboardTesterEngine Unit Tests', () => {
     expect(report.testedKeysCount).toBe(0);
     expect(report.totalPresses).toBe(0);
   });
+
+  it('should estimate keyboard polling rate (Hz) from microsecond chatter deltas', () => {
+    state.processKeyDown('KeyA', 1000);
+    state.processKeyUp('KeyA', 1050);
+    state.processKeyDown('KeyA', 1051); // 1ms delta -> ~1000Hz
+
+    const estimatedHz = state.estimatePollingRateHz();
+    expect(estimatedHz).toBe(1000);
+  });
+
+  it('should calculate CPS (clicks per second) accurately over time window', () => {
+    state.processKeyDown('Space', 0);
+    state.processKeyDown('Space', 1000);
+    state.processKeyDown('Space', 2000);
+    state.processKeyDown('Space', 3000);
+    state.processKeyDown('Space', 4000); // 5 presses over 5 seconds
+
+    const cps = state.calculateCps(5, 5000);
+    expect(cps).toBe(1.0);
+  });
 });

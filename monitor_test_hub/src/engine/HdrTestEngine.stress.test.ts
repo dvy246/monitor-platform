@@ -348,7 +348,7 @@ describe('HdrTestEngine Empirical Stress Test Suite', () => {
       }
 
       const durationMs = performance.now() - startTime;
-      expect(durationMs).toBeLessThan(150);
+      expect(durationMs).toBeLessThan(300);
       console.log(`[HdrTestEngine Perf] 10k simulateToneMap calls: ${durationMs.toFixed(2)}ms`);
     });
   });

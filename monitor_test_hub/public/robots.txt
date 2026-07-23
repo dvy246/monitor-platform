@@ -4,4 +4,4 @@ Disallow: /api/
 Disallow: /embed/
 Disallow: /cdn-cgi/
 
-Sitemap: https://monitortester.com/sitemap-index.xml
+Sitemap: https://displaytestonline.com/sitemap-index.xml

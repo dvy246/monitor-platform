@@ -37,15 +37,15 @@
         <span id="active-pattern-name" class="text-text-primary font-bold ml-1 font-mono">5% Near-Black Gray</span>
       </div>
       <button id="btn-fullscreen" class="bg-status-pass hover:opacity-90 text-text-on-accent px-4 py-1.5 rounded font-bold text-xs flex items-center gap-1.5 transition-all shadow-[0_0_15px_rgba(16,185,129,0.3)] cursor-pointer">
-        <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M4 8V4m0 0h4M4 4l5 5m11-5V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5v-4m0 0h-4m4 0l-5-5"/></svg>
-        Go Fullscreen
+        <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3 8V5a2 2 0 012-2h3m11 0h3a2 2 0 012 2v3m0 11v3a2 2 0 01-2 2h-3m-11 0H5a2 2 0 01-2-2v-3"/></svg>
+        <span>Go Fullscreen</span>
       </button>
     </div>
 
     <!-- Preview Container -->
     <div id="uniform-preview" class="relative w-full aspect-video md:aspect-[2/1] rounded-lg overflow-hidden border border-border-hairline transition-colors duration-200 cursor-pointer" style="background-color: #0d0d0d;" title="Click to open fullscreen">
       <!-- Fullscreen instruction overlay -->
-      <div class="absolute inset-0 flex items-center justify-center bg-black/40 backdrop-blur-[1px] hover:backdrop-blur-none transition-all text-center p-4">
+      <div data-fullscreen-hide="true" class="absolute inset-0 flex items-center justify-center bg-black/40 backdrop-blur-[1px] hover:backdrop-blur-none transition-all text-center p-4">
         <span class="text-text-secondary text-xs md:text-sm font-semibold select-none font-sans">
           Click window or use the button above to test fullscreen.<br/>
           Press <kbd class="px-1.5 py-0.5 rounded bg-bg-elevated text-text-primary font-mono border border-border-hairline">ESC</kbd> to exit fullscreen.

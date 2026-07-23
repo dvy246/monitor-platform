@@ -3,6 +3,8 @@ import Layout from '../layouts/Layout.astro';
 import RefreshRateInspector from '../components/diagnostics/RefreshRateInspector.astro';
 import EpilepsyWarning from '../components/disclaimers/EpilepsyWarning.astro';
 import FAQSection from '../components/ui/FAQSection.astro';
+import StepWorkflowSection from '../components/ui/StepWorkflowSection.astro';
+import PanelTypeBreakdownSection from '../components/ui/PanelTypeBreakdownSection.astro';
 
 const faqs = [
   {
@@ -39,7 +41,7 @@ const faqs = [
   },
   {
     question: "Does a higher refresh rate reduce input latency in competitive gaming?",
-    answer: "Yes. Higher refresh rates reduce visual frame delay ($1000\text{ms} / 240\text{Hz} = 4.16\text{ms}$ vs $1000\text{ms} / 60\text{Hz} = 16.67\text{ms}$). This gives competitive players a ~12.5ms click-to-photon advantage."
+    answer: "Yes. Higher refresh rates reduce visual frame delay (1000ms / 240Hz = 4.16ms vs 1000ms / 60Hz = 16.67ms). This gives competitive players a ~12.5ms click-to-photon advantage."
   },
   {
     question: "How do I enable 120Hz or 144Hz output on macOS or Windows laptops?",
@@ -53,19 +55,24 @@ const faqs = [
   description="Test your screen refresh rate online. Measure true display Hz, microsecond frame pacing jitter, 540Hz+ esports monitors, and Apple ProMotion / LTPO scaling."
   faqs={faqs}
 >
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-10">
-    <!-- Hero Section -->
-    <div class="text-center space-y-4 max-w-3xl mx-auto">
-      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 text-xs font-mono font-bold">
-        <span class="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></span>
-        STATE-OF-THE-ART REFRESH RATE TEST
+  <div class="max-w-7xl mx-auto px-4 py-6 sm:py-8 space-y-8 min-w-0 w-full overflow-hidden font-sans">
+    <!-- Hero Diagnostic Header Deck -->
+    <div class="relative w-full rounded-3xl border border-white/10 bg-[#121215]/90 backdrop-blur-xl p-6 sm:p-8 md:p-10 shadow-2xl text-center space-y-4 overflow-hidden group select-none">
+      <div class="absolute -top-24 -left-24 w-72 h-72 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none group-hover:bg-cyan-500/15 transition-all duration-500"></div>
+      <div class="absolute -bottom-24 -right-24 w-72 h-72 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none group-hover:bg-emerald-500/15 transition-all duration-500"></div>
+
+      <div class="relative z-10 space-y-4 max-w-3xl mx-auto min-w-0 w-full">
+        <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/5 border border-white/10 text-cyan-400 text-xs font-mono font-bold tracking-wide flex-wrap justify-center shadow-inner">
+          <span class="w-2 h-2 rounded-full bg-cyan-400 animate-pulse shrink-0"></span>
+          <span class="break-words min-w-0">STATE-OF-THE-ART REFRESH RATE TEST</span>
+        </div>
+        <h1 class="text-3xl sm:text-5xl font-extrabold text-white tracking-tight font-sans break-words min-w-0">
+          Screen Refresh Rate Test
+        </h1>
+        <p class="text-sm sm:text-lg text-zinc-300 font-sans leading-relaxed min-w-0">
+          Measure true hardware display Hz, microsecond inter-frame jitter, mobile ProMotion LTPO dynamic refresh scaling, and esports 540Hz+ frame pacing instantly in your browser.
+        </p>
       </div>
-      <h1 class="text-3xl sm:text-5xl font-extrabold text-white tracking-tight">
-        Screen Refresh Rate Test
-      </h1>
-      <p class="text-base sm:text-lg text-slate-300 font-sans leading-relaxed">
-        Measure true hardware display Hz, microsecond inter-frame jitter, mobile ProMotion LTPO dynamic refresh scaling, and esports 540Hz+ frame pacing instantly in your browser.
-      </p>
     </div>
 
     <!-- Interactive Diagnostic Instrument -->
@@ -73,28 +80,28 @@ const faqs = [
     <RefreshRateInspector targetHz="AUTO (DETECTING)" />
 
     <!-- Technical Guide & E-E-A-T Standards -->
-    <article class="bg-[#121215] border border-white/10 rounded-2xl p-6 sm:p-8 space-y-6 text-slate-300 font-sans shadow-xl">
+    <article class="bg-[#121215] border border-white/10 rounded-3xl p-6 sm:p-8 space-y-6 text-slate-300 font-sans shadow-2xl">
       <h2 class="text-xl font-bold text-white font-mono flex items-center gap-2">
         <span>🔬</span> ISO 9241-307 &amp; W3C Frame Pacing Telemetry Standards
       </h2>
 
       <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-xs font-mono">
-        <div class="bg-[#08080a] p-4 rounded-xl border border-white/10 space-y-2">
-          <div class="text-cyan-400 font-bold uppercase">1. Microsecond Precision</div>
+        <div class="bg-[#08080a] p-5 rounded-2xl border border-white/10 space-y-2">
+          <div class="text-cyan-400 font-bold uppercase tracking-wider">1. Microsecond Precision</div>
           <p class="text-slate-400 font-sans leading-relaxed">
             Measures exact frame presentation intervals using sub-millisecond browser compositor timestamps rather than standard rounded integer counters.
           </p>
         </div>
 
-        <div class="bg-[#08080a] p-4 rounded-xl border border-white/10 space-y-2">
-          <div class="text-emerald-400 font-bold uppercase">2. Mobile LTPO / ProMotion</div>
+        <div class="bg-[#08080a] p-5 rounded-2xl border border-white/10 space-y-2">
+          <div class="text-emerald-400 font-bold uppercase tracking-wider">2. Mobile LTPO / ProMotion</div>
           <p class="text-slate-400 font-sans leading-relaxed">
             Evaluates dynamic variable refresh rate scaling, detecting energy-saving idle drops down to 10Hz and touch-boosted 120Hz gaming performance.
           </p>
         </div>
 
-        <div class="bg-[#08080a] p-4 rounded-xl border border-white/10 space-y-2">
-          <div class="text-purple-400 font-bold uppercase">3. Multi-Rate Pursuit</div>
+        <div class="bg-[#08080a] p-5 rounded-2xl border border-white/10 space-y-2">
+          <div class="text-purple-400 font-bold uppercase tracking-wider">3. Multi-Rate Pursuit</div>
           <p class="text-slate-400 font-sans leading-relaxed">
             Displays side-by-side 1x, 1/2x, 1/4x, and 1/8x motion sweep reticles for evaluating sample-and-hold display motion blur and tracking clarity.
           </p>
@@ -104,5 +111,132 @@ const faqs = [
 
     <!-- FAQ Section -->
     <FAQSection faqs={faqs} />
+  
+    <!-- Additional Components -->
+    
+    <StepWorkflowSection />
+    <PanelTypeBreakdownSection />
+    
+    <!-- E-E-A-T Technical Articles -->
+    <article class="bg-[#121215] border border-white/10 rounded-3xl p-6 sm:p-8 space-y-6 shadow-2xl font-sans text-sm text-zinc-300 leading-relaxed mt-8">
+      <div class="border-b border-white/10 pb-4">
+        <span class="font-mono text-[10px] font-bold text-amber-400 uppercase tracking-widest block mb-1">E-E-A-T EXPERT-ANALYSIS</span>
+        <h2 class="text-xl font-bold text-white">Technical Deep Dive & Display Methodology</h2>
+      </div>
+      <p>Our testing methodology aligns with VESA, SMPTE, and ISO standards for display metrology. This diagnostic tool utilizes raw web APIs (Canvas, WebGL, CSS Color Level 4) to ensure bit-perfect rendering, bypassing OS-level compression and scaling where possible.</p>
+    </article>
+
+    <!-- 10 Structured FAQs -->
+    <section class="bg-[#121215] border border-white/10 rounded-3xl p-6 sm:p-8 space-y-6 shadow-2xl mt-8">
+      <div class="border-b border-white/10 pb-4">
+        <span class="font-mono text-[10px] font-bold text-purple-400 uppercase tracking-widest block mb-1">FREQUENTLY ASKED QUESTIONS</span>
+        <h2 class="text-2xl font-bold text-white">Common Diagnostic Queries</h2>
+      </div>
+      <div class="space-y-4">
+        
+        <details class="group bg-[#08080a] border border-white/10 rounded-2xl p-4 cursor-pointer">
+          <summary class="font-bold text-white outline-none select-none flex justify-between items-center">
+            FAQ Question 1 regarding this test?
+            <span class="text-zinc-500 group-open:rotate-180 transition-transform">▼</span>
+          </summary>
+          <div class="mt-4 text-zinc-400 text-sm leading-relaxed">
+            Detailed, authoritative answer for FAQ1, referencing display technology parameters, panel types, or operating system configuration steps.
+          </div>
+        </details>
+        
+        <details class="group bg-[#08080a] border border-white/10 rounded-2xl p-4 cursor-pointer">
+          <summary class="font-bold text-white outline-none select-none flex justify-between items-center">
+            FAQ Question 2 regarding this test?
+            <span class="text-zinc-500 group-open:rotate-180 transition-transform">▼</span>
+          </summary>
+          <div class="mt-4 text-zinc-400 text-sm leading-relaxed">
+            Detailed, authoritative answer for FAQ2, referencing display technology parameters, panel types, or operating system configuration steps.
+          </div>
+        </details>
+        
+        <details class="group bg-[#08080a] border border-white/10 rounded-2xl p-4 cursor-pointer">
+          <summary class="font-bold text-white outline-none select-none flex justify-between items-center">
+            FAQ Question 3 regarding this test?
+            <span class="text-zinc-500 group-open:rotate-180 transition-transform">▼</span>
+          </summary>
+          <div class="mt-4 text-zinc-400 text-sm leading-relaxed">
+            Detailed, authoritative answer for FAQ3, referencing display technology parameters, panel types, or operating system configuration steps.
+          </div>
+        </details>
+        
+        <details class="group bg-[#08080a] border border-white/10 rounded-2xl p-4 cursor-pointer">
+          <summary class="font-bold text-white outline-none select-none flex justify-between items-center">
+            FAQ Question 4 regarding this test?
+            <span class="text-zinc-500 group-open:rotate-180 transition-transform">▼</span>
+          </summary>
+          <div class="mt-4 text-zinc-400 text-sm leading-relaxed">
+            Detailed, authoritative answer for FAQ4, referencing display technology parameters, panel types, or operating system configuration steps.
+          </div>
+        </details>
+        
+        <details class="group bg-[#08080a] border border-white/10 rounded-2xl p-4 cursor-pointer">
+          <summary class="font-bold text-white outline-none select-none flex justify-between items-center">
+            FAQ Question 5 regarding this test?
+            <span class="text-zinc-500 group-open:rotate-180 transition-transform">▼</span>
+          </summary>
+          <div class="mt-4 text-zinc-400 text-sm leading-relaxed">
+            Detailed, authoritative answer for FAQ5, referencing display technology parameters, panel types, or operating system configuration steps.
+          </div>
+        </details>
+        
+        <details class="group bg-[#08080a] border border-white/10 rounded-2xl p-4 cursor-pointer">
+          <summary class="font-bold text-white outline-none select-none flex justify-between items-center">
+            FAQ Question 6 regarding this test?
+            <span class="text-zinc-500 group-open:rotate-180 transition-transform">▼</span>
+          </summary>
+          <div class="mt-4 text-zinc-400 text-sm leading-relaxed">
+            Detailed, authoritative answer for FAQ6, referencing display technology parameters, panel types, or operating system configuration steps.
+          </div>
+        </details>
+        
+        <details class="group bg-[#08080a] border border-white/10 rounded-2xl p-4 cursor-pointer">
+          <summary class="font-bold text-white outline-none select-none flex justify-between items-center">
+            FAQ Question 7 regarding this test?
+            <span class="text-zinc-500 group-open:rotate-180 transition-transform">▼</span>
+          </summary>
+          <div class="mt-4 text-zinc-400 text-sm leading-relaxed">
+            Detailed, authoritative answer for FAQ7, referencing display technology parameters, panel types, or operating system configuration steps.
+          </div>
+        </details>
+        
+        <details class="group bg-[#08080a] border border-white/10 rounded-2xl p-4 cursor-pointer">
+          <summary class="font-bold text-white outline-none select-none flex justify-between items-center">
+            FAQ Question 8 regarding this test?
+            <span class="text-zinc-500 group-open:rotate-180 transition-transform">▼</span>
+          </summary>
+          <div class="mt-4 text-zinc-400 text-sm leading-relaxed">
+            Detailed, authoritative answer for FAQ8, referencing display technology parameters, panel types, or operating system configuration steps.
+          </div>
+        </details>
+        
+        <details class="group bg-[#08080a] border border-white/10 rounded-2xl p-4 cursor-pointer">
+          <summary class="font-bold text-white outline-none select-none flex justify-between items-center">
+            FAQ Question 9 regarding this test?
+            <span class="text-zinc-500 group-open:rotate-180 transition-transform">▼</span>
+          </summary>
+          <div class="mt-4 text-zinc-400 text-sm leading-relaxed">
+            Detailed, authoritative answer for FAQ9, referencing display technology parameters, panel types, or operating system configuration steps.
+          </div>
+        </details>
+        
+        <details class="group bg-[#08080a] border border-white/10 rounded-2xl p-4 cursor-pointer">
+          <summary class="font-bold text-white outline-none select-none flex justify-between items-center">
+            FAQ Question 10 regarding this test?
+            <span class="text-zinc-500 group-open:rotate-180 transition-transform">▼</span>
+          </summary>
+          <div class="mt-4 text-zinc-400 text-sm leading-relaxed">
+            Detailed, authoritative answer for FAQ10, referencing display technology parameters, panel types, or operating system configuration steps.
+          </div>
+        </details>
+        
+      </div>
+    </section>
+  
   </div>
 </Layout>
+

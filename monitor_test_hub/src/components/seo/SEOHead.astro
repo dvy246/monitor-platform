@@ -16,7 +16,7 @@ const {
   title,
   description,
   canonicalUrl = Astro.url.href,
-  ogImage = 'https://monitortester.com/og-image.png',
+  ogImage = 'https://displaytestonline.com/og-image.png',
   ogType = 'website',
   noindex = false,
   faqs = [],
@@ -24,12 +24,12 @@ const {
 } = Astro.props;
 
 // Hreflang: compute alternate URLs for all supported locales
-const siteOrigin = 'https://monitortester.com';
+const siteOrigin = 'https://displaytestonline.com';
 const supportedLocales = ['en', 'es', 'de', 'fr'] as const;
 const pathSegments = Astro.url.pathname.split('/').filter(Boolean);
 const currentLocale = supportedLocales.includes(pathSegments[0] as typeof supportedLocales[number]) ? pathSegments[0] : 'en';
 const localeSuffix = currentLocale === 'es' ? ' [ES]' : currentLocale === 'de' ? ' [DE]' : currentLocale === 'fr' ? ' [FR]' : '';
-const baseTitle = title.includes('Monitor Test Hub') ? title : `${title} | Monitor Test Hub`;
+const baseTitle = title.includes('Display Test Online') ? title : `${title} | Display Test Online`;
 const fullTitle = `${baseTitle}${localeSuffix}`;
 const isLocalePrefix = currentLocale !== 'en';
 const rawPathSegments = isLocalePrefix ? pathSegments.slice(1) : pathSegments;
@@ -73,7 +73,7 @@ const hreflangs = supportedLocales.map((locale) => ({
 
 <!-- Open Graph / Facebook -->
 <meta property="og:type" content={ogType} />
-<meta property="og:site_name" content="Monitor Test Hub" />
+<meta property="og:site_name" content="Display Test Online" />
 <meta property="og:url" content={canonicalUrl} />
 <meta property="og:title" content={fullTitle} />
 <meta property="og:description" content={description} />
@@ -92,4 +92,14 @@ const hreflangs = supportedLocales.map((locale) => ({
 
 <!-- Schema Graph -->
 <SchemaGraph title={title} description={description} canonicalUrl={canonicalUrl} faqs={faqs} items={schemaItems} />
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-9VKL34KZJQ"></script>
+<script is:inline>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-9VKL34KZJQ');
+</script>
 

@@ -1,0 +1,153 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import UniversalScreenTestDeck from '../../components/diagnostics/UniversalScreenTestDeck.astro';
+import MasterBentoDiagnosticSuite from '../../components/diagnostics/MasterBentoDiagnosticSuite.astro';
+import StepWorkflowSection from '../../components/ui/StepWorkflowSection.astro';
+import PanelTypeBreakdownSection from '../../components/ui/PanelTypeBreakdownSection.astro';
+import FAQSection from '../../components/ui/FAQSection.astro';
+import EpilepsyWarning from '../../components/disclaimers/EpilepsyWarning.astro';
+import Breadcrumbs from '../../components/ui/Breadcrumbs.astro';
+import TestGuideModal from '../../components/ui/TestGuideModal.astro';
+
+
+const faqs = [
+  {
+    question: "What is an online monitor screen test?",
+    answer: "An online screen test is a free, web-native diagnostic instrument that evaluates computer displays, laptops, smartphones, tablets, and Smart TVs for physical hardware defects, including dead pixels, stuck subpixels, OLED 5%/10% gray banding, subpixel text anti-aliasing, color depth limits, and touch digitizer accuracy."
+  },
+  {
+    question: "How do I test my screen for dead and stuck pixels?",
+    answer: "Enter fullscreen mode on our Universal Screen Test deck and cycle through solid primary backgrounds (White, Black, Red, Green, Blue). Inspect your screen closely: dead pixels remain permanently unlit dark black dots, while stuck subpixels display a fixed color regardless of background."
+  },
+  {
+    question: "What is the difference between 5% and 10% OLED dark gray banding tests?",
+    answer: "The 5% and 10% dark gray tests use low-luminance gray patterns (IEC 62341-6-2 standard) to expose unequal organic subpixel wear, static image retention, dirty screen effect (DSE), and vertical banding on OLED, WOLED, and QD-OLED panels."
+  },
+  {
+    question: "How do I run a screen test on a Smart TV using a remote or gamepad?",
+    answer: "Open displaytestonline.com on your Smart TV browser (Samsung Tizen, LG webOS, Android TV). Our test includes a native W3C Gamepad API loop: use D-Pad Left/Right on your TV remote or Xbox/PlayStation controller to cycle patterns, and Press A/Cross for Fullscreen."
+  },
+  {
+    question: "Why does the Screen Wake Lock API matter during visual inspection?",
+    answer: "The Screen Wake Lock API prevents mobile devices, laptops, and Smart TVs from dimming or activating screen savers while you inspect your display for faint subpixel defects or backlight bleed."
+  },
+  {
+    question: "How does color temperature (Kelvin) affect screen fill lighting and testing?",
+    answer: "Our Kelvin temp wheel maps color temperatures from 2700K (Warm Soft Light) to 9500K (Cool Blue Light). It allows you to test panel white balance and turn your monitor into a high-CRI video call fill light."
+  },
+  {
+    question: "How does the hands-free auto-cycle slideshow scanner work?",
+    answer: "Click '▶ AUTO SLIDESHOW' on the test deck. The engine automatically cycles through all 16 diagnostic patterns at 3-second intervals, allowing automated scanning of large wall-mounted displays or multiple workstation monitors."
+  },
+  {
+    question: "What are subpixel geometry reticles for QD-OLED and WOLED panels?",
+    answer: "Subpixel reticles render high-contrast text and micro-lines to inspect unique subpixel layouts (RGB Stripe, BGR Inverted, QD-OLED Triangular, WOLED RWBG) for ClearType text fringing and color bleeding."
+  },
+  {
+    question: "How do touch gesture controls work on mobile smartphones and tablets?",
+    answer: "On touchscreen devices, swipe horizontally left or right to cycle test patterns, swipe vertically up or down to adjust brightness/Kelvin, single tap to toggle UI overlays, and double tap to enter true fullscreen mode."
+  },
+  {
+    question: "How do I generate a SHA-256 Hardware Passport receipt for warranty claims?",
+    answer: "Click 'SIGN SHA-256 PASSPORT' on the test deck header. The engine evaluates active telemetry (Resolution, DPR, Color Depth, Refresh Rate, Defect Pins) and exports a cryptographically signed verification certificate for eBay/Reddit listings or retailer RMA claims."
+  }
+];
+
+const breadcrumbs = [
+  { label: 'Home', href: '/' },
+  { label: 'Display Tests', href: '/display-tests' },
+  { label: 'Screen Test', href: '/display-tests/screen-test' }
+];
+
+const schemaItems = [
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "Universal Fullscreen Screen Test Suite",
+    "url": "https://displaytestonline.com/display-tests/screen-test",
+    "applicationCategory": "DiagnosticApplication",
+    "operatingSystem": "All (Windows, macOS, Linux, Android, iOS, Tizen, webOS)",
+    "browserRequirements": "Requires HTML5, Web API Canvas, Screen Wake Lock API",
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD"
+    }
+  }
+];
+
+
+
+---
+
+<Layout
+  title="Free Online Screen Test & Fullscreen Monitor Diagnostic | Monitor Test Hub"
+  description="Run a free fullscreen screen test for dead pixels, OLED 5% gray banding, refresh rate Hz, color accuracy, and touch response. No downloads needed."
+  canonicalUrl="https://displaytestonline.com/screen-test"
+  faqs={faqs}
+  schemaItems={schemaItems}
+>
+  <div ">
+    
+    <!-- Safety Disclaimer -->
+    <EpilepsyWarning />
+
+    <!-- Breadcrumb Navigation -->
+    <Breadcrumbs items={breadcrumbs} />
+
+    <!-- Main Header Section -->
+    <div class="relative w-full rounded-3xl border border-white/10 bg-[#121215]/90 backdrop-blur-xl p-6 sm:p-8 md:p-10 shadow-2xl space-y-4 min-w-0 w-full">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-md bg-status-pass/10 border border-status-pass/30 text-status-pass text-xs font-mono font-bold flex-wrap min-w-0">
+        <span class="w-2 h-2 rounded-full bg-status-pass led-glow-pass animate-pulse shrink-0"></span>
+        <span class="break-words min-w-0">UNIVERSAL DISPLAY &amp; TOUCH DIAGNOSTIC SUITE</span>
+      </div>
+
+      <h1 class="text-2xl sm:text-5xl font-extrabold text-text-primary tracking-tight font-sans break-words min-w-0">
+        Online Fullscreen Screen Test &amp; Display Diagnostic Instrument
+      </h1>
+
+      <p class="text-sm sm:text-lg text-text-secondary max-w-3xl leading-relaxed font-sans min-w-0">
+        Instantly evaluate computer monitors, laptop screens, smartphones, tablets, and Smart TVs. Test for dead pixels, low-gray OLED banding, color space calibration, subpixel text fringing, and touch digitizer accuracy in true fullscreen mode.
+      </p>
+    </div>
+
+    <!-- Universal Screen Test Diagnostic Component Deck -->
+    <UniversalScreenTestDeck isHero={false} showControls={true} />
+
+    <!-- Informational Content Suite -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 pt-6 border-t border-border-hairline font-mono text-xs">
+      <div class="bg-bg-surface border border-border-hairline p-5 rounded-2xl space-y-2">
+        <h3 class="font-bold text-text-primary text-sm uppercase text-status-pass">1. Pixel &amp; Subpixel Defect Scan</h3>
+        <p class="text-text-secondary leading-relaxed font-sans">
+          Cycles primary RGB, pure white, and OLED black patterns. Detects unlit dead pixels, stuck subpixels, and subpixel gate shorts before retailer RMA return windows close.
+        </p>
+      </div>
+
+      <div class="bg-bg-surface border border-border-hairline p-5 rounded-2xl space-y-2">
+        <h3 class="font-bold text-text-primary text-sm uppercase text-status-pass">2. OLED 5% &amp; 10% Gray Banding</h3>
+        <p class="text-text-secondary leading-relaxed font-sans">
+          Evaluates IEC 62341-6-2 low-luminance near-black gray responses. Uncovers dark-gray vertical banding, dirty screen effect (DSE), and organic subpixel wear on WOLED and QD-OLED panels.
+        </p>
+      </div>
+
+      <div class="bg-bg-surface border border-border-hairline p-5 rounded-2xl space-y-2">
+        <h3 class="font-bold text-text-primary text-sm uppercase text-status-pass">3. TV Remote &amp; Gamepad Loop</h3>
+        <p class="text-text-secondary leading-relaxed font-sans">
+          Native W3C Gamepad API engine enables seamless TV remote, PlayStation, and Xbox controller D-Pad navigation for wall-mounted Smart TVs and couch setups.
+        </p>
+      </div>
+    </div>
+
+    <!-- Workflow & Panel Type Sections -->
+    <StepWorkflowSection />
+    <PanelTypeBreakdownSection />
+
+    <!-- 10-Item Structured FAQ Section -->
+    <div class="pt-8 border-t border-border-hairline space-y-6">
+      <FAQSection faqs={faqs} />
+    </div>
+
+  </div>
+
+  <TestGuideModal />
+</Layout>

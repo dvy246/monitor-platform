@@ -160,10 +160,15 @@ import HardwareLimitationNotice from '../disclaimers/HardwareLimitationNotice.as
     function resizeCanvas() {
       if (!canvas) return;
       const rect = canvas.getBoundingClientRect();
-      canvas.width = rect.width * window.devicePixelRatio;
-      canvas.height = rect.height * window.devicePixelRatio;
+      canvas.width = Math.round(rect.width * window.devicePixelRatio);
+      canvas.height = Math.round(rect.height * window.devicePixelRatio);
       if (ctx) ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
       redrawCanvas();
+    }
+
+    if (typeof ResizeObserver !== 'undefined' && canvas.parentElement) {
+      const ro = new ResizeObserver(() => resizeCanvas());
+      ro.observe(canvas.parentElement);
     }
 
     window.addEventListener('resize', resizeCanvas);

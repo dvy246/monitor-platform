@@ -1,0 +1,159 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import Breadcrumbs from '../../components/ui/Breadcrumbs.astro';
+import FAQSection from '../../components/ui/FAQSection.astro';
+import { useTranslations, localizeLink } from '../../utils/i18n';
+
+
+const { lang } = useTranslations(Astro.url.pathname);
+
+const breadcrumbs = [
+  { label: 'Device Guides', href: localizeLink('/guides', lang) },
+  { label: 'LCD & Mini-LED Master Guide' }
+];
+
+const faqs = [
+  { question: "How do I distinguish IPS Glow from hardware Backlight Bleeding?", answer: "IPS glow changes position and intensity as you shift your viewing angle relative to the screen corners. Backlight bleed remains fixed in location and brightness regardless of your eye position." },
+  { question: "What causes VA panel dark-gray smearing in high-refresh gaming?", answer: "VA (Vertical Alignment) liquid crystals require significantly longer state transition times when switching between deep black (0% luminance) and dark gray (5%-10% luminance), creating noticeable dark trailing smears behind fast-moving objects." },
+  { question: "How does Mini-LED Full-Array Local Dimming (FALD) work?", answer: "Mini-LED displays replace traditional edge LED strips with hundreds or thousands of miniature LED zones behind the LCD matrix, dynamically dimming backlight zones in dark areas to achieve near-OLED contrast." },
+  { question: "What is IEEE 1789 PWM dimming flicker eye safety standard?", answer: "IEEE 1789-2015 establishes safety guidelines for LED lighting and backlight flicker, classifying pulse modulation frequencies above 1250Hz as zero-risk for eye fatigue and headaches." },
+  { question: "How do I test my LCD panel for IPS 1000:1 vs VA 4000:1 contrast ratios?", answer: "Use our APCA Contrast & Accessibility tool along with pure black and pure white full-screen frames to measure static contrast performance." },
+  { question: "Why do Mini-LED monitors display halo blooming around bright text?", answer: "Because a single local dimming zone covers thousands of individual liquid crystal pixels, a small bright white subtitle or mouse cursor causes the entire backlight zone behind it to illuminate, spilling light into surrounding black pixels." },
+  { question: "How do I fix stuck pixels on an LCD screen?", answer: "Stuck pixels (subpixels locked ON in Red, Green, or Blue) can often be massaged or unstuck by running rapid high-frequency RGB color cycling via our Stuck Pixel Repair tool." },
+  { question: "What is FRC (Frame Rate Control) 8-bit+2-bit dithering?", answer: "FRC dithering rapidly alternates between two adjacent color shades at 60Hz/120Hz to simulate a 10-bit color depth (1.07 billion colors) on a native 8-bit LCD panel." },
+  { question: "What ISO standard governs LCD monitor dead pixel returns?", answer: "ISO 9241-307 Class II allows up to 2 bright subpixels, 2 dark subpixels, or 5 subpixel defects per million pixels before a manufacturer warranty replacement is mandated." },
+  { question: "How do I test liquid crystal response time and motion MPRT?", answer: "Play our Ghosting Invaders game to benchmark MPRT motion picture response time and overdrive response tuning." }
+];
+
+
+
+---
+
+<Layout
+  title="LCD & Mini-LED Master Guide: IPS Glow, VA Smearing & FALD Haloing"
+  description="Comprehensive LCD & Mini-LED testing guide. IPS glow vs backlight bleed discriminator, VA dark-gray smearing, FALD local dimming halo blooming, and IEEE 1789 PWM flicker."
+  faqs={faqs}
+>
+  <main id="main-content" class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-12 font-sans">
+    <Breadcrumbs items={breadcrumbs} />
+
+    <!-- Guide Header -->
+    <header class="space-y-4 text-center max-w-3xl mx-auto">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-xs font-mono text-amber-400 font-bold uppercase tracking-wider">
+        <svg class="w-4 h-4 text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+        <span>LCD &amp; MINI-LED PANEL ENGINEERING GUIDE</span>
+      </div>
+      <h1 class="text-3xl sm:text-4xl font-extrabold text-text-primary tracking-tight font-mono">
+        LCD &amp; Mini-LED Master Guide: IPS Glow, VA Smearing &amp; FALD Haloing
+      </h1>
+      <p class="text-sm sm:text-base text-text-secondary leading-relaxed">
+        Understand LCD panel physics. Discriminate IPS corner glow from hardware backlight bleed, analyze VA dark-gray response smearing, and evaluate Mini-LED FALD halo blooming.
+      </p>
+    </header>
+
+    <!-- Custom Inline SVG Visual Diagram -->
+    <section class="p-6 rounded-2xl bg-bg-surface border border-border-hairline space-y-4 shadow-xl">
+      <h2 class="text-lg font-bold font-mono text-text-primary flex items-center gap-2">
+        <svg class="w-5 h-5 text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+        <span>IPS Glow (Angular Shift) vs Backlight Bleed (Fixed Hardware Defect)</span>
+      </h2>
+
+      <div class="w-full flex justify-center py-4 bg-bg-canvas rounded-xl border border-border-hairline">
+        <svg class="w-full max-w-2xl h-auto" viewBox="0 0 700 280" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <!-- Left Panel: IPS Glow (Shifting Corner Glow) -->
+          <g transform="translate(60, 30)">
+            <rect x="0" y="0" width="260" height="180" rx="8" fill="#08080a" stroke="#fbbf24" stroke-width="2"/>
+            <text x="50" y="25" fill="#fbbf24" font-family="monospace" font-size="11" font-weight="bold">IPS Glow (Angle Shift)</text>
+            <!-- Corner Glow Gradients -->
+            <path d="M 0 0 L 80 0 L 0 80 Z" fill="url(#glowGradL)" opacity="0.8"/>
+            <path d="M 260 0 L 180 0 L 260 80 Z" fill="url(#glowGradR)" opacity="0.8"/>
+            <text x="35" y="100" fill="#a1a1aa" font-family="monospace" font-size="10">Glow shifts as eye position</text>
+            <text x="50" y="115" fill="#a1a1aa" font-family="monospace" font-size="10">moves relative to panel</text>
+          </g>
+
+          <!-- Right Panel: Backlight Bleed (Fixed Light Leak) -->
+          <g transform="translate(380, 30)">
+            <rect x="0" y="0" width="260" height="180" rx="8" fill="#08080a" stroke="#ef4444" stroke-width="2"/>
+            <text x="40" y="25" fill="#ef4444" font-family="monospace" font-size="11" font-weight="bold">Backlight Bleed (Fixed Defect)</text>
+            <!-- Fixed Light Leak Spot -->
+            <ellipse cx="130" cy="180" rx="60" ry="30" fill="#ffffff" opacity="0.5"/>
+            <text x="35" y="100" fill="#a1a1aa" font-family="monospace" font-size="10">Fixed white light leakage</text>
+            <text x="35" y="115" fill="#a1a1aa" font-family="monospace" font-size="10">caused by bezel frame pinch</text>
+          </g>
+
+          <!-- Gradient Defs -->
+          <defs>
+            <radialGradient id="glowGradL" cx="0%" cy="0%" r="100%">
+              <stop offset="0%" stop-color="#fbbf24" stop-opacity="0.8"/>
+              <stop offset="100%" stop-color="#fbbf24" stop-opacity="0"/>
+            </radialGradient>
+            <radialGradient id="glowGradR" cx="100%" cy="0%" r="100%">
+              <stop offset="0%" stop-color="#fbbf24" stop-opacity="0.8"/>
+              <stop offset="100%" stop-color="#fbbf24" stop-opacity="0"/>
+            </radialGradient>
+          </defs>
+        </svg>
+      </div>
+    </section>
+
+    <!-- 8-Step LCD Inspection Workflow -->
+    <section class="space-y-6">
+      <h2 class="text-2xl font-bold font-mono text-text-primary border-b border-border-hairline pb-3">
+        8-Step LCD &amp; Mini-LED Inspection Workflow
+      </h2>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 font-sans text-sm">
+        <div class="p-4 rounded-xl bg-bg-surface border border-border-hairline space-y-2">
+          <span class="text-xs font-mono font-bold text-amber-400 px-2 py-0.5 rounded bg-amber-500/10 border border-amber-500/30">STEP 1</span>
+          <h3 class="font-bold text-text-primary">IPS Glow vs Backlight Bleed Audit</h3>
+          <p class="text-text-muted text-xs leading-relaxed">Turn off room lights, open a pure black canvas via <a href={localizeLink("/white-screen/black-screen", lang)} class="text-amber-400 hover:underline">Black Screen Utility</a>, and tilt your viewing angle to distinguish IPS glow from hardware frame pinch bleed.</p>
+        </div>
+
+        <div class="p-4 rounded-xl bg-bg-surface border border-border-hairline space-y-2">
+          <span class="text-xs font-mono font-bold text-amber-400 px-2 py-0.5 rounded bg-amber-500/10 border border-amber-500/30">STEP 2</span>
+          <h3 class="font-bold text-text-primary">Mini-LED FALD Blooming &amp; Haloing</h3>
+          <p class="text-text-muted text-xs leading-relaxed">Launch our <a href={localizeLink("/display-tests/blooming-test", lang)} class="text-amber-400 hover:underline">Blooming Test Inspector</a> to evaluate local dimming halo artifacts around moving targets.</p>
+        </div>
+
+        <div class="p-4 rounded-xl bg-bg-surface border border-border-hairline space-y-2">
+          <span class="text-xs font-mono font-bold text-amber-400 px-2 py-0.5 rounded bg-amber-500/10 border border-amber-500/30">STEP 3</span>
+          <h3 class="font-bold text-text-primary">PWM Dimming Flicker &amp; Zebra Bars</h3>
+          <p class="text-text-muted text-xs leading-relaxed">Use the <a href={localizeLink("/display-tests/flicker-test", lang)} class="text-amber-400 hover:underline">PWM Flicker Inspector</a> to measure pulse frequency and camera zebra strobe bars under IEEE 1789 eye safety standards.</p>
+        </div>
+
+        <div class="p-4 rounded-xl bg-bg-surface border border-border-hairline space-y-2">
+          <span class="text-xs font-mono font-bold text-amber-400 px-2 py-0.5 rounded bg-bg-amber-500/10 border border-amber-500/30">STEP 4</span>
+          <h3 class="font-bold text-text-primary">VA Dark-Gray Smearing Test</h3>
+          <p class="text-text-muted text-xs leading-relaxed">Run <a href={localizeLink("/arcade/ghosting-invaders", lang)} class="text-amber-400 hover:underline">Ghosting Invaders</a> at 5% dark-gray background luminance to measure VA liquid crystal black-to-gray transition smearing.</p>
+        </div>
+
+        <div class="p-4 rounded-xl bg-bg-surface border border-border-hairline space-y-2">
+          <span class="text-xs font-mono font-bold text-amber-400 px-2 py-0.5 rounded bg-amber-500/10 border border-amber-500/30">STEP 5</span>
+          <h3 class="font-bold text-text-primary">ISO 9241-307 Dead &amp; Stuck Pixel Sweep</h3>
+          <p class="text-text-muted text-xs leading-relaxed">Use our <a href={localizeLink("/display-tests/dead-pixel", lang)} class="text-amber-400 hover:underline">Dead Pixel Inspector</a> across solid RGB canvases to spot stuck subpixels.</p>
+        </div>
+
+        <div class="p-4 rounded-xl bg-bg-surface border border-border-hairline space-y-2">
+          <span class="text-xs font-mono font-bold text-amber-400 px-2 py-0.5 rounded bg-amber-500/10 border border-amber-500/30">STEP 6</span>
+          <h3 class="font-bold text-text-primary">6-Bit / 8-Bit / 10-Bit Color Banding</h3>
+          <p class="text-text-muted text-xs leading-relaxed">Use <a href={localizeLink("/monitor-color-calibration", lang)} class="text-amber-400 hover:underline">Monitor Color Calibration</a> to test FRC dithering and 64-step gray ramp smoothness.</p>
+        </div>
+
+        <div class="p-4 rounded-xl bg-bg-surface border border-border-hairline space-y-2">
+          <span class="text-xs font-mono font-bold text-amber-400 px-2 py-0.5 rounded bg-amber-500/10 border border-amber-500/30">STEP 7</span>
+          <h3 class="font-bold text-text-primary">APCA Contrast &amp; Viewing Angles</h3>
+          <p class="text-text-muted text-xs leading-relaxed">Measure perceptual contrast and off-axis color shift with our <a href={localizeLink("/display-tests/contrast-accessibility", lang)} class="text-amber-400 hover:underline">APCA Contrast Tool</a>.</p>
+        </div>
+
+        <div class="p-4 rounded-xl bg-bg-surface border border-border-hairline space-y-2">
+          <span class="text-xs font-mono font-bold text-amber-400 px-2 py-0.5 rounded bg-amber-500/10 border border-amber-500/30">STEP 8</span>
+          <h3 class="font-bold text-text-primary">Export Hardware Health Receipt</h3>
+          <p class="text-text-muted text-xs leading-relaxed">Compile your LCD panel test results into a signed SHA-256 <a href={localizeLink("/passport", lang)} class="text-amber-400 hover:underline">Hardware Passport</a> receipt.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <FAQSection faqs={faqs} title="LCD & Mini-LED Master FAQs" />
+  </main>
+</Layout>

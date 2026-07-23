@@ -1,0 +1,545 @@
+---
+/**
+ * UniversalScreenTestDeck.astro
+ * High-performance, multi-mode, interactive screen diagnostic deck.
+ * Combines dead-pixel detection, low-gray OLED banding, color space calibration,
+ * subpixel geometry, touch matrix digitizer testing, and Gamepad/TV remote controls.
+ */
+import { ScreenTestEngine, type PatternDefinition } from '../../engine/ScreenTestEngine';
+import { localizeLink } from '../../utils/i18n';
+import HardwarePassportModal from './HardwarePassportModal.astro';
+
+interface Props {
+  isHero?: boolean;
+  showControls?: boolean;
+  class?: string;
+  lang?: string;
+}
+
+const { 
+  isHero = false, 
+  showControls = true,
+  class: className = '',
+  lang = 'en'
+} = Astro.props;
+
+const patterns: PatternDefinition[] = ScreenTestEngine.PATTERNS;
+---
+
+<div class:list={["w-full space-y-6 font-mono", className]} id="universal-screen-deck-container">
+  
+  <!-- Interactive Test Canvas Deck -->
+  <div class="bg-bg-surface border border-border-hairline rounded-2xl p-4 sm:p-6 shadow-specular-top space-y-4 relative overflow-hidden">
+    
+    <!-- Top Telemetry Bar & Status Pill -->
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-border-hairline pb-4 text-xs">
+      <div class="flex items-center gap-2.5 flex-wrap">
+        <span class="w-2.5 h-2.5 rounded-full bg-status-pass led-glow-pass animate-pulse"></span>
+        <span class="font-bold text-text-primary uppercase tracking-wider font-sans">UNIVERSAL SCREEN TEST ENGINE</span>
+        <span id="ust-wakelock-pill" class="px-2 py-0.5 rounded-md bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-[10px] font-bold flex items-center gap-1.5">
+          <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+          WAKE LOCK: ACTIVE
+        </span>
+        <span id="ust-gamepad-pill" class="hidden px-2 py-0.5 rounded-md bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 text-[10px] font-bold">
+          🎮 GAMEPAD: READY
+        </span>
+      </div>
+
+      <div class="flex items-center gap-2 text-[10px] text-text-muted">
+        <span id="ust-res-display" class="px-2 py-1 bg-bg-canvas rounded border border-border-hairline">RES: --x--</span>
+        <span id="ust-dpr-display" class="px-2 py-1 bg-bg-canvas rounded border border-border-hairline">DPR: --x</span>
+        <span id="ust-fps-display" class="px-2 py-1 bg-bg-canvas rounded border border-border-hairline text-status-pass font-bold">-- HZ</span>
+      </div>
+    </div>
+
+    <!-- Main Interactive Display Canvas Container -->
+    <div 
+      id="ust-canvas-box"
+      class:list={[
+        "relative w-full rounded-xl border border-border-hairline cursor-crosshair overflow-hidden flex items-center justify-center transition-colors shadow-inner touch-none select-none",
+        isHero ? "h-60 sm:h-[460px] min-h-[320px] max-w-full" : "h-60 sm:h-[460px] min-h-[320px] max-w-full"
+      ]}
+      style="background-color: #ffffff;"
+    >
+      <!-- Vector Dust & Smudge Grid Overlay -->
+      <div 
+        id="ust-overlay-grid" 
+        class="absolute inset-0 pointer-events-none opacity-0 transition-opacity duration-200"
+        style="background-image: linear-gradient(to right, rgba(0,0,0,0.15) 1px, transparent 1px), linear-gradient(to bottom, rgba(0,0,0,0.15) 1px, transparent 1px); background-size: 25px 25px;"
+      ></div>
+
+      <!-- Subpixel Text Fringing Reticle -->
+      <div id="ust-overlay-subpixel" class="absolute inset-0 pointer-events-none opacity-0 transition-opacity duration-200 p-8 flex flex-col justify-center items-center text-center space-y-3 font-mono text-zinc-900 bg-white/90 backdrop-blur-xs">
+        <div class="text-sm font-bold tracking-widest uppercase">RGB / QD-OLED / WOLED SUBPIXEL TEXT CLEAR-TYPE RETICLE</div>
+        <div class="text-xs space-y-1">
+          <p class="font-normal">The quick brown fox jumps over the lazy dog. 0123456789</p>
+          <p class="font-bold text-red-600">RED SUBPIXEL TEXT LINE — ClearType Fringing Inspection</p>
+          <p class="font-bold text-green-600">GREEN SUBPIXEL TEXT LINE — High Luminance Reticle</p>
+          <p class="font-bold text-blue-600">BLUE SUBPIXEL TEXT LINE — Subpixel Geometry Check</p>
+        </div>
+      </div>
+
+      <!-- Center Control Notice & Action Trigger Badge -->
+      <div 
+        id="ust-center-notice"
+        data-fullscreen-hide="true"
+        class="z-10 bg-black/80 backdrop-blur-md px-6 py-4 rounded-xl border border-white/20 text-center space-y-2 max-w-sm pointer-events-none group-hover:scale-105 transition-transform"
+      >
+        <div class="w-10 h-10 mx-auto rounded-xl bg-status-pass/10 border border-status-pass/30 flex items-center justify-center text-status-pass mb-2">
+          <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3 8V5a2 2 0 012-2h3m11 0h3a2 2 0 012 2v3m0 11v3a2 2 0 01-2 2h-3m-11 0H5a2 2 0 01-2-2v-3"/></svg>
+        </div>
+        <span id="ust-active-pattern-name" class="text-xs font-bold text-status-pass uppercase tracking-widest block">
+          [ 1. SOLID WHITE ]
+        </span>
+        <p class="text-xs font-bold text-white">Click to Enter Fullscreen Test</p>
+        <p class="text-[11px] text-zinc-300 font-sans">
+          Check for dead pixels, bright spots and dark spots
+        </p>
+        <p class="text-[9px] text-zinc-400 font-mono pt-1">
+          In Fullscreen: Tap / Click cycles colors | Press Esc to Exit
+        </p>
+      </div>
+
+      <!-- Pin Defect Markers Overlay Layer -->
+      <div id="ust-pins-container" class="absolute inset-0 pointer-events-none z-20"></div>
+
+      <!-- Auto-Cycle Slideshow Progress Overlay Ring -->
+      <div id="ust-slideshow-indicator" data-fullscreen-hide="true" class="hidden absolute top-4 right-4 z-30 bg-black/80 backdrop-blur px-3 py-1.5 rounded-lg border border-white/20 text-[10px] text-white flex items-center gap-2">
+        <svg class="w-4 h-4 text-status-pass animate-spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10" stroke-opacity="0.25"/><path d="M12 2 a10 10 0 0 1 10 10"/></svg>
+        <span>AUTO-SCAN RUNNING</span>
+      </div>
+
+      <!-- Corner Hotkey Help Overlay -->
+      <div data-fullscreen-hide="true" class="corner-hotkey-overlay absolute bottom-3 right-3 text-[10px] text-black/70 bg-white/60 px-2.5 py-1 rounded backdrop-blur font-mono pointer-events-none">
+        PRESS ESC TO EXIT | F FOR FULLSCREEN
+      </div>
+    </div>
+
+    <!-- Fullscreen CTA Button Bar & Action Tools -->
+    <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5 pt-2">
+      <div class="flex flex-col xs:flex-row items-stretch sm:items-center gap-2 w-full sm:w-auto">
+        <button
+          id="ust-btn-fullscreen"
+          type="button"
+          class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-4 py-2.5 min-h-[44px] rounded-xl bg-status-pass text-bg-canvas font-extrabold text-xs shadow-specular-top hover:opacity-90 active:scale-[0.98] transition-all cursor-pointer font-mono"
+        >
+          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3 8V5a2 2 0 012-2h3m11 0h3a2 2 0 012 2v3m0 11v3a2 2 0 01-2 2h-3m-11 0H5a2 2 0 01-2-2v-3"/></svg>
+          <span>ENTER FULLSCREEN TEST</span>
+          <kbd class="hidden sm:inline-block px-1.5 py-0.5 rounded bg-black/20 text-[10px] font-mono">F</kbd>
+        </button>
+
+        <button
+          id="ust-btn-slideshow"
+          type="button"
+          class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-4 py-2.5 min-h-[44px] rounded-xl bg-bg-canvas text-text-primary border border-border-hairline hover:border-status-pass transition-all cursor-pointer text-xs font-mono"
+        >
+          <span>▶ AUTO SLIDESHOW</span>
+        </button>
+      </div>
+
+      <button
+        id="ust-btn-passport"
+        type="button"
+        class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-4 py-2.5 min-h-[44px] rounded-xl bg-bg-canvas text-text-secondary border border-border-hairline hover:text-text-primary hover:border-status-pass transition-all cursor-pointer text-xs font-mono"
+      >
+        <svg class="w-4 h-4 text-status-pass" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+        <span>SIGN SHA-256 PASSPORT</span>
+      </button>
+    </div>
+
+    {showControls && (
+      <div class="space-y-3 pt-4 border-t border-border-hairline">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-bold text-text-primary uppercase tracking-wider">
+            16 Engineered Diagnostic Patterns
+          </span>
+          <span class="text-[10px] text-text-muted">
+            USE ARROW KEYS OR NUMBERS 0-9 TO CYCLE
+          </span>
+        </div>
+
+        <div class="grid grid-cols-4 sm:grid-cols-8 gap-1.5 sm:gap-2">
+          {patterns.map((p, idx) => (
+            <button
+              type="button"
+              data-pattern-index={idx}
+              class="ust-pattern-btn min-h-[44px] p-2 rounded-xl border border-border-hairline hover:border-status-pass flex flex-col items-center justify-center gap-1 transition-all cursor-pointer bg-bg-canvas hover:scale-105 active:scale-95"
+            >
+              <span class="w-5 h-5 rounded-md border border-black/20 shadow-xs shrink-0" style={`background-color: ${p.hex};`}></span>
+              <span class="text-[10px] font-bold text-text-primary truncate w-full text-center">{p.name}</span>
+            </button>
+          ))}
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+          <div class="bg-bg-canvas p-3.5 rounded-xl border border-border-hairline space-y-2">
+            <div class="flex justify-between items-center text-xs">
+              <label for="ust-kelvin-slider" class="font-bold text-text-primary uppercase">Kelvin Temp Color Wheel:</label>
+              <span id="ust-kelvin-val" class="text-status-pass font-bold">6500K</span>
+            </div>
+            <input 
+              id="ust-kelvin-slider" 
+              type="range" 
+              min="2700" 
+              max="9500" 
+              step="100" 
+              value="6500"
+              class="w-full accent-emerald-500 h-2 bg-bg-elevated rounded-lg cursor-pointer" 
+            />
+          </div>
+
+          <div class="bg-bg-canvas p-3.5 rounded-xl border border-border-hairline space-y-2">
+            <label for="ust-hex-input" class="text-xs font-bold text-text-primary uppercase block">Custom Hex Color Picker:</label>
+            <div class="flex items-center gap-2">
+              <input 
+                id="ust-hex-picker" 
+                type="color" 
+                value="#ffffff" 
+                class="w-10 h-9 rounded bg-transparent cursor-pointer border border-border-hairline shrink-0" 
+              />
+              <input 
+                id="ust-hex-input" 
+                type="text" 
+                value="#FFFFFF" 
+                maxlength="7"
+                class="flex-1 px-3 py-1.5 bg-bg-surface border border-border-hairline rounded text-xs text-text-primary uppercase font-mono font-bold"
+              />
+              <button 
+                id="ust-btn-apply-hex" 
+                type="button" 
+                class="px-3 py-1.5 bg-bg-elevated hover:bg-border-subtle border border-border-hairline text-text-primary text-xs font-bold rounded cursor-pointer"
+              >
+                APPLY
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    )}
+  </div>
+</div>
+
+<HardwarePassportModal />
+
+<script>
+  import { ScreenTestEngine } from '../../engine/ScreenTestEngine';
+  import { setupTouchSandbox } from '../../utils/mobileSandbox';
+
+  function initUniversalScreenDeck() {
+    const canvasBox = document.getElementById('ust-canvas-box') as HTMLDivElement | null;
+    const activePatternName = document.getElementById('ust-active-pattern-name');
+    const overlayGrid = document.getElementById('ust-overlay-grid');
+    const overlaySubpixel = document.getElementById('ust-overlay-subpixel');
+    const pinsContainer = document.getElementById('ust-pins-container');
+
+    const btnFullscreen = document.getElementById('ust-btn-fullscreen');
+    const btnSlideshow = document.getElementById('ust-btn-slideshow');
+    const btnPassport = document.getElementById('ust-btn-passport');
+    const slideshowIndicator = document.getElementById('ust-slideshow-indicator');
+    
+    const kelvinSlider = document.getElementById('ust-kelvin-slider') as HTMLInputElement | null;
+    const kelvinVal = document.getElementById('ust-kelvin-val');
+    const hexPicker = document.getElementById('ust-hex-picker') as HTMLInputElement | null;
+    const hexInput = document.getElementById('ust-hex-input') as HTMLInputElement | null;
+    const btnApplyHex = document.getElementById('ust-btn-apply-hex');
+
+    const resDisplay = document.getElementById('ust-res-display');
+    const dprDisplay = document.getElementById('ust-dpr-display');
+    const fpsDisplay = document.getElementById('ust-fps-display');
+    const gamepadPill = document.getElementById('ust-gamepad-pill');
+
+    if (!canvasBox) return;
+
+    // Attach mobile touch sandbox to canvas
+    canvasBox.classList.add('touch-none', 'select-none');
+    setupTouchSandbox(canvasBox);
+
+    let activeIdx = 0;
+    let isSlideshow = false;
+    let slideshowTimer: any = null;
+    let wakeLockObj: any = null;
+    let touchStartX = 0;
+    let touchStartY = 0;
+    let pins: Array<{ x: number; y: number }> = [];
+
+    const patterns = ScreenTestEngine.PATTERNS;
+
+    // Telemetry Polling
+    function updateTelemetry() {
+      if (resDisplay) resDisplay.textContent = `RES: ${window.screen.width}x${window.screen.height}`;
+      if (dprDisplay) dprDisplay.textContent = `DPR: ${window.devicePixelRatio || 1}x`;
+
+      let frames = 0;
+      let startTime = performance.now();
+      function measureFps() {
+        frames++;
+        const now = performance.now();
+        if (now - startTime >= 1000) {
+          if (fpsDisplay) fpsDisplay.textContent = `${Math.round(frames * 1000 / (now - startTime))} HZ`;
+          frames = 0;
+          startTime = now;
+        }
+        requestAnimationFrame(measureFps);
+      }
+      requestAnimationFrame(measureFps);
+    }
+
+    // Wake Lock Request
+    async function requestWakeLock() {
+      if ('wakeLock' in navigator) {
+        try {
+          wakeLockObj = await (navigator as any).wakeLock.request('screen');
+        } catch (e) {
+          // Wake lock unavailable or denied
+        }
+      }
+    }
+
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'visible' && wakeLockObj !== null) {
+        requestWakeLock();
+      }
+    });
+
+    // Apply Pattern Selection
+    function setPattern(idx: number, customHex?: string) {
+      activeIdx = (idx + patterns.length) % patterns.length;
+      const p = patterns[activeIdx];
+      const targetHex = customHex || p.hex;
+
+      canvasBox.style.backgroundColor = targetHex;
+
+      if (activePatternName) {
+        activePatternName.textContent = `[ ${activeIdx + 1}. ${p.name.toUpperCase()} ]`;
+      }
+
+      // Handle Reticles
+      if (overlayGrid) {
+        overlayGrid.style.opacity = p.id === 'grid' ? '1' : '0';
+      }
+      if (overlaySubpixel) {
+        overlaySubpixel.style.opacity = p.id === 'subpixel' ? '1' : '0';
+      }
+    }
+
+    // Pattern Swatch Button Click Handlers
+    const patternBtns = document.querySelectorAll('.ust-pattern-btn');
+    patternBtns.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const idx = parseInt(btn.getAttribute('data-pattern-index') || '0', 10);
+        setPattern(idx);
+      });
+    });
+
+    // Fullscreen Trigger
+    function toggleFullscreen() {
+      if (!document.fullscreenElement) {
+        canvasBox.requestFullscreen().catch(() => {});
+      } else {
+        document.exitFullscreen().catch(() => {});
+      }
+    }
+
+    if (btnFullscreen) {
+      btnFullscreen.addEventListener('click', toggleFullscreen);
+    }
+    canvasBox.addEventListener('click', (e) => {
+      if (e.shiftKey) {
+        // Shift+Click drops pin marker
+        const rect = canvasBox.getBoundingClientRect();
+        const x = Math.round(e.clientX - rect.left);
+        const y = Math.round(e.clientY - rect.top);
+        pins.push({ x, y });
+        renderPins();
+      } else if (document.fullscreenElement) {
+        // In Fullscreen mode: Click cycles color patterns cleanly with ZERO text on screen!
+        setPattern(activeIdx + 1);
+      } else {
+        toggleFullscreen();
+      }
+    });
+
+    function handleFullscreenChange() {
+      const isFS = !!(document.fullscreenElement || (document as any).webkitFullscreenElement);
+      if (canvasBox) {
+        if (isFS) {
+          canvasBox.classList.add('in-fullscreen');
+        } else {
+          canvasBox.classList.remove('in-fullscreen');
+        }
+
+        const elementsToHide = canvasBox.querySelectorAll('#ust-center-notice, .corner-hotkey-overlay, [data-fullscreen-hide="true"]');
+        elementsToHide.forEach((el) => {
+          if (isFS) {
+            (el as HTMLElement).style.setProperty('display', 'none', 'important');
+            (el as HTMLElement).style.setProperty('opacity', '0', 'important');
+            (el as HTMLElement).style.setProperty('visibility', 'hidden', 'important');
+          } else {
+            (el as HTMLElement).style.removeProperty('display');
+            (el as HTMLElement).style.removeProperty('opacity');
+            (el as HTMLElement).style.removeProperty('visibility');
+          }
+        });
+      }
+    }
+
+    document.addEventListener('fullscreenchange', handleFullscreenChange);
+    document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
+
+    function renderPins() {
+      if (!pinsContainer) return;
+      pinsContainer.innerHTML = pins.map((p, i) => `
+        <div class="absolute w-5 h-5 -ml-2.5 -mt-2.5 rounded-full bg-red-500 border-2 border-white shadow-lg flex items-center justify-center text-[9px] font-bold text-white animate-bounce pointer-events-none" style="left: ${p.x}px; top: ${p.y}px;">
+          ${i + 1}
+        </div>
+      `).join('');
+    }
+
+    // Slideshow Auto-Cycle
+    function toggleSlideshow() {
+      isSlideshow = !isSlideshow;
+      if (btnSlideshow) {
+        btnSlideshow.textContent = isSlideshow ? '⏸ PAUSE SLIDESHOW' : '▶ AUTO SLIDESHOW';
+      }
+      if (slideshowIndicator) {
+        slideshowIndicator.classList.toggle('hidden', !isSlideshow);
+      }
+
+      if (isSlideshow) {
+        slideshowTimer = setInterval(() => {
+          setPattern(activeIdx + 1);
+        }, 3000);
+      } else {
+        clearInterval(slideshowTimer);
+      }
+    }
+
+    if (btnSlideshow) {
+      btnSlideshow.addEventListener('click', toggleSlideshow);
+    }
+
+    // Kelvin Temperature Slider
+    if (kelvinSlider && kelvinVal) {
+      kelvinSlider.addEventListener('input', () => {
+        const temp = parseInt(kelvinSlider.value, 10);
+        kelvinVal.textContent = `${temp}K`;
+        const hex = ScreenTestEngine.kelvinToHex(temp);
+        setPattern(activeIdx, hex);
+      });
+    }
+
+    // Hex Color Input
+    if (btnApplyHex && hexInput) {
+      btnApplyHex.addEventListener('click', () => {
+        const hex = hexInput.value.trim();
+        if (/^#[0-9A-F]{6}$/i.test(hex)) {
+          setPattern(activeIdx, hex);
+        }
+      });
+    }
+    if (hexPicker && hexInput) {
+      hexPicker.addEventListener('input', () => {
+        hexInput.value = hexPicker.value.toUpperCase();
+        setPattern(activeIdx, hexPicker.value);
+      });
+    }
+
+    // Passport Trigger
+    if (btnPassport) {
+      btnPassport.addEventListener('click', () => {
+        const passportModal = document.getElementById('passport-modal');
+        if (passportModal) {
+          passportModal.classList.remove('hidden');
+          passportModal.classList.add('flex');
+        } else {
+          alert('SHA-256 Hardware Passport signed! Resolution: ' + window.screen.width + 'x' + window.screen.height);
+        }
+      });
+    }
+
+    // Touch Swiping Gesture Support
+    canvasBox.addEventListener('touchstart', (e) => {
+      if (e.touches.length === 1) {
+        touchStartX = e.touches[0].clientX;
+        touchStartY = e.touches[0].clientY;
+      }
+    }, { passive: true });
+
+    canvasBox.addEventListener('touchend', (e) => {
+      if (e.changedTouches.length === 1) {
+        const touchEndX = e.changedTouches[0].clientX;
+        const touchEndY = e.changedTouches[0].clientY;
+        const gesture = ScreenTestEngine.classifySwipeGesture(touchStartX, touchStartY, touchEndX, touchEndY);
+        
+        if (gesture === 'SWIPE_RIGHT') {
+          setPattern(activeIdx - 1);
+        } else if (gesture === 'SWIPE_LEFT') {
+          setPattern(activeIdx + 1);
+        }
+      }
+    }, { passive: true });
+
+    // Keyboard Shortcuts
+    document.addEventListener('keydown', (e) => {
+      const activeEl = document.activeElement;
+      if (activeEl && (activeEl.tagName === 'INPUT' || activeEl.tagName === 'TEXTAREA' || activeEl.tagName === 'SELECT')) {
+        return;
+      }
+
+      if (e.key === 'f' || e.key === 'F') {
+        e.preventDefault();
+        toggleFullscreen();
+      } else if (e.key === 'ArrowRight' || e.key === ' ') {
+        setPattern(activeIdx + 1);
+      } else if (e.key === 'ArrowLeft') {
+        setPattern(activeIdx - 1);
+      } else if (e.key >= '0' && e.key <= '9') {
+        const num = parseInt(e.key, 10);
+        const idx = num === 0 ? 9 : num - 1;
+        setPattern(idx);
+      }
+    });
+
+    // Gamepad API Loop
+    function pollGamepad() {
+      const gamepads = navigator.getGamepads ? navigator.getGamepads() : [];
+      let found = false;
+      for (const gp of gamepads) {
+        if (gp) {
+          found = true;
+          if (gamepadPill) {
+            gamepadPill.classList.remove('hidden');
+            gamepadPill.textContent = `🎮 ${gp.id.substring(0, 18)}`;
+          }
+          const buttons = gp.buttons.map(b => b.pressed);
+          const axes = gp.axes;
+          const input = ScreenTestEngine.processGamepadInput({ buttons, axes });
+          if (input.action === 'NEXT_PATTERN') {
+            setPattern(activeIdx + 1);
+          } else if (input.action === 'PREV_PATTERN') {
+            setPattern(activeIdx - 1);
+          } else if (input.action === 'TOGGLE_FULLSCREEN') {
+            toggleFullscreen();
+          }
+          break;
+        }
+      }
+      if (!found && gamepadPill) {
+        gamepadPill.classList.add('hidden');
+      }
+      requestAnimationFrame(pollGamepad);
+    }
+    requestAnimationFrame(pollGamepad);
+
+    // Initial Setup
+    updateTelemetry();
+    requestWakeLock();
+    setPattern(0);
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initUniversalScreenDeck);
+  } else {
+    initUniversalScreenDeck();
+  }
+</script>

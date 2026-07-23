@@ -1,0 +1,119 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import AudioTesterCanvas from '../../components/diagnostics/AudioTesterCanvas.astro';
+import FAQSection from '../../components/ui/FAQSection.astro';
+import Breadcrumbs from '../../components/ui/Breadcrumbs.astro';
+import MasterBentoDiagnosticSuite from '../../components/diagnostics/MasterBentoDiagnosticSuite.astro';
+import StepWorkflowSection from '../../components/ui/StepWorkflowSection.astro';
+import PanelTypeBreakdownSection from '../../components/ui/PanelTypeBreakdownSection.astro';
+
+
+const title = "Audio Latency & Lip-Sync Test";
+const description = "Test Bluetooth wireless headphones and speaker audio-visual latency. Measure A/V sync delay in milliseconds using Web Audio API.";
+
+const faqs = [
+  {
+    question: "How does the Audio Latency & Lip-Sync Test measure delay?",
+    answer: "Our test engine triggers a high-contrast visual flash synchronized with an audio ping using Web Audio API AudioContext timestamps, allowing you to estimate audio-visual sync lag in milliseconds."
+  },
+  {
+    question: "What is an acceptable audio latency for gaming and video playback?",
+    answer: "Wired headphones achieve <10ms of latency (imperceptible). For wireless audio, latency under 40ms is ideal for gaming, while under 100ms is acceptable for lip-synced video streaming."
+  },
+  {
+    question: "How do Bluetooth audio codecs (SBC, AAC, aptX, LDAC) differ in latency?",
+    answer: "Standard SBC and AAC codecs introduce 150ms to 250ms of latency. aptX Low Latency (aptX-LL) cuts delay to ~30ms-40ms, while LC3 (Bluetooth LE Audio) targets ~20ms-30ms."
+  },
+  {
+    question: "Why do Bluetooth headphones lag behind video when playing games?",
+    answer: "Video players can delay video frames to align with slow Bluetooth audio, but real-time interactive games cannot predict audio dispatch, exposing raw Bluetooth transmission delay."
+  },
+  {
+    question: "Does operating system audio processing add latency to headphones?",
+    answer: "Yes. OS software spatial audio, system equalizers, and virtual surround processing add 10ms to 50ms of extra DSP buffer latency."
+  },
+  {
+    question: "How do I fix lip-sync delay on my TV or Bluetooth soundbar?",
+    answer: "Enable 'Game Mode' or 'Low Latency Audio Pass-Through' in your TV audio settings, or adjust the AV Sync offset slider in your media player app."
+  },
+  {
+    question: "What is the AES17 audio measurement standard?",
+    answer: "AES17 is the Audio Engineering Society standard for measuring digital audio equipment performance, including passband ripple, total harmonic distortion, and latency."
+  },
+  {
+    question: "Can web browser hardware acceleration affect audio latency?",
+    answer: "Yes. Hardware acceleration allows the Web Audio API to schedule audio buffers directly on dedicated hardware audio threads, bypassing main thread CPU stutters."
+  },
+  {
+    question: "Why does USB wired audio have lower latency than 2.4GHz wireless dongles?",
+    answer: "Direct USB wires transmit uncompressed PCM audio packet streams at 1000Hz USB polling rates with zero wireless packet retransmission overhead."
+  },
+  {
+    question: "Does sample rate (44.1kHz vs 48kHz vs 96kHz) impact latency?",
+    answer: "Higher sample rates reduce buffer duration (e.g. 512 samples at 96kHz = 5.33ms vs 512 samples at 44.1kHz = 11.61ms), providing faster buffer updates."
+  }
+];
+
+const breadcrumbs = [
+  { label: 'Home', href: '/' },
+  { label: 'Sound Test', href: '/sound-test' },
+  { label: title, href: '#' }
+];
+---
+
+<Layout title={title} description={description} faqs={faqs}>
+  <div  font-sans">
+    <Breadcrumbs items={breadcrumbs} />
+
+    <!-- Hero Header Deck -->
+    <header class="relative w-full rounded-3xl border border-white/10 bg-[#121215]/90 backdrop-blur-xl p-6 sm:p-8 md:p-10 shadow-2xl space-y-4 overflow-hidden group select-none">
+      <div class="absolute -top-24 -left-24 w-72 h-72 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none group-hover:bg-emerald-500/15 transition-all duration-500"></div>
+      <div class="absolute -bottom-24 -right-24 w-72 h-72 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none group-hover:bg-cyan-500/15 transition-all duration-500"></div>
+
+      <div class="relative z-10 space-y-3 max-w-3xl min-w-0 w-full">
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-emerald-400 text-xs font-mono font-bold tracking-wide flex-wrap shadow-inner">
+          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shrink-0"></span>
+          <span>AES17 DIGITAL AUDIO SPECIFICATIONS</span>
+        </div>
+        <h1 class="text-3xl sm:text-5xl font-extrabold text-white tracking-tight font-sans break-words min-w-0">
+          {title}
+        </h1>
+        <p class="text-sm sm:text-base text-zinc-300 font-sans leading-relaxed min-w-0">
+          Measure Bluetooth headphone latency, wireless speaker delay, and lip-sync audio-visual synchronization using precision Web Audio API microsecond timers.
+        </p>
+      </div>
+    </header>
+
+    <!-- Main Diagnostic Instrument -->
+    <div class="rounded-3xl border border-white/10 bg-[#121215]/90 backdrop-blur-xl p-4 sm:p-6 shadow-2xl">
+      <AudioTesterCanvas />
+    </div>
+
+    <!-- 3-Step Workflow Protocol -->
+    <StepWorkflowSection />
+
+    <!-- Panel Technology Breakdown -->
+    <PanelTypeBreakdownSection />
+
+    <!-- Article Section -->
+    <article class="bg-[#121215] border border-white/10 rounded-3xl p-6 sm:p-8 space-y-6 shadow-2xl font-sans text-sm text-zinc-300 leading-relaxed">
+      <div class="border-b border-white/10 pb-4 font-mono">
+        <span class="text-xs font-bold text-emerald-400 uppercase tracking-widest block mb-1">AUDIO HARDWARE BENCHMARKING</span>
+        <h2 class="text-2xl font-bold text-white">Comprehensive Audio Diagnostics &amp; Engineering Standards</h2>
+      </div>
+
+      <p>
+        Ensuring high-fidelity audio reproduction requires clinical, uncompressed test signals generated by precision mathematical algorithms. Our suite leverages the modern Web Audio API to bypass typical browser compression, delivering pure sine waves, white noise, and exact channel routing directly to your DAC.
+      </p>
+
+      <h3 class="text-xl font-bold text-white font-mono mt-6">Bluetooth Audio Codecs &amp; Latency Measurement</h3>
+      <p>
+        Standard Bluetooth SBC or AAC codecs introduce 150ms to 250ms of audio lag, resulting in noticeable lip-sync issues in movies and severe disadvantages in gaming. Advanced codecs like aptX Low Latency or LDAC reduce this overhead. Our audio-visual synchronization test provides empirical telemetry to quantify exactly how many milliseconds your wireless connection is lagging behind the video frame.
+      </p>
+    </article>
+
+    <!-- 10 Structured FAQs Component -->
+    <FAQSection faqs={faqs} title="Audio Latency & Lip-Sync FAQs" />
+
+  </div>
+</Layout>

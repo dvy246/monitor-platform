@@ -1,0 +1,443 @@
+---
+/**
+ * BentoScreenControlDeck.astro
+ * Modern minimalist 4-card bento control deck with real-time screen info telemetry,
+ * preset color picker grid, keyboard shortcuts helper, custom hex color picker,
+ * and clean fullscreen canvas mode with ZERO text overlays in fullscreen.
+ */
+interface Props {
+  initialColor?: string;
+  activeColorName?: string;
+}
+
+const { 
+  initialColor = '#FFFFFF', 
+  activeColorName = 'White' 
+} = Astro.props;
+
+const presetColors = [
+  { id: 'white', name: 'White', hex: '#FFFFFF', isDark: false },
+  { id: 'black', name: 'Black', hex: '#000000', isDark: true },
+  { id: 'red', name: 'Red', hex: '#E53E3E', isDark: true },
+  { id: 'green', name: 'Green', hex: '#38A169', isDark: false },
+  { id: 'blue', name: 'Blue', hex: '#3182CE', isDark: true },
+  { id: 'cyan', name: 'Cyan', hex: '#00B5D8', isDark: false },
+  { id: 'magenta', name: 'Magenta', hex: '#D69E2E', isDark: true },
+  { id: 'yellow', name: 'Yellow', hex: '#D69E2E', isDark: false },
+  { id: 'orange', name: 'Orange', hex: '#DD6B20', isDark: true },
+  { id: 'darkgray', name: 'Dark Gray', hex: '#2D3748', isDark: true },
+  { id: 'gray', name: 'Gray', hex: '#718096', isDark: true },
+  { id: 'lightgray', name: 'Light Gray', hex: '#A0AEC0', isDark: false }
+];
+---
+
+<div class="bento-deck-container w-full max-w-5xl mx-auto space-y-6 font-sans select-none">
+  
+  <!-- Interactive Fullscreen Canvas Preview Area -->
+  <div 
+    id="bento-canvas-box"
+    class="relative w-full h-[320px] sm:h-[460px] rounded-3xl border border-white/10 shadow-2xl flex flex-col items-center justify-center transition-colors duration-200 cursor-pointer overflow-hidden group"
+    style={`background-color: ${initialColor};`}
+    title="Click for Fullscreen Test"
+  >
+    <!-- Center Control Badge (Hidden 100% in Fullscreen) -->
+    <div 
+      id="bento-center-notice"
+      data-fullscreen-hide="true"
+      class="z-10 bg-black/80 backdrop-blur-xl px-6 py-5 rounded-2xl border border-white/15 text-center space-y-2 max-w-sm pointer-events-none group-hover:scale-105 transition-transform shadow-2xl"
+    >
+      <div class="w-12 h-12 mx-auto rounded-2xl bg-white/10 border border-white/20 flex items-center justify-center text-white mb-2 shadow-inner">
+        <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M3 8V5a2 2 0 012-2h3m11 0h3a2 2 0 012 2v3m0 11v3a2 2 0 01-2 2h-3m-11 0H5a2 2 0 01-2-2v-3"/>
+        </svg>
+      </div>
+      <h3 class="text-base font-bold text-white tracking-tight">Click to Enter Fullscreen Test</h3>
+      <p class="text-xs text-zinc-300 font-sans leading-relaxed">
+        Check for dead pixels, bright spots and dark spots
+      </p>
+      <div class="pt-1 text-[10px] font-mono text-emerald-400 font-bold uppercase tracking-wider flex items-center justify-center gap-1.5">
+        <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+        <span>Active: <span id="bento-active-color-name">{activeColorName}</span> (<span id="bento-active-hex-code">{initialColor}</span>)</span>
+      </div>
+    </div>
+
+    <!-- Bottom Left Active Color Indicator (Hidden in Fullscreen) -->
+    <div data-fullscreen-hide="true" class="absolute bottom-4 left-4 text-xs font-mono text-zinc-300 bg-black/60 px-3 py-1.5 rounded-xl backdrop-blur border border-white/10 flex items-center gap-2 pointer-events-none">
+      <svg class="w-4 h-4 text-zinc-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="12" rx="2"/><path d="M12 16v4m-4 0h8"/></svg>
+      <span><span id="bento-bottom-name">{activeColorName}</span> · <span id="bento-bottom-hex">{initialColor}</span></span>
+    </div>
+
+    <!-- Bottom Right Fullscreen Hint (Hidden in Fullscreen) -->
+    <div data-fullscreen-hide="true" class="absolute bottom-4 right-4 text-xs font-mono text-zinc-400 bg-black/60 px-3 py-1.5 rounded-xl backdrop-blur border border-white/10 pointer-events-none">
+      Press F for Fullscreen
+    </div>
+  </div>
+
+  <!-- 4-Card Bento Grid Layout -->
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+    
+    <!-- CARD 1: Screen Info -->
+    <div class="bg-[#121215] border border-white/10 rounded-3xl p-6 space-y-4 shadow-xl">
+      <div class="flex items-center justify-between border-b border-white/10 pb-3">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-blue-500/15 border border-blue-500/30 flex items-center justify-center text-blue-400">
+            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <rect x="2" y="4" width="20" height="12" rx="2"/>
+              <path d="M12 16v4m-4 0h8"/>
+            </svg>
+          </div>
+          <h3 class="text-base font-bold text-white font-sans">Screen Info</h3>
+        </div>
+        <span id="bento-device-type" class="px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 font-mono text-xs font-semibold">
+          Desktop Monitor
+        </span>
+      </div>
+
+      <div class="space-y-3 font-mono text-xs text-zinc-300">
+        <div class="flex items-center justify-between py-1 border-b border-white/5">
+          <div class="flex items-center gap-2 text-zinc-400">
+            <svg class="w-4 h-4 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M3 8V5a2 2 0 012-2h3m11 0h3a2 2 0 012 2v3m0 11v3a2 2 0 01-2 2h-3m-11 0H5a2 2 0 01-2-2v-3"/></svg>
+            <span>Resolution</span>
+          </div>
+          <span id="bento-res-val" class="font-bold text-white">1920 × 1080</span>
+        </div>
+
+        <div class="flex items-center justify-between py-1 border-b border-white/5">
+          <div class="flex items-center gap-2 text-zinc-400">
+            <svg class="w-4 h-4 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
+            <span>Pixel Ratio DPR</span>
+          </div>
+          <span id="bento-dpr-val" class="font-bold text-white">2x</span>
+        </div>
+
+        <div class="flex items-center justify-between py-1 border-b border-white/5">
+          <div class="flex items-center gap-2 text-zinc-400">
+            <svg class="w-4 h-4 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/></svg>
+            <span>Color Depth</span>
+          </div>
+          <span id="bento-depth-val" class="font-bold text-white">24-bit</span>
+        </div>
+
+        <div class="flex items-center justify-between py-1">
+          <div class="flex items-center gap-2 text-zinc-400">
+            <svg class="w-4 h-4 text-yellow-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+            <span>Refresh Rate</span>
+          </div>
+          <span id="bento-hz-val" class="font-bold text-emerald-400">~60 Hz</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- CARD 2: Color Picker -->
+    <div class="bg-[#121215] border border-white/10 rounded-3xl p-6 space-y-4 shadow-xl">
+      <div class="flex items-center justify-between border-b border-white/10 pb-3">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-purple-500/15 border border-purple-500/30 flex items-center justify-center text-purple-400">
+            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"/>
+            </svg>
+          </div>
+          <h3 class="text-base font-bold text-white font-sans">Color Picker</h3>
+        </div>
+        <span class="text-xs font-mono text-zinc-400">12 Presets</span>
+      </div>
+
+      <!-- Swatch Grid -->
+      <div class="grid grid-cols-4 gap-3">
+        {presetColors.map(c => (
+          <button
+            data-color-hex={c.hex}
+            data-color-name={c.name}
+            class="bento-swatch-btn w-full h-11 rounded-2xl border border-white/20 transition-all transform hover:scale-105 active:scale-95 cursor-pointer flex items-center justify-center shadow-md relative"
+            style={`background-color: ${c.hex};`}
+            title={c.name}
+            aria-label={`Select ${c.name}`}
+          >
+            <span class="swatch-check hidden w-2 h-2 rounded-full bg-white shadow-lg"></span>
+          </button>
+        ))}
+      </div>
+
+      <div class="flex items-center justify-between font-mono text-xs pt-1 border-t border-white/5">
+        <div class="flex items-center gap-2 text-white">
+          <span id="bento-dot-indicator" class="w-2.5 h-2.5 rounded-full bg-white border border-white/20"></span>
+          <span id="bento-picker-selected-name" class="font-bold">{activeColorName}</span>
+        </div>
+        <span id="bento-picker-selected-hex" class="text-zinc-400">{initialColor}</span>
+      </div>
+    </div>
+
+    <!-- CARD 3: Shortcuts -->
+    <div class="bg-[#121215] border border-white/10 rounded-3xl p-6 space-y-4 shadow-xl">
+      <div class="flex items-center justify-between border-b border-white/10 pb-3">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-amber-500/15 border border-amber-500/30 flex items-center justify-center text-amber-400">
+            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <rect x="2" y="6" width="20" height="12" rx="2"/>
+              <path d="M6 10h.01M10 10h.01M14 10h.01M18 10h.01M6 14h.01M18 14h.01M10 14h4"/>
+            </svg>
+          </div>
+          <h3 class="text-base font-bold text-white font-sans">Shortcuts</h3>
+        </div>
+        <span class="text-xs font-mono text-zinc-400">Hotkeys</span>
+      </div>
+
+      <div class="space-y-3 font-sans text-xs text-zinc-300">
+        <div class="flex items-center justify-between py-1.5 border-b border-white/5">
+          <div class="flex items-center gap-1.5">
+            <kbd class="px-2 py-1 rounded-lg bg-zinc-800 border border-zinc-700 font-mono text-[11px] text-white">←</kbd>
+            <kbd class="px-2 py-1 rounded-lg bg-zinc-800 border border-zinc-700 font-mono text-[11px] text-white">→</kbd>
+          </div>
+          <span class="text-zinc-400">Switch test color</span>
+        </div>
+
+        <div class="flex items-center justify-between py-1.5 border-b border-white/5">
+          <kbd class="px-3 py-1 rounded-lg bg-zinc-800 border border-zinc-700 font-mono text-[11px] text-white">F</kbd>
+          <span class="text-zinc-400">Enter fullscreen</span>
+        </div>
+
+        <div class="flex items-center justify-between py-1.5 border-b border-white/5">
+          <kbd class="px-2.5 py-1 rounded-lg bg-zinc-800 border border-zinc-700 font-mono text-[11px] text-white">Esc</kbd>
+          <span class="text-zinc-400">Exit fullscreen</span>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-2 pt-1 font-mono text-[11px] text-amber-400/90">
+        <svg class="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+        <span>TV users can use remote arrow keys</span>
+      </div>
+    </div>
+
+    <!-- CARD 4: Custom Color -->
+    <div class="bg-[#121215] border border-white/10 rounded-3xl p-6 space-y-4 shadow-xl">
+      <div class="flex items-center justify-between border-b border-white/10 pb-3">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-rose-500/15 border border-rose-500/30 flex items-center justify-center text-rose-400">
+            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"/>
+              <path d="M12 2a10 10 0 000 20 10 10 0 000-20z"/>
+            </svg>
+          </div>
+          <h3 class="text-base font-bold text-white font-sans">Custom Color</h3>
+        </div>
+        <span class="text-xs font-mono text-zinc-400">HEX Code</span>
+      </div>
+
+      <div class="space-y-4">
+        <!-- Input Row -->
+        <div class="flex items-center gap-3">
+          <div 
+            id="bento-custom-preview-swatch"
+            class="w-12 h-12 rounded-2xl border border-white/20 shadow-md shrink-0 transition-colors"
+            style={`background-color: ${initialColor};`}
+          ></div>
+          <div class="relative flex-1">
+            <input 
+              id="bento-hex-input"
+              type="text" 
+              value={initialColor}
+              placeholder="#FFFFFF"
+              class="w-full bg-[#1c1c21] border border-white/15 rounded-xl px-4 py-3 font-mono text-sm text-white focus:border-rose-500 focus:outline-none uppercase"
+            />
+            <input 
+              id="bento-native-color-picker"
+              type="color" 
+              value={initialColor}
+              class="absolute right-3 top-1/2 -translate-y-1/2 w-6 h-6 rounded border-0 bg-transparent cursor-pointer opacity-80 hover:opacity-100"
+              title="Open Color Palette"
+            />
+          </div>
+        </div>
+
+        <!-- Dynamic Color Gradient Bar -->
+        <div 
+          id="bento-color-bar"
+          class="w-full h-9 rounded-xl shadow-inner transition-colors border border-white/10"
+          style={`background-color: ${initialColor};`}
+        ></div>
+
+        <!-- Fullscreen CTA Button -->
+        <button
+          id="bento-btn-fullscreen"
+          type="button"
+          class="w-full py-3.5 px-4 rounded-xl bg-white text-black font-extrabold text-xs sm:text-sm font-sans hover:bg-zinc-200 transition-colors shadow-lg flex items-center justify-center gap-2.5 cursor-pointer"
+        >
+          <svg class="w-4 h-4 text-black" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M3 8V5a2 2 0 012-2h3m11 0h3a2 2 0 012 2v3m0 11v3a2 2 0 01-2 2h-3m-11 0H5a2 2 0 01-2-2v-3"/>
+          </svg>
+          <span>Fullscreen Test This Color</span>
+        </button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  import { VsyncSyncEngine } from '../../engine/VsyncSyncEngine';
+
+  function initBentoDeck() {
+    const canvasBox = document.getElementById('bento-canvas-box') as HTMLDivElement;
+    const centerNotice = document.getElementById('bento-center-notice') as HTMLDivElement;
+    const activeColorNameEl = document.getElementById('bento-active-color-name') as HTMLSpanElement;
+    const activeHexCodeEl = document.getElementById('bento-active-hex-code') as HTMLSpanElement;
+    const bottomName = document.getElementById('bento-bottom-name') as HTMLSpanElement;
+    const bottomHex = document.getElementById('bento-bottom-hex') as HTMLSpanElement;
+    const dotIndicator = document.getElementById('bento-dot-indicator') as HTMLSpanElement;
+    const pickerSelectedName = document.getElementById('bento-picker-selected-name') as HTMLSpanElement;
+    const pickerSelectedHex = document.getElementById('bento-picker-selected-hex') as HTMLSpanElement;
+    const hexInput = document.getElementById('bento-hex-input') as HTMLInputElement;
+    const nativePicker = document.getElementById('bento-native-color-picker') as HTMLInputElement;
+    const customSwatch = document.getElementById('bento-custom-preview-swatch') as HTMLDivElement;
+    const colorBar = document.getElementById('bento-color-bar') as HTMLDivElement;
+    const btnFullscreen = document.getElementById('bento-btn-fullscreen') as HTMLButtonElement;
+
+    const resVal = document.getElementById('bento-res-val') as HTMLSpanElement;
+    const dprVal = document.getElementById('bento-dpr-val') as HTMLSpanElement;
+    const depthVal = document.getElementById('bento-depth-val') as HTMLSpanElement;
+    const hzVal = document.getElementById('bento-hz-val') as HTMLSpanElement;
+    const deviceTypeEl = document.getElementById('bento-device-type') as HTMLSpanElement;
+
+    // Telemetry Population
+    if (resVal) {
+      resVal.textContent = `${window.screen.width * window.devicePixelRatio} × ${window.screen.height * window.devicePixelRatio}`;
+    }
+    if (dprVal) {
+      dprVal.textContent = `${window.devicePixelRatio.toFixed(1)}x`;
+    }
+    if (depthVal) {
+      const depth = (window.screen as any).colorDepth || 24;
+      depthVal.textContent = `${depth}-bit`;
+    }
+    if (deviceTypeEl) {
+      const isMobile = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+      deviceTypeEl.textContent = isMobile ? 'Mobile Touch' : 'Desktop Monitor';
+    }
+
+    let vsyncEngine: VsyncSyncEngine | null = null;
+    if (hzVal) {
+      vsyncEngine = new VsyncSyncEngine((stats) => {
+        hzVal.textContent = `~${Math.round(stats.currentFps)} Hz`;
+      });
+      vsyncEngine.start();
+    }
+
+    // Color State Management
+    const colorsList = [
+      { name: 'White', hex: '#FFFFFF' },
+      { name: 'Black', hex: '#000000' },
+      { name: 'Red', hex: '#E53E3E' },
+      { name: 'Green', hex: '#38A169' },
+      { name: 'Blue', hex: '#3182CE' },
+      { name: 'Cyan', hex: '#00B5D8' },
+      { name: 'Magenta', hex: '#D69E2E' },
+      { name: 'Yellow', hex: '#D69E2E' },
+      { name: 'Orange', hex: '#DD6B20' },
+      { name: 'Dark Gray', hex: '#2D3748' },
+      { name: 'Gray', hex: '#718096' },
+      { name: 'Light Gray', hex: '#A0AEC0' }
+    ];
+
+    let currentIndex = 0;
+
+    function applyColor(hex: string, name: string) {
+      if (canvasBox) canvasBox.style.backgroundColor = hex;
+      if (customSwatch) customSwatch.style.backgroundColor = hex;
+      if (colorBar) colorBar.style.backgroundColor = hex;
+      if (dotIndicator) dotIndicator.style.backgroundColor = hex;
+
+      if (activeColorNameEl) activeColorNameEl.textContent = name;
+      if (activeHexCodeEl) activeHexCodeEl.textContent = hex;
+      if (bottomName) bottomName.textContent = name;
+      if (bottomHex) bottomHex.textContent = hex;
+      if (pickerSelectedName) pickerSelectedName.textContent = name;
+      if (pickerSelectedHex) pickerSelectedHex.textContent = hex;
+      if (hexInput && document.activeElement !== hexInput) hexInput.value = hex;
+      if (nativePicker) nativePicker.value = hex;
+    }
+
+    // Swatch Clicks
+    document.querySelectorAll('.bento-swatch-btn').forEach((btn, idx) => {
+      btn.addEventListener('click', () => {
+        const hex = btn.getAttribute('data-color-hex') || '#FFFFFF';
+        const name = btn.getAttribute('data-color-name') || 'Color';
+        currentIndex = idx;
+        applyColor(hex, name);
+      });
+    });
+
+    // Native Color Picker Input
+    if (nativePicker) {
+      nativePicker.addEventListener('input', (e) => {
+        const hex = (e.target as HTMLInputElement).value;
+        applyColor(hex.toUpperCase(), 'Custom Color');
+      });
+    }
+
+    // Hex Text Input
+    if (hexInput) {
+      hexInput.addEventListener('input', (e) => {
+        let val = (e.target as HTMLInputElement).value.trim();
+        if (!val.startsWith('#')) val = '#' + val;
+        if (/^#[0-9A-FA-F]{6}$/.test(val)) {
+          applyColor(val.toUpperCase(), 'Custom Color');
+        }
+      });
+    }
+
+    // Fullscreen Handler
+    function toggleFullscreen() {
+      if (!canvasBox) return;
+      if (!document.fullscreenElement) {
+        canvasBox.requestFullscreen().catch(() => {});
+      } else {
+        document.exitFullscreen().catch(() => {});
+      }
+    }
+
+    if (btnFullscreen) btnFullscreen.addEventListener('click', toggleFullscreen);
+
+    canvasBox?.addEventListener('click', () => {
+      if (document.fullscreenElement) {
+        // In Fullscreen mode: Click cycles color preset with ZERO text overlay!
+        currentIndex = (currentIndex + 1) % colorsList.length;
+        const target = colorsList[currentIndex];
+        applyColor(target.hex, target.name);
+      } else {
+        toggleFullscreen();
+      }
+    });
+
+    // Keyboard Shortcuts
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+        currentIndex = (currentIndex + 1) % colorsList.length;
+        const target = colorsList[currentIndex];
+        applyColor(target.hex, target.name);
+      } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+        currentIndex = (currentIndex - 1 + colorsList.length) % colorsList.length;
+        const target = colorsList[currentIndex];
+        applyColor(target.hex, target.name);
+      } else if (e.key === 'f' || e.key === 'F') {
+        const activeEl = document.activeElement;
+        const isInput = activeEl && (activeEl.tagName === 'INPUT' || activeEl.tagName === 'TEXTAREA');
+        if (!isInput) {
+          e.preventDefault();
+          toggleFullscreen();
+        }
+      }
+    });
+
+    // Clean Fullscreen UI Toggle
+    document.addEventListener('fullscreenchange', () => {
+      const isFS = !!document.fullscreenElement;
+      if (centerNotice) centerNotice.style.display = isFS ? 'none' : 'block';
+    });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initBentoDeck);
+  } else {
+    initBentoDeck();
+  }
+</script>

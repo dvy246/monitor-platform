@@ -1,0 +1,155 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import Breadcrumbs from '../../components/ui/Breadcrumbs.astro';
+import FAQSection from '../../components/ui/FAQSection.astro';
+import { useTranslations, localizeLink } from '../../utils/i18n';
+
+
+const { lang } = useTranslations(Astro.url.pathname);
+
+const breadcrumbs = [
+  { label: 'Device Guides', href: localizeLink('/guides', lang) },
+  { label: 'OLED & QD-OLED Master Guide' }
+];
+
+const faqs = [
+  { question: "What is the difference between QD-OLED and LG WOLED panel structures?", answer: "Samsung QD-OLED uses blue self-emissive OLEDs with printed Quantum Dot green/red color converters arranged in a triangular subpixel layout. LG WOLED uses white OLED emitters with a 4-subpixel Red-Green-Blue-White (RWBG) stripe matrix." },
+  { question: "How does the OLED Burn-In mathematical decay model estimate panel life?", answer: "Subpixel degradation follows an Arrhenius thermal-stress curve where luminance decay acceleration is proportional to (Brightness)^1.7 * Operating Hours * Color Spectrum Factor. Blue OLED subpixels decay ~2.4x faster than Red/Green emitters." },
+  { question: "What causes 5% dark-gray OLED banding and vignetting?", answer: "During manufacturing, vacuum-evaporated organic layers exhibit micro-variations in film thickness across the glass substrate, leading to subtle vertical luminance streaks visible at low 1%-5% gray signals." },
+  { question: "What is Auto Brightness Limiter (ABL) and how do I measure it?", answer: "ABL is a power and thermal protection algorithm that dims peak panel brightness as high-luminance white content expands across the screen area. A 10% white window may hit 1000 nits, while a 100% full-field white window drops to 250 nits." },
+  { question: "How often should I run Pixel Refresh or Panel Refresh maintenance cycles?", answer: "Short Pixel Refresh cycles (5-10 minutes) run automatically every 4 cumulative operating hours when the display enters standby. Full Panel Refresh cycles (1 hour) should only be run manually every 1500-2000 hours." },
+  { question: "Why does text look fringed on 1st-generation QD-OLED monitors?", answer: "1st-gen QD-OLED subpixels are arranged in a triangular configuration (Green top, Red/Blue bottom). Standard Windows ClearType assumes horizontal RGB stripes, creating subtle magenta and green color fringing along high-contrast text edges." },
+  { question: "How do I test my OLED panel for static UI element burn-in?", answer: "Launch our OLED Burn-In Inspector in a dark room. Cycle through solid Red, Green, Blue, Magenta, and 50% Gray frames, inspecting taskbars, game HUDs, and web browser address bars for faint ghost outlines." },
+  { question: "Do OLED monitors support true 0-nit black levels?", answer: "Yes. Because every subpixel shuts off completely, OLED panels achieve true 0.000 nit black levels with infinite (∞:1) static contrast ratio." },
+  { question: "What is VESA DisplayHDR True Black 400 / 500 / 600 certification?", answer: "VESA True Black standards require a maximum black level of 0.0005 nits, a dynamic range 50x greater than standard DisplayHDR 1000, and sub-millisecond pixel response times." },
+  { question: "How can I prevent burn-in on an OLED desktop gaming monitor?", answer: "Hide the Windows taskbar, enable dark mode in applications, set a 5-minute screen sleep timer, use dynamic desktop wallpapers, and avoid running static UI elements at 100% HDR brightness 24/7." }
+];
+
+
+
+---
+
+<Layout
+  title="OLED & QD-OLED Master Guide: Subpixel Physics & Burn-In Model"
+  description="Comprehensive OLED & QD-OLED testing guide. QD-OLED vs WOLED subpixel layout geometry, mathematical burn-in decay model, ABL roll-off, 5% gray banding, and Pixel Refresh maintenance."
+  faqs={faqs}
+>
+  <main id="main-content" class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-12 font-sans">
+    <Breadcrumbs items={breadcrumbs} />
+
+    <!-- Guide Header -->
+    <header class="space-y-4 text-center max-w-3xl mx-auto">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/30 text-xs font-mono text-cyan-400 font-bold uppercase tracking-wider">
+        <svg class="w-4 h-4 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"/></svg>
+        <span>OLED &amp; QD-OLED PANEL ENGINEERING GUIDE</span>
+      </div>
+      <h1 class="text-3xl sm:text-4xl font-extrabold text-text-primary tracking-tight font-mono">
+        OLED &amp; QD-OLED Master Guide: Subpixel Physics &amp; Burn-In Model
+      </h1>
+      <p class="text-sm sm:text-base text-text-secondary leading-relaxed">
+        Deep-dive into OLED physics. Compare QD-OLED vs WOLED subpixel geometries, evaluate the Arrhenius burn-in decay model, measure ABL roll-off, and inspect 5% gray uniformity.
+      </p>
+    </header>
+
+    <!-- Custom Inline SVG Visual Diagram -->
+    <section class="p-6 rounded-2xl bg-bg-surface border border-border-hairline space-y-4 shadow-xl">
+      <h2 class="text-lg font-bold font-mono text-text-primary flex items-center gap-2">
+        <svg class="w-5 h-5 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"/></svg>
+        <span>QD-OLED Triangular vs WOLED RWBG Subpixel Geometry</span>
+      </h2>
+
+      <div class="w-full flex justify-center py-4 bg-bg-canvas rounded-xl border border-border-hairline">
+        <svg class="w-full max-w-2xl h-auto" viewBox="0 0 700 280" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <!-- QD-OLED Subpixel Structure (Triangular) -->
+          <g transform="translate(80, 40)">
+            <rect x="0" y="0" width="220" height="200" rx="8" fill="#121215" stroke="#22d3ee" stroke-width="2"/>
+            <text x="50" y="25" fill="#22d3ee" font-family="monospace" font-size="11" font-weight="bold">QD-OLED (Triangular)</text>
+            <!-- Top Green Subpixel -->
+            <rect x="85" y="45" width="50" height="45" rx="4" fill="#22c55e"/>
+            <text x="103" y="72" fill="#ffffff" font-family="monospace" font-size="10">G</text>
+            <!-- Bottom Red & Blue Subpixels -->
+            <rect x="50" y="105" width="50" height="60" rx="4" fill="#ef4444"/>
+            <text x="69" y="140" fill="#ffffff" font-family="monospace" font-size="10">R</text>
+            <rect x="120" y="105" width="50" height="60" rx="4" fill="#3b82f6"/>
+            <text x="139" y="140" fill="#ffffff" font-family="monospace" font-size="10">B</text>
+          </g>
+
+          <!-- WOLED Subpixel Structure (4-Stripe RWBG) -->
+          <g transform="translate(400, 40)">
+            <rect x="0" y="0" width="220" height="200" rx="8" fill="#121215" stroke="#a855f7" stroke-width="2"/>
+            <text x="45" y="25" fill="#a855f7" font-family="monospace" font-size="11" font-weight="bold">LG WOLED (RWBG Stripe)</text>
+            <!-- 4 Vertical Subpixel Stripes -->
+            <rect x="20" y="45" width="38" height="125" rx="3" fill="#ef4444"/>
+            <text x="33" y="112" fill="#ffffff" font-family="monospace" font-size="10">R</text>
+            <rect x="66" y="45" width="38" height="125" rx="3" fill="#ffffff"/>
+            <text x="78" y="112" fill="#000000" font-family="monospace" font-size="10">W</text>
+            <rect x="112" y="45" width="38" height="125" rx="3" fill="#3b82f6"/>
+            <text x="125" y="112" fill="#ffffff" font-family="monospace" font-size="10">B</text>
+            <rect x="158" y="45" width="38" height="125" rx="3" fill="#22c55e"/>
+            <text x="171" y="112" fill="#ffffff" font-family="monospace" font-size="10">G</text>
+          </g>
+        </svg>
+      </div>
+    </section>
+
+    <!-- 8-Step OLED Inspection Workflow -->
+    <section class="space-y-6">
+      <h2 class="text-2xl font-bold font-mono text-text-primary border-b border-border-hairline pb-3">
+        8-Step OLED Diagnostic &amp; Burn-In Workflow
+      </h2>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 font-sans text-sm">
+        <div class="p-4 rounded-xl bg-bg-surface border border-border-hairline space-y-2">
+          <span class="text-xs font-mono font-bold text-cyan-400 px-2 py-0.5 rounded bg-cyan-500/10 border border-cyan-500/30">STEP 1</span>
+          <h3 class="font-bold text-text-primary">OLED Burn-In Risk Mathematical Model</h3>
+          <p class="text-text-muted text-xs leading-relaxed">Launch our <a href={localizeLink("/display-tests/oled-burn-in", lang)} class="text-cyan-400 hover:underline">OLED Burn-In Model</a> to calculate subpixel decay based on daily operational hours and brightness.</p>
+        </div>
+
+        <div class="p-4 rounded-xl bg-bg-surface border border-border-hairline space-y-2">
+          <span class="text-xs font-mono font-bold text-cyan-400 px-2 py-0.5 rounded bg-cyan-500/10 border border-cyan-500/30">STEP 2</span>
+          <h3 class="font-bold text-text-primary">5% Dark-Gray Luminance Uniformity</h3>
+          <p class="text-text-muted text-xs leading-relaxed">Open the <a href={localizeLink("/display-tests/uniformity", lang)} class="text-cyan-400 hover:underline">OLED Uniformity Inspector</a> and check low-gray 5% luminance patterns in a dim room for vertical banding.</p>
+        </div>
+
+        <div class="p-4 rounded-xl bg-bg-surface border border-border-hairline space-y-2">
+          <span class="text-xs font-mono font-bold text-cyan-400 px-2 py-0.5 rounded bg-cyan-500/10 border border-cyan-500/30">STEP 3</span>
+          <h3 class="font-bold text-text-primary">HDR ST 2084 PQ &amp; ABL Roll-Off Test</h3>
+          <p class="text-text-muted text-xs leading-relaxed">Use the <a href={localizeLink("/display-tests/hdr-test", lang)} class="text-cyan-400 hover:underline">HDR ST 2084 PQ Evaluator</a> to measure Auto Brightness Limiter roll-off across 1% to 100% window sizes.</p>
+        </div>
+
+        <div class="p-4 rounded-xl bg-bg-surface border border-border-hairline space-y-2">
+          <span class="text-xs font-mono font-bold text-cyan-400 px-2 py-0.5 rounded bg-cyan-500/10 border border-cyan-500/30">STEP 4</span>
+          <h3 class="font-bold text-text-primary">Subpixel Geometry Reticle Inspection</h3>
+          <p class="text-text-muted text-xs leading-relaxed">Use the <a href={localizeLink("/display-tests/sub-pixel", lang)} class="text-cyan-400 hover:underline">Sub-Pixel Analyzer</a> to inspect QD-OLED triangular vs LG WOLED RWBG subpixel text fringing.</p>
+        </div>
+
+        <div class="p-4 rounded-xl bg-bg-surface border border-border-hairline space-y-2">
+          <span class="text-xs font-mono font-bold text-cyan-400 px-2 py-0.5 rounded bg-cyan-500/10 border border-cyan-500/30">STEP 5</span>
+          <h3 class="font-bold text-text-primary">Pure R/G/B Channel Balance</h3>
+          <p class="text-text-muted text-xs leading-relaxed">Run the <a href={localizeLink("/display-tests/rgb-channel-test", lang)} class="text-cyan-400 hover:underline">RGB Primary Channel Test</a> to verify subpixel chromaticity and white balance bias.</p>
+        </div>
+
+        <div class="p-4 rounded-xl bg-bg-surface border border-border-hairline space-y-2">
+          <span class="text-xs font-mono font-bold text-cyan-400 px-2 py-0.5 rounded bg-cyan-500/10 border border-cyan-500/30">STEP 6</span>
+          <h3 class="font-bold text-text-primary">Solid Color Dead Pixel Sweep</h3>
+          <p class="text-text-muted text-xs leading-relaxed">Open <a href={localizeLink("/display-tests/dead-pixel", lang)} class="text-cyan-400 hover:underline">Dead Pixel Inspector</a> to verify 0 dead subpixels across self-emissive OLED panels.</p>
+        </div>
+
+        <div class="p-4 rounded-xl bg-bg-surface border border-border-hairline space-y-2">
+          <span class="text-xs font-mono font-bold text-cyan-400 px-2 py-0.5 rounded bg-cyan-500/10 border border-cyan-500/30">STEP 7</span>
+          <h3 class="font-bold text-text-primary">CIE 1931 Color Gamut Map</h3>
+          <p class="text-text-muted text-xs leading-relaxed">Map DCI-P3 and Rec.2020 color volumes using our <a href={localizeLink("/display-tests/color-gamut", lang)} class="text-cyan-400 hover:underline">Color Gamut Mapper</a>.</p>
+        </div>
+
+        <div class="p-4 rounded-xl bg-bg-surface border border-border-hairline space-y-2">
+          <span class="text-xs font-mono font-bold text-cyan-400 px-2 py-0.5 rounded bg-cyan-500/10 border border-cyan-500/30">STEP 8</span>
+          <h3 class="font-bold text-text-primary">Generate Cryptographic Hardware Receipt</h3>
+          <p class="text-text-muted text-xs leading-relaxed">Export a cryptographically signed SHA-256 <a href={localizeLink("/passport", lang)} class="text-cyan-400 hover:underline">Hardware Passport</a> receipt certifying OLED panel health.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <FAQSection faqs={faqs} title="OLED & QD-OLED Master FAQs" />
+  </main>
+</Layout>

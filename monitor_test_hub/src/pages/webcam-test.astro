@@ -1,0 +1,127 @@
+---
+import Layout from '../layouts/Layout.astro';
+import WebcamTesterCanvas from '../components/diagnostics/WebcamTesterCanvas.astro';
+import StepWorkflowSection from '../components/ui/StepWorkflowSection.astro';
+import PanelTypeBreakdownSection from '../components/ui/PanelTypeBreakdownSection.astro';
+import FAQSection from '../components/ui/FAQSection.astro';
+import Breadcrumbs from '../components/ui/Breadcrumbs.astro';
+import SEOHead from '../components/seo/SEOHead.astro';
+
+
+const title = "Webcam Test | Free Online Camera Test & FPS Resolution Checker";
+const description = "Run a free online webcam test to check your camera, FaceTime, USB webcam, or laptop camera. Verify video resolution, real-time FPS, mirror selfie flip, and virtual fill light.";
+
+const faqs = [
+  {
+    question: "How do I test my webcam online without installing software?",
+    answer: "To perform a free online webcam test, click 'Start Webcam Test' and select 'Allow' when your browser requests camera permissions. Our tool will instantly stream your video feed, detect camera resolution (1080p, 4K, 720p), and display real-time FPS frame rates without downloading any software."
+  },
+  {
+    question: "Is my camera video feed safe during an online webcam test?",
+    answer: "Yes! Your privacy is 100% protected. All video stream decoding, resolution analysis, FPS frame counting, and snapshot rendering occur strictly inside your browser memory via native HTML5 Web APIs. Zero video or image data is ever recorded or uploaded to any server."
+  },
+  {
+    question: "How do I check if my webcam is outputting 60 FPS or 30 FPS?",
+    answer: "Our camera test features a real-time requestVideoFrameCallback (rVFC) frame counter that calculates the exact output frame rate (FPS) and frame pacing jitter of your camera sensor in real-time."
+  },
+  {
+    question: "How do I test my camera before a Zoom, Microsoft Teams, or Google Meet call?",
+    answer: "Use our webcam test site to verify your lighting, frame composition, mirror selfie orientation, and video resolution before joining a professional Zoom meeting or online interview."
+  },
+  {
+    question: "Can I take a snapshot photo with my webcam?",
+    answer: "Yes! Click the 'Take Photo' button in our webcam diagnostic scope to instantly capture a full-resolution PNG photo snapshot from your camera feed and save it to your device."
+  },
+  {
+    question: "Why is my webcam video blurry or low resolution?",
+    answer: "Blurry webcam video is often caused by poor room lighting, dirty camera lenses, or USB bandwidth throttling. Ensure your camera is plugged into a USB 3.0 port and use our built-in Virtual Fill Light Studio for optimal exposure."
+  },
+  {
+    question: "How does the Virtual Fill Light Studio work?",
+    answer: "Our virtual fill light tool turns your screen into a high-CRI soft light panel. You can adjust the color temperature from 2700K (Warm Tungsten) to 6500K (Daylight D65) to illuminate your face during video calls."
+  },
+  {
+    question: "Can I test USB webcams, FaceTime HD cameras, and OBS virtual cameras?",
+    answer: "Yes! Our webcam test supports all video input hardware detected by your OS, including built-in Mac FaceTime HD cameras, USB webcams (Logitech Brio, Razer Kiyo, Elgato Facecam), and OBS Studio virtual camera streams."
+  },
+  {
+    question: "How do I flip or mirror my webcam video feed?",
+    answer: "Click the 'Mirror Flip' button on our control deck to horizontally invert your video stream. This allows you to preview your camera feed in natural mirror orientation or true unmirrored perspective."
+  },
+  {
+    question: "Does this webcam test work on iPhone, iPad, and Android devices?",
+    answer: "Yes! Open this page in Safari on iOS or Chrome on Android and tap 'Start Webcam Test' to check front and rear mobile camera sensors."
+  }
+];
+
+const breadcrumbs = [
+  { label: 'Home', href: '/' },
+  { label: 'Webcam Test', href: '#' }
+];
+
+
+---
+
+<Layout title={title} description={description} faqs={faqs}>
+  <SEOHead slot="head" title={title} description={description} />
+  
+  <main  space-y-8">
+    <Breadcrumbs items={breadcrumbs} />
+    
+    <header class="relative w-full rounded-3xl border border-white/10 bg-[#121215]/90 backdrop-blur-xl p-6 sm:p-8 md:p-10 shadow-2xl text-center space-y-4 overflow-hidden group select-none">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-status-pass/10 border border-status-pass/30 text-status-pass text-xs font-mono font-bold mb-3">
+        <span class="w-2 h-2 rounded-full bg-status-pass animate-pulse"></span>
+        <span>100% Client-Side Private Video DSP</span>
+      </div>
+      <h1 class="text-3xl sm:text-5xl font-extrabold text-text-primary tracking-tight mb-4 font-sans">
+        Free Online Webcam Test <span class="text-status-pass font-mono font-normal text-2xl sm:text-4xl">&amp; Camera Checker</span>
+      </h1>
+      <p class="text-base sm:text-lg text-text-secondary max-w-3xl mx-auto font-sans leading-relaxed">
+        Run a free <strong class="text-text-primary">online webcam test</strong> to check your camera, FaceTime HD, USB webcam, or laptop camera. Verify video resolution, real-time FPS, mirror selfie flip, and virtual fill light.
+      </p>
+    </header>
+
+    <!-- Main Diagnostic Canvas & Camera Deck -->
+    <div class="mb-12">
+      <WebcamTesterCanvas />
+    </div>
+
+    <!-- SEO Content Architecture & Technical Documentation -->
+    <article class="bg-[#121215] border border-white/10 rounded-3xl p-6 sm:p-10 space-y-6 text-zinc-300 font-sans leading-relaxed shadow-2xl">
+      <h2 class="text-2xl font-semibold text-white font-mono flex items-center gap-2">
+        <span>📷</span> Free Online Webcam Test &amp; Camera Hardware Inspector
+      </h2>
+      <p>
+        Verifying your camera before an important remote interview, online class, or streaming session is critical for presenting a clear, professional video feed. Our webcam test site provides a zero-install online webcam test that measures exact sensor resolution (1080p Full HD, 4K Ultra HD), aspect ratios (16:9 vs 4:3), and real-time frame rates (30 FPS vs 60 FPS).
+      </p>
+      <p>
+        Whether you are running a free webcam test on a laptop, checking a USB webcam (Logitech Brio, Elgato Facecam, Razer Kiyo), or testing an iPhone or Android camera, all video processing runs 100% inside your local browser memory.
+      </p>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 my-6 text-xs font-mono">
+        <div class="bg-[#08080a] p-5 rounded-2xl border border-white/10 space-y-2">
+          <div class="text-cyan-400 font-bold uppercase tracking-wider">Virtual Fill Light Studio</div>
+          <p class="text-zinc-400 font-sans leading-relaxed">
+            Turns your monitor into a soft light panel (2700K Warm to 6500K Daylight) to eliminate harsh shadow noise during video calls.
+          </p>
+        </div>
+
+        <div class="bg-[#08080a] p-5 rounded-2xl border border-white/10 space-y-2">
+          <div class="text-emerald-400 font-bold uppercase tracking-wider">rVFC Microsecond Frame Telemetry</div>
+          <p class="text-zinc-400 font-sans leading-relaxed">
+            Uses HTML5 requestVideoFrameCallback() to evaluate real-time sensor output FPS and frame jitter.
+          </p>
+        </div>
+      </div>
+    </article>
+
+    <!-- Workflow & Panel Type Breakdown Sections -->
+    <StepWorkflowSection />
+    <PanelTypeBreakdownSection />
+
+    <!-- 10-Item FAQ Accordion Deck -->
+    <div class="pt-8 border-t border-border-hairline">
+      <FAQSection faqs={faqs} />
+    </div>
+  </main>
+</Layout>

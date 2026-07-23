@@ -22,7 +22,7 @@
 
       <!-- Mode & Sound Selectors -->
       <div class="flex flex-wrap items-center gap-2">
-        <div class="bg-bg-canvas p-1 rounded-xl border border-border-subtle flex items-center gap-1 text-xs font-mono">
+        <div class="bg-bg-canvas p-1 rounded-xl border border-border-subtle flex items-center gap-1 text-xs font-mono overflow-x-auto max-w-full">
           <button id="mode-standard" class="mode-btn px-3 py-1.5 rounded-lg font-semibold bg-status-pass/20 text-status-pass border border-status-pass/40 cursor-pointer transition-all">
             Key Matrix
           </button>
@@ -37,7 +37,7 @@
           </button>
         </div>
 
-        <select id="sound-selector" class="bg-bg-canvas border border-border-subtle text-text-primary text-xs font-mono rounded-xl px-3 py-2 focus:outline-none cursor-pointer">
+        <select id="sound-selector" class="bg-bg-canvas border border-border-subtle text-text-primary text-xs font-mono rounded-xl px-3 py-2 focus-visible:ring-2 focus-visible:ring-status-pass focus-visible:outline-none cursor-pointer">
           <option value="none">🔊 Mute Click Sound</option>
           <option value="blue" selected>🔊 Clicky Blue Switch</option>
           <option value="brown">🔊 Tactile Brown Switch</option>
@@ -83,7 +83,10 @@
     </div>
 
     <!-- Interactive Visual Keyboard Grid Container -->
-    <div class="w-full overflow-x-auto pb-2">
+    <div class="w-full overflow-x-auto pb-2 touch-pan-x h-auto max-w-full">
+      <div class="sm:hidden text-[10px] text-text-muted text-center py-1 font-mono uppercase tracking-wider">
+        ↔ Swipe left/right to view full 104-key layout
+      </div>
       <div id="keyboard-visual-grid" class="min-w-[840px] space-y-1.5 p-4 rounded-xl bg-bg-canvas border border-border-subtle select-none">
         <!-- Rendered via JS -->
       </div>

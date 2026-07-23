@@ -1,0 +1,179 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import Breadcrumbs from '../../components/ui/Breadcrumbs.astro';
+import FAQSection from '../../components/ui/FAQSection.astro';
+import { useTranslations, localizeLink } from '../../utils/i18n';
+
+
+const { lang } = useTranslations(Astro.url.pathname);
+
+const faqs = [
+  {
+    question: "How does Display Test Online compare to Screentester.io?",
+    answer: "Screentester.io is a lightweight web tool providing simple fullscreen color blocks and basic refresh rate counters. Display Test Online is an engineering grade diagnostic suite that adds ISO 9241-307 RMA return standards, SHA-256 cryptographic hardware receipts, QD-OLED subpixel geometry modeling, 540Hz microsecond frame pacing, keyboard switch chatter testing, and state level US appliance energy calculators."
+  },
+  {
+    question: "Is Display Test Online free to use?",
+    answer: "Yes. Display Test Online is 100% free, browser native, and requires zero software downloads or registration."
+  },
+  {
+    question: "Can I use Display Test Online to prove a monitor defect for a retail refund?",
+    answer: "Yes. Our dead pixel and uniformity tools measure defects against official ISO 9241-307 Class I through IV standards and store SHA-256 cryptographically signed Hardware Passports so you can attach verified evidence to warranty or retail exchange claims."
+  },
+  {
+    question: "Which site is better for testing high refresh rate 240Hz or 540Hz gaming monitors?",
+    answer: "Display Test Online is designed specifically for high refresh rate gaming displays. It uses microsecond requestAnimationFrame delta math to detect VSync frame drops, G-Sync tearing, and 8000Hz USB mouse polling jitter."
+  },
+  {
+    question: "Does Screentester.io offer keyboard or USB peripheral testing?",
+    answer: "No. Screentester.io focuses exclusively on visual screen testing. Display Test Online includes a full mechanical keyboard switch chatter analyzer, key rollover stress tester, and gamepad drift inspector."
+  }
+];
+
+const breadcrumbItems = [
+  { label: 'Display Suite', href: '/display-tests' },
+  { label: 'Comparison Hub', href: '/compare' },
+  { label: 'Screentester.io Alternative Comparison' }
+];
+
+const canonicalUrl = "https://displaytestonline.com/compare/screentester-alternative";
+
+
+
+---
+
+<Layout 
+  title="Display Test Online vs ScreenTester.io — Honest Comparison & Features"
+  description="Compare Display Test Online and ScreenTester.io. Discover differences in ISO 9241-307 RMA return standards, SHA-256 hardware passports, QD-OLED subpixel text clarity, and high refresh rate frame pacing."
+  faqs={faqs}
+  canonicalUrl={canonicalUrl}
+>
+  <div class="max-w-7xl mx-auto px-4 py-8 space-y-10 font-sans">
+    <Breadcrumbs items={breadcrumbItems} />
+
+    <header class="space-y-4 border-b border-border-hairline pb-8 font-mono">
+      <div class="flex items-center gap-2 text-status-pass text-xs font-bold uppercase tracking-wider">
+        <span class="w-2 h-2 rounded-full bg-status-pass led-glow-pass"></span>
+        HONEST COMPETITOR & ALTERNATIVE COMPARISON
+      </div>
+      <h1 class="text-3xl sm:text-5xl font-extrabold text-text-primary tracking-tight font-sans">
+        Display Test Online vs. ScreenTester.io
+      </h1>
+      <p class="text-base text-text-secondary max-w-4xl font-sans leading-relaxed">
+        An objective, evidence based evaluation from the user's perspective. Understand where both platforms excel and which display testing tool best fits your visual inspection needs.
+      </p>
+    </header>
+
+    <!-- Quick Verdict Banner -->
+    <div class="bg-bg-surface/90 border border-status-pass/40 rounded-2xl p-6 sm:p-8 space-y-4 backdrop-blur-xl">
+      <h2 class="text-xl font-bold text-text-primary flex items-center gap-2">
+        <span class="text-status-pass">✓</span> The Bottom Line Summary
+      </h2>
+      <p class="text-sm text-text-secondary leading-relaxed">
+        If you just opened your browser and need a quick 5-second color check to see if a red dot is stuck on your screen, <strong class="text-text-primary">either website works fine</strong>. Screentester.io provides clean fullscreen color blocks and basic refresh rate counters that handle casual checks well.
+      </p>
+      <p class="text-sm text-text-secondary leading-relaxed">
+        <strong class="text-text-primary">Display Test Online is built for users who need deeper technical verification</strong>: evaluating whether a dead pixel qualifies for a retail return under ISO 9241-307 standards, locking hardware results into SHA-256 signed receipts, testing QD-OLED versus WOLED text fringing, benchmarking 540Hz frame pacing, or measuring keyboard switch chatter.
+      </p>
+    </div>
+
+    <!-- Feature Comparison Table -->
+    <div class="space-y-4">
+      <h2 class="text-2xl font-bold text-text-primary font-sans">
+        Feature &amp; Capability Matrix
+      </h2>
+      <div class="overflow-x-auto border border-border-hairline rounded-2xl bg-bg-surface">
+        <table class="w-full text-left text-xs font-mono">
+          <thead class="bg-bg-elevated border-b border-border-hairline text-text-muted uppercase">
+            <tr>
+              <th class="p-4 font-semibold">Diagnostic Capability</th>
+              <th class="p-4 font-semibold text-text-secondary">ScreenTester.io</th>
+              <th class="p-4 font-semibold text-status-pass">Display Test Online</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-border-hairline/60 text-text-secondary">
+            <tr class="hover:bg-bg-elevated/40">
+              <td class="p-4 font-bold text-text-primary">Basic Fullscreen Color Cycle</td>
+              <td class="p-4 text-emerald-400">Yes (Solid colors)</td>
+              <td class="p-4 text-emerald-400 font-bold">Yes (RGBW + Custom HEX)</td>
+            </tr>
+            <tr class="hover:bg-bg-elevated/40">
+              <td class="p-4 font-bold text-text-primary">Warranty RMA Guidance</td>
+              <td class="p-4 text-rose-400">No (Generic advice)</td>
+              <td class="p-4 text-emerald-400 font-bold">Yes (ISO 9241-307 Class I-IV)</td>
+            </tr>
+            <tr class="hover:bg-bg-elevated/40">
+              <td class="p-4 font-bold text-text-primary">Cryptographic Hardware Proof</td>
+              <td class="p-4 text-rose-400">No</td>
+              <td class="p-4 text-emerald-400 font-bold">Yes (SHA-256 Receipts)</td>
+            </tr>
+            <tr class="hover:bg-bg-elevated/40">
+              <td class="p-4 font-bold text-text-primary">High-Refresh Rate Precision</td>
+              <td class="p-4 text-amber-400">Basic rAF counter</td>
+              <td class="p-4 text-emerald-400 font-bold">540Hz+ Microsecond Delta Math</td>
+            </tr>
+            <tr class="hover:bg-bg-elevated/40">
+              <td class="p-4 font-bold text-text-primary">OLED Subpixel Layout Inspection</td>
+              <td class="p-4 text-rose-400">No</td>
+              <td class="p-4 text-emerald-400 font-bold">Yes (QD-OLED / WOLED / ClearType)</td>
+            </tr>
+            <tr class="hover:bg-bg-elevated/40">
+              <td class="p-4 font-bold text-text-primary">8000Hz Mouse Polling Jitter</td>
+              <td class="p-4 text-rose-400">No</td>
+              <td class="p-4 text-emerald-400 font-bold">Yes (RFC 3550 Telemetry)</td>
+            </tr>
+            <tr class="hover:bg-bg-elevated/40">
+              <td class="p-4 font-bold text-text-primary">Crowdsourced Device Database</td>
+              <td class="p-4 text-rose-400">No</td>
+              <td class="p-4 text-emerald-400 font-bold">Yes (25+ Flagship Models)</td>
+            </tr>
+            <tr class="hover:bg-bg-elevated/40">
+              <td class="p-4 font-bold text-text-primary">Keyboard &amp; Switch Diagnostics</td>
+              <td class="p-4 text-rose-400">No</td>
+              <td class="p-4 text-emerald-400 font-bold">Yes (Key Chatter &amp; Bounce)</td>
+            </tr>
+            <tr class="hover:bg-bg-elevated/40">
+              <td class="p-4 font-bold text-text-primary">US Regional Utility Calculators</td>
+              <td class="p-4 text-rose-400">No</td>
+              <td class="p-4 text-emerald-400 font-bold">Yes (50 State EIA Rates, NEC 2026)</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Core Differentiators Breakdown -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 font-sans">
+      <div class="bg-bg-surface border border-border-hairline rounded-2xl p-6 space-y-3">
+        <h3 class="text-lg font-bold text-text-primary">1. ISO 9241-307 RMA Class Auditing</h3>
+        <p class="text-xs text-text-secondary leading-relaxed">
+          ScreenTester.io shows you where a dead pixel is located, but leaves you guessing if your manufacturer will replace it. Display Test Online evaluates defect density against ISO 9241-307 Class I (Zero Defect), Class II (Standard Consumer), and Class III/IV specs so you know whether to file an RMA or return the screen to your retailer.
+        </p>
+      </div>
+
+      <div class="bg-bg-surface border border-border-hairline rounded-2xl p-6 space-y-3">
+        <h3 class="text-lg font-bold text-text-primary">2. Immutable SHA-256 Receipts</h3>
+        <p class="text-xs text-text-secondary leading-relaxed">
+          Selling a monitor on Reddit, eBay, or Swappa? Screentester results cannot be saved or independently verified. Display Test Online cryptographically signs your screen metrics into a SHA-256 digital passport that buyers and sellers can verify at any time.
+        </p>
+      </div>
+
+      <div class="bg-bg-surface border border-border-hairline rounded-2xl p-6 space-y-3">
+        <h3 class="text-lg font-bold text-text-primary">3. Subpixel QD-OLED &amp; WOLED Fringing</h3>
+        <p class="text-xs text-text-secondary leading-relaxed">
+          Modern OLED displays use non-traditional subpixel layouts (Samsung QD-OLED triangular layout vs LG WOLED RWBG layout). Display Test Online provides custom reticle patterns to test font blurriness and ClearType fringing specific to high-end OLED screens.
+        </p>
+      </div>
+
+      <div class="bg-bg-surface border border-border-hairline rounded-2xl p-6 space-y-3">
+        <h3 class="text-lg font-bold text-text-primary">4. Beyond Display: Peripheral Diagnostics</h3>
+        <p class="text-xs text-text-secondary leading-relaxed">
+          Display Test Online expands hardware diagnostics to your entire desk setup, including mechanical keyboard switch chatter testing, 8000Hz USB mouse polling pacing, gamepad stick drift inspection, and mobile digitizer charger EMI noise tracking.
+        </p>
+      </div>
+    </div>
+
+    <!-- FAQ Accordion Section -->
+    <FAQSection faqs={faqs} />
+  </div>
+</Layout>

@@ -42,12 +42,12 @@ const { initialPanel = 'qd-oled-v2', initialTier = 'moderate', initialHours, cla
       <!-- Usage Tier Selection Buttons -->
       <div>
         <label class="block text-xs font-bold text-text-secondary uppercase mb-2">Usage Profile Tier</label>
-        <div class="grid grid-cols-4 gap-1.5" id="tier-button-group">
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2" id="tier-button-group">
           <button 
             type="button" 
             data-tier="light"
             class:list={[
-              "tier-btn text-[11px] font-semibold py-1.5 px-2 rounded border transition-all text-center focus:outline-none focus:ring-2 focus:ring-status-pass cursor-pointer",
+              "tier-btn text-[11px] font-semibold py-2.5 px-3 min-h-[44px] rounded-lg border transition-all text-center focus:outline-none focus:ring-2 focus:ring-status-pass cursor-pointer flex items-center justify-center",
               initialTier === 'light' ? "bg-status-pass/20 border-status-pass text-status-pass" : "bg-bg-surface border-border-hairline text-text-secondary hover:text-text-primary"
             ]}
           >
@@ -169,7 +169,7 @@ const { initialPanel = 'qd-oled-v2', initialTier = 'moderate', initialHours, cla
         </div>
         
         <!-- Canvas Container with Fixed Height (Zero CLS) -->
-        <div id="uniformity-canvas-container" class="relative w-full h-52 bg-[#08080a] rounded-lg border border-border-hairline overflow-hidden flex items-center justify-center">
+        <div id="uniformity-canvas-container" class="relative w-full h-[320px] sm:h-[460px] max-w-full bg-[#08080a] rounded-lg border border-border-hairline overflow-hidden flex items-center justify-center">
           <canvas id="burnin-canvas" class="w-full h-full block"></canvas>
           
           <!-- Static Taskbar Overlay -->
@@ -434,12 +434,29 @@ const { initialPanel = 'qd-oled-v2', initialTier = 'moderate', initialHours, cla
       renderCanvas();
     });
 
+    let burnInResizeObserver: ResizeObserver | null = null;
+    if (typeof ResizeObserver !== 'undefined' && canvas.parentElement) {
+      burnInResizeObserver = new ResizeObserver(() => renderCanvas());
+      burnInResizeObserver.observe(canvas.parentElement);
+    }
     window.addEventListener('resize', renderCanvas);
+
+    document.addEventListener('astro:before-swap', () => {
+      if (burnInResizeObserver) {
+        burnInResizeObserver.disconnect();
+        burnInResizeObserver = null;
+      }
+      window.removeEventListener('resize', renderCanvas);
+    }, { once: true });
 
     // Initial update
     updateRisk();
   }
 
-  document.addEventListener('DOMContentLoaded', initBurnInAnalyzer);
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initBurnInAnalyzer, { once: true });
+  } else {
+    initBurnInAnalyzer();
+  }
   document.addEventListener('astro:page-load', initBurnInAnalyzer);
 </script>

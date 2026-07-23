@@ -1,0 +1,197 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import Breadcrumbs from '../../components/ui/Breadcrumbs.astro';
+import FAQSection from '../../components/ui/FAQSection.astro';
+import { useTranslations, localizeLink } from '../../utils/i18n';
+
+
+const { lang } = useTranslations(Astro.url.pathname);
+
+const breadcrumbs = [
+  { label: 'Device Guides', href: localizeLink('/guides', lang) },
+  { label: 'Laptop Screen Testing Guide' }
+];
+
+const faqs = [
+  { question: "What is the 8-step laptop screen testing workflow?", answer: "Our 8-step laptop workflow includes: 1) Solid color dead pixel sweep, 2) OLED 5% dark-gray uniformity, 3) Dark-room IPS backlight bleed audit, 4) WebGL subpixel text fringing inspection, 5) Gamma 2.2 calibration check, 6) PWM dimming flicker test, 7) Touchpad/touchscreen digitizer test, and 8) Keyboard switch chatter audit." },
+  { question: "How many dead pixels qualify a laptop for warranty RMA replacement?", answer: "Under ISO 9241-307 Class II standards (enforced by Apple, Dell, Lenovo, and HP), a laptop panel must typically have 3 or more dead pixels, or 2 adjacent bright subpixels, within the central active area to qualify for an immediate return or screen replacement." },
+  { question: "How do I test my MacBook Pro Liquid Retina XDR or OLED notebook screen?", answer: "Use our full-screen solid black and 5% gray patterns in a dark room. Liquid Retina XDR Mini-LED panels should show zero edge backlight bleed, while OLED MacBooks should display uniform dark grays without vertical banding." },
+  { question: "What is the difference between IPS, OLED, and Mini-LED laptop panels?", answer: "IPS panels offer stable viewing angles but suffer from IPS glow (~1000:1 contrast). OLED panels feature per-pixel self-emissive blacks (∞:1 contrast) but carry burn-in risk. Mini-LED panels provide 1000+ nit peak brightness with local dimming zones." },
+  { question: "How do I test if my laptop screen uses eye-fatiguing PWM flicker?", answer: "Open our PWM Flicker Inspector tool, set brightness to 30%, and observe the screen through a 240fps smartphone camera. Heavy zebra rolling bars indicate low-frequency PWM dimming." },
+  { question: "Why does text look blurry or fringed on some Windows OLED laptops?", answer: "Some Windows laptops use non-standard OLED subpixel geometries (such as Samsung QD-OLED triangular or LG WOLED RWBG layouts) which conflict with Windows ClearType RGB stripe assumptions." },
+  { question: "What should I do immediately after receiving a new laptop?", answer: "Unbox the laptop, connect AC power, open Monitor Test Hub, and run the 8-step screen inspection before the retailer's 14-day or 30-day return window expires." },
+  { question: "How do I check if my laptop panel has backlight bleeding vs IPS glow?", answer: "Tilt your viewing angle. If the glow shifts position as your eyes move, it is normal IPS glow. If bright white light remains fixed in corners regardless of viewing angle, it is hardware backlight bleed." },
+  { question: "Can I generate a cryptographic receipt for my laptop's screen health?", answer: "Yes. Completing our visual diagnostics logs screen resolution, color depth, and pixel integrity into a SHA-256 signed Hardware Passport receipt." },
+  { question: "Does closing the laptop lid while testing damage the screen?", answer: "No. Modern laptop panels use durable glass or matte anti-glare layers. However, ensure no keyboard covers or camera sliders are attached that could crack the display glass." }
+];
+
+
+
+---
+
+<Layout
+  title="Laptop Screen Testing Guide: 8-Step Inspection & Return Standards"
+  description="Comprehensive laptop screen testing guide. 8-step diagnostic workflow, IPS vs OLED vs Mini-LED notebook panel comparison, ISO 9241-307 RMA return standards, and buying advice."
+  faqs={faqs}
+>
+  <main id="main-content" class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-12 font-sans">
+    <Breadcrumbs items={breadcrumbs} />
+
+    <!-- Guide Header -->
+    <header class="space-y-4 text-center max-w-3xl mx-auto">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-status-pass/10 border border-status-pass/30 text-xs font-mono text-status-pass font-bold uppercase tracking-wider">
+        <svg class="w-4 h-4 text-status-pass" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+        <span>LAPTOP HARDWARE DIAGNOSTIC GUIDE</span>
+      </div>
+      <h1 class="text-3xl sm:text-4xl font-extrabold text-text-primary tracking-tight font-mono">
+        Laptop Screen Testing Guide: 8-Step Inspection &amp; Return Standards
+      </h1>
+      <p class="text-sm sm:text-base text-text-secondary leading-relaxed">
+        Learn how to test your laptop screen for dead pixels, OLED banding, IPS backlight bleed, and PWM flicker before your retailer return window closes.
+      </p>
+    </header>
+
+    <!-- Custom Inline SVG Visual Diagram -->
+    <section class="p-6 rounded-2xl bg-bg-surface border border-border-hairline space-y-4 shadow-xl">
+      <h2 class="text-lg font-bold font-mono text-text-primary flex items-center gap-2">
+        <svg class="w-5 h-5 text-status-pass" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+        <span>Laptop Display Inspection Diagram</span>
+      </h2>
+
+      <div class="w-full flex justify-center py-4 bg-bg-canvas rounded-xl border border-border-hairline">
+        <svg class="w-full max-w-2xl h-auto" viewBox="0 0 700 320" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <!-- Laptop Body Outline -->
+          <rect x="150" y="20" width="400" height="230" rx="12" fill="#121215" stroke="#059669" stroke-width="3"/>
+          <rect x="165" y="35" width="370" height="200" rx="6" fill="#08080a" stroke="#27272a" stroke-width="2"/>
+          <!-- Screen Grid & Defects -->
+          <line x1="165" y1="135" x2="535" y2="135" stroke="#18181b" stroke-dasharray="4 4"/>
+          <line x1="350" y1="35" x2="350" y2="235" stroke="#18181b" stroke-dasharray="4 4"/>
+          <!-- Dead Pixel Marker -->
+          <circle cx="260" cy="85" r="5" fill="#ef4444" stroke="#ffffff" stroke-width="1.5"/>
+          <text x="275" y="89" fill="#ef4444" font-family="monospace" font-size="11" font-weight="bold">Dead Pixel (ISO Class II)</text>
+          <!-- IPS Glow Corner -->
+          <path d="M 165 35 L 220 35 L 165 90 Z" fill="url(#ipsGlowGrad)" opacity="0.8"/>
+          <text x="180" y="60" fill="#fbbf24" font-family="monospace" font-size="10" font-weight="bold">IPS Glow</text>
+          <!-- Center Active Area -->
+          <rect x="250" y="75" width="200" height="120" rx="4" fill="none" stroke="#059669" stroke-dasharray="2 2" stroke-width="1.5"/>
+          <text x="270" y="140" fill="#059669" font-family="monospace" font-size="11" font-weight="bold">Critical RMA Zone</text>
+          <!-- Laptop Base -->
+          <path d="M 100 255 L 600 255 L 630 285 L 70 285 Z" fill="#18181b" stroke="#3f3f46" stroke-width="2"/>
+          <rect x="300" y="260" width="100" height="15" rx="3" fill="#27272a"/>
+          <!-- Gradient Definition -->
+          <defs>
+            <radialGradient id="ipsGlowGrad" cx="0%" cy="0%" r="100%">
+              <stop offset="0%" stop-color="#fbbf24" stop-opacity="0.6"/>
+              <stop offset="100%" stop-color="#fbbf24" stop-opacity="0"/>
+            </radialGradient>
+          </defs>
+        </svg>
+      </div>
+    </section>
+
+    <!-- 8-Step Workflow Section -->
+    <section class="space-y-6">
+      <h2 class="text-2xl font-bold font-mono text-text-primary border-b border-border-hairline pb-3">
+        8-Step Laptop Screen Testing Workflow
+      </h2>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 font-sans text-sm">
+        <div class="p-4 rounded-xl bg-bg-surface border border-border-hairline space-y-2">
+          <span class="text-xs font-mono font-bold text-status-pass px-2 py-0.5 rounded bg-status-pass/10 border border-status-pass/30">STEP 1</span>
+          <h3 class="font-bold text-text-primary">Solid Color Dead Pixel Sweep</h3>
+          <p class="text-text-muted text-xs leading-relaxed">Open our <a href={localizeLink("/display-tests/dead-pixel", lang)} class="text-status-pass hover:underline">Dead Pixel Inspector</a>, enter Fullscreen (F key), and cycle through Red, Green, Blue, Black, and White canvases to spot stuck subpixels.</p>
+        </div>
+
+        <div class="p-4 rounded-xl bg-bg-surface border border-border-hairline space-y-2">
+          <span class="text-xs font-mono font-bold text-status-pass px-2 py-0.5 rounded bg-status-pass/10 border border-status-pass/30">STEP 2</span>
+          <h3 class="font-bold text-text-primary">OLED 5% Dark-Gray Uniformity</h3>
+          <p class="text-text-muted text-xs leading-relaxed">For OLED laptops, launch the <a href={localizeLink("/display-tests/uniformity", lang)} class="text-status-pass hover:underline">OLED Uniformity Inspector</a> and check a 5% dark gray pattern in a dim room for vertical banding or vignetting.</p>
+        </div>
+
+        <div class="p-4 rounded-xl bg-bg-surface border border-border-hairline space-y-2">
+          <span class="text-xs font-mono font-bold text-status-pass px-2 py-0.5 rounded bg-status-pass/10 border border-status-pass/30">STEP 3</span>
+          <h3 class="font-bold text-text-primary">IPS Backlight Bleed Audit</h3>
+          <p class="text-text-muted text-xs leading-relaxed">Turn off ambient lights, open a pure black canvas, set laptop brightness to 100%, and inspect panel corners for fixed white light leakage.</p>
+        </div>
+
+        <div class="p-4 rounded-xl bg-bg-surface border border-border-hairline space-y-2">
+          <span class="text-xs font-mono font-bold text-status-pass px-2 py-0.5 rounded bg-status-pass/10 border border-status-pass/30">STEP 4</span>
+          <h3 class="font-bold text-text-primary">Subpixel Text Fringing Check</h3>
+          <p class="text-text-muted text-xs leading-relaxed">Use the <a href={localizeLink("/display-tests/sub-pixel", lang)} class="text-status-pass hover:underline">Sub-Pixel Analyzer</a> to verify text sharp rendering against ClearType (Windows) or FreeType (Linux).</p>
+        </div>
+
+        <div class="p-4 rounded-xl bg-bg-surface border border-border-hairline space-y-2">
+          <span class="text-xs font-mono font-bold text-status-pass px-2 py-0.5 rounded bg-status-pass/10 border border-status-pass/30">STEP 5</span>
+          <h3 class="font-bold text-text-primary">Gamma 2.2 Calibration</h3>
+          <p class="text-text-muted text-xs leading-relaxed">Navigate to <a href={localizeLink("/monitor-color-calibration", lang)} class="text-status-pass hover:underline">Monitor Color Calibration</a> to test 64-step grayscale neutrality and export a binary ICC v4.3 profile.</p>
+        </div>
+
+        <div class="p-4 rounded-xl bg-bg-surface border border-border-hairline space-y-2">
+          <span class="text-xs font-mono font-bold text-status-pass px-2 py-0.5 rounded bg-status-pass/10 border border-status-pass/30">STEP 6</span>
+          <h3 class="font-bold text-text-primary">PWM Dimming Flicker Inspection</h3>
+          <p class="text-text-muted text-xs leading-relaxed">Run the <a href={localizeLink("/display-tests/flicker-test", lang)} class="text-status-pass hover:underline">PWM Flicker Inspector</a> at 30% screen brightness to verify IEEE 1789 eye safety standards.</p>
+        </div>
+
+        <div class="p-4 rounded-xl bg-bg-surface border border-border-hairline space-y-2">
+          <span class="text-xs font-mono font-bold text-status-pass px-2 py-0.5 rounded bg-status-pass/10 border border-status-pass/30">STEP 7</span>
+          <h3 class="font-bold text-text-primary">Touchscreen &amp; Touchpad Audit</h3>
+          <p class="text-text-muted text-xs leading-relaxed">If equipped with a touch screen, open the <a href={localizeLink("/touch-tests/dead-zone", lang)} class="text-status-pass hover:underline">Touch Matrix Dead-Zone Inspector</a> to test multi-finger touch contacts.</p>
+        </div>
+
+        <div class="p-4 rounded-xl bg-bg-surface border border-border-hairline space-y-2">
+          <span class="text-xs font-mono font-bold text-status-pass px-2 py-0.5 rounded bg-status-pass/10 border border-status-pass/30">STEP 8</span>
+          <h3 class="font-bold text-text-primary">Keyboard Switch Chatter Audit</h3>
+          <p class="text-text-muted text-xs leading-relaxed">Launch our <a href={localizeLink("/keyboard-tester", lang)} class="text-status-pass hover:underline">Keyboard Tester</a> to detect switch chatter double-typing and modifier key registering.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Return Standards Section -->
+    <section class="p-6 rounded-2xl bg-bg-surface border border-border-hairline space-y-4">
+      <h2 class="text-xl font-bold font-mono text-text-primary flex items-center gap-2">
+        <svg class="w-5 h-5 text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+        <span>ISO 9241-307 Laptop Screen Return &amp; RMA Standards</span>
+      </h2>
+      <p class="text-text-secondary text-sm leading-relaxed">
+        Major notebook OEMs (Apple, Dell Alienware, Lenovo, HP, ASUS) adhere to **ISO 9241-307 Class II** display fault limits. Here are the exact thresholds that entitle you to a 100% free manufacturer RMA replacement:
+      </p>
+
+      <div class="overflow-x-auto">
+        <table class="w-full text-left font-mono text-xs border border-border-hairline rounded-lg">
+          <thead class="bg-bg-canvas text-text-muted uppercase">
+            <tr>
+              <th class="p-3 border-b border-border-hairline">Defect Category</th>
+              <th class="p-3 border-b border-border-hairline">ISO Class II Threshold</th>
+              <th class="p-3 border-b border-border-hairline">Action Required</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-border-hairline text-text-secondary">
+            <tr>
+              <td class="p-3 font-bold text-text-primary">Always-Bright Subpixel</td>
+              <td class="p-3 text-rose-400">2 or more in center active grid</td>
+              <td class="p-3">Immediate OEM Warranty RMA</td>
+            </tr>
+            <tr>
+              <td class="p-3 font-bold text-text-primary">Always-Dark Subpixel</td>
+              <td class="p-3 text-amber-400">5 or more across panel</td>
+              <td class="p-3">Store Return or Screen Swap</td>
+            </tr>
+            <tr>
+              <td class="p-3 font-bold text-text-primary">OLED Vertical Banding</td>
+              <td class="p-3 text-amber-400">Visible at &gt;10% gray luminance</td>
+              <td class="p-3">Return to Retailer</td>
+            </tr>
+            <tr>
+              <td class="p-3 font-bold text-text-primary">IPS Backlight Bleed</td>
+              <td class="p-3 text-text-muted">Fixed corner glow on 100% black</td>
+              <td class="p-3">Retailer Exchange</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <FAQSection faqs={faqs} title="Laptop Screen Testing FAQs" />
+  </main>
+</Layout>

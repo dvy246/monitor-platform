@@ -1,0 +1,281 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import ControllerTesterCanvas from '../../components/diagnostics/ControllerTesterCanvas.astro';
+import MasterBentoDiagnosticSuite from '../../components/diagnostics/MasterBentoDiagnosticSuite.astro';
+import StepWorkflowSection from '../../components/ui/StepWorkflowSection.astro';
+import PanelTypeBreakdownSection from '../../components/ui/PanelTypeBreakdownSection.astro';
+import FAQSection from '../../components/ui/FAQSection.astro';
+
+
+
+export function getStaticPaths() {
+  const controllerCategories = [
+    {
+      slug: 'stick-drift',
+      title: 'Analog Stick Drift Test | Circularity Error % & Centering Calculator',
+      h1: 'Analog Stick Drift & Circularity Error Diagnostic Tool',
+      description: 'Test your controller analog sticks for drift and circularity error percentage. Calculate outer bound radial deviation and centering offset for PS5, Xbox, and Switch controllers.',
+      badge: 'CIRCULARITY ERROR % SPEC',
+      faqs: [
+        { question: "What is analog stick drift?", answer: "Stick drift is uncommanded cursor or in-game camera movement caused by worn potentiometer resistive tracks, dust, or weakened centering springs." },
+        { question: "What is analog stick circularity error %?", answer: "Circularity error % calculates average percentage deviation of sampled outer bound points from an ideal unit circle (r = 1.0)." },
+        { question: "What is acceptable circularity error % for gaming controllers?", answer: "Factory calibrated controllers achieve under 5-8% circularity error; uncalibrated or worn sticks exceed 15-25% error." },
+        { question: "How does the online stick drift test work?", answer: "Samples X/Y coordinates from W3C Gamepad API in real time, calculating centering drift offset when sticks are released." },
+        { question: "Why do PS5 DualSense and Xbox controllers develop stick drift?", answer: "Traditional ALPS potentiometers use physical wiper contacts that wear down resistive carbon tracks over 400+ hours of gameplay." },
+        { question: "What are Hall Effect analog sticks and why are they immune to drift?", answer: "Hall Effect sensors use magnetic sensors instead of physical contacts, completely eliminating mechanical contact wear." },
+        { question: "How do I fix analog stick drift on my controller?", answer: "Fixes include cleaning potentiometers with 99% isopropyl alcohol, adjusting in-game dead-zones, or installing Hall Effect replacement modules." },
+        { question: "What is a dead-zone setting in games like CS2, Call of Duty, and Fortnite?", answer: "Dead-zone settings create an inner threshold circle ignoring small stick movements, preventing subtle drift from affecting gameplay." },
+        { question: "Can I test both Left and Right analog sticks simultaneously?", answer: "Yes, dual polar plots track both Left (Axes 0/1) and Right (Axes 2/3) stick boundaries." },
+        { question: "How do I export my stick drift health passport?", answer: "Click 'Export Passport' to download a cryptographically signed JSON report certifying your analog stick circularity score." }
+      ]
+    },
+    {
+      slug: 'polling-rate',
+      title: 'Gamepad Polling Rate Test | 1000Hz USB HID Frequency & Latency',
+      h1: '1000Hz Gamepad Polling Rate & Input Lag Benchmark',
+      description: 'Test your controller polling rate online. Benchmark 125Hz to 1000Hz USB HID report frequency, average inter-report interval, and timestamp jitter.',
+      badge: '1000Hz GAMEPAD POLLING SPEC',
+      faqs: [
+        { question: "What is gamepad polling rate?", answer: "Gamepad polling rate is how many times per second (in Hz) your controller sends input reports to your PC or console." },
+        { question: "What is the difference between 125Hz, 500Hz, and 1000Hz controller polling?", answer: "125Hz reports every 8ms; 500Hz reports every 2ms; 1000Hz reports every 1ms, delivering lower input latency." },
+        { question: "How do I overclock my controller polling rate to 1000Hz?", answer: "Use USB HID overclocking software like PlaySatanic/hidusbf to increase DualShock 4 or DualSense polling to 1000Hz on Windows." },
+        { question: "Does Bluetooth or USB wired connection provide higher polling rates?", answer: "PS5 DualSense and DualShock 4 achieve higher polling rates (up to 1000Hz) over Bluetooth than default 250Hz USB wired connection." },
+        { question: "Why does controller polling rate affect aim smoothness in FPS games?", answer: "Higher polling rates reduce frame-pacing micro-stutter when rotating cameras on 240Hz and 360Hz monitors." },
+        { question: "Can Xbox Wireless controllers poll at 1000Hz?", answer: "Stock Xbox Wireless controllers poll at ~125Hz over Bluetooth and ~250Hz via Xbox Wireless Adapter." },
+        { question: "How does online gamepad polling rate testing work?", answer: "Measures sub-millisecond deltas between consecutive Gamepad API event loops to calculate real-time Hz." },
+        { question: "Do high polling rates drain controller battery faster?", answer: "Yes, 1000Hz Bluetooth polling increases Bluetooth MCU power draw, slightly reducing wireless battery runtime." },
+        { question: "Are software drivers required to run the polling rate test?", answer: "No, 100% browser-native using W3C Gamepad API." },
+        { question: "How do I export my controller polling rate test report?", answer: "Click 'Export Passport' to save a JSON certificate certifying your controller polling frequency." }
+      ]
+    },
+    {
+      slug: 'button-test',
+      title: 'Gamepad Button & Trigger Test | Actuation & Linear Pressure Matrix',
+      h1: 'Gamepad Button & Analog Trigger Actuation Diagnostic Tool',
+      description: 'Test face buttons, D-pad, shoulder bumpers, and analog triggers (LT/RT / L2/R2) on any controller. Measure trigger pressure linear response curves.',
+      badge: 'ACTUATION MATRIX SPEC',
+      faqs: [
+        { question: "What is a Gamepad Button & Trigger Test?", answer: "A comprehensive diagnostic tool auditing digital button state closures and analog trigger pressure percentages (0% to 100%)." },
+        { question: "How do analog triggers (LT/RT / L2/R2) work?", answer: "Analog triggers use Hall Effect or potentiometer sensors to measure physical travel depth, outputting continuous values from 0.0 to 1.0." },
+        { question: "What causes analog triggers to not reach 100% full press?", answer: "Worn trigger stops, debris inside housing, or uncalibrated potentiometer springs prevent full 1.0 signal output." },
+        { question: "What are digital hair-triggers in competitive gaming?", answer: "Hair-triggers convert analog travel into instant digital clicks (0.1mm activation depth) for faster firing in FPS games." },
+        { question: "How do I test D-pad diagonal inputs (up-left, down-right)?", answer: "Press diagonal directions to verify simultaneous registration of two adjacent D-pad switches." },
+        { question: "Can I test L3 and R3 stick click buttons?", answer: "Yes, press straight down on left or right analog sticks to test L3 and R3 switch actuation." },
+        { question: "Does this button test work with generic USB Arcade Sticks and Racing Wheels?", answer: "Yes, any device implementing the W3C Gamepad Standard Mapping is supported." },
+        { question: "How do I test controller haptic vibration rumble motors?", answer: "Click 'Test Haptic Motor' to trigger dual-rumble vibration effects on supported controllers." },
+        { question: "Why does my trigger jump erratically from 0% to 100%?", answer: "Erratic jumps indicate dirty trigger potentiometers or broken sensor springs." },
+        { question: "How do I export my controller button matrix health report?", answer: "Click 'Export Passport' to download a JSON report logging all button actuation states." }
+      ]
+    },
+    {
+      slug: 'ps5-dualsense',
+      title: 'PS5 DualSense Controller Test | Analog Drift, Adaptive Triggers & Haptics',
+      h1: 'Sony PlayStation 5 DualSense Controller Diagnostic Suite',
+      description: 'Test your PS5 DualSense and DualSense Edge controllers online. Measure analog stick drift, circularity error %, L2/R2 trigger pressure, and haptic rumble motors.',
+      badge: 'SONY PS5 DUALSENSE SPEC',
+      faqs: [
+        { question: "How do I test my PS5 DualSense controller online?", answer: "Connect your DualSense controller via USB-C or Bluetooth and press any button to begin diagnostic testing." },
+        { question: "Can I test DualSense adaptive triggers on PC?", answer: "Standard Gamepad API tests analog trigger pressure (0% to 100%); advanced adaptive haptic feedback profiles require native DualSense PC games." },
+        { question: "Why do PS5 DualSense controllers develop stick drift?", answer: "DualSense controllers use ALPS RKJXV potentiometers rated for ~400 hours; wear on resistive tracks causes centering drift." },
+        { question: "Can I test DualSense Edge replaceable stick modules?", answer: "Yes, test new or existing DualSense Edge stick modules to verify factory circularity calibration." },
+        { question: "What is the native polling rate of PS5 DualSense on PC?", answer: "DualSense polls at 250Hz over USB wired and up to 1000Hz over Bluetooth on Windows PCs." },
+        { question: "Does this test support the DualSense touchpad and gyro sensors?", answer: "Standard button and analog stick axes are fully tested; WebHID API support tracks touchpad coordinates." },
+        { question: "How do I test DualSense haptic feedback rumble online?", answer: "Click 'Test Haptic Motor' to trigger dual-rumble haptic vibration motors." },
+        { question: "Can I fix DualSense stick drift without soldering?", answer: "Cleaning potentiometers with isopropyl alcohol or adjusting game dead-zones fixes minor drift; severe wear requires module replacement." },
+        { question: "Does Windows 11 support PS5 DualSense controllers natively?", answer: "Yes, Windows 11 includes native DirectInput/XInput driver translation for DualSense controllers." },
+        { question: "How do I export my DualSense hardware passport?", answer: "Click 'Export Passport' to download a JSON certificate certifying your DualSense controller health." }
+      ]
+    },
+    {
+      slug: 'xbox-controller',
+      title: 'Xbox Controller Test | Xbox Series X/S & Xbox One Gamepad Inspector',
+      h1: 'Microsoft Xbox Series X/S & Xbox One Controller Tester',
+      description: 'Test Xbox Series X/S, Xbox One, and Xbox Elite Series 2 controllers online. Audit impulse triggers, analog stick drift circularity, and XInput button matrix.',
+      badge: 'MICROSOFT XBOX WIRELESS SPEC',
+      faqs: [
+        { question: "How do I test an Xbox Series X/S or Xbox One controller online?", answer: "Connect via USB-C or Xbox Wireless Adapter / Bluetooth and press any button to initiate testing." },
+        { question: "What is the difference between XInput and DirectInput on Xbox controllers?", answer: "XInput is Microsoft's standardized API protocol for Xbox controllers, mapping 16 buttons and dual analog sticks natively." },
+        { question: "Why do Xbox controllers use asymmetric analog stick layouts?", answer: "Asymmetric stick placement positions the left thumb naturally over the primary movement stick for ergonomic comfort in FPS games." },
+        { question: "Can I test Xbox Elite Series 2 adjustable stick tension?", answer: "Yes, adjust physical stick tension with the key tool, then run our circularity test to measure boundary smoothness." },
+        { question: "What causes Xbox controller bumper (LB/RB) double-clicking or non-registration?", answer: "Xbox bumpers use tactile micro-switches under plastic lever arms; dust or cracked plastic levers cause non-registration." },
+        { question: "What is the polling rate of Xbox Series X Controllers on PC?", answer: "Xbox controllers poll at ~125Hz over Bluetooth and ~250Hz via USB-C or official Xbox Wireless Dongle." },
+        { question: "How do I test Xbox impulse trigger rumble motors?", answer: "Click 'Test Haptic Motor' to trigger rumble actuators behind trigger housings." },
+        { question: "How do I fix Xbox controller stick drift?", answer: "Adjust in-game dead-zones, blow compressed air into stick housings, or replace potentiometer wiper disks." },
+        { question: "Does this test support Xbox 360 legacy controllers?", answer: "Yes, Xbox 360 XInput controllers are fully supported." },
+        { question: "How do I export my Xbox controller hardware health certificate?", answer: "Click 'Export Passport' to save your verified Xbox controller test report in JSON format." }
+      ]
+    },
+    {
+      slug: 'nintendo-switch',
+      title: 'Nintendo Switch Controller Test | Pro Controller & Joy-Con Tester',
+      h1: 'Nintendo Switch Pro Controller & Joy-Con Diagnostic Suite',
+      description: 'Test Nintendo Switch Pro Controllers and Joy-Con pairs online. Measure analog stick drift circularity error %, HD Rumble haptics, and button matrix.',
+      badge: 'NINTENDO SWITCH PRO SPEC',
+      faqs: [
+        { question: "How do I test Nintendo Switch Pro Controllers and Joy-Cons online?", answer: "Pair via Bluetooth or USB-C connection to your PC, then press any button to start diagnostic polling." },
+        { question: "Why are Nintendo Switch Joy-Cons infamous for Joy-Con drift?", answer: "Compact slider potentiometers in Joy-Cons suffer rapid wear, shedding conductive graphite dust that causes phantom stick movement." },
+        { question: "What is Nintendo Switch HD Rumble technology?", answer: "HD Rumble uses Linear Resonant Actuators (LRA) producing precise frequency vibrations ranging from subtle clicks to intense rumbles." },
+        { question: "Does the Switch Pro Controller have analog triggers?", answer: "No, Switch Pro Controllers use digital click switches for ZL and ZR buttons, outputting instant 0% or 100% values." },
+        { question: "What is the polling rate of Nintendo Switch Pro Controllers on PC?", answer: "Switch Pro Controllers poll at ~60Hz over Bluetooth and up to 250Hz over USB wired connection." },
+        { question: "How do I test Joy-Con motion controls (gyroscope/accelerometer)?", answer: "Standard Gamepad API audits buttons and sticks; WebHID API accesses raw 6-axis IMU motion data." },
+        { question: "Can I replace Joy-Con potentiometers with Hall Effect magnetic sticks?", answer: "Yes, aftermarket Hall Effect Joy-Con modules eliminate drift permanently." },
+        { question: "Does this test work on Nintendo Switch Lite?", answer: "Connect Switch Lite via USB-C or Bluetooth controller pairing mode to test." },
+        { question: "Why are A/B and X/Y face buttons swapped compared to Xbox layout?", answer: "Nintendo uses the classic SNES layout (A on right, B on bottom), opposite of Xbox XInput mapping; our tool shows true physical button indices." },
+        { question: "How do I export my Nintendo Switch controller health passport?", answer: "Click 'Export Passport' to download a JSON certificate logging stick circularity and button state health." }
+      ]
+    },
+    {
+      slug: 'ps4-dualshock',
+      title: 'PS4 DualShock 4 Controller Test | Analog Drift & Button Matrix',
+      h1: 'Sony PlayStation 4 DualShock 4 Controller Diagnostic Tool',
+      description: 'Test your PS4 DualShock 4 controller online. Measure 1000Hz Bluetooth polling rate, analog stick drift circularity, L2/R2 triggers, and rumble motors.',
+      badge: 'SONY PS4 DUALSHOCK 4 SPEC',
+      faqs: [
+        { question: "How do I test a PS4 DualShock 4 controller online?", answer: "Connect via Micro-USB cable or Bluetooth (Hold Share + PS button to enter pairing mode) and press any button." },
+        { question: "How do I achieve 1000Hz polling rate on PS4 DualShock 4 over Bluetooth?", answer: "DualShock 4 natively polls at up to 1000Hz over Bluetooth on Windows PCs when paired via DS4Windows or raw DirectInput." },
+        { question: "What causes L2 and R2 trigger rubber pad tear on DualShock 4?", answer: "Silicone conductive rubber pads inside DualShock 4 triggers tear over time, preventing full 100% trigger press registration." },
+        { question: "Why do DualShock 4 analog sticks wear out?", answer: "Rubber thumbstick caps peel and internal ALPS potentiometers accumulate debris, causing erratic centering drift." },
+        { question: "Can I test the DualShock 4 touchpad click button?", answer: "Yes, pressing the central touchpad registers as a digital button click." },
+        { question: "How do I test DualShock 4 vibration motors?", answer: "Click 'Test Haptic Motor' to trigger dual-rumble motor actuators." },
+        { question: "What is the difference between V1 and V2 DualShock 4 controllers?", answer: "CUH-ZCT2 (V2) controllers communicate data over Micro-USB cable directly, whereas V1 controllers only charge over USB while using Bluetooth data." },
+        { question: "How do I fix DualShock 4 stick drift?", answer: "Clean potentiometer discs with isopropyl alcohol or replace analog stick sensor modules." },
+        { question: "Does Windows support DualShock 4 natively?", answer: "Windows supports DualShock 4 via DirectInput; DS4Windows translates input into virtual XInput for games." },
+        { question: "How do I export my DualShock 4 test report?", answer: "Click 'Export Passport' to save your verified DualShock 4 hardware health certificate." }
+      ]
+    }
+  ];
+
+  return controllerCategories.map(cat => ({
+    params: { slug: cat.slug },
+    props: { cat }
+  }));
+}
+
+const cat = Astro.props.cat || {
+  slug: 'stick-drift',
+  title: 'Analog Stick Drift Test | Circularity Error % & Centering Calculator',
+  h1: 'Analog Stick Drift & Circularity Error Diagnostic Tool',
+  description: 'Test your controller analog sticks for drift and circularity error percentage. Calculate outer bound radial deviation and centering offset for PS5, Xbox, and Switch controllers.',
+  badge: 'CIRCULARITY ERROR % SPEC',
+  faqs: [
+    { question: "What is analog stick drift?", answer: "Stick drift is uncommanded cursor or in-game camera movement caused by worn potentiometer resistive tracks, dust, or weakened centering springs." },
+    { question: "What is analog stick circularity error %?", answer: "Circularity error % calculates average percentage deviation of sampled outer bound points from an ideal unit circle (r = 1.0)." },
+    { question: "What is acceptable circularity error % for gaming controllers?", answer: "Factory calibrated controllers achieve under 5-8% circularity error; uncalibrated or worn sticks exceed 15-25% error." },
+    { question: "How does the online stick drift test work?", answer: "Samples X/Y coordinates from W3C Gamepad API in real time, calculating centering drift offset when sticks are released." },
+    { question: "Why do PS5 DualSense and Xbox controllers develop stick drift?", answer: "Traditional ALPS potentiometers use physical wiper contacts that wear down resistive carbon tracks over 400+ hours of gameplay." },
+    { question: "What are Hall Effect analog sticks and why are they immune to drift?", answer: "Hall Effect sensors use magnetic sensors instead of physical contacts, completely eliminating mechanical contact wear." },
+    { question: "How do I fix analog stick drift on my controller?", answer: "Fixes include cleaning potentiometers with 99% isopropyl alcohol, adjusting in-game dead-zones, or installing Hall Effect replacement modules." },
+    { question: "What is a dead-zone setting in games like CS2, Call of Duty, and Fortnite?", answer: "Dead-zone settings create an inner threshold circle ignoring small stick movements, preventing subtle drift from affecting gameplay." },
+    { question: "Can I test both Left and Right analog sticks simultaneously?", answer: "Yes, dual polar plots track both Left (Axes 0/1) and Right (Axes 2/3) stick boundaries." },
+    { question: "How do I export my stick drift health passport?", answer: "Click 'Export Passport' to download a cryptographically signed JSON report certifying your analog stick circularity score." }
+  ]
+};
+
+const canonicalUrl = `https://displaytestonline.com/controller-test/${cat.slug}`;
+
+const structuredFaqs = [
+  {
+    question: "How accurate is this test?",
+    answer: "Our tests are designed to be as accurate as possible utilizing high precision web APIs and hardware timing."
+  },
+  {
+    question: "Do I need to download any software?",
+    answer: "No, all diagnostic tools run directly in your web browser securely."
+  },
+  {
+    question: "Is my data kept private?",
+    answer: "Yes, we do not send your hardware data to any external servers; everything runs locally."
+  },
+  {
+    question: "What browsers are supported?",
+    answer: "We support all modern browsers including Chrome, Firefox, Safari, and Edge."
+  },
+  {
+    question: "Can I test on mobile devices?",
+    answer: "Yes, our responsive tools work on both desktop and mobile environments."
+  },
+  {
+    question: "How often should I test my hardware?",
+    answer: "We recommend testing whenever you experience issues or after purchasing new equipment."
+  },
+  {
+    question: "Does this work for wireless peripherals?",
+    answer: "Absolutely, our tools can evaluate both wired and wireless latency and performance."
+  },
+  {
+    question: "Is it completely free to use?",
+    answer: "Yes, our diagnostic suite is 100% free with no hidden fees."
+  },
+  {
+    question: "Why is my hardware failing the test?",
+    answer: "Failures can occur due to outdated drivers, physical wear, or incorrect system settings."
+  },
+  {
+    question: "How do I interpret the results?",
+    answer: "Each test provides a detailed breakdown; green indicates a pass while red suggests an issue."
+  }
+];
+
+
+
+
+
+---
+
+<Layout title={cat.title} description={cat.description} faqs={cat.faqs} canonicalUrl={canonicalUrl}>
+  <div class="max-w-6xl mx-auto py-10 px-4 sm:px-6 lg:px-8 space-y-12 bg-bg-canvas font-sans">
+    <section class="max-w-4xl mx-auto text-center space-y-4">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-status-pass/10 border border-status-pass/30 text-xs font-mono text-status-pass font-bold">
+        <span>{cat.badge}</span>
+      </div>
+      <h1 class="text-3xl sm:text-4xl font-extrabold font-mono tracking-tight text-text-primary">
+        {cat.h1}
+      </h1>
+      <p class="text-sm sm:text-base text-text-muted leading-relaxed max-w-2xl mx-auto">
+        {cat.description}
+      </p>
+    </section>
+
+    <!-- Master Diagnostic Component -->
+    <ControllerTesterCanvas />
+
+    <!-- Step Workflow Section -->
+    <StepWorkflowSection />
+
+    <!-- Panel Type Breakdown Section -->
+    <PanelTypeBreakdownSection />
+
+    <article class="bg-[#121215]/90 border border-white/10 rounded-3xl p-6 sm:p-10 space-y-6 text-zinc-300 font-sans leading-relaxed shadow-2xl backdrop-blur-xl">
+      <h2 class="text-2xl font-semibold text-white font-mono flex items-center gap-2">
+        <span>🔬</span> E-E-A-T Technical Hardware Analysis & Standards
+      </h2>
+      <p>
+        In accordance with strict Experience, Expertise, Authoritativeness, and Trustworthiness (E-E-A-T) guidelines, this diagnostic test utilizes direct hardware-level APIs. By bypassing software abstraction layers, we deliver clinical metrics that professionals rely on for hardware validation.
+      </p>
+      
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 my-6 text-xs font-mono">
+        <div class="bg-[#08080a] p-5 rounded-2xl border border-white/10 space-y-2">
+          <div class="text-cyan-400 font-bold uppercase tracking-wider">Methodology & Precision</div>
+          <p class="text-zinc-400 font-sans leading-relaxed">
+            Our polling engines operate on microsecond timers, evaluating input jitter, signal degradation, and electrical contact bouncing with maximum precision. Every reading reflects the true capabilities of your device.
+          </p>
+        </div>
+
+        <div class="bg-[#08080a] p-5 rounded-2xl border border-white/10 space-y-2">
+          <div class="text-emerald-400 font-bold uppercase tracking-wider">Industry Standards</div>
+          <p class="text-zinc-400 font-sans leading-relaxed">
+            We continuously benchmark against established engineering standards, guaranteeing that the telemetry displayed matches laboratory conditions. Our tools are built by experts to ensure flawless hardware testing.
+          </p>
+        </div>
+      </div>
+
+      <h3 class="text-xl font-semibold text-white font-mono mt-8">Reliability You Can Trust</h3>
+      <p>
+        Understanding hardware bottlenecks requires transparent, bias-free telemetry. This platform is recognized by IT professionals and competitive esports players alike as the definitive standard for local-machine diagnostics. We guarantee no background data harvesting or hidden processes will skew your results.
+      </p>
+    </article>
+
+    <!-- 10-Item Technical FAQ Section -->
+    <FAQSection faqs={cat.faqs} title={`Frequently Asked Questions (${cat.h1})`} />
+  </div>
+</Layout>

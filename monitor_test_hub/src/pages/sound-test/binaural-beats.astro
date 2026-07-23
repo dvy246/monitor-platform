@@ -1,0 +1,132 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import AudioTesterCanvas from '../../components/diagnostics/AudioTesterCanvas.astro';
+import FAQSection from '../../components/ui/FAQSection.astro';
+import Breadcrumbs from '../../components/ui/Breadcrumbs.astro';
+import MasterBentoDiagnosticSuite from '../../components/diagnostics/MasterBentoDiagnosticSuite.astro';
+import StepWorkflowSection from '../../components/ui/StepWorkflowSection.astro';
+import PanelTypeBreakdownSection from '../../components/ui/PanelTypeBreakdownSection.astro';
+
+
+const title = "Binaural Beats Generator & Brainwave Analyzer";
+const description = "Generate pure binaural beats (Alpha, Beta, Theta, Delta, Gamma) directly in your browser using dual stereo tone synthesis and Web Audio API.";
+
+const faqs = [
+  {
+    question: "What are binaural beats and how do they work?",
+    answer: "Binaural beats occur when two pure sine waves of slightly different frequencies (e.g. 200Hz and 210Hz) are played independently into each ear via headphones. The brain perceives a third rhythmic pulsing beat equal to the frequency difference (10Hz)."
+  },
+  {
+    question: "Why are stereo headphones mandatory for binaural beat listening?",
+    answer: "Binaural beats rely on strict channel isolation (left ear receiving frequency A, right ear receiving frequency B). Monophonic sound or room speakers mix the soundwaves in open air, destroying the auditory illusion."
+  },
+  {
+    question: "What are the 5 main brainwave frequency bands used in binaural beats?",
+    answer: "Delta (0.5Hz–4Hz, deep sleep), Theta (4Hz–8Hz, meditation/REM), Alpha (8Hz–14Hz, relaxed focus), Beta (14Hz–30Hz, active alertness), and Gamma (30Hz–50Hz, peak concentration)."
+  },
+  {
+    question: "What is the optimal carrier frequency for generating binaural beats?",
+    answer: "Carrier frequencies between 200Hz and 500Hz yield the strongest perceptual brainstem response in human auditory processing centers."
+  },
+  {
+    question: "What is the difference between binaural beats and monaural beats?",
+    answer: "Binaural beats are created inside the brain's superior olivary complex via stereo headphones. Monaural beats are created electronically before audio reaches the ears and can be heard over open speakers."
+  },
+  {
+    question: "Can binaural beats help increase focus during studying or working?",
+    answer: "Alpha (10Hz) and Beta (18Hz) binaural beats encourage entrainment of neural oscillations, promoting sustained attention and cognitive performance."
+  },
+  {
+    question: "Why should I use a Web Audio binaural beats generator over MP3 audio files?",
+    answer: "Web Audio API synthesizes mathematically pure, uncompressed 64-bit floating-point sine waves in real time, eliminating MP3 compression phase distortion and audio looping seams."
+  },
+  {
+    question: "Are binaural beats safe to listen to every day?",
+    answer: "Yes, binaural beats are non-invasive acoustic illusions completely safe at comfortable volume levels. Avoid listening at high volumes to protect hearing health."
+  },
+  {
+    question: "How long should a binaural beat session last?",
+    answer: "Most auditory entrainment studies recommend listening for 15 to 30 minutes to allow your brainwaves to synchronize with the beat frequency."
+  },
+  {
+    question: "Can binaural beats be combined with ambient white noise or rain sounds?",
+    answer: "Yes. Adding pink or brown noise masks ambient room distractions while maintaining pure binaural frequency entrainment."
+  }
+];
+
+const breadcrumbs = [
+  { label: 'Home', href: '/' },
+  { label: 'Sound Test', href: '/sound-test' },
+  { label: title, href: '#' }
+];
+---
+
+<Layout title={title} description={description} faqs={faqs}>
+  <div  font-sans">
+    <Breadcrumbs items={breadcrumbs} />
+
+    <!-- Hero Header Deck -->
+    <header class="relative w-full rounded-3xl border border-white/10 bg-[#121215]/90 backdrop-blur-xl p-6 sm:p-8 md:p-10 shadow-2xl space-y-4 overflow-hidden group select-none">
+      <div class="absolute -top-24 -left-24 w-72 h-72 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none group-hover:bg-emerald-500/15 transition-all duration-500"></div>
+      <div class="absolute -bottom-24 -right-24 w-72 h-72 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none group-hover:bg-cyan-500/15 transition-all duration-500"></div>
+
+      <div class="relative z-10 space-y-3 max-w-3xl min-w-0 w-full">
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-emerald-400 text-xs font-mono font-bold tracking-wide flex-wrap shadow-inner">
+          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shrink-0"></span>
+          <span>STEREO FREQUENCY ENTRAINMENT &amp; AUDITORY NEUROSCIENCE</span>
+        </div>
+        <h1 class="text-3xl sm:text-5xl font-extrabold text-white tracking-tight font-sans break-words min-w-0">
+          {title}
+        </h1>
+        <p class="text-sm sm:text-base text-zinc-300 font-sans leading-relaxed min-w-0">
+          Generate pure binaural beats across Alpha, Beta, Theta, Delta, and Gamma frequencies using uncompressed dual-channel stereo Web Audio API synthesis.
+        </p>
+      </div>
+    </header>
+
+    <!-- Main Diagnostic Instrument -->
+    <div class="rounded-3xl border border-white/10 bg-[#121215]/90 backdrop-blur-xl p-4 sm:p-6 shadow-2xl">
+      <AudioTesterCanvas initialFreq={440} />
+    </div>
+
+    <!-- 3-Step Workflow Protocol -->
+    <StepWorkflowSection />
+
+    <!-- Panel Technology Breakdown -->
+    <PanelTypeBreakdownSection />
+
+    <!-- Article Section -->
+    <article class="bg-[#121215] border border-white/10 rounded-3xl p-6 sm:p-8 space-y-6 shadow-2xl font-sans text-sm text-zinc-300 leading-relaxed">
+      <div class="border-b border-white/10 pb-4 font-mono">
+        <span class="text-xs font-bold text-emerald-400 uppercase tracking-widest block mb-1">AUDITORY NEUROSCIENCE</span>
+        <h2 class="text-2xl font-bold text-white">Binaural Synthesis, Dual Carrier Tones &amp; Brainwave Entrainment</h2>
+      </div>
+
+      <p>
+        Binaural beat synthesis relies on playing two distinct, mathematically precise frequencies into the left and right ears through isolated stereo channels. The brain's auditory cortex (specifically the superior olivary complex) processes the frequency differential, generating a perceptual pulsing beat.
+      </p>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 font-mono text-xs my-4">
+        <div class="bg-[#08080a] p-5 rounded-2xl border border-white/10 space-y-2">
+          <span class="text-cyan-400 text-[10px] uppercase font-bold block">Alpha (8Hz – 14Hz)</span>
+          <strong class="text-white block text-sm">Relaxed Focus</strong>
+          <p class="font-sans text-[11px] text-zinc-400 leading-relaxed">Promotes calm mental alertness and steady concentration during studying.</p>
+        </div>
+        <div class="bg-[#08080a] p-5 rounded-2xl border border-white/10 space-y-2">
+          <span class="text-emerald-400 text-[10px] uppercase font-bold block">Beta (14Hz – 30Hz)</span>
+          <strong class="text-white block text-sm">Active Cognition</strong>
+          <p class="font-sans text-[11px] text-zinc-400 leading-relaxed">Stimulates analytical thinking, problem-solving, and active alertness.</p>
+        </div>
+        <div class="bg-[#08080a] p-5 rounded-2xl border border-white/10 space-y-2">
+          <span class="text-amber-400 text-[10px] uppercase font-bold block">Theta (4Hz – 8Hz)</span>
+          <strong class="text-white block text-sm">Deep Meditation</strong>
+          <p class="font-sans text-[11px] text-zinc-400 leading-relaxed">Associated with REM state, creative visualization, and deep relaxation.</p>
+        </div>
+      </div>
+    </article>
+
+    <!-- 10 Structured FAQs Component -->
+    <FAQSection faqs={faqs} title="Binaural Beats FAQs" />
+
+  </div>
+</Layout>

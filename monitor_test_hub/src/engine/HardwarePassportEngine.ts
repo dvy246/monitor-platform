@@ -24,6 +24,19 @@ export interface HardwarePassportData {
   isoClass?: string;
   iccProfileVerified?: boolean;
   signatureHash?: string;
+  /** Certified Display Health Report Branding & Historical Tracking */
+  reportTitle?: string; // "Certified Display Health Report"
+  previousHealthScore?: number; // Historical retention delta
+  degradationDeltaMs?: number; // Frame pacing drift over time
+}
+
+export interface HealthReportHistoryEntry {
+  timestamp: string;
+  healthScore: number;
+  vsyncFps: number;
+  frameJitterMs: number;
+  isoClass: string;
+  signatureHash: string;
 }
 
 export interface HealthScoreBreakdown {
@@ -163,7 +176,7 @@ export class HardwarePassportEngine {
   <text x="75" y="74" fill="${textPrimary}" font-family="monospace" font-size="11" font-weight="700">${res} @ ${fps}Hz</text>
   <rect x="250" y="52" width="114" height="24" rx="6" fill="${accent}" fill-opacity="0.15" stroke="${accent}" stroke-opacity="0.3"/>
   <text x="307" y="68" fill="${accent}" font-family="monospace" font-size="10" font-weight="700" text-anchor="middle">ISO 9241-307 PASS</text>
-  <text x="24" y="96" fill="${textMuted}" font-family="sans-serif" font-size="8">Certified by Monitor Test Hub Hardware API • SHA-256 Signed</text>
+  <text x="24" y="96" fill="${textMuted}" font-family="sans-serif" font-size="8">Certified by Display Test Online Hardware API • SHA-256 Signed</text>
 </svg>`;
   }
 
@@ -189,6 +202,47 @@ export class HardwarePassportEngine {
       htmlBadgeSnippet,
       directUrl
     };
+  }
+
+  /**
+   * Stores a local history snapshot in localStorage to enable long-term OLED degradation & firmware tracking
+   */
+  public static saveReportHistory(data: HardwarePassportData): void {
+    if (typeof localStorage === 'undefined') return;
+    try {
+      const historyKey = 'dto_health_report_history';
+      const existing = localStorage.getItem(historyKey);
+      const list: HealthReportHistoryEntry[] = existing ? JSON.parse(existing) : [];
+
+      const entry: HealthReportHistoryEntry = {
+        timestamp: data.timestamp || new Date().toISOString(),
+        healthScore: data.healthScore,
+        vsyncFps: data.vsyncFps,
+        frameJitterMs: data.frameJitterMs || 0.1,
+        isoClass: data.isoClass || 'Class I',
+        signatureHash: data.signatureHash || 'verified',
+      };
+
+      // Keep latest 10 historical scans
+      list.unshift(entry);
+      const trimmed = list.slice(0, 10);
+      localStorage.setItem(historyKey, JSON.stringify(trimmed));
+    } catch (e) {
+      // Storage quota exceeded or disabled
+    }
+  }
+
+  /**
+   * Retrieves local report history for long-term health trends
+   */
+  public static getReportHistory(): HealthReportHistoryEntry[] {
+    if (typeof localStorage === 'undefined') return [];
+    try {
+      const existing = localStorage.getItem('dto_health_report_history');
+      return existing ? JSON.parse(existing) : [];
+    } catch (e) {
+      return [];
+    }
   }
 
   /**

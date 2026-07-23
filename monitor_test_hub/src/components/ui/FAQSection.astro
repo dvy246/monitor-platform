@@ -44,10 +44,10 @@ const normalizedFaqs = faqs.map(item => ({
     <div class="grid grid-cols-1 gap-4 font-sans">
       {normalizedFaqs.map(({ question, answer }, index) => (
         <details class="group bg-bg-surface border border-border-hairline rounded-xl overflow-hidden transition-all duration-200 hover:border-border-interactive shadow-specular-top" open={index === 0}>
-          <summary class="flex items-center justify-between p-5 cursor-pointer font-mono text-sm font-bold text-text-primary hover:text-status-pass select-none transition-colors">
-            <span class="flex items-center gap-3">
-              <span class="text-xs font-mono text-status-pass/80 font-semibold">{String(index + 1).padStart(2, '0')}.</span>
-              <span>{question}</span>
+          <summary class="flex items-center justify-between p-5 cursor-pointer font-mono text-sm font-bold text-text-primary hover:text-status-pass select-none transition-colors min-w-0">
+            <span class="flex items-center gap-3 min-w-0">
+              <span class="text-xs font-mono text-status-pass/80 font-semibold shrink-0">{String(index + 1).padStart(2, '0')}.</span>
+              <span class="break-words min-w-0">{question}</span>
             </span>
             <span class="ml-4 shrink-0 text-text-muted group-hover:text-status-pass group-open:rotate-180 transition-transform duration-200">
               <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
@@ -60,6 +60,17 @@ const normalizedFaqs = faqs.map(item => ({
           </div>
         </details>
       ))}
+    </div>
+
+    <!-- Master Guide Banner -->
+    <div class="bg-bg-canvas border border-border-hairline rounded-xl p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs font-mono">
+      <div class="flex items-center gap-2 text-text-secondary">
+        <span class="w-2 h-2 rounded-full bg-status-pass"></span>
+        <span>Not sure which test to run next? Need troubleshooting advice?</span>
+      </div>
+      <a href="/display-testing-guide" class="text-status-pass font-bold hover:underline shrink-0">
+        Read Complete Diagnostic Guide &rarr;
+      </a>
     </div>
   </section>
 )}

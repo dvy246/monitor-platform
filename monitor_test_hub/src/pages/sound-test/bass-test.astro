@@ -1,0 +1,132 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import AudioTesterCanvas from '../../components/diagnostics/AudioTesterCanvas.astro';
+import FAQSection from '../../components/ui/FAQSection.astro';
+import Breadcrumbs from '../../components/ui/Breadcrumbs.astro';
+import MasterBentoDiagnosticSuite from '../../components/diagnostics/MasterBentoDiagnosticSuite.astro';
+import StepWorkflowSection from '../../components/ui/StepWorkflowSection.astro';
+import PanelTypeBreakdownSection from '../../components/ui/PanelTypeBreakdownSection.astro';
+
+
+const title = "Subwoofer & Low-Frequency Bass Test";
+const description = "Test subwoofer bass extension, sub-audible low frequency limit (10Hz-100Hz), speaker cabinet rattling, and room acoustic modes online.";
+
+const faqs = [
+  {
+    question: "How do I test my subwoofer low-frequency cutoff (extension limit)?",
+    answer: "Our bass sweep transitions from 100Hz down to sub-audible 10Hz. Listen for the point where volume drops dramatically or disappears completely to find your subwoofer's low-end limit."
+  },
+  {
+    question: "What is the frequency range of human sub-bass perception?",
+    answer: "Human hearing perceives deep bass starting at ~20Hz up to 60Hz as tactile physical vibrations. Frequencies below 20Hz (infrasound) are felt as room air pressure shifts."
+  },
+  {
+    question: "What causes speaker cabinet rattling or buzzing during heavy bass sweeps?",
+    answer: "Bass rattles are caused by loose cabinet enclosures, unsealed port tubes, vibrating desk surfaces, or driver voice coils exceeding linear excursion limits (Xmax)."
+  },
+  {
+    question: "How do room acoustic modes and standing waves distort bass sound?",
+    answer: "Parallel walls reflect low-frequency soundwaves, creating standing wave nodes (bass buildup) and anti-nodes (bass dead zones) at specific seating positions."
+  },
+  {
+    question: "What is the recommended subwoofer crossover frequency for studio monitors?",
+    answer: "The THX standard crossover frequency is 80Hz. Frequencies below 80Hz are routed to the dedicated active subwoofer, freeing main speakers from heavy cone excursion."
+  },
+  {
+    question: "Can laptop or mobile phone speakers play 20Hz sub-bass tones?",
+    answer: "No. Micro-speakers in laptops and smartphones physically cannot move enough air volume to reproduce frequencies below 150Hz–200Hz."
+  },
+  {
+    question: "What is subwoofer phase alignment (0° vs 180°)?",
+    answer: "Phase alignment ensures your subwoofer cone pushes forward simultaneously with main speaker woofers. Out-of-phase subwoofers cancel out bass at the crossover point."
+  },
+  {
+    question: "Why does uncompressed Web Audio sine sweep produce cleaner bass than YouTube videos?",
+    answer: "YouTube applies lossy AAC/OPUS compression that truncates sub-20Hz low end and adds phase distortion. Web Audio API generates uncompressed pure 64-bit mathematical sine waves directly in RAM."
+  },
+  {
+    question: "How do I locate the optimal subwoofer position in my room ('sub crawl')?",
+    answer: "Place the subwoofer at your main listening position, play a 40Hz bass sweep, and crawl along the floor near room boundaries to find where the bass sounds cleanest and punchiest."
+  },
+  {
+    question: "Is playing 10Hz to 20Hz sub-bass sweeps safe for high-end subwoofers?",
+    answer: "Yes, provided volume is set at moderate listening levels. Avoid excessive amplification on ported subwoofers below their tuning frequency to prevent driver unloading."
+  }
+];
+
+const breadcrumbs = [
+  { label: 'Home', href: '/' },
+  { label: 'Sound Test', href: '/sound-test' },
+  { label: title, href: '#' }
+];
+---
+
+<Layout title={title} description={description} faqs={faqs}>
+  <div  font-sans">
+    <Breadcrumbs items={breadcrumbs} />
+
+    <!-- Hero Header Deck -->
+    <header class="relative w-full rounded-3xl border border-white/10 bg-[#121215]/90 backdrop-blur-xl p-6 sm:p-8 md:p-10 shadow-2xl space-y-4 overflow-hidden group select-none">
+      <div class="absolute -top-24 -left-24 w-72 h-72 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none group-hover:bg-emerald-500/15 transition-all duration-500"></div>
+      <div class="absolute -bottom-24 -right-24 w-72 h-72 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none group-hover:bg-cyan-500/15 transition-all duration-500"></div>
+
+      <div class="relative z-10 space-y-3 max-w-3xl min-w-0 w-full">
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-emerald-400 text-xs font-mono font-bold tracking-wide flex-wrap shadow-inner">
+          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shrink-0"></span>
+          <span>SUBWOOFER &amp; INFRASOUND ACOUSTICS</span>
+        </div>
+        <h1 class="text-3xl sm:text-5xl font-extrabold text-white tracking-tight font-sans break-words min-w-0">
+          {title}
+        </h1>
+        <p class="text-sm sm:text-base text-zinc-300 font-sans leading-relaxed min-w-0">
+          Sweep low-frequency sub-bass tones from 100Hz down to 10Hz. Evaluate subwoofer extension limits, detect cabinet rattles, and calibrate room acoustic standing waves.
+        </p>
+      </div>
+    </header>
+
+    <!-- Main Diagnostic Instrument -->
+    <div class="rounded-3xl border border-white/10 bg-[#121215]/90 backdrop-blur-xl p-4 sm:p-6 shadow-2xl">
+      <AudioTesterCanvas initialFreq={60} />
+    </div>
+
+    <!-- 3-Step Workflow Protocol -->
+    <StepWorkflowSection />
+
+    <!-- Panel Technology Breakdown -->
+    <PanelTypeBreakdownSection />
+
+    <!-- Article Section -->
+    <article class="bg-[#121215] border border-white/10 rounded-3xl p-6 sm:p-8 space-y-6 shadow-2xl font-sans text-sm text-zinc-300 leading-relaxed">
+      <div class="border-b border-white/10 pb-4 font-mono">
+        <span class="text-xs font-bold text-emerald-400 uppercase tracking-widest block mb-1">ACOUSTIC FREQUENCY RESPONSE</span>
+        <h2 class="text-2xl font-bold text-white">Subwoofer Crossover, Port Tuning &amp; Infrasound Acoustics</h2>
+      </div>
+
+      <p>
+        Low-frequency sound reproduction requires large mechanical driver excursion and high electrical power. Our logarithmic bass sweeps transition seamlessly from 100Hz down to sub-audible 10Hz, allowing you to test subwoofer crossover handoffs, locate port tubulence, and evaluate room boundary bass reinforcement.
+      </p>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 font-mono text-xs my-4">
+        <div class="bg-[#08080a] p-5 rounded-2xl border border-white/10 space-y-2">
+          <span class="text-cyan-400 text-[10px] uppercase font-bold block">Sub-Bass Range</span>
+          <strong class="text-white block text-sm">20 Hz – 60 Hz</strong>
+          <p class="font-sans text-[11px] text-zinc-400 leading-relaxed">Tactile acoustic vibrations produced by active subwoofers and planar magnetic headphones.</p>
+        </div>
+        <div class="bg-[#08080a] p-5 rounded-2xl border border-white/10 space-y-2">
+          <span class="text-emerald-400 text-[10px] uppercase font-bold block">80 Hz THX Crossover</span>
+          <strong class="text-white block text-sm">Satellite Handoff</strong>
+          <p class="font-sans text-[11px] text-zinc-400 leading-relaxed">Standard frequency threshold where satellite speakers hand off low-end signals to the subwoofer.</p>
+        </div>
+        <div class="bg-[#08080a] p-5 rounded-2xl border border-white/10 space-y-2">
+          <span class="text-amber-400 text-[10px] uppercase font-bold block">Room Mode Nodes</span>
+          <strong class="text-white block text-sm">Boundary Reflection</strong>
+          <p class="font-sans text-[11px] text-zinc-400 leading-relaxed">Identifies standing wave peaks and nulls caused by parallel wall reflections.</p>
+        </div>
+      </div>
+    </article>
+
+    <!-- 10 Structured FAQs Component -->
+    <FAQSection faqs={faqs} title="Subwoofer & Bass Response FAQs" />
+
+  </div>
+</Layout>

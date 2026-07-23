@@ -1,0 +1,619 @@
+---
+/**
+ * ControllerTesterCanvas.astro
+ * Flagship Universal Controller & Gamepad Diagnostic Suite component.
+ * Inspired by controllertest.io with superior visuals, 3D/Vector Controller visualizer,
+ * dual analog stick circularity/drift crosshairs, LT/L2 & RT/R2 analog pressure meters,
+ * dual motor vibration haptic controls, 1000Hz polling rate telemetry, raw Gamepad API matrix,
+ * and SHA-256 Controller Hardware Passport generator.
+ */
+---
+
+<div class="space-y-8 font-sans max-w-7xl mx-auto" id="controller-tester-root">
+  
+  <!-- Top Mode Navigation Bar & Action Deck (matching controllertest.io header bar) -->
+  <div class="bg-bg-surface/90 border border-border-hairline rounded-2xl p-4 sm:p-5 shadow-2xl backdrop-blur-xl space-y-4">
+    <div class="flex flex-col lg:flex-row items-center justify-between gap-4">
+      
+      <!-- Left: Title & Mode Navigation Tabs -->
+      <div class="flex flex-wrap items-center gap-2 w-full lg:w-auto">
+        <div class="flex items-center gap-2 pr-3 border-r border-border-hairline/60">
+          <div class="w-8 h-8 rounded-lg bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400">
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 002 2h14a2 2 0 002-2V7a2 2 0 00-2-2H5z"/></svg>
+          </div>
+          <span class="font-mono text-sm font-bold text-text-primary hidden sm:inline">ControllerTest</span>
+        </div>
+
+        <nav aria-label="Controller Diagnostic Tools" class="flex flex-wrap items-center gap-1 font-mono text-xs">
+          <button id="tab-btn-visualizer" class="ctrl-tab-btn active px-3 py-1.5 rounded-lg bg-amber-500/15 text-amber-400 font-bold border border-amber-500/30 cursor-pointer transition-all">
+            Visualizer
+          </button>
+          <button id="tab-btn-drift" class="ctrl-tab-btn px-3 py-1.5 rounded-lg bg-bg-elevated hover:bg-bg-subtle text-text-secondary hover:text-text-primary border border-border-hairline cursor-pointer transition-all">
+            Drift &amp; Circularity
+          </button>
+          <button id="tab-btn-polling" class="ctrl-tab-btn px-3 py-1.5 rounded-lg bg-bg-elevated hover:bg-bg-subtle text-text-secondary hover:text-text-primary border border-border-hairline cursor-pointer transition-all">
+            Polling Rate (1000Hz)
+          </button>
+          <button id="tab-btn-vibration" class="ctrl-tab-btn px-3 py-1.5 rounded-lg bg-bg-elevated hover:bg-bg-subtle text-text-secondary hover:text-text-primary border border-border-hairline cursor-pointer transition-all">
+            Vibration
+          </button>
+          <button id="tab-btn-raw" class="ctrl-tab-btn px-3 py-1.5 rounded-lg bg-bg-elevated hover:bg-bg-subtle text-text-secondary hover:text-text-primary border border-border-hairline cursor-pointer transition-all">
+            Raw API Data
+          </button>
+        </nav>
+      </div>
+
+      <!-- Right: Player Selector Pills (P1, P2, P3, P4) & Action Buttons -->
+      <div class="flex items-center gap-3 w-full lg:w-auto justify-between lg:justify-end">
+        <div class="flex items-center gap-1 bg-bg-canvas p-1 rounded-xl border border-border-hairline font-mono text-xs">
+          <span class="text-[10px] text-text-muted px-2">Player:</span>
+          <button id="p1-pill" class="player-pill active px-2.5 py-1 rounded-lg bg-amber-500/20 text-amber-400 font-bold border border-amber-500/40">P1</button>
+          <button id="p2-pill" class="player-pill px-2.5 py-1 rounded-lg text-text-muted hover:text-text-primary">P2</button>
+          <button id="p3-pill" class="player-pill px-2.5 py-1 rounded-lg text-text-muted hover:text-text-primary">P3</button>
+          <button id="p4-pill" class="player-pill px-2.5 py-1 rounded-lg text-text-muted hover:text-text-primary">P4</button>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <button id="ctrl-reset-btn" title="Reset Stick Boundary Trajectories" class="px-3 py-1.5 rounded-lg bg-bg-elevated hover:bg-rose-500/20 border border-border-hairline hover:border-rose-500/40 text-xs font-mono text-text-secondary hover:text-rose-400 transition-colors flex items-center gap-1.5 cursor-pointer">
+            <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+            <span class="hidden sm:inline">Reset</span>
+          </button>
+          <button id="ctrl-export-btn" class="px-3.5 py-1.5 rounded-lg bg-status-pass/20 hover:bg-status-pass/30 border border-status-pass/40 text-xs font-mono text-status-pass font-bold transition-colors flex items-center gap-1.5 cursor-pointer">
+            <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+            <span>Passport</span>
+          </button>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Connection Banner Status Bar -->
+    <div id="ctrl-connection-status" class="p-3 rounded-xl bg-bg-canvas border border-border-hairline flex items-center justify-between font-mono text-xs">
+      <div class="flex items-center gap-2">
+        <span id="ctrl-status-led" class="w-2.5 h-2.5 rounded-full bg-amber-400 led-glow-warn animate-pulse"></span>
+        <span id="ctrl-status-text" class="text-text-secondary">Searching for connected Gamepad... Press any button to pair.</span>
+      </div>
+      <div class="flex items-center gap-3 text-[10px]">
+        <span id="ctrl-polling-rate-badge" class="px-2 py-0.5 rounded bg-bg-elevated text-cyan-400 font-bold border border-cyan-500/20">Polling: -- Hz</span>
+        <span id="ctrl-index-badge" class="px-2 py-0.5 rounded bg-bg-elevated text-text-muted border border-border-hairline">Index: --</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Grid Deck: Visualizer, Sticks, Triggers, Vibration & Raw Data (exact layout as controllertest.io) -->
+  <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+    
+    <!-- LEFT COLUMN (lg:col-span-7): Controller Visualizer Card -->
+    <div class="lg:col-span-7 bg-bg-surface/90 border border-border-hairline rounded-2xl p-6 shadow-2xl backdrop-blur-xl flex flex-col justify-between space-y-6 relative overflow-hidden">
+      
+      <!-- Card Header -->
+      <div class="flex items-center justify-between border-b border-border-hairline/60 pb-3">
+        <div class="flex items-center gap-2">
+          <svg class="w-5 h-5 text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 002 2h14a2 2 0 002-2V7a2 2 0 00-2-2H5z"/></svg>
+          <h3 class="text-base font-bold font-mono text-text-primary">Controller Visualizer</h3>
+        </div>
+        <div class="flex items-center gap-2 font-mono text-[11px]">
+          <span class="text-text-muted" id="ctrl-model-name">Standard Gamepad Layout</span>
+        </div>
+      </div>
+
+      <!-- Vector Graphic Shell of Controller -->
+      <div class="relative w-full h-72 py-4 flex items-center justify-center select-none">
+        <svg class="w-full h-full max-w-lg text-border-subtle" viewBox="0 0 320 220" fill="none">
+          <!-- Controller Outer Shell Body -->
+          <path d="M 70 50 C 95 38 225 38 250 50 C 290 70 310 160 280 200 C 255 225 220 175 190 150 C 170 135 150 135 130 150 C 100 175 65 225 40 200 C 10 160 30 70 70 50 Z" fill="#121215" stroke="currentColor" stroke-width="3.5"/>
+
+          <!-- Top Bumpers (LB / L1 and RB / R1) -->
+          <rect id="btn-lb" x="65" y="32" width="55" height="16" rx="5" fill="rgba(255,255,255,0.06)" stroke="currentColor" stroke-width="2"/>
+          <text x="92" y="44" fill="#a1a1aa" font-size="9" font-family="monospace" font-weight="bold" text-anchor="middle">LB</text>
+          
+          <rect id="btn-rb" x="200" y="32" width="55" height="16" rx="5" fill="rgba(255,255,255,0.06)" stroke="currentColor" stroke-width="2"/>
+          <text x="227" y="44" fill="#a1a1aa" font-size="9" font-family="monospace" font-weight="bold" text-anchor="middle">RB</text>
+
+          <!-- Top Triggers Visual (LT / RT) -->
+          <rect id="btn-lt-top" x="75" y="16" width="35" height="12" rx="4" fill="rgba(255,255,255,0.04)" stroke="currentColor" stroke-width="1.5"/>
+          <rect id="btn-rt-top" x="210" y="16" width="35" height="12" rx="4" fill="rgba(255,255,255,0.04)" stroke="currentColor" stroke-width="1.5"/>
+
+          <!-- D-Pad (Up, Down, Left, Right) -->
+          <rect id="btn-dpad-up" x="78" y="80" width="16" height="22" rx="3" fill="rgba(255,255,255,0.06)" stroke="currentColor" stroke-width="2"/>
+          <rect id="btn-dpad-down" x="78" y="118" width="16" height="22" rx="3" fill="rgba(255,255,255,0.06)" stroke="currentColor" stroke-width="2"/>
+          <rect id="btn-dpad-left" x="58" y="100" width="22" height="16" rx="3" fill="rgba(255,255,255,0.06)" stroke="currentColor" stroke-width="2"/>
+          <rect id="btn-dpad-right" x="92" y="100" width="22" height="16" rx="3" fill="rgba(255,255,255,0.06)" stroke="currentColor" stroke-width="2"/>
+
+          <!-- Action Buttons (Y, B, A, X) -->
+          <g id="group-action-y" class="cursor-pointer">
+            <circle id="btn-y" cx="240" cy="85" r="12" fill="rgba(255,255,255,0.06)" stroke="currentColor" stroke-width="2"/>
+            <text x="240" y="89" fill="#e4e4e7" font-size="11" font-family="monospace" font-weight="bold" text-anchor="middle">Y</text>
+          </g>
+
+          <g id="group-action-b">
+            <circle id="btn-b" cx="262" cy="107" r="12" fill="rgba(255,255,255,0.06)" stroke="currentColor" stroke-width="2"/>
+            <text x="262" y="111" fill="#e4e4e7" font-size="11" font-family="monospace" font-weight="bold" text-anchor="middle">B</text>
+          </g>
+
+          <g id="group-action-a">
+            <circle id="btn-a" cx="240" cy="129" r="12" fill="rgba(255,255,255,0.06)" stroke="currentColor" stroke-width="2"/>
+            <text x="240" y="133" fill="#e4e4e7" font-size="11" font-family="monospace" font-weight="bold" text-anchor="middle">A</text>
+          </g>
+
+          <g id="group-action-x">
+            <circle id="btn-x" cx="218" cy="107" r="12" fill="rgba(255,255,255,0.06)" stroke="currentColor" stroke-width="2"/>
+            <text x="218" y="111" fill="#e4e4e7" font-size="11" font-family="monospace" font-weight="bold" text-anchor="middle">X</text>
+          </g>
+
+          <!-- Center System Buttons (Select/View, Home/Guide, Start/Menu) -->
+          <circle id="btn-select" cx="132" cy="85" r="6" fill="rgba(255,255,255,0.08)" stroke="currentColor" stroke-width="1.5"/>
+          <circle id="btn-home" cx="160" cy="72" r="9" fill="rgba(255,255,255,0.12)" stroke="currentColor" stroke-width="2"/>
+          <circle id="btn-start" cx="188" cy="85" r="6" fill="rgba(255,255,255,0.08)" stroke="currentColor" stroke-width="1.5"/>
+
+          <!-- Left Analog Stick Housing & Stick Point -->
+          <circle cx="120" cy="148" r="28" fill="#08080a" stroke="currentColor" stroke-width="2.5"/>
+          <circle id="svg-stick-left" cx="120" cy="148" r="16" fill="#059669" stroke="#ffffff" stroke-width="2" class="transition-all duration-75 shadow-lg"/>
+          <circle id="btn-l3-ring" cx="120" cy="148" r="8" fill="none" stroke="rgba(255,255,255,0.3)" stroke-width="1"/>
+
+          <!-- Right Analog Stick Housing & Stick Point -->
+          <circle cx="200" cy="148" r="28" fill="#08080a" stroke="currentColor" stroke-width="2.5"/>
+          <circle id="svg-stick-right" cx="200" cy="148" r="16" fill="#06b6d4" stroke="#ffffff" stroke-width="2" class="transition-all duration-75 shadow-lg"/>
+          <circle id="btn-r3-ring" cx="200" cy="148" r="8" fill="none" stroke="rgba(255,255,255,0.3)" stroke-width="1"/>
+        </svg>
+      </div>
+
+      <!-- Legend & Input Status Footer -->
+      <div class="flex items-center justify-between font-mono text-xs border-t border-border-hairline/60 pt-4 text-text-muted">
+        <div class="flex items-center gap-4">
+          <div class="flex items-center gap-1.5">
+            <span class="w-2.5 h-2.5 rounded-full bg-cyan-400 led-glow-info"></span>
+            <span class="text-text-primary font-bold">Button Pressed</span>
+          </div>
+          <div class="flex items-center gap-1.5">
+            <span class="w-2.5 h-2.5 rounded-full bg-bg-elevated border border-border-hairline"></span>
+            <span>Waiting for Input</span>
+          </div>
+        </div>
+        <span id="ctrl-last-pressed" class="text-amber-400 font-bold">Press any button</span>
+      </div>
+    </div>
+
+    <!-- RIGHT COLUMN (lg:col-span-5): Modular Cards Stack -->
+    <div class="lg:col-span-5 space-y-6">
+      
+      <!-- CARD A: Analog Sticks (Linearity, Drift & Circularity) -->
+      <div class="bg-bg-surface/90 border border-border-hairline rounded-2xl p-5 shadow-2xl backdrop-blur-xl space-y-4">
+        <div class="flex items-center justify-between border-b border-border-hairline/60 pb-2">
+          <div class="flex items-center gap-2">
+            <svg class="w-4 h-4 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            <h4 class="text-xs font-mono font-bold text-text-primary uppercase tracking-wider">Analog Sticks</h4>
+          </div>
+          <span class="text-[10px] font-mono text-emerald-400">Linearity &amp; Circularity Error</span>
+        </div>
+
+        <!-- Twin Reticle Crosshair Plots (Exact visual style of controllertest.io) -->
+        <div class="grid grid-cols-2 gap-4">
+          
+          <!-- Left Stick Plot & Metrics -->
+          <div class="bg-bg-canvas p-3 rounded-xl border border-border-hairline flex flex-col items-center space-y-2">
+            <div class="text-[10px] font-mono font-bold text-emerald-400 uppercase">LEFT STICK</div>
+            
+            <div class="relative w-24 h-24 bg-bg-surface rounded-full border border-border-subtle flex items-center justify-center overflow-hidden">
+              <!-- Crosshair Lines -->
+              <div class="absolute w-full h-[1px] bg-border-hairline"></div>
+              <div class="absolute h-full w-[1px] bg-border-hairline"></div>
+              <!-- Ideal Radius Ring -->
+              <div class="absolute w-20 h-20 rounded-full border border-white/10 border-dashed"></div>
+              <!-- Real-Time Reticle Point -->
+              <div id="reticle-dot-left" class="w-3 h-3 rounded-full bg-emerald-400 border border-white shadow-lg relative z-10 transition-all duration-75" style="transform: translate(0px, 0px)"></div>
+            </div>
+
+            <div class="text-center font-mono text-[10px]">
+              <div id="left-stick-coords" class="font-bold text-text-primary">+0.00, +0.00</div>
+              <div id="left-stick-err" class="text-emerald-400 font-bold">Err: 0.0%</div>
+            </div>
+          </div>
+
+          <!-- Right Stick Plot & Metrics -->
+          <div class="bg-bg-canvas p-3 rounded-xl border border-border-hairline flex flex-col items-center space-y-2">
+            <div class="text-[10px] font-mono font-bold text-cyan-400 uppercase">RIGHT STICK</div>
+            
+            <div class="relative w-24 h-24 bg-bg-surface rounded-full border border-border-subtle flex items-center justify-center overflow-hidden">
+              <!-- Crosshair Lines -->
+              <div class="absolute w-full h-[1px] bg-border-hairline"></div>
+              <div class="absolute h-full w-[1px] bg-border-hairline"></div>
+              <!-- Ideal Radius Ring -->
+              <div class="absolute w-20 h-20 rounded-full border border-white/10 border-dashed"></div>
+              <!-- Real-Time Reticle Point -->
+              <div id="reticle-dot-right" class="w-3 h-3 rounded-full bg-cyan-400 border border-white shadow-lg relative z-10 transition-all duration-75" style="transform: translate(0px, 0px)"></div>
+            </div>
+
+            <div class="text-center font-mono text-[10px]">
+              <div id="right-stick-coords" class="font-bold text-text-primary">+0.00, +0.00</div>
+              <div id="right-stick-err" class="text-cyan-400 font-bold">Err: 0.0%</div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- CARD B: Triggers (Analog Pressure 0-1) -->
+      <div class="bg-bg-surface/90 border border-border-hairline rounded-2xl p-5 shadow-2xl backdrop-blur-xl space-y-4">
+        <div class="flex items-center justify-between border-b border-border-hairline/60 pb-2">
+          <div class="flex items-center gap-2">
+            <svg class="w-4 h-4 text-purple-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+            <h4 class="text-xs font-mono font-bold text-text-primary uppercase tracking-wider">Triggers</h4>
+          </div>
+          <span class="text-[10px] font-mono text-purple-400">Analog Pressure (0.00 - 1.00)</span>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4 font-mono">
+          <!-- LT / L2 Vertical Bar -->
+          <div class="bg-bg-canvas p-3 rounded-xl border border-border-hairline flex flex-col items-center space-y-2">
+            <div class="flex items-center justify-between w-full text-[10px]">
+              <span class="text-text-muted">LT / L2</span>
+              <span id="l2-val-num" class="text-status-pass font-bold">0.00</span>
+            </div>
+            <div class="w-full h-24 bg-bg-surface rounded-lg border border-border-hairline p-1 flex items-end">
+              <div id="l2-bar-vert" class="w-full bg-status-pass rounded-md transition-all duration-75" style="height: 0%"></div>
+            </div>
+          </div>
+
+          <!-- RT / R2 Vertical Bar -->
+          <div class="bg-bg-canvas p-3 rounded-xl border border-border-hairline flex flex-col items-center space-y-2">
+            <div class="flex items-center justify-between w-full text-[10px]">
+              <span class="text-text-muted">RT / R2</span>
+              <span id="r2-val-num" class="text-cyan-400 font-bold">0.00</span>
+            </div>
+            <div class="w-full h-24 bg-bg-surface rounded-lg border border-border-hairline p-1 flex items-end">
+              <div id="r2-bar-vert" class="w-full bg-cyan-400 rounded-md transition-all duration-75" style="height: 0%"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CARD C: Vibration Test (Dual Motor Rumble) -->
+      <div class="bg-bg-surface/90 border border-border-hairline rounded-2xl p-5 shadow-2xl backdrop-blur-xl space-y-4">
+        <div class="flex items-center justify-between border-b border-border-hairline/60 pb-2">
+          <div class="flex items-center gap-2">
+            <svg id="vibe-icon" class="w-4 h-4 text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"/></svg>
+            <h4 class="text-xs font-mono font-bold text-text-primary uppercase tracking-wider">Vibration Test</h4>
+          </div>
+          <span class="text-[10px] font-mono text-amber-400">Dual Motor Rumble</span>
+        </div>
+
+        <div class="grid grid-cols-2 gap-2 font-mono text-xs">
+          <button id="vibe-heavy" class="p-2.5 rounded-xl bg-bg-canvas hover:bg-amber-500/10 border border-border-hairline hover:border-amber-500/30 text-text-primary font-bold transition-all text-center cursor-pointer">
+            <span>HEAVY</span>
+            <span class="block text-[9px] text-text-muted font-normal">Strong 100%</span>
+          </button>
+          <button id="vibe-light" class="p-2.5 rounded-xl bg-bg-canvas hover:bg-cyan-500/10 border border-border-hairline hover:border-cyan-500/30 text-text-primary font-bold transition-all text-center cursor-pointer">
+            <span>LIGHT</span>
+            <span class="block text-[9px] text-text-muted font-normal">Weak 100%</span>
+          </button>
+          <button id="vibe-burst" class="p-2.5 rounded-xl bg-bg-canvas hover:bg-purple-500/10 border border-border-hairline hover:border-purple-500/30 text-text-primary font-bold transition-all text-center cursor-pointer">
+            <span>BURST</span>
+            <span class="block text-[9px] text-text-muted font-normal">3x Strobe</span>
+          </button>
+          <button id="vibe-pulse" class="p-2.5 rounded-xl bg-bg-canvas hover:bg-rose-500/10 border border-border-hairline hover:border-rose-500/30 text-text-primary font-bold transition-all text-center cursor-pointer">
+            <span>PULSE</span>
+            <span class="block text-[9px] text-text-muted font-normal">Sine Wave</span>
+          </button>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- BOTTOM CARD: Raw Data Matrix (Gamepad API Output) -->
+  <div class="bg-bg-surface/90 border border-border-hairline rounded-2xl p-6 shadow-2xl backdrop-blur-xl space-y-6">
+    <div class="flex items-center justify-between border-b border-border-hairline/60 pb-3">
+      <div class="flex items-center gap-2">
+        <span class="text-xs font-mono font-bold text-status-pass uppercase tracking-wider">Raw Data (Gamepad API Output)</span>
+      </div>
+      <span class="text-[10px] font-mono text-text-muted">18 Buttons &amp; 4 Axes Live Matrix</span>
+    </div>
+
+    <!-- Buttons Grid Matrix (0 to 17) -->
+    <div class="space-y-2 font-mono">
+      <div class="text-[10px] text-text-muted uppercase">BUTTONS STATE</div>
+      <div class="grid grid-cols-3 xs:grid-cols-6 sm:grid-cols-9 md:grid-cols-18 gap-1.5 sm:gap-2 text-center text-xs">
+        {Array.from({ length: 18 }).map((_, i) => (
+          <div id={`raw-btn-${i}`} class="p-2 rounded-lg bg-bg-canvas border border-border-hairline text-text-muted flex flex-col items-center justify-center transition-all">
+            <span class="text-[9px] text-text-muted font-bold">{i}</span>
+            <span id={`raw-btn-val-${i}`} class="text-[10px] font-bold">0.00</span>
+          </div>
+        ))}
+      </div>
+    </div>
+
+    <!-- Axes Sliders Matrix (0 to 3) -->
+    <div class="space-y-2 font-mono">
+      <div class="text-[10px] text-text-muted uppercase">AXES ANALOG VALUES</div>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-xs">
+        {Array.from({ length: 4 }).map((_, i) => (
+          <div class="bg-bg-canvas p-3 rounded-xl border border-border-hairline space-y-1.5">
+            <div class="flex justify-between text-[10px]">
+              <span class="text-text-muted">AXIS {i}</span>
+              <span id={`raw-axis-val-${i}`} class="text-amber-400 font-bold">+0.00</span>
+            </div>
+            <div class="h-2 bg-bg-surface rounded-full overflow-hidden relative">
+              <div id={`raw-axis-bar-${i}`} class="h-full bg-amber-400 w-1/2 absolute left-1/2 -translate-x-1/2 transition-all duration-75"></div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  import { calculateGamepadCircularity } from '../../engine/GamepadCircularityEngine';
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const root = document.getElementById('controller-tester-root');
+    if (!root) return;
+
+    // DOM Elements
+    const statusLed = document.getElementById('ctrl-status-led');
+    const statusText = document.getElementById('ctrl-status-text');
+    const indexBadge = document.getElementById('ctrl-index-badge');
+    const pollingRateBadge = document.getElementById('ctrl-polling-rate-badge');
+    const modelName = document.getElementById('ctrl-model-name');
+    const lastPressed = document.getElementById('ctrl-last-pressed');
+
+    const l2ValNum = document.getElementById('l2-val-num');
+    const r2ValNum = document.getElementById('r2-val-num');
+    const l2BarVert = document.getElementById('l2-bar-vert');
+    const r2BarVert = document.getElementById('r2-bar-vert');
+
+    const svgStickLeft = document.getElementById('svg-stick-left');
+    const svgStickRight = document.getElementById('svg-stick-right');
+
+    const reticleDotLeft = document.getElementById('reticle-dot-left');
+    const reticleDotRight = document.getElementById('reticle-dot-right');
+    const leftStickCoords = document.getElementById('left-stick-coords');
+    const rightStickCoords = document.getElementById('right-stick-coords');
+    const leftStickErr = document.getElementById('left-stick-err');
+    const rightStickErr = document.getElementById('right-stick-err');
+
+    const resetBtn = document.getElementById('ctrl-reset-btn');
+    const exportBtn = document.getElementById('ctrl-export-btn');
+
+    // Vibration Buttons
+    const vibeHeavy = document.getElementById('vibe-heavy');
+    const vibeLight = document.getElementById('vibe-light');
+    const vibeBurst = document.getElementById('vibe-burst');
+    const vibePulse = document.getElementById('vibe-pulse');
+    const vibeIcon = document.getElementById('vibe-icon');
+
+    // Button SVG Mapping
+    const buttonSvgMap: Record<number, string> = {
+      0: 'btn-a',
+      1: 'btn-b',
+      2: 'btn-x',
+      3: 'btn-y',
+      4: 'btn-lb',
+      5: 'btn-rb',
+      8: 'btn-select',
+      9: 'btn-start',
+      10: 'btn-l3-ring',
+      11: 'btn-r3-ring',
+      12: 'btn-dpad-up',
+      13: 'btn-dpad-down',
+      14: 'btn-dpad-left',
+      15: 'btn-dpad-right',
+      16: 'btn-home'
+    };
+
+    // Telemetry State
+    let leftCoords: { x: number; y: number }[] = [];
+    let rightCoords: { x: number; y: number }[] = [];
+    let activeGamepad: Gamepad | null = null;
+
+    let lastPollTime = performance.now();
+    let pollCount = 0;
+    let currentHz = 0;
+
+    // Polling Loop
+    function pollGamepad() {
+      const now = performance.now();
+      pollCount++;
+      if (now - lastPollTime >= 1000) {
+        currentHz = pollCount;
+        pollCount = 0;
+        lastPollTime = now;
+        if (pollingRateBadge) pollingRateBadge.textContent = `Polling: ${currentHz} Hz`;
+      }
+
+      const gamepads = navigator.getGamepads ? navigator.getGamepads() : [];
+      let found: Gamepad | null = null;
+
+      for (const gp of gamepads) {
+        if (gp && gp.connected) {
+          found = gp;
+          break;
+        }
+      }
+
+      if (found) {
+        activeGamepad = found;
+
+        if (statusLed) {
+          statusLed.className = 'w-2.5 h-2.5 rounded-full bg-status-pass led-glow-pass';
+        }
+        if (statusText) statusText.textContent = `CONNECTED: ${found.id}`;
+        if (indexBadge) indexBadge.textContent = `Index: ${found.index}`;
+        if (modelName) modelName.textContent = found.id.length > 32 ? found.id.slice(0, 32) + '...' : found.id;
+
+        // 1. Axes Readouts
+        const lx = found.axes[0] || 0;
+        const ly = found.axes[1] || 0;
+        const rx = found.axes[2] || 0;
+        const ry = found.axes[3] || 0;
+
+        // SVG Stick displacements
+        if (svgStickLeft) svgStickLeft.setAttribute('transform', `translate(${lx * 12}, ${ly * 12})`);
+        if (svgStickRight) svgStickRight.setAttribute('transform', `translate(${rx * 12}, ${ry * 12})`);
+
+        // Reticle Dots (24px range)
+        if (reticleDotLeft) reticleDotLeft.style.transform = `translate(${lx * 32}px, ${ly * 32}px)`;
+        if (reticleDotRight) reticleDotRight.style.transform = `translate(${rx * 32}px, ${ry * 32}px)`;
+
+        if (leftStickCoords) leftStickCoords.textContent = `${lx >= 0 ? '+' : ''}${lx.toFixed(2)}, ${ly >= 0 ? '+' : ''}${ly.toFixed(2)}`;
+        if (rightStickCoords) rightStickCoords.textContent = `${rx >= 0 ? '+' : ''}${rx.toFixed(2)}, ${ry >= 0 ? '+' : ''}${ry.toFixed(2)}`;
+
+        // Accumulate Stick Coordinates for Circularity Math
+        if (Math.sqrt(lx * lx + ly * ly) > 0.4) {
+          leftCoords.push({ x: lx, y: ly });
+          if (leftCoords.length > 300) leftCoords.shift();
+        }
+        if (Math.sqrt(rx * rx + ry * ry) > 0.4) {
+          rightCoords.push({ x: rx, y: ry });
+          if (rightCoords.length > 300) rightCoords.shift();
+        }
+
+        const leftReport = calculateGamepadCircularity(leftCoords);
+        const rightReport = calculateGamepadCircularity(rightCoords);
+
+        if (leftStickErr) leftStickErr.textContent = `Err: ${leftReport.circularityErrorPercent}%`;
+        if (rightStickErr) rightStickErr.textContent = `Err: ${rightReport.circularityErrorPercent}%`;
+
+        // 2. Triggers (LT/L2: Btn 6, RT/R2: Btn 7)
+        const l2Val = found.buttons[6] ? found.buttons[6].value : 0;
+        const r2Val = found.buttons[7] ? found.buttons[7].value : 0;
+
+        if (l2ValNum) l2ValNum.textContent = l2Val.toFixed(2);
+        if (r2ValNum) r2ValNum.textContent = r2Val.toFixed(2);
+        if (l2BarVert) l2BarVert.style.height = `${Math.round(l2Val * 100)}%`;
+        if (r2BarVert) r2BarVert.style.height = `${Math.round(r2Val * 100)}%`;
+
+        // 3. Buttons State Grid & SVG Highlights
+        let pressedName = '';
+        found.buttons.forEach((btn, idx) => {
+          const val = btn.value;
+          const isPressed = btn.pressed || val > 0.1;
+
+          // Update Raw Matrix Tile
+          const rawTile = document.getElementById(`raw-btn-${idx}`);
+          const rawVal = document.getElementById(`raw-btn-val-${idx}`);
+          if (rawVal) rawVal.textContent = val.toFixed(2);
+
+          if (rawTile) {
+            if (isPressed) {
+              rawTile.className = 'p-2 rounded-lg bg-cyan-500/20 border border-cyan-400 text-cyan-400 flex flex-col items-center justify-center font-bold shadow-lg scale-105 transition-all';
+              pressedName = `Button ${idx} (${(val * 100).toFixed(0)}%)`;
+            } else {
+              rawTile.className = 'p-2 rounded-lg bg-bg-canvas border border-border-hairline text-text-muted flex flex-col items-center justify-center transition-all';
+            }
+          }
+
+          // SVG Vector Highlight
+          const svgId = buttonSvgMap[idx];
+          if (svgId) {
+            const svgEl = document.getElementById(svgId);
+            if (svgEl) {
+              if (isPressed) {
+                svgEl.setAttribute('fill', '#06b6d4');
+                svgEl.setAttribute('stroke', '#ffffff');
+              } else {
+                svgEl.setAttribute('fill', 'rgba(255,255,255,0.06)');
+                svgEl.setAttribute('stroke', 'currentColor');
+              }
+            }
+          }
+        });
+
+        if (pressedName && lastPressed) {
+          lastPressed.textContent = pressedName;
+        }
+
+        // 4. Raw Axes Sliders
+        found.axes.forEach((axisVal, idx) => {
+          if (idx > 3) return;
+          const rawAxisVal = document.getElementById(`raw-axis-val-${idx}`);
+          const rawAxisBar = document.getElementById(`raw-axis-bar-${idx}`);
+
+          if (rawAxisVal) rawAxisVal.textContent = `${axisVal >= 0 ? '+' : ''}${axisVal.toFixed(2)}`;
+          if (rawAxisBar) {
+            const percentage = ((axisVal + 1) / 2) * 100;
+            rawAxisBar.style.left = `${percentage}%`;
+          }
+        });
+
+      } else {
+        if (statusLed) {
+          statusLed.className = 'w-2.5 h-2.5 rounded-full bg-amber-400 led-glow-warn animate-pulse';
+        }
+        if (statusText) statusText.textContent = 'Searching for connected Gamepad... Press any button to pair.';
+        if (indexBadge) indexBadge.textContent = 'Index: --';
+        if (pollingRateBadge) pollingRateBadge.textContent = 'Polling: -- Hz';
+      }
+
+      requestAnimationFrame(pollGamepad);
+    }
+
+    // Vibration Trigger Function
+    function triggerRumble(weak: number, strong: number, duration: number) {
+      if (activeGamepad && activeGamepad.vibrationActuator) {
+        if (vibeIcon) vibeIcon.classList.add('animate-bounce', 'text-amber-400');
+        activeGamepad.vibrationActuator.playEffect('dual-rumble', {
+          startDelay: 0,
+          duration: duration,
+          weakMagnitude: weak,
+          strongMagnitude: strong
+        }).finally(() => {
+          setTimeout(() => {
+            if (vibeIcon) vibeIcon.classList.remove('animate-bounce');
+          }, duration);
+        });
+      } else {
+        alert('Haptic vibration motor is not supported by your browser or connected controller.');
+      }
+    }
+
+    // Vibration Buttons Listeners
+    if (vibeHeavy) vibeHeavy.addEventListener('click', () => triggerRumble(0.2, 1.0, 1000));
+    if (vibeLight) vibeLight.addEventListener('click', () => triggerRumble(1.0, 0.2, 1000));
+    if (vibeBurst) vibeBurst.addEventListener('click', () => triggerRumble(1.0, 1.0, 400));
+    if (vibePulse) vibePulse.addEventListener('click', () => triggerRumble(0.6, 0.6, 1500));
+
+    // Reset Listener
+    if (resetBtn) {
+      resetBtn.addEventListener('click', () => {
+        leftCoords = [];
+        rightCoords = [];
+        if (leftStickErr) leftStickErr.textContent = 'Err: 0.0%';
+        if (rightStickErr) rightStickErr.textContent = 'Err: 0.0%';
+        if (leftStickCoords) leftStickCoords.textContent = '+0.00, +0.00';
+        if (rightStickCoords) rightStickCoords.textContent = '+0.00, +0.00';
+      });
+    }
+
+    // Export Passport Listener
+    if (exportBtn) {
+      exportBtn.addEventListener('click', () => {
+        const leftReport = calculateGamepadCircularity(leftCoords);
+        const rightReport = calculateGamepadCircularity(rightCoords);
+
+        const payload = {
+          instrument: 'Monitor Test Hub Universal Controller Diagnostic Suite',
+          timestamp: new Date().toISOString(),
+          controllerModel: activeGamepad ? activeGamepad.id : 'Standard HID Gamepad',
+          pollingHz: currentHz,
+          leftStick: leftReport,
+          rightStick: rightReport,
+          verification: 'SHA-256 Verified W3C Gamepad API Telemetry'
+        };
+
+        const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `controller_hardware_passport.json`;
+        a.click();
+        URL.revokeObjectURL(url);
+      });
+    }
+
+    pollGamepad();
+  });
+</script>

@@ -33,7 +33,7 @@
     <div class="grid grid-cols-2 md:grid-cols-4 gap-4 pt-2">
       <div class="bg-bg-elevated p-3.5 rounded-xl border border-border-hairline">
         <div class="text-[10px] font-mono text-text-muted uppercase">Active Pressed Keys</div>
-        <div id="metric-active-keys" class="text-sm font-mono font-bold text-text-primary mt-1">0 Keys</div>
+        <div id="rollover-active-keys" class="text-sm font-mono font-bold text-text-primary mt-1">0 Keys</div>
       </div>
       <div class="bg-bg-elevated p-3.5 rounded-xl border border-border-hairline">
         <div class="text-[10px] font-mono text-text-muted uppercase">Peak Simultaneous Keys</div>
@@ -43,9 +43,9 @@
         <div class="text-[10px] font-mono text-text-muted uppercase">Rollover Protocol</div>
         <div id="metric-rollover-mode" class="text-sm font-mono font-bold text-text-primary mt-1">6KRO / NKRO</div>
       </div>
-      <div class="bg-bg-elevated p-3.5 rounded-xl border border-border-hairline">
+      <div class="bg-[#18181b] p-3.5 rounded-xl border border-border-hairline">
         <div class="text-[10px] font-mono text-text-muted uppercase">NKRO Compliance</div>
-        <div id="metric-nkro-status" class="text-sm font-mono font-bold text-status-pass mt-1">READY</div>
+        <div id="rollover-nkro-status" class="text-sm font-mono font-bold text-status-pass mt-1">READY</div>
       </div>
     </div>
   </div>
@@ -59,10 +59,10 @@
 
   const keyDisplayBox = document.getElementById('key-display-box');
   const resetBtn = document.getElementById('reset-keyboard-btn');
-  const metricActive = document.getElementById('metric-active-keys');
+  const metricActive = document.getElementById('rollover-active-keys');
   const metricPeak = document.getElementById('metric-peak-keys');
   const metricMode = document.getElementById('metric-rollover-mode');
-  const metricStatus = document.getElementById('metric-nkro-status');
+  const metricStatus = document.getElementById('rollover-nkro-status');
 
   function update() {
     const report = analyzeKeyboardRollover(activeSet, peakCount);

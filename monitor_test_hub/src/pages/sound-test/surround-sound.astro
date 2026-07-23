@@ -1,0 +1,132 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import AudioTesterCanvas from '../../components/diagnostics/AudioTesterCanvas.astro';
+import FAQSection from '../../components/ui/FAQSection.astro';
+import Breadcrumbs from '../../components/ui/Breadcrumbs.astro';
+import MasterBentoDiagnosticSuite from '../../components/diagnostics/MasterBentoDiagnosticSuite.astro';
+import StepWorkflowSection from '../../components/ui/StepWorkflowSection.astro';
+import PanelTypeBreakdownSection from '../../components/ui/PanelTypeBreakdownSection.astro';
+
+
+const title = "5.1 & 7.1 Surround Sound Channel Test";
+const description = "Test 5.1 and 7.1 multichannel surround sound speaker setups online. Verify discrete channel routing for Center, LFE Subwoofer, Surround, and Rear speakers.";
+
+const faqs = [
+  {
+    question: "Can web browsers play discrete 5.1 and 7.1 multichannel surround audio?",
+    answer: "Yes. Modern web browsers (Chrome, Edge, Safari) supporting Web Audio API can route uncompressed discrete PCM audio channels directly to multichannel soundcards and AV receivers."
+  },
+  {
+    question: "What are the individual channels tested in a 5.1 surround sound setup?",
+    answer: "A 5.1 setup consists of 5 full-range channels (Front Left, Center, Front Right, Surround Left, Surround Right) and 1 Low-Frequency Effects (LFE Subwoofer) channel."
+  },
+  {
+    question: "What additional channels are added in a 7.1 surround sound system?",
+    answer: "A 7.1 setup adds 2 Rear Surround channels (Rear Left and Rear Right) behind the listening position in addition to the standard 5.1 speaker layout."
+  },
+  {
+    question: "Why does surround sound play in stereo when testing 5.1 in my browser?",
+    answer: "Ensure your operating system audio settings (Windows Sound Control Panel / macOS Audio MIDI Setup) are set to '5.1 Surround' or '7.1 Surround' and that HDMI/Optical output pass-through is active."
+  },
+  {
+    question: "What is the function of the dedicated Center channel speaker in home theater?",
+    answer: "The Center channel delivers dialogue and on-screen vocal audio, anchoring voice signals to the center of the display screen."
+  },
+  {
+    question: "What is the LFE (.1) channel and how is it processed by subwoofers?",
+    answer: "The Low-Frequency Effects (LFE) channel delivers dedicated low-bass effects (10Hz to 120Hz) directly to active subwoofers without robbing power from main speakers."
+  },
+  {
+    question: "What is virtual HRTF surround sound for headphones?",
+    answer: "Head-Related Transfer Function (HRTF) algorithms simulate spatial 3D surround sound over standard stereo headphones by applying acoustic ear-filtering micro-delays."
+  },
+  {
+    question: "How do I configure HDMI eARC for uncompressed 7.1 PCM surround sound?",
+    answer: "Connect your PC or console directly to your AV Receiver via HDMI eARC, set audio output to 'Uncompressed 7.1 LPCM', and disable lossy Dolby Digital re-encoding."
+  },
+  {
+    question: "Why does dialogue sound quiet while action explosions sound too loud in movies?",
+    answer: "This occurs when 5.1 surround audio is downmixed to 2.0 stereo without dynamic range compression (DRC) or proper center channel dialogue gain boosting."
+  },
+  {
+    question: "Does Web Audio API support spatial 3D audio object positioning (PannerNode)?",
+    answer: "Yes. Web Audio API includes PannerNode and AudioListener interfaces for positioning 3D audio objects in virtual spatial coordinates around the listener."
+  }
+];
+
+const breadcrumbs = [
+  { label: 'Home', href: '/' },
+  { label: 'Sound Test', href: '/sound-test' },
+  { label: title, href: '#' }
+];
+---
+
+<Layout title={title} description={description} faqs={faqs}>
+  <div  font-sans">
+    <Breadcrumbs items={breadcrumbs} />
+
+    <!-- Hero Header Deck -->
+    <header class="relative w-full rounded-3xl border border-white/10 bg-[#121215]/90 backdrop-blur-xl p-6 sm:p-8 md:p-10 shadow-2xl space-y-4 overflow-hidden group select-none">
+      <div class="absolute -top-24 -left-24 w-72 h-72 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none group-hover:bg-emerald-500/15 transition-all duration-500"></div>
+      <div class="absolute -bottom-24 -right-24 w-72 h-72 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none group-hover:bg-cyan-500/15 transition-all duration-500"></div>
+
+      <div class="relative z-10 space-y-3 max-w-3xl min-w-0 w-full">
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-emerald-400 text-xs font-mono font-bold tracking-wide flex-wrap shadow-inner">
+          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shrink-0"></span>
+          <span>MULTICHANNEL W3C WEBAUDIO CHANNEL ROUTING</span>
+        </div>
+        <h1 class="text-3xl sm:text-5xl font-extrabold text-white tracking-tight font-sans break-words min-w-0">
+          {title}
+        </h1>
+        <p class="text-sm sm:text-base text-zinc-300 font-sans leading-relaxed min-w-0">
+          Verify discrete channel routing for 5.1 and 7.1 surround sound setups. Test Front Left, Center, Front Right, LFE Subwoofer, Surround L/R, and Rear L/R channels.
+        </p>
+      </div>
+    </header>
+
+    <!-- Main Diagnostic Instrument -->
+    <div class="rounded-3xl border border-white/10 bg-[#121215]/90 backdrop-blur-xl p-4 sm:p-6 shadow-2xl">
+      <AudioTesterCanvas />
+    </div>
+
+    <!-- 3-Step Workflow Protocol -->
+    <StepWorkflowSection />
+
+    <!-- Panel Technology Breakdown -->
+    <PanelTypeBreakdownSection />
+
+    <!-- Article Section -->
+    <article class="bg-[#121215] border border-white/10 rounded-3xl p-6 sm:p-8 space-y-6 shadow-2xl font-sans text-sm text-zinc-300 leading-relaxed">
+      <div class="border-b border-white/10 pb-4 font-mono">
+        <span class="text-xs font-bold text-emerald-400 uppercase tracking-widest block mb-1">MULTICHANNEL ACOUSTICS</span>
+        <h2 class="text-2xl font-bold text-white">Multichannel Speaker Routing, LFE Channel &amp; HRTF Spatial 3D</h2>
+      </div>
+
+      <p>
+        Multichannel surround sound setups require independent verification of discrete audio channels to ensure that speakers are physically positioned and wired correctly. Using Web Audio API channel splitter nodes, our diagnostic tool isolates every channel in 5.1 and 7.1 configurations.
+      </p>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 font-mono text-xs my-4">
+        <div class="bg-[#08080a] p-5 rounded-2xl border border-white/10 space-y-2">
+          <span class="text-cyan-400 text-[10px] uppercase font-bold block">Front &amp; Center</span>
+          <strong class="text-white block text-sm">FL, FC, FR</strong>
+          <p class="font-sans text-[11px] text-zinc-400 leading-relaxed">Anchors dialogue and front soundstage imaging directly on-screen.</p>
+        </div>
+        <div class="bg-[#08080a] p-5 rounded-2xl border border-white/10 space-y-2">
+          <span class="text-emerald-400 text-[10px] uppercase font-bold block">LFE Subwoofer</span>
+          <strong class="text-white block text-sm">Low-Frequency Effects</strong>
+          <p class="font-sans text-[11px] text-zinc-400 leading-relaxed">Delivers dedicated sub-120Hz bass impact to active subwoofers.</p>
+        </div>
+        <div class="bg-[#08080a] p-5 rounded-2xl border border-white/10 space-y-2">
+          <span class="text-amber-400 text-[10px] uppercase font-bold block">Surround &amp; Rear</span>
+          <strong class="text-white block text-sm">SL/SR &amp; RL/RR</strong>
+          <p class="font-sans text-[11px] text-zinc-400 leading-relaxed">Creates 360-degree environmental immersion and rear spatial cues.</p>
+        </div>
+      </div>
+    </article>
+
+    <!-- 10 Structured FAQs Component -->
+    <FAQSection faqs={faqs} title="5.1 & 7.1 Surround Sound FAQs" />
+
+  </div>
+</Layout>

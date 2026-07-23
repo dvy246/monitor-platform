@@ -1,0 +1,132 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import AudioTesterCanvas from '../../components/diagnostics/AudioTesterCanvas.astro';
+import FAQSection from '../../components/ui/FAQSection.astro';
+import Breadcrumbs from '../../components/ui/Breadcrumbs.astro';
+import MasterBentoDiagnosticSuite from '../../components/diagnostics/MasterBentoDiagnosticSuite.astro';
+import StepWorkflowSection from '../../components/ui/StepWorkflowSection.astro';
+import PanelTypeBreakdownSection from '../../components/ui/PanelTypeBreakdownSection.astro';
+
+
+const title = "High-Frequency Hearing & Audiogram Test";
+const description = "Test your upper limit of human hearing (8kHz to 20kHz). Check high-frequency audio sensitivity and age-related hearing roll-off online.";
+
+const faqs = [
+  {
+    question: "What is the normal high-frequency upper limit of human hearing?",
+    answer: "Healthy human hearing in young adults ranges from 20Hz to 20,000Hz (20kHz). As people age, natural high-frequency loss (presbycusis) gradually reduces upper hearing limits to 12kHz–16kHz."
+  },
+  {
+    question: "How does the High-Frequency Hearing Test work?",
+    answer: "The test plays calibrated high-frequency sine waves starting at 8,000Hz (8kHz) and climbing step-by-step up to 20,000Hz (20kHz). Listen at quiet, comfortable volume levels and note the highest frequency tone you can perceive."
+  },
+  {
+    question: "Why can't I hear frequencies above 15,000 Hz during the test?",
+    answer: "Inability to hear extreme high frequencies can be caused by natural age-related hearing decline, prolonged loud noise exposure, or hardware limitations of budget headphones and laptop speakers."
+  },
+  {
+    question: "Can budget laptop speakers or cheap earbuds reproduce 18kHz to 20kHz tones?",
+    answer: "No. Small laptop micro-speakers and budget earbuds experience severe high-frequency roll-off above 14kHz–16kHz. High-quality studio headphones or calibrated IEMs are recommended for accurate testing."
+  },
+  {
+    question: "What is presbycusis and at what age does high-frequency hearing decline?",
+    answer: "Presbycusis is age-related sensory hair cell loss in the cochlea. High-frequency perception typically begins declining gradually after age 20 to 25."
+  },
+  {
+    question: "What volume level should I set during a high-frequency hearing test?",
+    answer: "Set your system volume to a comfortable, moderate level using a standard speech or 1kHz reference tone. Never increase volume to force hearing ultra-high frequencies, as excessive volume can damage hearing."
+  },
+  {
+    question: "What is tinnitus and does it affect high-frequency hearing tests?",
+    answer: "Tinnitus is a condition causing ringing or buzzing sensations in the ears. High-pitched tinnitus can overlap with 8kHz–12kHz test tones, making detection harder."
+  },
+  {
+    question: "What is the difference between an online hearing screener and a clinical audiogram?",
+    answer: "An online test is an informal educational screening tool. A clinical audiogram is performed by an audiologist in a soundproof booth using calibrated bone-conduction transducers."
+  },
+  {
+    question: "How can I protect my high-frequency hearing from noise-induced hearing loss (NIHL)?",
+    answer: "Use high-attenuation earplugs at loud concerts, keep headphone listening volume below 60% of maximum, and take frequent quiet breaks during long listening sessions."
+  },
+  {
+    question: "Why do high-frequency sine waves sound like faint static or clicks at high pitch?",
+    answer: "When sine waves reach your personal hearing ceiling or driver playback limits, you may hear mechanical transducer click artifacts rather than a continuous tonal pitch."
+  }
+];
+
+const breadcrumbs = [
+  { label: 'Home', href: '/' },
+  { label: 'Sound Test', href: '/sound-test' },
+  { label: title, href: '#' }
+];
+---
+
+<Layout title={title} description={description} faqs={faqs}>
+  <div  font-sans">
+    <Breadcrumbs items={breadcrumbs} />
+
+    <!-- Hero Header Deck -->
+    <header class="relative w-full rounded-3xl border border-white/10 bg-[#121215]/90 backdrop-blur-xl p-6 sm:p-8 md:p-10 shadow-2xl space-y-4 overflow-hidden group select-none">
+      <div class="absolute -top-24 -left-24 w-72 h-72 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none group-hover:bg-emerald-500/15 transition-all duration-500"></div>
+      <div class="absolute -bottom-24 -right-24 w-72 h-72 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none group-hover:bg-cyan-500/15 transition-all duration-500"></div>
+
+      <div class="relative z-10 space-y-3 max-w-3xl min-w-0 w-full">
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-emerald-400 text-xs font-mono font-bold tracking-wide flex-wrap shadow-inner">
+          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shrink-0"></span>
+          <span>HIGH-FREQUENCY AUDIOMETRIC SPECTRUM</span>
+        </div>
+        <h1 class="text-3xl sm:text-5xl font-extrabold text-white tracking-tight font-sans break-words min-w-0">
+          {title}
+        </h1>
+        <p class="text-sm sm:text-base text-zinc-300 font-sans leading-relaxed min-w-0">
+          Test your upper ceiling of human hearing from 8,000Hz up to 20,000Hz. Check high-frequency sound perception and transducer treble extension in browser RAM.
+        </p>
+      </div>
+    </header>
+
+    <!-- Main Diagnostic Instrument -->
+    <div class="rounded-3xl border border-white/10 bg-[#121215]/90 backdrop-blur-xl p-4 sm:p-6 shadow-2xl">
+      <AudioTesterCanvas initialFreq={10000} />
+    </div>
+
+    <!-- 3-Step Workflow Protocol -->
+    <StepWorkflowSection />
+
+    <!-- Panel Technology Breakdown -->
+    <PanelTypeBreakdownSection />
+
+    <!-- Article Section -->
+    <article class="bg-[#121215] border border-white/10 rounded-3xl p-6 sm:p-8 space-y-6 shadow-2xl font-sans text-sm text-zinc-300 leading-relaxed">
+      <div class="border-b border-white/10 pb-4 font-mono">
+        <span class="text-xs font-bold text-emerald-400 uppercase tracking-widest block mb-1">AUDIOMETRIC FREQUENCY ANALYSIS</span>
+        <h2 class="text-2xl font-bold text-white">Cochlear Hair Cell Sensitivity &amp; High-Frequency Perception</h2>
+      </div>
+
+      <p>
+        The human inner ear contains thousands of delicate stereocilia hair cells inside the cochlea. Basilar membrane hair cells near the base process high-frequency sounds (12kHz–20kHz) and are the most sensitive to age-related roll-off and environmental sound exposure.
+      </p>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 font-mono text-xs my-4">
+        <div class="bg-[#08080a] p-5 rounded-2xl border border-white/10 space-y-2">
+          <span class="text-cyan-400 text-[10px] uppercase font-bold block">8kHz – 12kHz</span>
+          <strong class="text-white block text-sm">Treble Presence</strong>
+          <p class="font-sans text-[11px] text-zinc-400 leading-relaxed">Vocal sibilance and cymbal harmonics audible across all age groups.</p>
+        </div>
+        <div class="bg-[#08080a] p-5 rounded-2xl border border-white/10 space-y-2">
+          <span class="text-emerald-400 text-[10px] uppercase font-bold block">14kHz – 16kHz</span>
+          <strong class="text-white block text-sm">Ultra-Treble Air</strong>
+          <p class="font-sans text-[11px] text-zinc-400 leading-relaxed">Perceived by young adults with intact high-frequency hair cell sensitivity.</p>
+        </div>
+        <div class="bg-[#08080a] p-5 rounded-2xl border border-white/10 space-y-2">
+          <span class="text-amber-400 text-[10px] uppercase font-bold block">18kHz – 20kHz</span>
+          <strong class="text-white block text-sm">Human Hearing Ceiling</strong>
+          <p class="font-sans text-[11px] text-zinc-400 leading-relaxed">The absolute upper limit of human auditory perception under ideal conditions.</p>
+        </div>
+      </div>
+    </article>
+
+    <!-- 10 Structured FAQs Component -->
+    <FAQSection faqs={faqs} title="High-Frequency Hearing FAQs" />
+
+  </div>
+</Layout>

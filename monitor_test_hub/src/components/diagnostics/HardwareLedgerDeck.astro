@@ -1,4 +1,6 @@
 ---
+import HardwarePassportModal from './HardwarePassportModal.astro';
+
 export interface LedgerEntry {
   id: string;
   signatureHash: string;
@@ -196,6 +198,7 @@ const sampleLedgerData: LedgerEntry[] = [
       </div>
     </div>
   </div>
+  <HardwarePassportModal />
 </section>
 
 <script>

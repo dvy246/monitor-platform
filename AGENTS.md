@@ -12,9 +12,9 @@ This document serves as the primary technical guide and rules of engagement for 
 - **Framework**: [Astro v7](https://astro.build/) (`output: 'static'`)
 - **Styling**: Tailwind CSS v4 via `@tailwindcss/vite`
 - **Language**: TypeScript (`tsconfig.json`, strict mode)
-- **Engine Testing**: [Vitest](https://vitest.dev/) (287 unit & stress test cases across 51 test suites, 100% PASS)
+- **Engine Testing**: [Vitest](https://vitest.dev/) (317 unit & stress test cases across 55 test suites, 100% PASS)
 - **E2E Testing**: [Playwright](https://playwright.dev/)
-- **SEO & Performance Audit**: Lighthouse CI (`@lhci/cli`), `@astrojs/sitemap` (2,699 static pages generated across 4 locales, canonical domain: `https://monitortester.com`)
+- **SEO & Performance Audit**: Lighthouse CI (`@lhci/cli`), `@astrojs/sitemap` (2,807 static pages generated across 4 locales, canonical domain: `https://displaytestonline.com`)
 - **Hosting & Infrastructure**: Cloudflare Pages via Wrangler (`npm run deploy`)
 
 ### Repository Directory Layout
@@ -51,11 +51,14 @@ This document serves as the primary technical guide and rules of engagement for 
     │   │   ├── TouchMatrixEngine.ts         # Multi-touch gesture & dead-zone matrix analyzer
     │   │   ├── VrrSweepEngine.ts            # Variable Refresh Rate stutter & tear engine (540Hz+)
     │   │   ├── IccExporter.ts               # Display calibration & binary ICC v4.3 profile exporter
-    │   │   └── *.test.ts                    # Vitest unit/stress/perf test suites (286 tests across 51 files)
+    │   │   ├── AudioTestEngine.ts           # Logarithmic frequency sweep, L/R balance, mic noise floor & audio latency engine
+    │   │   └── *.test.ts                    # Vitest unit/stress/perf test suites (315 tests across 55 files)
     │   ├── pages/                           # Astro page routes
     │   │   ├── index.astro                  # Homepage & real-time telemetry deck (~950-word Helpful Content SEO suite)
     │   │   ├── refresh-rate-test.astro      # Screen Refresh Rate & Hz Test suite (10-item FAQ + schema)
     │   │   ├── monitor-color-calibration.astro # Monitor Color Calibration Suite (Gamma 2.2, ΔE00, ICC v4.3, 10-item FAQ)
+    │   │   ├── sound-test.astro             # Universal Sound & Speaker Test Suite (L/R balance, 10-item FAQ + schema)
+    │   │   ├── sound-test/                  # Sound diagnostic sub-tools (speaker-test, headphone-test, bass-test, microphone-test, tone-generator, surround-sound, audio-latency)
     │   │   ├── [locale]/                    # Localized routes (es, de, fr)
     │   │   ├── models/                      # Device Database Hub (/models) & Crowdsourced Per-Model Reports (/models/[slug])
     │   │   ├── compare/                     # Display Comparison Engine (/compare & /compare/[slug])
@@ -64,6 +67,8 @@ This document serves as the primary technical guide and rules of engagement for 
     │   │   ├── white-screen/                # Fullscreen white screen & fill lighting utility (/white-screen, /[color], 10-item FAQ)
     │   │   ├── display-tests/               # Visual tests (dead-pixel, return-window-checker/[slug], sub-pixel, uniformity, vrr, oled-burn-in, hdr-test, ppi-calculator, color-gamut)
     │   │   ├── touch-tests/                 # Mobile touch tests (dead-zone, multi-touch, vector-precision, swipe-velocity, input-lag, 10-item FAQ)
+    │   │   ├── mouse-test/                  # Mouse diagnostic suite (5-button click matrix, 8000Hz polling rate, double-click chatter, DPI solver, CPS test, scroll wheel)
+    │   │   ├── controller-test/             # Gamepad diagnostic suite (PS5 DualSense, Xbox Series X/S, Switch Pro, stick drift circularity %, 1000Hz HID polling rate)
     │   │   ├── benchmarks/                  # High-rate mouse frame pacing, pc bottleneck, wire gauge & 3D cost calculators
     │   │   ├── touch-matrix/                # Touch matrix & charger EMI inspector routes (/touch-matrix/charger-emi-inspector)
     │   │   ├── keyboard-tester/             # Keyboard tester, switch chatter & key switch directory (/keyboard-tester/switches & /[slug], 10-item FAQ)
@@ -97,13 +102,13 @@ This document serves as the primary technical guide and rules of engagement for 
 | Task | Command | Description |
 | :--- | :--- | :--- |
 | **Development** | `npm run dev` | Start Astro local dev server (`http://localhost:4321`) |
-| **Build** | `TMPDIR=$PWD/.tmp npm run build` | Compile static production site to `./dist/` (2,699 static pages) |
+| **Build** | `TMPDIR=$PWD/.tmp npm run build` | Compile static production site to `./dist/` (2,807 static pages) |
 | **Preview** | `npm run preview` | Serve production build locally |
 
 ### Testing & Quality Assurance
 | Test Suite | Command | Notes |
 | :--- | :--- | :--- |
-| **Unit & Engine Tests** | `TMPDIR=$PWD/.tmp npm test` *(or `npx vitest run`)* | Runs all 286 test cases across 51 test suites (100% PASS) |
+| **Unit & Engine Tests** | `TMPDIR=$PWD/.tmp npm test` *(or `npx vitest run`)* | Runs all 317 test cases across 55 test suites (100% PASS) |
 | **Targeted Engine Test** | `TMPDIR=$PWD/.tmp npx vitest run src/engine/HardwarePassportEngine.test.ts` | Test specific engine module |
 | **Stress & Perf Tests** | `TMPDIR=$PWD/.tmp npx vitest run src/engine/HdrTestEngine.stress.test.ts` | Benchmark under 100,000-operation high load |
 | **Type Check** | `npx tsc --noEmit` | Strict TypeScript type verification (0 errors) |
@@ -270,4 +275,25 @@ Monitor Test Hub includes the following production features, pure-TypeScript cal
   - Positioned at `bottom-5 right-5 sm:bottom-6 sm:right-6` with native mobile safe area insets (`env(safe-area-inset-bottom)` and `env(safe-area-inset-right)`).
   - Styled with dark glassmorphic container (`bg-bg-surface/90 backdrop-blur-xl border border-border-hairline`), subtle green radial accent glow, and centered 2.5px SVG plus icon.
   - Eliminates overlap with mobile browser bottom bars, system gesture bars, or main page content.
+
+### 5.13 Universal Mouse Diagnostic Suite & Esports Sensitivity Suite
+- **Universal Mouse Diagnostics (`/mouse-test`, `/mouse-test/[slug]`)**:
+  - Powered by `src/engine/MouseDpiEngine.ts`, `MousePollingEngine.ts`, `MouseDoubleClickEngine.ts`, and `MouseTesterCanvas.astro`.
+  - Interactive 5-button SVG vector (LMB, MMB, RMB, MB4, MB5) with scroll wheel rotational velocity, `Pointer Lock API` physical displacement DPI solver, 8000Hz USB HID polling rate telemetry & jitter histogram, microsecond switch double-click chatter analyzer ($t_{\text{delta}} < 35\text{ms}$), Bezier trajectory smoothness splines, CS2/Valorant yaw-based sensitivity converter, eDPI pro player benchmark calculator, 7-round PSA method A/B testing, and hold-drag signal drop inspector.
+  - Programmatic pSEO routes across 12 mouse search targets (`polling-rate`, `double-click`, `dpi-calculator`, `cps-test`, `scroll-wheel`, `jitter-test`, `sensitivity-converter`, `edpi-calculator`, `psa-method-calculator`, `hold-drag-test`, `right-click-cps-test`, `click-latency`, `precision-aim-test`).
+
+### 5.14 Universal Controller & Gamepad Diagnostic Suite
+- **Gamepad Diagnostic Suite (`/controller-test`, `/controller-test/[slug]`)**:
+  - Powered by `src/engine/GamepadCircularityEngine.ts`, `GamepadDriftEngine.ts`, and `ControllerTesterCanvas.astro`.
+  - Interactive 3D/Vector SVG controller keymap illustrations for **Sony PS5 DualSense**, **Microsoft Xbox Series X/S**, **Nintendo Switch Pro**, and **PlayStation 4 DualShock 4**.
+  - Real-time W3C Gamepad API event loop (`navigator.getGamepads()`), analog stick circularity error percentage solver ($\text{Error} \% = \max_i \left|\sqrt{x_i^2 + y_i^2} - 1.0\right| \times 100\%$), centering drift variance indicator, analog trigger pressure linear response curves (L2/R2 / LT/RT), W3C vibration motor haptic pulse test, 1000Hz USB HID polling rate benchmark, and downloadable SHA-256 Controller Hardware Passport receipts.
+  - Programmatic pSEO routes across 7 controller search targets (`stick-drift`, `polling-rate`, `button-test`, `ps5-dualsense`, `xbox-controller`, `nintendo-switch`, `ps4-dualshock`).
+
+### 5.15 Universal Sound & Audio Diagnostic Suite
+- **Universal Sound Diagnostics (`/sound-test`, `/sound-test/[slug]`)**:
+  - Powered by `src/engine/AudioTestEngine.ts` and `AudioTesterCanvas.astro`.
+  - Interactive Web Audio diagnostic suite featuring 2048-bin HTML5 Canvas FFT spectrum visualizer, AES17 logarithmic 20Hz-20kHz frequency sweeps, stereo speaker polarity & phase alignment analyzer, subwoofer 10Hz-200Hz bass sweep, ISO 8253-1 online hearing audiogram screening (250Hz-8kHz), 5-band binaural beats brainwave entrainment generator (Delta 2.5Hz, Theta 6Hz, Alpha 10Hz, Beta 20Hz, Gamma 40Hz), Web Audio parametric tone oscillator (Sine, Square, Sawtooth, Triangle), 5.1/7.1 spatial surround sound channel test, IEC 61672-1 mic RMS dBFS noise floor meter, Bluetooth click-to-audio latency profiler (SBC, AAC, aptX, LDAC), 10-item FAQ schema graphs, and downloadable SHA-256 Audio Hardware Passports.
+  - Programmatic pSEO routes across 10 audio search targets (`speaker-test`, `headphone-test`, `bass-test`, `hearing-test`, `binaural-beats`, `microphone-test`, `tone-generator`, `surround-sound`, `audio-latency`).
+
+
 

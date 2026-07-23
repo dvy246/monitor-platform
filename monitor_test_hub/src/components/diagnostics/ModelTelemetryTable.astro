@@ -132,8 +132,8 @@ const { receipts, modelSlug, totalEntries } = Astro.props;
     {receipts.map((entry) => (
       <div class="p-4 space-y-2.5 bg-bg-canvas/40">
         <div class="flex justify-between items-center">
-          <a href={`/passport/${entry.signatureHash}`} class="font-bold text-status-pass text-xs">
-            #{entry.signatureHash}
+          <a href={`/passport/${entry.signatureHash}`} class="font-bold text-status-pass text-xs break-all truncate max-w-[180px]">
+            #{entry.signatureHash.slice(0, 16)}...
           </a>
           <span class="px-2 py-0.5 rounded bg-status-pass/10 text-status-pass border border-status-pass/30 text-[10px] font-bold">
             {entry.healthScore}/100 Score
@@ -154,7 +154,7 @@ const { receipts, modelSlug, totalEntries } = Astro.props;
   </div>
 
   <!-- Table Footer Pagination -->
-  <div class="px-6 py-3 border-t border-border-hairline bg-bg-elevated flex items-center justify-between text-[11px] text-text-muted">
+  <div class="px-4 sm:px-6 py-3 border-t border-border-hairline bg-bg-elevated flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-[11px] text-text-muted">
     <span>Showing recent verified submissions</span>
     <a href="/display-tests/dead-pixel" class="text-status-pass hover:underline font-bold">
       + Run Diagnostic &amp; Submit Receipt

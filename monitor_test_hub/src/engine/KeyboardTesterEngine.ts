@@ -173,7 +173,7 @@ export class KeyboardTesterState {
   public chatterThresholdMs: number = 35; // If double-press occurs under 35ms, flag chatter
 
   public processKeyDown(code: string, timestampMs: number): { isChatter: boolean; deltaMs: number } {
-    if (!this.startTimeMs) {
+    if (this.startTimeMs === null) {
       this.startTimeMs = timestampMs;
     }
 
@@ -275,6 +275,43 @@ export class KeyboardTesterState {
       coveragePercent,
       chatterLog: [...this.chatterLog]
     };
+  }
+
+  /**
+   * Calculates estimated keyboard hardware polling rate (Hz) based on microsecond keydown interval deltas
+   */
+  public estimatePollingRateHz(samplesLimit: number = 50): number {
+    if (this.chatterLog.length > 0) {
+      const validDeltas = this.chatterLog
+        .map(c => c.deltaMs)
+        .filter(d => d > 0.1 && d < 100)
+        .slice(-samplesLimit);
+      
+      if (validDeltas.length > 0) {
+        const minDelta = Math.min(...validDeltas);
+        if (minDelta > 0) {
+          const estimatedHz = 1000 / minDelta;
+          if (estimatedHz >= 7500) return 8000;
+          if (estimatedHz >= 3500) return 4000;
+          if (estimatedHz >= 1800) return 2000;
+          if (estimatedHz >= 900) return 1000;
+          if (estimatedHz >= 450) return 500;
+          if (estimatedHz >= 220) return 250;
+          return 125;
+        }
+      }
+    }
+    return 1000; // Default standard USB polling rate
+  }
+
+  /**
+   * Evaluates Spacebar / Key CPS (Clicks Per Second) over a specific time window
+   */
+  public calculateCps(windowSeconds: number = 5, currentTimeMs: number = Date.now()): number {
+    if (this.startTimeMs === null || currentTimeMs <= this.startTimeMs) return 0;
+    const windowStartMs = Math.max(this.startTimeMs, currentTimeMs - (windowSeconds * 1000));
+    const elapsedSeconds = Math.max(0.1, (currentTimeMs - windowStartMs) / 1000);
+    return parseFloat((this.totalPresses / elapsedSeconds).toFixed(1));
   }
 
   public getHeatmapIntensity(code: string): number {

@@ -62,16 +62,30 @@
       woled: { mode: 'RWBG_WOLED', text: 'WOLED RWBG 4-subpixel structure. Includes dedicated white subpixel for peak luminance, creating subtle text antialiasing shifts.' }
     };
 
-    function drawLoupe(mode: string) {
-      canvas.width = 400;
-      canvas.height = 160;
+    let currentLoupeMode = 'rgb';
+
+    function drawLoupe(mode: string = currentLoupeMode) {
+      currentLoupeMode = mode;
+      const parent = canvas.parentElement;
+      if (!parent) return;
+      const rect = parent.getBoundingClientRect();
+      const dpr = window.devicePixelRatio || 1;
+      const displayW = Math.min(rect.width ? rect.width - 32 : 400, 400);
+      const displayH = Math.max(Math.floor(displayW * (160 / 400)), 100);
+
+      canvas.width = Math.floor(displayW * dpr);
+      canvas.height = Math.floor(displayH * dpr);
+      canvas.style.width = displayW + 'px';
+      canvas.style.height = displayH + 'px';
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
       ctx.fillStyle = document.documentElement.classList.contains('light') ? '#f8fafc' : '#08080a';
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.fillRect(0, 0, displayW, displayH);
 
       const cols = 8;
       const rows = 3;
-      const cellW = canvas.width / cols;
-      const cellH = canvas.height / rows;
+      const cellW = displayW / cols;
+      const cellH = displayH / rows;
 
       for (let r = 0; r < rows; r++) {
         for (let c = 0; c < cols; c++) {
@@ -89,9 +103,9 @@
             ctx.fillStyle = '#10b981'; ctx.fillRect(x + cellW / 3 + 2, y + 4, cellW / 3 - 6, cellH - 8);
             ctx.fillStyle = '#ef4444'; ctx.fillRect(x + (2 * cellW) / 3, y + 4, cellW / 3 - 6, cellH - 8);
           } else if (mode === 'qdoled') {
-            ctx.fillStyle = '#10b981'; ctx.beginPath(); ctx.arc(x + cellW / 2, y + cellH / 3, 10, 0, Math.PI * 2); ctx.fill();
-            ctx.fillStyle = '#ef4444'; ctx.beginPath(); ctx.arc(x + cellW / 3, y + (2 * cellH) / 3, 8, 0, Math.PI * 2); ctx.fill();
-            ctx.fillStyle = '#3b82f6'; ctx.beginPath(); ctx.arc(x + (2 * cellW) / 3, y + (2 * cellH) / 3, 8, 0, Math.PI * 2); ctx.fill();
+            ctx.fillStyle = '#10b981'; ctx.beginPath(); ctx.arc(x + cellW / 2, y + cellH / 3, Math.min(10, cellH / 4), 0, Math.PI * 2); ctx.fill();
+            ctx.fillStyle = '#ef4444'; ctx.beginPath(); ctx.arc(x + cellW / 3, y + (2 * cellH) / 3, Math.min(8, cellH / 5), 0, Math.PI * 2); ctx.fill();
+            ctx.fillStyle = '#3b82f6'; ctx.beginPath(); ctx.arc(x + (2 * cellW) / 3, y + (2 * cellH) / 3, Math.min(8, cellH / 5), 0, Math.PI * 2); ctx.fill();
           } else if (mode === 'woled') {
             ctx.fillStyle = '#ffffff'; ctx.fillRect(x + 2, y + 4, cellW / 4 - 4, cellH - 8);
             ctx.fillStyle = '#ef4444'; ctx.fillRect(x + cellW / 4 + 2, y + 4, cellW / 4 - 4, cellH - 8);
@@ -141,6 +155,20 @@
       if (e.key === '4') setSubpixelMode('woled');
     });
 
+    let subpixelResizeObserver: ResizeObserver | null = null;
+    if (typeof ResizeObserver !== 'undefined' && canvas.parentElement) {
+      subpixelResizeObserver = new ResizeObserver(() => drawLoupe());
+      subpixelResizeObserver.observe(canvas.parentElement);
+    }
+    window.addEventListener('resize', () => drawLoupe());
+
+    document.addEventListener('astro:before-swap', () => {
+      if (subpixelResizeObserver) {
+        subpixelResizeObserver.disconnect();
+        subpixelResizeObserver = null;
+      }
+    }, { once: true });
+
     window.addEventListener('themechange', () => {
       drawLoupe('rgb');
     });
@@ -149,7 +177,7 @@
   }
 
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initSubpixelLoupe);
+    document.addEventListener('DOMContentLoaded', initSubpixelLoupe, { once: true });
   } else {
     initSubpixelLoupe();
   }

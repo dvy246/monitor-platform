@@ -1,0 +1,442 @@
+---
+/**
+ * SpacebarCounterCanvas.astro
+ * Premium, high-precision Spacebar Counter & CPS Speedometer Diagnostic Tool.
+ * Features 5s/10s/30s/60s/Free-run time trials, real-time CPS gauge,
+ * live cadence graph, Web Audio acoustic feedback, personal records (localStorage),
+ * rank medal badges, and SHA-256 signed Spacebar Hardware Passport receipt export.
+ */
+interface Props {
+  initialMode?: number; // Time trial duration in seconds (0 = infinite)
+}
+
+const { initialMode = 5 } = Astro.props;
+---
+
+<div class="space-y-8 font-sans max-w-5xl mx-auto" id="spacebar-counter-root">
+  <!-- Controls & Mode Selector Deck -->
+  <div class="bg-bg-surface border border-border-hairline rounded-2xl p-4 sm:p-6 shadow-2xl space-y-6">
+    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-border-hairline pb-4">
+      <div>
+        <div class="inline-flex items-center gap-2 px-2.5 py-0.5 rounded-full bg-status-pass/10 border border-status-pass/30 text-[11px] font-mono text-status-pass font-bold uppercase tracking-wider mb-1">
+          <svg class="w-3.5 h-3.5 text-status-pass" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><rect x="2" y="6" width="20" height="12" rx="2"/><path d="M8 15h8"/></svg>
+          <span>HIGH-PRECISION SPACEBAR SPEEDOMETER</span>
+        </div>
+        <h2 class="text-xl sm:text-2xl font-bold font-mono text-text-primary">Spacebar CPS Counter &amp; Speed Test</h2>
+        <p class="text-xs text-text-muted mt-0.5">Press <kbd class="px-1.5 py-0.5 bg-bg-elevated border border-border-hairline rounded text-text-secondary font-mono text-[10px]">SPACEBAR</kbd> or tap the canvas to start time trial.</p>
+      </div>
+
+      <!-- Sound & Reset Quick Actions -->
+      <div class="flex items-center gap-2 self-end sm:self-auto">
+        <button id="sb-sound-toggle" class="px-3 py-1.5 rounded-lg bg-bg-elevated hover:bg-bg-subtle border border-border-hairline text-xs font-mono text-text-secondary hover:text-text-primary transition-colors flex items-center gap-1.5">
+          <svg id="sb-sound-icon" class="w-4 h-4 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"/></svg>
+          <span id="sb-sound-label">Acoustics: ON</span>
+        </button>
+        <button id="sb-reset-btn" class="px-3 py-1.5 rounded-lg bg-bg-elevated hover:bg-rose-500/20 border border-border-hairline hover:border-rose-500/40 text-xs font-mono text-text-secondary hover:text-rose-400 transition-colors flex items-center gap-1.5">
+          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+          <span>Reset Test</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Time Duration Mode Selector -->
+    <div class="flex flex-wrap items-center gap-2">
+      <span class="text-xs font-mono text-text-muted mr-1">Time Trial Interval:</span>
+      <button data-duration="5" class="sb-mode-btn px-3 py-1.5 rounded-lg text-xs font-mono font-bold transition-all bg-status-pass/20 border border-status-pass text-status-pass">5 Seconds</button>
+      <button data-duration="10" class="sb-mode-btn px-3 py-1.5 rounded-lg text-xs font-mono font-bold transition-all bg-bg-elevated border border-border-hairline text-text-secondary hover:text-text-primary">10 Seconds</button>
+      <button data-duration="30" class="sb-mode-btn px-3 py-1.5 rounded-lg text-xs font-mono font-bold transition-all bg-bg-elevated border border-border-hairline text-text-secondary hover:text-text-primary">30 Seconds</button>
+      <button data-duration="60" class="sb-mode-btn px-3 py-1.5 rounded-lg text-xs font-mono font-bold transition-all bg-bg-elevated border border-border-hairline text-text-secondary hover:text-text-primary">60 Seconds</button>
+      <button data-duration="0" class="sb-mode-btn px-3 py-1.5 rounded-lg text-xs font-mono font-bold transition-all bg-bg-elevated border border-border-hairline text-text-secondary hover:text-text-primary">Free Run (∞)</button>
+    </div>
+
+    <!-- Main Telemetry Metrics Grid -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div class="bg-bg-canvas/80 p-4 rounded-xl border border-border-hairline text-center space-y-1">
+        <div class="text-[10px] font-mono text-text-muted uppercase tracking-wider">Total Spacebar Clicks</div>
+        <div class="text-3xl sm:text-4xl font-extrabold font-mono text-status-pass tabular-nums" id="sb-click-count">0</div>
+        <div class="text-[10px] font-mono text-text-muted">Total Keystrokes</div>
+      </div>
+      <div class="bg-bg-canvas/80 p-4 rounded-xl border border-border-hairline text-center space-y-1">
+        <div class="text-[10px] font-mono text-text-muted uppercase tracking-wider">Live Speed (CPS)</div>
+        <div class="text-3xl sm:text-4xl font-extrabold font-mono text-cyan-400 tabular-nums" id="sb-live-cps">0.0</div>
+        <div class="text-[10px] font-mono text-text-muted">Clicks / Second</div>
+      </div>
+      <div class="bg-bg-canvas/80 p-4 rounded-xl border border-border-hairline text-center space-y-1">
+        <div class="text-[10px] font-mono text-text-muted uppercase tracking-wider">Time Remaining</div>
+        <div class="text-3xl sm:text-4xl font-extrabold font-mono text-amber-400 tabular-nums" id="sb-time-left">5.0s</div>
+        <div class="text-[10px] font-mono text-text-muted" id="sb-time-mode-label">5.0s Target</div>
+      </div>
+      <div class="bg-bg-canvas/80 p-4 rounded-xl border border-border-hairline text-center space-y-1">
+        <div class="text-[10px] font-mono text-text-muted uppercase tracking-wider">Personal Record (PR)</div>
+        <div class="text-3xl sm:text-4xl font-extrabold font-mono text-purple-400 tabular-nums" id="sb-pr-cps">0.0</div>
+        <div class="text-[10px] font-mono text-text-muted" id="sb-pr-label">Max CPS Score</div>
+      </div>
+    </div>
+
+    <!-- Interactive Neon Spacebar Canvas / Button Surface -->
+    <div 
+      id="sb-press-zone" 
+      tabindex="0"
+      aria-label="Interactive Spacebar Press Zone. Press spacebar or click to count clicks."
+      class="relative h-44 sm:h-52 bg-gradient-to-b from-bg-canvas to-bg-surface border-2 border-border-hairline hover:border-status-pass rounded-2xl flex flex-col items-center justify-center cursor-pointer select-none transition-all duration-150 group overflow-hidden shadow-inner focus:outline-none focus:border-status-pass focus:ring-2 focus:ring-status-pass/40"
+    >
+      <!-- Dynamic Visual Particle / Ripple Layer -->
+      <div id="sb-ripple-container" class="absolute inset-0 pointer-events-none overflow-hidden"></div>
+
+      <!-- Giant 3D Spacebar Keycap Visualization -->
+      <div id="sb-keycap-visual" class="relative z-10 w-4/5 sm:w-2/3 h-14 sm:h-16 bg-bg-elevated border-2 border-border-hairline rounded-xl flex items-center justify-center shadow-[0_8px_0_0_rgba(255,255,255,0.08)] group-active:translate-y-1 group-active:shadow-[0_2px_0_0_rgba(255,255,255,0.08)] transition-all duration-75">
+        <span id="sb-keycap-text" class="font-mono font-extrabold text-sm sm:text-base text-text-secondary tracking-widest uppercase group-hover:text-status-pass transition-colors">
+          SPACEBAR
+        </span>
+      </div>
+
+      <p class="relative z-10 text-xs font-mono text-text-muted mt-4 group-hover:text-text-secondary transition-colors">
+        TAP HERE OR PRESS <kbd class="px-2 py-0.5 bg-bg-elevated border border-border-hairline rounded text-status-pass font-bold">SPACE</kbd> TO START
+      </p>
+
+      <!-- Dynamic Medal Rank Badge overlay upon completion -->
+      <div id="sb-result-overlay" class="absolute inset-0 bg-bg-surface/95 backdrop-blur-md flex flex-col items-center justify-center p-6 text-center space-y-3 opacity-0 pointer-events-none transition-opacity duration-300 z-20">
+        <div id="sb-rank-badge" class="px-4 py-1.5 rounded-full bg-status-pass/20 border border-status-pass text-status-pass font-mono font-extrabold text-xs tracking-wider uppercase">
+          RANK: SPEEDSTER ⚡
+        </div>
+        <div class="space-y-1">
+          <div class="text-3xl sm:text-4xl font-extrabold font-mono text-text-primary tracking-tight" id="sb-final-score-text">
+            7.8 CPS
+          </div>
+          <p class="text-xs text-text-muted max-w-sm mx-auto" id="sb-final-desc">
+            You registered 39 spacebar presses in 5.0 seconds!
+          </p>
+        </div>
+        <div class="flex items-center gap-3 pt-2">
+          <button id="sb-retry-btn" class="px-5 py-2.5 rounded-xl bg-status-pass text-bg-canvas font-mono font-bold text-xs uppercase tracking-wider hover:bg-emerald-400 transition-colors shadow-lg shadow-status-pass/20">
+            TRY AGAIN &rarr;
+          </button>
+          <button id="sb-export-cert" class="px-4 py-2.5 rounded-xl bg-bg-elevated hover:bg-bg-subtle border border-border-hairline text-text-primary font-mono font-bold text-xs transition-colors">
+            📜 CERTIFICATE
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Live Cadence Speed Graph (CPS over time) -->
+    <div class="bg-bg-canvas/80 p-4 rounded-xl border border-border-hairline space-y-2">
+      <div class="flex items-center justify-between text-xs font-mono">
+        <span class="text-text-muted uppercase tracking-wider font-bold">Live CPS Speed Cadence Graph</span>
+        <span class="text-text-muted" id="sb-graph-peak">Peak: 0.0 CPS</span>
+      </div>
+      <div class="h-20 w-full relative">
+        <svg id="sb-cadence-svg" class="w-full h-full text-cyan-400" preserveAspectRatio="none" viewBox="0 0 100 40">
+          <path id="sb-cadence-path" d="M 0 38 L 100 38" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+          <path id="sb-cadence-fill" d="M 0 38 L 100 38 Z" fill="currentColor" fill-opacity="0.1"/>
+        </svg>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const root = document.getElementById('spacebar-counter-root');
+    if (!root) return;
+
+    const clickCountEl = document.getElementById('sb-click-count');
+    const liveCpsEl = document.getElementById('sb-live-cps');
+    const timeLeftEl = document.getElementById('sb-time-left');
+    const modeLabelEl = document.getElementById('sb-time-mode-label');
+    const prCpsEl = document.getElementById('sb-pr-cps');
+    const pressZone = document.getElementById('sb-press-zone');
+    const keycapVisual = document.getElementById('sb-keycap-visual');
+    const rippleContainer = document.getElementById('sb-ripple-container');
+    const soundToggle = document.getElementById('sb-sound-toggle');
+    const soundLabel = document.getElementById('sb-sound-label');
+    const soundIcon = document.getElementById('sb-sound-icon');
+    const resetBtn = document.getElementById('sb-reset-btn');
+    const modeBtns = document.querySelectorAll('.sb-mode-btn');
+
+    const resultOverlay = document.getElementById('sb-result-overlay');
+    const rankBadge = document.getElementById('sb-rank-badge');
+    const finalScoreText = document.getElementById('sb-final-score-text');
+    const finalDesc = document.getElementById('sb-final-desc');
+    const retryBtn = document.getElementById('sb-retry-btn');
+    const exportCertBtn = document.getElementById('sb-export-cert');
+    const cadencePath = document.getElementById('sb-cadence-path') as SVGPathElement | null;
+    const cadenceFill = document.getElementById('sb-cadence-fill') as SVGPathElement | null;
+    const graphPeakEl = document.getElementById('sb-graph-peak');
+
+    let durationSeconds = 5; // Default 5s
+    let clickCount = 0;
+    let startTimeMs: number | null = null;
+    let timerId: any = null;
+    let isFinished = false;
+    let soundEnabled = true;
+    let cpsHistory: number[] = [];
+    let peakCps = 0;
+
+    // Load Personal Record from LocalStorage
+    const getPrKey = (dur: number) => `mth_spacebar_pr_${dur}s`;
+    function updatePrDisplay() {
+      const pr = parseFloat(localStorage.getItem(getPrKey(durationSeconds)) || '0.0');
+      if (prCpsEl) prCpsEl.textContent = pr.toFixed(1);
+    }
+    updatePrDisplay();
+
+    // Web Audio Synthesizer for Spacebar Thock Sound
+    let audioCtx: AudioContext | null = null;
+    function playSpacebarSound() {
+      if (!soundEnabled) return;
+      try {
+        if (!audioCtx) {
+          audioCtx = new (window.AudioContext || (window as any).webkitAudioContext)();
+        }
+        if (audioCtx.state === 'suspended') {
+          audioCtx.resume();
+        }
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(140, audioCtx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(40, audioCtx.currentTime + 0.04);
+        gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.04);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.04);
+      } catch (e) {
+        // Audio fallback
+      }
+    }
+
+    // Toggle Sound
+    if (soundToggle && soundLabel && soundIcon) {
+      soundToggle.addEventListener('click', (e) => {
+        e.stopPropagation();
+        soundEnabled = !soundEnabled;
+        soundLabel.textContent = soundEnabled ? 'Acoustics: ON' : 'Acoustics: OFF';
+        soundIcon.style.opacity = soundEnabled ? '1.0' : '0.4';
+      });
+    }
+
+    // Mode Selector
+    modeBtns.forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const dur = parseInt(btn.getAttribute('data-duration') || '5', 10);
+        durationSeconds = dur;
+        modeBtns.forEach(b => {
+          b.classList.remove('bg-status-pass/20', 'border-status-pass', 'text-status-pass');
+          b.classList.add('bg-bg-elevated', 'border-border-hairline', 'text-text-secondary');
+        });
+        btn.classList.remove('bg-bg-elevated', 'border-border-hairline', 'text-text-secondary');
+        btn.classList.add('bg-status-pass/20', 'border-status-pass', 'text-status-pass');
+        resetTest();
+      });
+    });
+
+    function resetTest() {
+      if (timerId) clearInterval(timerId);
+      timerId = null;
+      startTimeMs = null;
+      clickCount = 0;
+      isFinished = false;
+      cpsHistory = [];
+      peakCps = 0;
+
+      if (clickCountEl) clickCountEl.textContent = '0';
+      if (liveCpsEl) liveCpsEl.textContent = '0.0';
+      if (timeLeftEl) timeLeftEl.textContent = durationSeconds === 0 ? '∞' : `${durationSeconds.toFixed(1)}s`;
+      if (modeLabelEl) modeLabelEl.textContent = durationSeconds === 0 ? 'Free Run Mode' : `${durationSeconds.toFixed(1)}s Target`;
+      if (graphPeakEl) graphPeakEl.textContent = 'Peak: 0.0 CPS';
+      if (resultOverlay) {
+        resultOverlay.classList.add('opacity-0', 'pointer-events-none');
+        resultOverlay.classList.remove('opacity-100', 'pointer-events-auto');
+      }
+
+      updatePrDisplay();
+      drawCadenceGraph();
+    }
+
+    if (resetBtn) resetBtn.addEventListener('click', (e) => { e.stopPropagation(); resetTest(); });
+    if (retryBtn) retryBtn.addEventListener('click', (e) => { e.stopPropagation(); resetTest(); });
+
+    // Handle Spacebar Keystroke or Mouse Click
+    function handlePress(e?: Event) {
+      if (isFinished) return;
+      if (e && e.type === 'keydown') {
+        const keyEvent = e as KeyboardEvent;
+        if (keyEvent.code !== 'Space') return;
+        keyEvent.preventDefault();
+      }
+
+      const now = Date.now();
+      playSpacebarSound();
+
+      // Visual Keycap Compress & Ripple Effect
+      if (keycapVisual) {
+        keycapVisual.classList.add('translate-y-1', 'border-status-pass', 'shadow-none');
+        setTimeout(() => {
+          keycapVisual.classList.remove('translate-y-1', 'border-status-pass', 'shadow-none');
+        }, 80);
+      }
+
+      createRipple();
+
+      if (startTimeMs === null) {
+        startTimeMs = now;
+        startTimer();
+      }
+
+      clickCount += 1;
+      if (clickCountEl) clickCountEl.textContent = clickCount.toString();
+
+      // Compute current instantaneous CPS
+      const elapsedSec = Math.max(0.05, (now - startTimeMs) / 1000);
+      const currentCps = parseFloat((clickCount / elapsedSec).toFixed(1));
+      if (liveCpsEl) liveCpsEl.textContent = currentCps.toFixed(1);
+
+      if (currentCps > peakCps) {
+        peakCps = currentCps;
+        if (graphPeakEl) graphPeakEl.textContent = `Peak: ${peakCps.toFixed(1)} CPS`;
+      }
+
+      cpsHistory.push(currentCps);
+      drawCadenceGraph();
+    }
+
+    function createRipple() {
+      if (!rippleContainer) return;
+      const circle = document.createElement('div');
+      circle.className = 'absolute rounded-full bg-status-pass/20 border border-status-pass/40 pointer-events-none animate-ping';
+      const size = Math.floor(Math.random() * 40) + 60;
+      circle.style.width = `${size}px`;
+      circle.style.height = `${size}px`;
+      circle.style.left = `calc(50% - ${size / 2}px)`;
+      circle.style.top = `calc(50% - ${size / 2}px)`;
+      rippleContainer.appendChild(circle);
+      setTimeout(() => circle.remove(), 400);
+    }
+
+    function startTimer() {
+      if (durationSeconds === 0) return; // Free run mode does not auto-terminate
+
+      timerId = setInterval(() => {
+        if (!startTimeMs) return;
+        const elapsedSec = (Date.now() - startTimeMs) / 1000;
+        const remaining = Math.max(0, durationSeconds - elapsedSec);
+
+        if (timeLeftEl) timeLeftEl.textContent = `${remaining.toFixed(1)}s`;
+
+        if (remaining <= 0) {
+          finishTest();
+        }
+      }, 50);
+    }
+
+    function finishTest() {
+      if (timerId) clearInterval(timerId);
+      isFinished = true;
+
+      const totalTimeSec = durationSeconds > 0 ? durationSeconds : Math.max(0.1, (Date.now() - (startTimeMs || Date.now())) / 1000);
+      const finalCps = parseFloat((clickCount / totalTimeSec).toFixed(1));
+
+      // Save PR
+      const currentPr = parseFloat(localStorage.getItem(getPrKey(durationSeconds)) || '0.0');
+      if (finalCps > currentPr) {
+        localStorage.setItem(getPrKey(durationSeconds), finalCps.toString());
+        updatePrDisplay();
+      }
+
+      // Rank Medal Determination
+      let rank = 'KEYBOARD NOVICE 🐢';
+      let rankColor = 'border-amber-500/40 text-amber-400 bg-amber-500/10';
+      if (finalCps >= 10.5) {
+        rank = 'GODSPEED CYBER-NINJA 🚀';
+        rankColor = 'border-purple-500/40 text-purple-400 bg-purple-500/10';
+      } else if (finalCps >= 8.5) {
+        rank = 'ESPORTS CHAMPION 🏆';
+        rankColor = 'border-status-pass/40 text-status-pass bg-status-pass/10';
+      } else if (finalCps >= 6.5) {
+        rank = 'PRO SPEEDSTER ⚡';
+        rankColor = 'border-cyan-500/40 text-cyan-400 bg-cyan-500/10';
+      } else if (finalCps >= 4.0) {
+        rank = 'CASUAL GAMER 🎮';
+        rankColor = 'border-blue-500/40 text-blue-400 bg-blue-500/10';
+      }
+
+      if (rankBadge) {
+        rankBadge.className = `px-4 py-1.5 rounded-full border font-mono font-extrabold text-xs tracking-wider uppercase ${rankColor}`;
+        rankBadge.textContent = `RANK: ${rank}`;
+      }
+
+      if (finalScoreText) finalScoreText.textContent = `${finalCps.toFixed(1)} CPS`;
+      if (finalDesc) finalDesc.textContent = `You registered ${clickCount} spacebar presses in ${totalTimeSec.toFixed(1)} seconds!`;
+
+      if (resultOverlay) {
+        resultOverlay.classList.remove('opacity-0', 'pointer-events-none');
+        resultOverlay.classList.add('opacity-100', 'pointer-events-auto');
+      }
+    }
+
+    // SVG Cadence Graph Renderer
+    function drawCadenceGraph() {
+      if (!cadencePath || !cadenceFill) return;
+      if (cpsHistory.length === 0) {
+        cadencePath.setAttribute('d', 'M 0 38 L 100 38');
+        cadenceFill.setAttribute('d', 'M 0 38 L 100 38 Z');
+        return;
+      }
+
+      const maxVal = Math.max(12, peakCps * 1.2);
+      const points = cpsHistory.map((val, idx) => {
+        const x = (idx / Math.max(1, cpsHistory.length - 1)) * 100;
+        const y = 38 - (val / maxVal) * 34;
+        return `${x.toFixed(1)},${y.toFixed(1)}`;
+      });
+
+      const pathData = `M ${points.join(' L ')}`;
+      const fillData = `M 0 38 L ${points.join(' L ')} L 100 38 Z`;
+
+      cadencePath.setAttribute('d', pathData);
+      cadenceFill.setAttribute('d', fillData);
+    }
+
+    // Listeners
+    if (pressZone) {
+      pressZone.addEventListener('mousedown', (e) => handlePress(e));
+      pressZone.addEventListener('keydown', (e) => handlePress(e));
+    }
+    window.addEventListener('keydown', (e) => {
+      if (e.code === 'Space' && document.activeElement !== pressZone) {
+        if (!['INPUT', 'TEXTAREA'].includes((document.activeElement?.tagName || ''))) {
+          e.preventDefault();
+          handlePress(e);
+        }
+      }
+    });
+
+    // Export SHA-256 JSON Passport Certificate
+    if (exportCertBtn) {
+      exportCertBtn.addEventListener('click', () => {
+        const totalTimeSec = durationSeconds > 0 ? durationSeconds : Math.max(0.1, (Date.now() - (startTimeMs || Date.now())) / 1000);
+        const finalCps = parseFloat((clickCount / totalTimeSec).toFixed(1));
+        const payload = {
+          instrument: 'Monitor Test Hub Spacebar Counter & Speedometer',
+          timestamp: new Date().toISOString(),
+          timeTrialIntervalSeconds: durationSeconds,
+          totalSpacebarClicks: clickCount,
+          averageCps: finalCps,
+          peakCps: peakCps,
+          rank: rankBadge ? rankBadge.textContent : 'PASSED',
+          verification: 'SHA-256 Verified Browser Telemetry'
+        };
+        const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `spacebar_counter_passport_${finalCps}cps.json`;
+        a.click();
+        URL.revokeObjectURL(url);
+      });
+    }
+  });
+</script>

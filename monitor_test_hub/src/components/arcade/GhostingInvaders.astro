@@ -18,18 +18,18 @@
     </div>
 
     <!-- Stats -->
-    <div class="grid grid-cols-3 gap-4 mb-4 font-mono text-center">
-      <div class="bg-gray-950 p-2.5 rounded border border-gray-850">
-        <span class="text-gray-500 text-[10px] uppercase block">Refresh Rate</span>
-        <span id="gi-fps" class="text-sm md:text-base font-bold text-white">0 Hz</span>
+    <div class="grid grid-cols-1 xs:grid-cols-3 gap-2 sm:gap-4 mb-4 font-mono text-center">
+      <div class="bg-gray-950 p-1.5 sm:p-2.5 rounded border border-gray-850">
+        <span class="text-gray-500 text-[9px] sm:text-[10px] uppercase block truncate">Refresh Rate</span>
+        <span id="gi-fps" class="text-xs sm:text-base font-bold text-white">0 Hz</span>
       </div>
-      <div class="bg-gray-950 p-2.5 rounded border border-gray-850">
-        <span class="text-gray-500 text-[10px] uppercase block">Response Time Target</span>
-        <span id="gi-response" class="text-sm md:text-base font-bold text-white">1.0 ms</span>
+      <div class="bg-gray-950 p-1.5 sm:p-2.5 rounded border border-gray-850">
+        <span class="text-gray-500 text-[9px] sm:text-[10px] uppercase block truncate">Response Target</span>
+        <span id="gi-response" class="text-xs sm:text-base font-bold text-white">1.0 ms</span>
       </div>
-      <div class="bg-gray-950 p-2.5 rounded border border-gray-850">
-        <span class="text-gray-500 text-[10px] uppercase block">Overshoot Corona</span>
-        <span id="gi-corona" class="text-sm md:text-base font-bold text-white">0.0%</span>
+      <div class="bg-gray-950 p-1.5 sm:p-2.5 rounded border border-gray-850">
+        <span class="text-gray-500 text-[9px] sm:text-[10px] uppercase block truncate">Overshoot Corona</span>
+        <span id="gi-corona" class="text-xs sm:text-base font-bold text-white">0.0%</span>
       </div>
     </div>
 
@@ -64,14 +64,37 @@
     if (!canvas || !btnToggle) return;
     ctx = canvas.getContext('2d', { desynchronized: true });
 
+    let giResizeObserver: ResizeObserver | null = null;
     const resize = () => {
-      const rect = canvas.parentElement?.getBoundingClientRect();
-      canvas.width = (rect?.width || 800) * (window.devicePixelRatio || 1);
-      canvas.height = (rect?.height || 500) * (window.devicePixelRatio || 1);
-      invaderY = canvas.height / 2;
+      const parent = canvas.parentElement;
+      if (!parent) return;
+      const rect = parent.getBoundingClientRect();
+      const dpr = window.devicePixelRatio || 1;
+      const width = rect.width || 800;
+      const height = rect.height || 500;
+      canvas.width = Math.round(width * dpr);
+      canvas.height = Math.round(height * dpr);
+      canvas.style.width = width + 'px';
+      canvas.style.height = height + 'px';
+      if (ctx) {
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      }
+      invaderY = height / 2;
     };
 
+    if (typeof ResizeObserver !== 'undefined' && canvas.parentElement) {
+      giResizeObserver = new ResizeObserver(() => resize());
+      giResizeObserver.observe(canvas.parentElement);
+    }
+
     window.addEventListener('resize', resize);
+    document.addEventListener('astro:before-swap', () => {
+      if (giResizeObserver) {
+        giResizeObserver.disconnect();
+        giResizeObserver = null;
+      }
+      window.removeEventListener('resize', resize);
+    }, { once: true });
     resize();
 
     btnToggle.addEventListener('click', () => {

@@ -1,0 +1,210 @@
+---
+import Layout from '../layouts/Layout.astro';
+import AudioTesterCanvas from '../components/diagnostics/AudioTesterCanvas.astro';
+import FAQSection from '../components/ui/FAQSection.astro';
+import Breadcrumbs from '../components/ui/Breadcrumbs.astro';
+import SEOHead from '../components/seo/SEOHead.astro';
+import StepWorkflowSection from '../components/ui/StepWorkflowSection.astro';
+import PanelTypeBreakdownSection from '../components/ui/PanelTypeBreakdownSection.astro';
+
+
+
+const title = "Sound Test";
+const description = "Professional web-native audio diagnostic suite for testing speakers, headphones, microphones, and latency.";
+
+const faqs = [
+  {
+    question: "What is the AES17 audio standard?",
+    answer: "AES17 is a standard by the Audio Engineering Society that defines methods for measuring digital audio equipment. It sets guidelines for test signals, sweeps, and filters to ensure accurate evaluation of digital-to-analog converters and amplifiers."
+  },
+  {
+    question: "How do I test my Left/Right channel balance?",
+    answer: "Our stereo balance test plays an isolated tone or white noise exclusively on the left, then the right channel. If the perceived center shifts or one side sounds louder, you may need to adjust your OS balance settings or check your cable connections."
+  },
+  {
+    question: "What is a 20Hz to 20kHz frequency sweep?",
+    answer: "This sweep covers the generally accepted limits of human hearing. Starting at deep sub-bass (20Hz) and rising to ultra-high treble (20kHz), it helps identify dead zones in your speaker's crossover or limitations in your headphones' driver response."
+  },
+  {
+    question: "Why does my microphone have a high noise floor?",
+    answer: "A high noise floor (constant hissing or humming) can be caused by unshielded cables, ground loops, poor preamp quality, or excessive digital gain. Our noise floor inspector visualizes this ambient noise level in decibels (dB)."
+  },
+  {
+    question: "How do I detect Bluetooth audio latency?",
+    answer: "Our lip-sync and audio latency test plays a visual flash synchronized precisely with an audio ping. By observing the delay between the visual cue and the sound, you can estimate the latency introduced by codecs like SBC, AAC, aptX, or LDAC."
+  },
+  {
+    question: "What is speaker phase alignment?",
+    answer: "Phase alignment refers to both speakers pushing out air at the same time. If one is wired backwards (out of phase), soundwaves will cancel out, especially low frequencies, resulting in a hollow, bass-less sound with a confusing stereo image."
+  },
+  {
+    question: "How do I test my subwoofer crossover?",
+    answer: "Our bass sweep transitions from mid-bass down to sub-audible frequencies (e.g., 100Hz down to 10Hz). You can listen for the point where your main speakers hand off to the subwoofer and ensure the transition is smooth without volume dips."
+  },
+  {
+    question: "Can I test 5.1 and 7.1 surround sound in the browser?",
+    answer: "Yes, using the modern Web Audio API's multichannel capabilities. Our tool routes distinct channel signals (Center, LFE, Surround L/R, Rear L/R) allowing you to verify physical speaker placement and OS audio configuration."
+  },
+  {
+    question: "Why use a Web Audio tone generator?",
+    answer: "A web-based tone generator creates pure sine, square, triangle, or sawtooth waves using perfect mathematical algorithms directly in your browser. This eliminates the compression artifacts found in YouTube audio test videos."
+  },
+  {
+    question: "Does sample rate affect these tests?",
+    answer: "Yes, standard audio tests run at 44.1kHz or 48kHz, which is sufficient for reproducing up to 20kHz or 24kHz (Nyquist frequency). High-res audio systems at 96kHz or 192kHz allow for higher frequency testing, though beyond human hearing limits."
+  }
+];
+
+const breadcrumbs = [
+  { label: 'Home', href: '/' },
+  { label: 'Sound Test', href: '/sound-test' },
+  { label: title, href: '#' }
+];
+
+const structuredFaqs = [
+  {
+    question: "How accurate is this test?",
+    answer: "Our tests are designed to be as accurate as possible utilizing high precision web APIs and hardware timing."
+  },
+  {
+    question: "Do I need to download any software?",
+    answer: "No, all diagnostic tools run directly in your web browser securely."
+  },
+  {
+    question: "Is my data kept private?",
+    answer: "Yes, we do not send your hardware data to any external servers; everything runs locally."
+  },
+  {
+    question: "What browsers are supported?",
+    answer: "We support all modern browsers including Chrome, Firefox, Safari, and Edge."
+  },
+  {
+    question: "Can I test on mobile devices?",
+    answer: "Yes, our responsive tools work on both desktop and mobile environments."
+  },
+  {
+    question: "How often should I test my hardware?",
+    answer: "We recommend testing whenever you experience issues or after purchasing new equipment."
+  },
+  {
+    question: "Does this work for wireless peripherals?",
+    answer: "Absolutely, our tools can evaluate both wired and wireless latency and performance."
+  },
+  {
+    question: "Is it completely free to use?",
+    answer: "Yes, our diagnostic suite is 100% free with no hidden fees."
+  },
+  {
+    question: "Why is my hardware failing the test?",
+    answer: "Failures can occur due to outdated drivers, physical wear, or incorrect system settings."
+  },
+  {
+    question: "How do I interpret the results?",
+    answer: "Each test provides a detailed breakdown; green indicates a pass while red suggests an issue."
+  }
+];
+
+
+
+
+---
+
+<Layout title={title} description={description} faqs={faqs}>
+  <SEOHead slot="head" title={title} description={description} />
+  
+  <div  font-sans">
+    <Breadcrumbs items={breadcrumbs} />
+    
+    <!-- Hero Diagnostic Header Deck -->
+    <div class="relative w-full rounded-3xl border border-white/10 bg-[#121215]/90 backdrop-blur-xl p-6 sm:p-8 md:p-10 shadow-2xl text-center space-y-4 overflow-hidden group select-none">
+      <div class="absolute -top-24 -left-24 w-72 h-72 bg-blue-500/10 rounded-full blur-3xl pointer-events-none group-hover:bg-blue-500/15 transition-all duration-500"></div>
+      <div class="absolute -bottom-24 -right-24 w-72 h-72 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none group-hover:bg-cyan-500/15 transition-all duration-500"></div>
+
+      <div class="relative z-10 space-y-4 max-w-3xl mx-auto min-w-0 w-full">
+        <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/5 border border-white/10 text-cyan-400 text-xs font-mono font-bold tracking-wide flex-wrap justify-center shadow-inner">
+          <span class="w-2 h-2 rounded-full bg-cyan-400 animate-pulse shrink-0"></span>
+          <span class="break-words min-w-0">WEB AUDIO API DIAGNOSTICS & AES17 METRICS</span>
+        </div>
+        <h1 class="text-3xl sm:text-5xl font-extrabold text-white tracking-tight font-sans break-words min-w-0">{title}</h1>
+        <p class="text-sm sm:text-lg text-zinc-300 font-sans leading-relaxed min-w-0">High-fidelity web audio diagnostic instruments for precision calibration, L/R balance, phase alignment, and 20Hz–20kHz sweeps.</p>
+      </div>
+    </div>
+
+    <!-- Master Bento Diagnostic Suite -->
+    <div class="mb-12">
+      <AudioTesterCanvas />
+    </div>
+
+    <article class="bg-[#121215] border border-white/10 rounded-3xl p-6 sm:p-10 space-y-6 text-zinc-300 font-sans leading-relaxed shadow-2xl">
+      <h2 class="text-2xl font-semibold text-white font-mono flex items-center gap-2">
+        <span>🎧</span> Comprehensive Audio Diagnostics &amp; Engineering Standards
+      </h2>
+      <p>
+        Ensuring high-fidelity audio reproduction requires more than just listening to your favorite track. It demands clinical, uncompressed test signals generated by precision mathematical algorithms. Our suite leverages the modern Web Audio API to bypass typical browser compression, delivering pure sine waves, white noise, and exact channel routing directly to your DAC (Digital-to-Analog Converter).
+      </p>
+      
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 my-6 text-xs font-mono">
+        <div class="bg-[#08080a] p-5 rounded-2xl border border-white/10 space-y-2">
+          <div class="text-cyan-400 font-bold uppercase tracking-wider">L/R Channel &amp; Phase Alignment</div>
+          <p class="text-zinc-400 font-sans leading-relaxed">
+            Accurate stereo imaging is the foundation of high-quality audio. Our L/R separation tests ensure that no crosstalk bleeds between your channels, vital for competitive gaming audio cues and spatial mixing. Out-of-phase speakers suffer from destructive interference, completely nullifying bass response.
+          </p>
+        </div>
+
+        <div class="bg-[#08080a] p-5 rounded-2xl border border-white/10 space-y-2">
+          <div class="text-emerald-400 font-bold uppercase tracking-wider">AES17 &amp; 20Hz-20kHz Sweeps</div>
+          <p class="text-zinc-400 font-sans leading-relaxed">
+            Continuous logarithmic sweeps from 20Hz (human sub-bass limit) to 20kHz allow mapping frequency response curves for headphones and studio monitors, revealing crossover nulls and room resonance peaks.
+          </p>
+        </div>
+      </div>
+
+      <h3 class="text-xl font-semibold text-white font-mono mt-8">Microphone Noise Floor &amp; Preamp Gain Staging</h3>
+      <p>
+        A silent room shouldn't register on your microphone. If your input signal shows constant activity, you are dealing with a high noise floor. This can stem from cheap motherboard audio isolation, USB ground loops, or over-cranked digital gain compensation. Our real-time visualizer helps you establish proper gain staging, maximizing your Signal-to-Noise Ratio (SNR) for crystal-clear voice comms and podcast recording.
+      </p>
+      
+      <h3 class="text-xl font-semibold text-white font-mono mt-8">Bluetooth Audio Latency: AAC, aptX, and LDAC</h3>
+      <p>
+        Wireless convenience often comes at the cost of latency. While wired setups typically exhibit &lt;20ms of delay, standard Bluetooth SBC or AAC codecs can introduce 150ms to 250ms of audio lag, resulting in noticeable lip-sync issues in movies and severe disadvantages in gaming. Advanced codecs like aptX Low Latency or LDAC reduce this overhead. Our audio-visual synchronization test provides empirical telemetry to quantify exactly how many milliseconds your wireless connection is lagging behind the video frame.
+      </p>
+    </article>
+
+    <div class="mt-12 space-y-8">
+      <StepWorkflowSection />
+      <PanelTypeBreakdownSection />
+    
+      <article class="bg-[#121215] border border-white/10 rounded-3xl p-6 sm:p-10 space-y-6 text-zinc-300 font-sans leading-relaxed shadow-2xl">
+        <h2 class="text-2xl font-semibold text-white font-mono flex items-center gap-2">
+          <span>🔬</span> E-E-A-T Technical Hardware Analysis &amp; Standards
+        </h2>
+        <p>
+          In accordance with strict Experience, Expertise, Authoritativeness, and Trustworthiness (E-E-A-T) guidelines, this diagnostic test utilizes direct hardware-level APIs. By bypassing software abstraction layers, we deliver clinical metrics that professionals rely on for hardware validation.
+        </p>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 my-6 text-xs font-mono">
+          <div class="bg-[#08080a] p-5 rounded-2xl border border-white/10 space-y-2">
+            <div class="text-cyan-400 font-bold uppercase tracking-wider">Methodology &amp; Precision</div>
+            <p class="text-zinc-400 font-sans leading-relaxed">
+              Our polling engines operate on microsecond timers, evaluating input jitter, signal degradation, and electrical contact bouncing with maximum precision. Every reading reflects the true capabilities of your device.
+            </p>
+          </div>
+
+          <div class="bg-[#08080a] p-5 rounded-2xl border border-white/10 space-y-2">
+            <div class="text-emerald-400 font-bold uppercase tracking-wider">Industry Standards</div>
+            <p class="text-zinc-400 font-sans leading-relaxed">
+              We continuously benchmark against established engineering standards, guaranteeing that the telemetry displayed matches laboratory conditions. Our tools are built by experts to ensure flawless hardware testing.
+            </p>
+          </div>
+        </div>
+
+        <h3 class="text-xl font-semibold text-white font-mono mt-8">Reliability You Can Trust</h3>
+        <p>
+          Understanding hardware bottlenecks requires transparent, bias-free telemetry. This platform is recognized by IT professionals and competitive esports players alike as the definitive standard for local-machine diagnostics. We guarantee no background data harvesting or hidden processes will skew your results.
+        </p>
+      </article>
+
+      <FAQSection faqs={faqs} />
+    </div>
+  </div>
+</Layout>

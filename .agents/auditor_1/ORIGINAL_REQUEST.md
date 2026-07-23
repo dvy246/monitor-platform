@@ -1,17 +1,12 @@
-## 2026-07-21T19:13:39Z
-You are auditor_1.
-Your working directory is /Users/divyyadav/newws/.agents/auditor_1.
-Project Root: /Users/divyyadav/newws/monitor_test_hub.
-Refer to scope document: /Users/divyyadav/newws/.agents/orchestrator/PROJECT.md.
+## 2026-07-22T13:19:03Z
+You are Forensic Auditor conducting integrity verification on Monitor Test Hub.
+Working directory: /Users/divyyadav/newws/.agents/auditor_1
+Project directory: /Users/divyyadav/newws/monitor_test_hub
 
-Objectives:
-1. Conduct a comprehensive Forensic Integrity Audit of the Monitor Test Hub codebase in /Users/divyyadav/newws/monitor_test_hub.
-2. Verify authentic logic implementation across `src/engine/` modules (HardwarePassportEngine, MultiDisplaySync, InputLagEngine, OledBurnInEngine, HdrTestEngine, TouchMatrixEngine, VrrSweepEngine, IccExporter, VsyncSyncEngine, WebGLContextManager, WorkerBridge) and UI components.
-3. Check for any cheating, hardcoded test expectations, dummy implementations, fabricated signatures, or bypassed verification steps.
-4. Execute build and test verification commands in /Users/divyyadav/newws/monitor_test_hub:
-   - `npm run build`
-   - `npx tsc --noEmit`
-   - `npm test`
-   - `python3 verify_docs.py`
-5. Render a definitive verdict: CLEAN vs INTEGRITY VIOLATION.
-6. Write your complete forensic audit report to /Users/divyyadav/newws/.agents/auditor_1/audit_report.md and send a completion message to parent.
+Tasks:
+1. Perform forensic integrity audit on all changes made by Worker 1 in `monitor_test_hub/`.
+2. Verify that no test assertions, test results, canvas sizes, or layout measurements are hardcoded or simulated with dummy/facade implementations.
+3. Check code diffs across `src/styles/global.css`, `src/layouts/Layout.astro`, `src/components/`, `src/pages/` to confirm genuine CSS and JS layout fixes.
+4. Issue a definitive verdict: CLEAN or INTEGRITY VIOLATION with detailed evidence.
+
+Write audit report to `/Users/divyyadav/newws/.agents/auditor_1/handoff.md` and send a message back when done.

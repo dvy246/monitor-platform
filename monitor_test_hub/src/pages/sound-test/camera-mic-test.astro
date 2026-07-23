@@ -1,0 +1,114 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import AudioTesterCanvas from '../../components/diagnostics/AudioTesterCanvas.astro';
+import FAQSection from '../../components/ui/FAQSection.astro';
+import Breadcrumbs from '../../components/ui/Breadcrumbs.astro';
+import MasterBentoDiagnosticSuite from '../../components/diagnostics/MasterBentoDiagnosticSuite.astro';
+import StepWorkflowSection from '../../components/ui/StepWorkflowSection.astro';
+import PanelTypeBreakdownSection from '../../components/ui/PanelTypeBreakdownSection.astro';
+
+
+const title = "Webcam & Microphone Hardware Test";
+const description = "Test your camera video feed, microphone audio levels, speech clarity, and room noise floor online using HTML5 MediaDevices APIs.";
+
+const faqs = [
+  {
+    question: "How does the online Webcam & Microphone Hardware Test work?",
+    answer: "Our diagnostic tool requests temporary access via HTML5 navigator.mediaDevices.getUserMedia(). It displays your live video feed and visualizes microphone audio input levels in real time."
+  },
+  {
+    question: "Is my webcam video or microphone audio recorded or sent to a server?",
+    answer: "No. Zero video frames or audio streams leave your device. All media processing happens 100% client-side inside your web browser."
+  },
+  {
+    question: "Why is my browser blocking access to my camera or microphone?",
+    answer: "Check your browser address bar permissions (click the lock/padlock icon) and ensure Camera and Microphone permissions are set to 'Allow'. Also ensure no other app (Zoom, Teams, Skype) is locking the camera device."
+  },
+  {
+    question: "How do I test webcam video resolution and frame rate (FPS)?",
+    answer: "Our video inspector reads live media track settings to report native resolution (1080p, 4K), active aspect ratio, and video frame rate."
+  },
+  {
+    question: "What causes microphone echo or feedback during video calls?",
+    answer: "Echo occurs when speaker sound leaks back into an unshielded microphone. Enabling Acoustic Echo Cancellation (AEC) or using headphones eliminates echo feedback loops."
+  },
+  {
+    question: "How do I test my microphone gain and background noise level?",
+    answer: "Speak into your microphone while observing the decibel meter. Green levels (-18dB to -6dB) indicate healthy speech volume; red levels (0dB) indicate clipping distortion."
+  },
+  {
+    question: "Can I test external USB webcams and Bluetooth headsets?",
+    answer: "Yes. Use the media device drop-down selector to switch between built-in laptop cameras, external USB webcams, and Bluetooth headset microphones."
+  },
+  {
+    question: "Why is my webcam video dark or grainy in low light?",
+    answer: "Webcam sensors increase digital gain (ISO) in low ambient light, introducing digital noise grain. Increase front lighting or position yourself facing a window."
+  },
+  {
+    question: "What is the difference between mono and stereo microphone input?",
+    answer: "Mono microphones capture a single audio channel; dual-capsule stereo microphones capture distinct left and right channels for immersive spatial voice recording."
+  },
+  {
+    question: "Does this test work on mobile devices (iPhone, iPad, Android)?",
+    answer: "Yes. Our tool is fully responsive and compatible with mobile Safari and Chrome, allowing you to test front and rear camera feeds and internal microphones."
+  }
+];
+
+const breadcrumbs = [
+  { label: 'Home', href: '/' },
+  { label: 'Sound Test', href: '/sound-test' },
+  { label: title, href: '#' }
+];
+---
+
+<Layout title={title} description={description} faqs={faqs}>
+  <div  font-sans">
+    <Breadcrumbs items={breadcrumbs} />
+
+    <!-- Hero Header Deck -->
+    <header class="relative w-full rounded-3xl border border-white/10 bg-[#121215]/90 backdrop-blur-xl p-6 sm:p-8 md:p-10 shadow-2xl space-y-4 overflow-hidden group select-none">
+      <div class="absolute -top-24 -left-24 w-72 h-72 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none group-hover:bg-emerald-500/15 transition-all duration-500"></div>
+      <div class="absolute -bottom-24 -right-24 w-72 h-72 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none group-hover:bg-cyan-500/15 transition-all duration-500"></div>
+
+      <div class="relative z-10 space-y-3 max-w-3xl min-w-0 w-full">
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-emerald-400 text-xs font-mono font-bold tracking-wide flex-wrap shadow-inner">
+          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shrink-0"></span>
+          <span>HTML5 MEDIADEVICES DIAGNOSTIC INSTRUMENT</span>
+        </div>
+        <h1 class="text-3xl sm:text-5xl font-extrabold text-white tracking-tight font-sans break-words min-w-0">
+          {title}
+        </h1>
+        <p class="text-sm sm:text-base text-zinc-300 font-sans leading-relaxed min-w-0">
+          Test your webcam video resolution, frame rate, microphone voice levels, and audio clipping before entering video conference calls.
+        </p>
+      </div>
+    </header>
+
+    <!-- Main Diagnostic Instrument -->
+    <div class="rounded-3xl border border-white/10 bg-[#121215]/90 backdrop-blur-xl p-4 sm:p-6 shadow-2xl">
+      <AudioTesterCanvas />
+    </div>
+
+    <!-- 3-Step Workflow Protocol -->
+    <StepWorkflowSection />
+
+    <!-- Panel Technology Breakdown -->
+    <PanelTypeBreakdownSection />
+
+    <!-- Article Section -->
+    <article class="bg-[#121215] border border-white/10 rounded-3xl p-6 sm:p-8 space-y-6 shadow-2xl font-sans text-sm text-zinc-300 leading-relaxed">
+      <div class="border-b border-white/10 pb-4 font-mono">
+        <span class="text-xs font-bold text-emerald-400 uppercase tracking-widest block mb-1">HARDWARE PRIVACY &amp; TELEMETRY</span>
+        <h2 class="text-2xl font-bold text-white">Client-Side HTML5 Media Device Inspection</h2>
+      </div>
+
+      <p>
+        Evaluating camera video feeds and microphone input quality is critical for remote meetings, streaming, and online calls. Our inspector uses standard W3C MediaDevices APIs to display real-time video resolution, frame rates, and microphone gain metrics securely in browser RAM.
+      </p>
+    </article>
+
+    <!-- 10 Structured FAQs Component -->
+    <FAQSection faqs={faqs} title="Webcam & Microphone FAQs" />
+
+  </div>
+</Layout>
