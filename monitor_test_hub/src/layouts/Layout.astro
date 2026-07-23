@@ -419,6 +419,10 @@ const { t, lang } = useTranslations(Astro.url.pathname);
                       <span class="truncate flex-1 min-w-0 font-sans group-hover/item:text-text-primary">Speaker Crackle Test</span>
                       <span class="shrink-0 text-[9px] font-mono font-bold text-amber-400 bg-amber-400/10 px-1.5 py-0.5 rounded border border-amber-400/30 whitespace-nowrap">Check</span>
                     </a>
+                    <a href={localizeLink("/sound-test/speaker-test-music", lang)} class="flex items-center justify-between gap-2 p-2 rounded-lg hover:bg-bg-elevated text-xs font-medium text-text-secondary hover:text-text-primary transition-colors group/item">
+                      <span class="truncate flex-1 min-w-0 font-sans group-hover/item:text-text-primary">Test Music Samples</span>
+                      <span class="shrink-0 text-[9px] font-mono font-bold text-indigo-400 bg-indigo-400/10 px-1.5 py-0.5 rounded border border-indigo-400/30 whitespace-nowrap">Music</span>
+                    </a>
                     <a href={localizeLink("/sound-test", lang)} class="flex items-center justify-between gap-2 p-2 rounded-lg hover:bg-bg-elevated text-xs font-bold text-text-primary bg-purple-400/10 border border-purple-400/30 transition-colors group/item">
                       <span class="truncate flex-1 min-w-0 font-sans">Sound &amp; Speaker Test</span>
                       <span class="shrink-0 text-[9px] font-mono font-bold text-purple-400 bg-purple-400/20 px-1.5 py-0.5 rounded border border-purple-400/40 whitespace-nowrap">Stereo</span>
@@ -1034,6 +1038,10 @@ const { t, lang } = useTranslations(Astro.url.pathname);
             <a href={localizeLink("/sound-test/speaker-crackle-test", lang)} class="flex items-center justify-between gap-2 p-2 rounded-lg hover:bg-bg-elevated text-text-primary min-h-[44px] group">
               <span class="truncate flex-1 min-w-0 font-sans">Speaker Crackle Test</span>
               <span class="shrink-0 text-[9px] font-mono font-bold text-amber-400 bg-amber-400/10 px-1.5 py-0.5 rounded border border-amber-400/30">Check</span>
+            </a>
+            <a href={localizeLink("/sound-test/speaker-test-music", lang)} class="flex items-center justify-between gap-2 p-2 rounded-lg hover:bg-bg-elevated text-text-primary min-h-[44px] group">
+              <span class="truncate flex-1 min-w-0 font-sans">Test Music Samples</span>
+              <span class="shrink-0 text-[9px] font-mono font-bold text-indigo-400 bg-indigo-400/10 px-1.5 py-0.5 rounded border border-indigo-400/30">Music</span>
             </a>
             <a href={localizeLink("/sound-test", lang)} class="flex items-center justify-between gap-2 p-2 rounded-lg hover:bg-bg-elevated text-text-primary min-h-[44px] group">
               <span class="truncate flex-1 min-w-0 font-sans">Sound &amp; Speaker Test</span>

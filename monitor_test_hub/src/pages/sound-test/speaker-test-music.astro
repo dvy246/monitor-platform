@@ -1,0 +1,122 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import AudiophilePlayerCanvas from '../../components/diagnostics/AudiophilePlayerCanvas.astro';
+import FAQSection from '../../components/ui/FAQSection.astro';
+
+const testMusicFaqs = [
+  {
+    q: 'How do I test my speakers with music?',
+    a: 'The best way to test speakers is by playing high-quality, lossless, or 320kbps MP3 audio tracks that cover the full frequency spectrum (20Hz to 20kHz). Listen for deep, un-distorted bass, clear mid-range vocals, and crisp treble without harshness.'
+  },
+  {
+    q: 'What is the best song for testing bass?',
+    a: 'Songs with isolated 808 sub-bass drops or heavy electronic synth-bass are ideal. You want tracks that can push frequencies down to 30Hz or 40Hz to see if your subwoofer or speaker drivers can reproduce them without rattling or bottoming out.'
+  },
+  {
+    q: 'Can I test surround sound with stereo music?',
+    a: 'While stereo music can test left/right imaging and soundstage, it cannot truly test 5.1 or 7.1 surround sound setups. For surround sound, you need specific multi-channel audio tracks or movies mixed in Dolby Atmos or DTS:X.'
+  },
+  {
+    q: 'What is soundstage in headphones?',
+    a: 'Soundstage refers to the perceived three-dimensional space of the audio. Good headphones (especially open-back models) make it sound like the instruments are spread out in a room around you, rather than just playing inside your head.'
+  },
+  {
+    q: 'Why does my speaker sound distorted at high volumes?',
+    a: 'Distortion at high volumes (clipping) usually means the amplifier is being pushed beyond its clean power limit, or the speaker cone is reaching its maximum physical excursion. Over time, playing heavily distorted music can blow the speaker.'
+  },
+  {
+    q: 'Do I need lossless FLAC audio to test my speakers?',
+    a: 'While FLAC or WAV files offer mathematically perfect audio, a high-quality 320kbps MP3 is virtually indistinguishable to the human ear for most testing purposes. The mixing and mastering quality of the track matters much more than the file format.'
+  },
+  {
+    q: 'How do I test vocal clarity?',
+    a: 'Use acoustic tracks featuring a solo vocalist with minimal background instruments. Pay attention to the mid-range (300Hz to 3kHz). The voice should sound natural, forward, and free of boxiness or sibilance (harsh "S" sounds).'
+  },
+  {
+    q: 'What is treble harshness?',
+    a: 'Treble harshness occurs when high frequencies (usually between 4kHz and 10kHz) are too amplified or distorted, leading to a piercing, fatiguing sound. A good speaker reproduces cymbals and high hats crisply without causing ear strain.'
+  },
+  {
+    q: 'Should I use an equalizer (EQ) when testing speakers?',
+    a: 'No. When testing new speakers or headphones, turn off all EQs, bass boosts, and spatial audio effects. You want to hear the "flat" or natural sound signature of the hardware itself before making adjustments.'
+  },
+  {
+    q: 'What is driver clipping?',
+    a: 'Clipping is a form of waveform distortion that occurs when an amplifier is overdriven and attempts to deliver an output voltage or current beyond its maximum capability. It flattens the peaks of the audio wave, producing a harsh, static-like sound.'
+  }
+];
+---
+
+<Layout
+  title="Speaker & Headphone Test Music | Audiophile Diagnostic Suite"
+  description="Free online audiophile testing suite. Test your speaker bass, treble, soundstage, and vocal clarity with our curated 320kbps high-quality audio samples."
+  faqs={testMusicFaqs.map(item => ({ question: item.q, answer: item.a }))}
+>
+  <main id="main-content" class="py-10 space-y-12">
+    <!-- Page Header & SEO Hero -->
+    <section class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-4">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/30 font-mono text-xs text-indigo-400 font-bold tracking-wider uppercase">
+        <span class="w-2 h-2 rounded-full bg-indigo-400 animate-pulse"></span>
+        Audiophile Diagnostic Suite
+      </div>
+
+      <h1 class="text-3xl sm:text-5xl font-extrabold text-text-primary tracking-tight font-mono">
+        Speaker &amp; Headphone Test Music
+      </h1>
+
+      <p class="text-sm sm:text-base text-text-secondary max-w-2xl mx-auto leading-relaxed">
+        Evaluate your audio hardware's dynamic range, sub-bass extension, vocal clarity, and 3D soundstage using our curated high-resolution test tracks.
+      </p>
+    </section>
+
+    <!-- Interactive Diagnostic Canvas Component -->
+    <section class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <AudiophilePlayerCanvas />
+    </section>
+
+    <!-- Deep Technical Information & SEO Suite -->
+    <section class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10 text-text-secondary text-sm leading-relaxed">
+      
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="p-6 rounded-2xl bg-bg-surface border border-border-hairline space-y-3">
+          <div class="w-10 h-10 rounded-full bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400">
+            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
+          </div>
+          <h3 class="font-bold text-text-primary text-base font-mono">Bass Extension</h3>
+          <p class="text-xs text-text-muted leading-relaxed">Sub-bass frequencies (20Hz-80Hz) require massive air displacement. Test for rattle, distortion, and clean low-end punch without muddying the mids.</p>
+        </div>
+        
+        <div class="p-6 rounded-2xl bg-bg-surface border border-border-hairline space-y-3">
+          <div class="w-10 h-10 rounded-full bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400">
+            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" /></svg>
+          </div>
+          <h3 class="font-bold text-text-primary text-base font-mono">Vocal Clarity</h3>
+          <p class="text-xs text-text-muted leading-relaxed">Mid-range frequencies (300Hz-3kHz) are where human hearing is most sensitive. Ensure vocals sound natural, forward, and separate from the instruments.</p>
+        </div>
+        
+        <div class="p-6 rounded-2xl bg-bg-surface border border-border-hairline space-y-3">
+          <div class="w-10 h-10 rounded-full bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center text-cyan-400">
+            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3" /></svg>
+          </div>
+          <h3 class="font-bold text-text-primary text-base font-mono">Treble &amp; Soundstage</h3>
+          <p class="text-xs text-text-muted leading-relaxed">High frequencies evaluate tweeter performance. Look for a wide 3D soundstage where you can pinpoint the physical location of instruments in the room.</p>
+        </div>
+      </div>
+
+      <div class="p-6 sm:p-8 rounded-2xl bg-gradient-to-br from-bg-surface to-bg-canvas border border-border-hairline space-y-4">
+        <h2 class="text-xl font-bold font-mono text-text-primary">
+          How to Test Your Audio Hardware Like a Pro
+        </h2>
+        <ol class="list-decimal list-inside space-y-3 text-text-muted marker:text-indigo-400 marker:font-bold pl-2">
+          <li><strong>Disable Enhancements:</strong> Turn off all EQ, spatial audio (like Dolby Atmos), and bass boost settings on your device to hear the raw hardware capability.</li>
+          <li><strong>Set Baseline Volume:</strong> Start at 50% volume. Increase to 80% to test for high-excursion distortion, but avoid 100% for prolonged periods to prevent hearing and speaker damage.</li>
+          <li><strong>Listen for Separation:</strong> A high-quality speaker or headphone will allow you to hear individual instruments distinctly, rather than a blurred "wall of sound".</li>
+          <li><strong>Check Left/Right Balance:</strong> Ensure the stereo image is perfectly centered. If one side is louder or quieter, there may be a hardware imbalance or dirty speaker mesh.</li>
+        </ol>
+      </div>
+
+      <!-- FAQ Section Accordion UI -->
+      <FAQSection faqs={testMusicFaqs.map(item => ({ question: item.q, answer: item.a }))} />
+    </section>
+  </main>
+</Layout>

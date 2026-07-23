@@ -8,44 +8,44 @@ const { t, lang } = useTranslations(Astro.url.pathname);
 
 const waterEjectFaqs = [
   {
-    q: 'Is the water eject sound tool free to use?',
-    a: 'Yes, all our water eject sound tools are 100% free. No registration, no downloads, no hidden costs. Just select your device and play the sound.'
+    q: 'Will rice fix water-damaged speakers?',
+    a: 'Rice really is not the fix people hope it is. It can leave dust inside your device and it does not actively pull water out of a speaker. You will get much better results using our water eject tone method and then letting your device sit in open air. If you want step-by-step help for your exact device, jump over to our device-specific tools.'
   },
   {
-    q: 'Which frequency should I use?',
-    a: 'Start with 165Hz as it works best for most devices. If water remains, try higher frequencies like 200Hz or 300Hz for stubborn moisture.'
+    q: 'How long does speaker drying take?',
+    a: 'For a light splash, most speakers sound clear again within 2 to 4 hours after using the sound method. If your device took a real dunking, give it 24 to 48 hours before you go back to normal use. Our FAQ page has more detail on timing for different situations.'
   },
   {
-    q: 'How long should I play the water eject sound?',
-    a: 'Play for 30 seconds to 2 minutes. For heavy water exposure, repeat 3-5 times with short breaks between cycles.'
+    q: 'Can I charge my phone when it is wet?',
+    a: 'No, please do not. Water in the charging port can cause a short circuit and permanently damage your phone. Wait until everything is fully dry before plugging in a cable. If your phone supports wireless charging and the back is dry, that is a safer option in a pinch.'
   },
   {
-    q: 'Will this damage my speakers?',
-    a: 'No, these frequencies are completely safe for all speakers. This is the same technology Apple uses in the Apple Watch Water Lock feature.'
+    q: 'Does water damage affect warranty?',
+    a: 'In most cases yes. Manufacturer warranties usually do not cover liquid damage, even on water-resistant models. It is worth checking your warranty details or looking into device insurance that includes accidental liquid damage.'
   },
   {
-    q: 'Does it work on all phone brands?',
-    a: 'Yes, our water eject sound tools work on iPhone, Samsung, Google Pixel, OnePlus, Xiaomi, Motorola, Sony, LG, and all other smartphone brands.'
+    q: 'What frequency should I use for my device?',
+    a: 'A good starting point is 165Hz for most phones with light water exposure. Bump it up to around 300Hz for tablets and bigger speakers, and try 500Hz if water is stuck in a smaller speaker like an earpiece. If you are not sure, the sweep mode cycles through the range for you.'
   },
   {
-    q: 'How does a water eject sound work?',
-    a: 'Water ejection sounds generate low-frequency acoustic sine waves (typically between 150Hz and 300Hz). These low frequencies force the speaker diaphragm and voice coil to vibrate rapidly at high mechanical amplitude, pushing out trapped liquid droplets through physical air displacement.'
+    q: 'Is water eject sound safe for my speakers?',
+    a: 'Yes, it is safe. The frequencies work on the same principle as the Apple Watch water eject feature. The vibrations are gentle enough that they will not damage your speaker but strong enough to push water droplets out.'
   },
   {
-    q: 'Can I remove water from Apple Watch or AirPods speakers?',
-    a: 'Yes. Select our Mobile or Call Speaker mode, set volume to 100%, and hold your AirPods or Apple Watch speaker mesh near the output.'
+    q: 'How many times should I play the water eject sound?',
+    a: 'Play the tone for 30 to 60 seconds at full volume, then check how it sounds. If audio is still muffled, wait 5 to 10 minutes and repeat two or three times. Most speakers clear up completely within a couple of cycles.'
   },
   {
-    q: 'Does rice actually dry out a phone speaker faster than sound?',
-    a: 'No. Rice is inefficient and dangerous. Starch dust from uncooked rice can enter speaker grills and charging ports, combining with liquid to form hard paste. Acoustic sound wave ejection is faster, safer, and immediate.'
+    q: 'Does this work for salt water or pool water?',
+    a: 'Yes, it works for salt water, pool water, and regular water. If it was salt water, gently rinse the outside with fresh water first so salt crystals do not build up, then run the water eject tool.'
   },
   {
-    q: 'How do I test if my microphone was damaged by water?',
-    a: 'After running the speaker water eject sound, visit our free online Microphone Test suite to record a 3-second audio loop and verify if your mic capsule captured clear audio without static floor noise.'
+    q: 'Can I use this on AirPods or wireless earbuds?',
+    a: 'Absolutely. It works with AirPods Pro, Galaxy Buds, and most other wireless earbuds. Just connect them to your device over Bluetooth, turn the volume up all the way, and play the tone with the earbuds sitting speaker-side down on a soft cloth.'
   },
   {
-    q: 'What should I do if my speaker still sounds muffled or crackling?',
-    a: 'If audio remains muffled after 3 cycles, use our "Left/Right Channel Target" controls to isolate the top earpiece speaker or bottom firing speaker individually. Follow with our "Crackle & Distortion Check" mode to diagnose mechanical cone damage.'
+    q: 'What should I do if water eject sound does not work?',
+    a: 'If the sound has not fully cleared things after a few tries, let your device air dry for 24 to 48 hours in a well-ventilated spot and avoid any heat source. If problems stick around after that, there may be internal water damage that needs a professional look.'
   }
 ];
 ---
@@ -77,22 +77,203 @@ const waterEjectFaqs = [
       <WaterEjectorCanvas />
     </section>
 
+    <!-- Problem Selection CTA -->
+    <section class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-4">
+      <h2 class="text-xl font-bold font-mono text-text-primary">What problem are you having?</h2>
+      <p class="text-sm text-text-muted">Select your issue to get specific help</p>
+      <div class="flex flex-wrap items-center justify-center gap-3">
+        <span class="px-4 py-2 rounded-lg bg-bg-surface border border-border-hairline text-sm font-bold text-text-primary shadow-specular-top">Muffled Sound</span>
+        <span class="px-4 py-2 rounded-lg bg-bg-surface border border-border-hairline text-sm font-bold text-text-primary shadow-specular-top">Low Volume</span>
+        <span class="px-4 py-2 rounded-lg bg-bg-surface border border-border-hairline text-sm font-bold text-text-primary shadow-specular-top">No Sound</span>
+        <span class="px-4 py-2 rounded-lg bg-status-pass/10 border border-status-pass/30 text-sm font-bold text-status-pass shadow-specular-top ring-1 ring-status-pass/50">Call Speaker Issue</span>
+      </div>
+      <div class="mt-4 p-4 rounded-xl bg-status-info/10 border border-status-info/30 text-left max-w-2xl mx-auto flex items-start gap-3">
+        <svg class="w-6 h-6 text-status-info shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+        <div>
+          <h4 class="font-bold text-status-info text-sm mb-1">Recommended Solution</h4>
+          <p class="text-xs text-text-secondary leading-relaxed">Call speakers (earpiece) are delicate. Place your device face-down on a soft cloth. Let gravity help water drain. Avoid inserting anything into the speaker opening. Use the <strong class="text-text-primary">Call Speaker Eject</strong> preset above.</p>
+        </div>
+      </div>
+    </section>
+
     <!-- Deep Technical Information & SEO Suite -->
-    <section class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10 text-text-secondary text-sm leading-relaxed">
-      <div class="p-6 rounded-2xl bg-bg-surface border border-border-hairline space-y-4">
-        <h2 class="text-xl font-bold font-mono text-text-primary">
-          Why Does Water Make Smartphone Speakers Sound Muffled?
-        </h2>
+    <section class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12 text-text-secondary text-sm leading-relaxed">
+      
+      <!-- What is Water Removal Sound -->
+      <div class="space-y-4">
+        <h2 class="text-2xl font-bold font-mono text-text-primary">What is Water Removal Sound?</h2>
         <p>
-          When liquid enters a smartphone speaker grill, surface tension traps microscopic water droplets directly against the speaker membrane (diaphragm). Because water is substantially denser than air, it restricts the voice coil from vibrating freely, suppressing higher frequencies and producing muffled, distorted audio output.
+          Water removal sound is a scientifically-proven technique that uses specific audio frequencies to eject water trapped inside your device speakers. When water enters your phone, tablet, or laptop speaker, it blocks the speaker membrane and causes muffled or distorted audio. Our water eject sound technology creates precise vibrations that physically push water droplets out of the speaker grille.
         </p>
         <p>
-          Standard drying methods like towels or blowing cannot break surface tension trapped inside micro-perforations. Our <strong>AudioDiagnosticEngine</strong> generates low-frequency resonant acoustic pressure waves (150Hz to 300Hz) that physically displace trapped moisture in seconds.
+          This method works similarly to how the Apple Watch ejects water after swimming, by playing low-frequency tones that cause rapid vibrations in the speaker membrane. These vibrations create enough force to expel water without damaging your device. It is the safest and most effective way to remove water from speakers compared to outdated methods like rice or heat.
         </p>
       </div>
 
+      <!-- Step by Step -->
+      <div class="p-6 sm:p-8 rounded-2xl bg-bg-surface border border-border-hairline shadow-specular-top space-y-6">
+        <h2 class="text-2xl font-bold font-mono text-text-primary border-b border-border-hairline pb-4">How to Remove Water From Speaker: Step-by-Step</h2>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div class="space-y-2">
+            <div class="flex items-center gap-3">
+              <span class="w-8 h-8 rounded-full bg-status-pass/10 text-status-pass font-bold flex items-center justify-center font-mono border border-status-pass/30">1</span>
+              <h3 class="font-bold text-text-primary text-base">Turn Off Your Device</h3>
+            </div>
+            <p class="text-xs text-text-muted pl-11">Immediately power off your phone, tablet, or laptop to prevent short circuits. Do not press any buttons excessively as this may push water deeper into the device.</p>
+          </div>
+
+          <div class="space-y-2">
+            <div class="flex items-center gap-3">
+              <span class="w-8 h-8 rounded-full bg-status-pass/10 text-status-pass font-bold flex items-center justify-center font-mono border border-status-pass/30">2</span>
+              <h3 class="font-bold text-text-primary text-base">Remove Cases and Accessories</h3>
+            </div>
+            <p class="text-xs text-text-muted pl-11">Take off any protective cases, screen protectors, or accessories. These can trap water against your device and slow down the drying process.</p>
+          </div>
+
+          <div class="space-y-2">
+            <div class="flex items-center gap-3">
+              <span class="w-8 h-8 rounded-full bg-status-pass/10 text-status-pass font-bold flex items-center justify-center font-mono border border-status-pass/30">3</span>
+              <h3 class="font-bold text-text-primary text-base">Shake Out Excess Water</h3>
+            </div>
+            <p class="text-xs text-text-muted pl-11">Gently shake your device with the speaker facing downward to remove loose water droplets. Avoid vigorous shaking which may spread water to other components.</p>
+          </div>
+
+          <div class="space-y-2">
+            <div class="flex items-center gap-3">
+              <span class="w-8 h-8 rounded-full bg-status-pass/10 text-status-pass font-bold flex items-center justify-center font-mono border border-status-pass/30">4</span>
+              <h3 class="font-bold text-text-primary text-base">Set Volume to Maximum</h3>
+            </div>
+            <p class="text-xs text-text-muted pl-11">Turn your device back on and set the volume to 100%. The water eject sound needs maximum volume to create sufficient vibrations for water expulsion.</p>
+          </div>
+
+          <div class="space-y-2">
+            <div class="flex items-center gap-3">
+              <span class="w-8 h-8 rounded-full bg-status-pass/10 text-status-pass font-bold flex items-center justify-center font-mono border border-status-pass/30">5</span>
+              <h3 class="font-bold text-text-primary text-base">Play Water Eject Sound</h3>
+            </div>
+            <p class="text-xs text-text-muted pl-11">Use our water removal tool above. Start with 165Hz for light water exposure, or try 300Hz-500Hz for stubborn water. Play for 30-60 seconds.</p>
+          </div>
+
+          <div class="space-y-2">
+            <div class="flex items-center gap-3">
+              <span class="w-8 h-8 rounded-full bg-status-pass/10 text-status-pass font-bold flex items-center justify-center font-mono border border-status-pass/30">6</span>
+              <h3 class="font-bold text-text-primary text-base">Repeat if Necessary</h3>
+            </div>
+            <p class="text-xs text-text-muted pl-11">If sound is still muffled, repeat the process 2-3 times. Allow 5-10 minutes between sessions. Most speakers clear within 2-3 cycles.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Common Mistakes -->
+      <div class="space-y-6">
+        <h2 class="text-2xl font-bold font-mono text-text-primary">Common Mistakes When Fixing Wet Speakers</h2>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div class="p-4 rounded-xl bg-status-fail/5 border border-status-fail/20 flex gap-3">
+            <span class="text-status-fail font-bold mt-0.5">✗</span>
+            <div>
+              <h4 class="font-bold text-text-primary text-sm mb-1">Using Rice</h4>
+              <p class="text-xs text-text-muted">Rice does not actively remove water and can leave starch residue and dust particles inside your device. This outdated method is less effective than sound-based water ejection.</p>
+            </div>
+          </div>
+          <div class="p-4 rounded-xl bg-status-fail/5 border border-status-fail/20 flex gap-3">
+            <span class="text-status-fail font-bold mt-0.5">✗</span>
+            <div>
+              <h4 class="font-bold text-text-primary text-sm mb-1">Using a Hair Dryer</h4>
+              <p class="text-xs text-text-muted">Heat from hair dryers can damage internal components, melt adhesives, and warp plastic parts. Never use direct heat on wet electronics.</p>
+            </div>
+          </div>
+          <div class="p-4 rounded-xl bg-status-fail/5 border border-status-fail/20 flex gap-3">
+            <span class="text-status-fail font-bold mt-0.5">✗</span>
+            <div>
+              <h4 class="font-bold text-text-primary text-sm mb-1">Charging While Wet</h4>
+              <p class="text-xs text-text-muted">Plugging in a wet device can cause short circuits, corrosion, and permanent damage. Always wait until your device is completely dry before charging.</p>
+            </div>
+          </div>
+          <div class="p-4 rounded-xl bg-status-fail/5 border border-status-fail/20 flex gap-3">
+            <span class="text-status-fail font-bold mt-0.5">✗</span>
+            <div>
+              <h4 class="font-bold text-text-primary text-sm mb-1">Ignoring the Problem</h4>
+              <p class="text-xs text-text-muted">Water left inside speakers can cause corrosion over time, leading to permanent speaker damage. Act quickly using water removal sound to prevent long-term issues.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Device Compatibility -->
+      <div class="space-y-6">
+        <h2 class="text-2xl font-bold font-mono text-text-primary">Device Compatibility</h2>
+        <p class="text-text-muted">Our water removal sound tool works with all major devices and brands. Here are some of the devices we support:</p>
+        
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div class="p-4 rounded-xl bg-bg-surface border border-border-hairline">
+            <h4 class="font-bold text-text-primary text-sm mb-2 text-cyan-400">iPhones</h4>
+            <p class="text-xs text-text-muted">Works on all iPhones including iPhone 17, 16 series, 15 series, 14, 13, 12, 11, SE models, and newer models.</p>
+          </div>
+          <div class="p-4 rounded-xl bg-bg-surface border border-border-hairline">
+            <h4 class="font-bold text-text-primary text-sm mb-2 text-emerald-400">Samsung</h4>
+            <p class="text-xs text-text-muted">Supports Galaxy S25 series, S24 series, S23, A55, A54, A35, Z Fold 6, Z Flip 6, and newer models.</p>
+          </div>
+          <div class="p-4 rounded-xl bg-bg-surface border border-border-hairline">
+            <h4 class="font-bold text-text-primary text-sm mb-2 text-rose-400">Google Pixel</h4>
+            <p class="text-xs text-text-muted">Works on Pixel 9 Pro XL, 9 Pro, 9, 8 Pro, 8a, 8, 7 Pro, 7a, 6 Pro, 6, and newer models.</p>
+          </div>
+          <div class="p-4 rounded-xl bg-bg-surface border border-border-hairline">
+            <h4 class="font-bold text-text-primary text-sm mb-2 text-emerald-500">Other Android</h4>
+            <p class="text-xs text-text-muted">Supports OnePlus, Xiaomi, OPPO, Realme GT, Motorola Edge, Nothing Phone, and more.</p>
+          </div>
+          <div class="p-4 rounded-xl bg-bg-surface border border-border-hairline">
+            <h4 class="font-bold text-text-primary text-sm mb-2 text-purple-400">Tablets</h4>
+            <p class="text-xs text-text-muted">Works on iPad M2, iPad Mini, Samsung Tab S10 and S9, Xiaomi Pad 6, and all major Android tablets.</p>
+          </div>
+          <div class="p-4 rounded-xl bg-bg-surface border border-border-hairline">
+            <h4 class="font-bold text-text-primary text-sm mb-2 text-amber-400">Laptops</h4>
+            <p class="text-xs text-text-muted">Supports MacBook M3 models, Dell XPS, HP Spectre, ThinkPad, ASUS ROG, Surface, and more.</p>
+          </div>
+          <div class="p-4 rounded-xl bg-bg-surface border border-border-hairline">
+            <h4 class="font-bold text-text-primary text-sm mb-2 text-indigo-400">Earbuds</h4>
+            <p class="text-xs text-text-muted">Supports AirPods Pro 2, AirPods 4, Galaxy Buds 3, Pixel Buds Pro, Sony WF-1000XM5, Jabra Elite.</p>
+          </div>
+          <div class="p-4 rounded-xl bg-bg-surface border border-border-hairline">
+            <h4 class="font-bold text-text-primary text-sm mb-2 text-sky-400">Smartwatches</h4>
+            <p class="text-xs text-text-muted">Supports Apple Watch Ultra 2 and Series 10, Galaxy Watch 7, Pixel Watch 3, Garmin, Fitbit.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Why We Are Different -->
+      <div class="p-6 rounded-2xl bg-gradient-to-br from-bg-surface to-bg-canvas border border-border-hairline space-y-6 shadow-specular-top">
+        <h2 class="text-2xl font-bold font-mono text-text-primary">Why Display Test Online is Different</h2>
+        <p class="text-text-muted">Most Fix My Speaker sites rely on a single basic tone that only works in light moisture situations. Display Test Online provides scientifically optimized diagnostic engines designed to target different droplet sizes and speaker types, giving your device a much better chance of complete water removal.</p>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
+          <div class="space-y-1.5">
+            <div class="text-lg">🎯</div>
+            <h4 class="font-bold text-text-primary text-sm">Customized for Your Device</h4>
+            <p class="text-xs text-text-muted">We provide device-specific guides for iPhones, Android phones, tablets, laptops, and call speakers. Each device has unique speaker characteristics, and our tool adapts to maximize effectiveness.</p>
+          </div>
+          <div class="space-y-1.5">
+            <div class="text-lg">🔬</div>
+            <h4 class="font-bold text-text-primary text-sm">Hardware-Tuned Frequencies</h4>
+            <p class="text-xs text-text-muted">Our tool offers fully dynamic sound frequencies (165Hz, 300Hz, 500Hz, and resonant sweep mode) because different water situations require different approaches. Others only give you one.</p>
+          </div>
+          <div class="space-y-1.5">
+            <div class="text-lg">📱</div>
+            <h4 class="font-bold text-text-primary text-sm">Works on All Devices</h4>
+            <p class="text-xs text-text-muted">From budget Android phones to premium iPhones, iPads, Samsung tablets, MacBooks, and Windows laptops, our water removal sound works across all devices with speakers.</p>
+          </div>
+          <div class="space-y-1.5">
+            <div class="text-lg">✅</div>
+            <h4 class="font-bold text-text-primary text-sm">100% Free &amp; Safe</h4>
+            <p class="text-xs text-text-muted">No downloads, no apps, no registration required. Just open our tool and start removing water instantly. The sound frequencies we use are completely safe for all speakers.</p>
+          </div>
+        </div>
+      </div>
+
       <!-- FAQ Section Accordion UI -->
-      <FAQSection faqs={waterEjectFaqs.map(item => ({ question: item.q, answer: item.a }))} />
+      <div class="pt-8">
+        <FAQSection faqs={waterEjectFaqs.map(item => ({ question: item.q, answer: item.a }))} />
+      </div>
     </section>
   </main>
 </Layout>

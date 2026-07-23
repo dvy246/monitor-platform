@@ -1,0 +1,333 @@
+---
+import { useTranslations } from '../../utils/i18n';
+const { t } = useTranslations(Astro.url.pathname);
+---
+
+<div class="w-full max-w-5xl mx-auto space-y-6 font-sans">
+  
+  <!-- Main Player Container -->
+  <div class="relative overflow-hidden rounded-3xl bg-bg-surface border border-border-hairline shadow-specular-top flex flex-col md:flex-row">
+    
+    <!-- Left Column: Visualizer & Controls -->
+    <div class="flex-1 p-6 sm:p-8 flex flex-col justify-between relative border-b md:border-b-0 md:border-r border-border-hairline bg-gradient-to-br from-bg-surface to-bg-canvas z-10">
+      
+      <!-- Top Badge -->
+      <div class="flex items-center justify-between mb-8">
+        <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/30 text-indigo-400 font-mono text-xs font-bold uppercase tracking-widest">
+          <span class="w-1.5 h-1.5 rounded-full bg-indigo-400 animate-pulse"></span>
+          Lossless Test Engine
+        </div>
+        <div class="text-[10px] text-text-muted font-mono tracking-wider">320kbps MP3 / Web Audio API</div>
+      </div>
+
+      <!-- Now Playing Info -->
+      <div class="space-y-1 mb-8">
+        <h2 id="now-playing-title" class="text-2xl sm:text-3xl font-extrabold text-text-primary tracking-tight truncate">Select a Test Track</h2>
+        <p id="now-playing-desc" class="text-sm text-text-muted">Choose a sample from the playlist to begin diagnostic.</p>
+      </div>
+
+      <!-- Real-time Web Audio Visualizer Canvas -->
+      <div class="w-full h-32 rounded-xl bg-bg-elevated/50 border border-border-hairline mb-8 overflow-hidden relative">
+        <canvas id="audio-visualizer-canvas" class="w-full h-full opacity-80"></canvas>
+        <div class="absolute inset-0 bg-gradient-to-t from-bg-elevated/50 to-transparent pointer-events-none"></div>
+        <div id="visualizer-overlay" class="absolute inset-0 flex items-center justify-center text-text-muted/50 font-mono text-xs font-bold uppercase tracking-widest">
+          Awaiting Signal
+        </div>
+      </div>
+
+      <!-- Controls -->
+      <div class="space-y-4">
+        <!-- Progress Bar -->
+        <div class="flex items-center gap-3">
+          <span id="time-current" class="text-xs font-mono text-text-muted w-10 text-right">0:00</span>
+          <div class="relative flex-1 h-1.5 rounded-full bg-bg-elevated cursor-pointer group" id="progress-bar-container">
+            <div id="progress-bar-fill" class="absolute top-0 left-0 h-full rounded-full bg-indigo-500 w-0 group-hover:bg-indigo-400 transition-colors"></div>
+            <div id="progress-bar-thumb" class="absolute top-1/2 -translate-y-1/2 -ml-2 w-4 h-4 rounded-full bg-white shadow-md scale-0 group-hover:scale-100 transition-transform origin-center border border-indigo-500"></div>
+          </div>
+          <span id="time-total" class="text-xs font-mono text-text-muted w-10">0:00</span>
+        </div>
+
+        <!-- Buttons -->
+        <div class="flex items-center justify-center gap-6">
+          <button id="btn-prev" class="text-text-muted hover:text-text-primary transition-colors disabled:opacity-50" aria-label="Previous Track">
+            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/></svg>
+          </button>
+          
+          <button id="btn-play-pause" class="w-14 h-14 rounded-full bg-indigo-500 hover:bg-indigo-400 text-white flex items-center justify-center shadow-[0_0_20px_rgba(99,102,241,0.4)] transition-all active:scale-95 disabled:opacity-50 disabled:pointer-events-none" aria-label="Play/Pause">
+            <svg id="icon-play" class="w-6 h-6 ml-1" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+            <svg id="icon-pause" class="w-6 h-6 hidden" fill="currentColor" viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+          </button>
+          
+          <button id="btn-next" class="text-text-muted hover:text-text-primary transition-colors disabled:opacity-50" aria-label="Next Track">
+            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/></svg>
+          </button>
+        </div>
+      </div>
+      
+    </div>
+
+    <!-- Right Column: Playlist -->
+    <div class="w-full md:w-[40%] bg-bg-surface/50 p-4">
+      <h3 class="text-xs font-bold text-text-primary uppercase tracking-wider font-mono mb-4 px-2">Diagnostic Playlist</h3>
+      
+      <div class="space-y-2" id="playlist-container">
+        <!-- Tracks will be injected here by JS -->
+      </div>
+    </div>
+  </div>
+
+  <audio id="hidden-audio-element" crossorigin="anonymous" class="hidden"></audio>
+
+</div>
+
+<script>
+  interface Track {
+    id: string;
+    title: string;
+    desc: string;
+    url: string;
+    focus: string;
+    color: string;
+  }
+
+  const tracks: Track[] = [
+    {
+      id: 'track-1',
+      title: 'Electronic Bass Response Test',
+      desc: 'Heavy 808s and synthesized sub-bass to test low-frequency extension (20Hz - 80Hz) and subwoofer capability.',
+      url: '/audio/samples/electronic-bass-test.mp3',
+      focus: 'Sub-Bass & Dynamics',
+      color: 'bg-emerald-500'
+    },
+    {
+      id: 'track-2',
+      title: 'Acoustic Vocal Clarity Test',
+      desc: 'Rich mid-range acoustic instruments and vocals to test driver clarity, distortion, and natural resonance.',
+      url: '/audio/samples/acoustic-vocals-test.mp3',
+      focus: 'Mid-range & Vocals',
+      color: 'bg-amber-500'
+    },
+    {
+      id: 'track-3',
+      title: 'Orchestral Treble & Soundstage',
+      desc: 'High-frequency strings and wide stereo panning to evaluate tweeter crispness and 3D soundstage separation.',
+      url: '/audio/samples/orchestral-treble-test.mp3',
+      focus: 'Treble & Soundstage',
+      color: 'bg-cyan-500'
+    }
+  ];
+
+  let currentTrackIndex = 0;
+  let isPlaying = false;
+  
+  // Audio Context & Visualizer State
+  let audioContext: AudioContext | null = null;
+  let analyser: AnalyserNode | null = null;
+  let source: MediaElementAudioSourceNode | null = null;
+  let animationFrameId: number;
+
+  const audioEl = document.getElementById('hidden-audio-element') as HTMLAudioElement;
+  const btnPlayPause = document.getElementById('btn-play-pause');
+  const iconPlay = document.getElementById('icon-play');
+  const iconPause = document.getElementById('icon-pause');
+  const btnPrev = document.getElementById('btn-prev');
+  const btnNext = document.getElementById('btn-next');
+  const titleEl = document.getElementById('now-playing-title');
+  const descEl = document.getElementById('now-playing-desc');
+  const timeCurrentEl = document.getElementById('time-current');
+  const timeTotalEl = document.getElementById('time-total');
+  const progressFill = document.getElementById('progress-bar-fill');
+  const progressContainer = document.getElementById('progress-bar-container');
+  const playlistContainer = document.getElementById('playlist-container');
+  const visualizerCanvas = document.getElementById('audio-visualizer-canvas') as HTMLCanvasElement;
+  const visualizerOverlay = document.getElementById('visualizer-overlay');
+  
+  const ctx = visualizerCanvas?.getContext('2d');
+
+  function initPlaylist() {
+    if (!playlistContainer) return;
+    playlistContainer.innerHTML = '';
+    
+    tracks.forEach((track, index) => {
+      const btn = document.createElement('button');
+      btn.className = `w-full text-left p-3 rounded-xl transition-all border ${index === currentTrackIndex ? 'bg-bg-elevated border-indigo-500/30 shadow-[0_0_10px_rgba(99,102,241,0.1)]' : 'bg-transparent border-transparent hover:bg-bg-elevated/50'}`;
+      btn.innerHTML = `
+        <div class="flex items-start gap-3">
+          <div class="w-8 h-8 rounded-full bg-bg-surface border border-border-hairline flex items-center justify-center shrink-0 mt-1 shadow-inner relative overflow-hidden">
+             ${index === currentTrackIndex && isPlaying 
+               ? `<div class="absolute inset-0 flex items-center justify-center gap-[2px] opacity-70">
+                    <div class="w-1 h-3 bg-indigo-500 animate-[bounce_0.8s_ease-in-out_infinite]"></div>
+                    <div class="w-1 h-4 bg-indigo-500 animate-[bounce_1s_ease-in-out_infinite]"></div>
+                    <div class="w-1 h-2 bg-indigo-500 animate-[bounce_0.9s_ease-in-out_infinite]"></div>
+                  </div>` 
+               : `<span class="text-xs font-mono font-bold text-text-muted">${index + 1}</span>`}
+          </div>
+          <div>
+            <h4 class="font-bold text-sm text-text-primary line-clamp-1">${track.title}</h4>
+            <span class="inline-block px-1.5 py-0.5 rounded text-[9px] font-mono font-bold uppercase ${track.color}/10 text-${track.color.split('-')[1]}-400 border border-${track.color.split('-')[1]}-500/30 mt-1 mb-1">${track.focus}</span>
+          </div>
+        </div>
+      `;
+      btn.addEventListener('click', () => {
+        if (currentTrackIndex === index && isPlaying) {
+          pauseTrack();
+        } else {
+          loadTrack(index);
+          playTrack();
+        }
+      });
+      playlistContainer.appendChild(btn);
+    });
+  }
+
+  function loadTrack(index: number) {
+    currentTrackIndex = index;
+    const track = tracks[index];
+    
+    if (titleEl) titleEl.textContent = track.title;
+    if (descEl) descEl.textContent = track.desc;
+    
+    audioEl.src = track.url;
+    audioEl.load();
+    initPlaylist(); // refresh UI
+  }
+
+  function formatTime(seconds: number) {
+    if (isNaN(seconds)) return '0:00';
+    const m = Math.floor(seconds / 60);
+    const s = Math.floor(seconds % 60);
+    return `${m}:${s.toString().padStart(2, '0')}`;
+  }
+
+  function setupWebAudio() {
+    if (audioContext) return;
+    
+    const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
+    audioContext = new AudioContextClass();
+    
+    analyser = audioContext.createAnalyser();
+    analyser.fftSize = 256;
+    analyser.smoothingTimeConstant = 0.85;
+    
+    source = audioContext.createMediaElementSource(audioEl);
+    source.connect(analyser);
+    analyser.connect(audioContext.destination);
+    
+    if (visualizerOverlay) visualizerOverlay.style.display = 'none';
+    resizeCanvas();
+    window.addEventListener('resize', resizeCanvas);
+    drawVisualizer();
+  }
+
+  function resizeCanvas() {
+    if (!visualizerCanvas) return;
+    visualizerCanvas.width = visualizerCanvas.offsetWidth;
+    visualizerCanvas.height = visualizerCanvas.offsetHeight;
+  }
+
+  function drawVisualizer() {
+    if (!analyser || !ctx || !visualizerCanvas) return;
+    
+    animationFrameId = requestAnimationFrame(drawVisualizer);
+    
+    const bufferLength = analyser.frequencyBinCount;
+    const dataArray = new Uint8Array(bufferLength);
+    analyser.getByteFrequencyData(dataArray);
+    
+    ctx.clearRect(0, 0, visualizerCanvas.width, visualizerCanvas.height);
+    
+    const barWidth = (visualizerCanvas.width / bufferLength) * 2.5;
+    let x = 0;
+    
+    for (let i = 0; i < bufferLength; i++) {
+      const barHeight = (dataArray[i] / 255) * visualizerCanvas.height;
+      
+      const r = 99 + (barHeight / visualizerCanvas.height) * 50;
+      const g = 102 + (barHeight / visualizerCanvas.height) * 50;
+      const b = 241;
+      
+      ctx.fillStyle = `rgba(${r}, ${g}, ${b}, ${0.5 + (dataArray[i]/255)*0.5})`;
+      
+      // Draw centered bars
+      const y = visualizerCanvas.height - barHeight;
+      ctx.fillRect(x, y, barWidth - 1, barHeight);
+      
+      x += barWidth;
+    }
+  }
+
+  async function playTrack() {
+    if (!audioContext) {
+      setupWebAudio();
+    }
+    
+    if (audioContext?.state === 'suspended') {
+      await audioContext.resume();
+    }
+    
+    try {
+      await audioEl.play();
+      isPlaying = true;
+      iconPlay?.classList.add('hidden');
+      iconPause?.classList.remove('hidden');
+      initPlaylist(); // refresh animation
+    } catch (e) {
+      console.error('Audio playback failed:', e);
+    }
+  }
+
+  function pauseTrack() {
+    audioEl.pause();
+    isPlaying = false;
+    iconPlay?.classList.remove('hidden');
+    iconPause?.classList.add('hidden');
+    initPlaylist();
+  }
+
+  // Event Listeners
+  btnPlayPause?.addEventListener('click', () => {
+    if (isPlaying) pauseTrack();
+    else playTrack();
+  });
+
+  btnPrev?.addEventListener('click', () => {
+    let newIndex = currentTrackIndex - 1;
+    if (newIndex < 0) newIndex = tracks.length - 1;
+    loadTrack(newIndex);
+    playTrack();
+  });
+
+  btnNext?.addEventListener('click', () => {
+    let newIndex = currentTrackIndex + 1;
+    if (newIndex >= tracks.length) newIndex = 0;
+    loadTrack(newIndex);
+    playTrack();
+  });
+
+  audioEl.addEventListener('timeupdate', () => {
+    if (timeCurrentEl) timeCurrentEl.textContent = formatTime(audioEl.currentTime);
+    if (progressFill && audioEl.duration) {
+      const percent = (audioEl.currentTime / audioEl.duration) * 100;
+      progressFill.style.width = `${percent}%`;
+    }
+  });
+
+  audioEl.addEventListener('loadedmetadata', () => {
+    if (timeTotalEl) timeTotalEl.textContent = formatTime(audioEl.duration);
+  });
+
+  audioEl.addEventListener('ended', () => {
+    btnNext?.click();
+  });
+
+  progressContainer?.addEventListener('click', (e) => {
+    if (!audioEl.duration) return;
+    const rect = progressContainer.getBoundingClientRect();
+    const pos = (e.clientX - rect.left) / rect.width;
+    audioEl.currentTime = pos * audioEl.duration;
+  });
+
+  // Init UI
+  loadTrack(0);
+
+</script>
