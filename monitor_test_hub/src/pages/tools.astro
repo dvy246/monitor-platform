@@ -103,10 +103,13 @@ const controllerTools = [
   { title: "Xbox Series X/S Controller Tester", description: "Specialized diagnostic suite for Microsoft Xbox Series X/S and Xbox One controllers.", href: localizeLink("/controller-test/xbox-controller", lang), badge: "Xbox Wireless", category: "CONTROLLER", icon: `<svg class="w-5 h-5 text-rose-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>` }
 ];
 
+const waterEjectTools = [
+  { title: "Water Eject Sound & Speaker Water Removal", description: "Clear trapped water from phone, iPhone, and laptop speakers using 165Hz acoustic resonant sweeps.", href: localizeLink("/sound-test/water-eject", lang), badge: "165Hz Water Eject", category: "WATER EJECT", icon: `<svg class="w-5 h-5 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 13.5L12 21m0 0l-7.5-7.5M12 21V3"/></svg>` },
+  { title: "Online Speaker Cleaner Tool", description: "Dislodge dust, pocket lint, and debris from mobile speaker meshes using high-energy sawtooth wave bursts.", href: localizeLink("/sound-test/speaker-cleaner", lang), badge: "Dust Cleaner", category: "WATER EJECT", icon: `<svg class="w-5 h-5 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>` },
+  { title: "Speaker Crackling & Distortion Test", description: "Diagnose mechanical buzzing, physical rattle, and blown speaker voice coils using triangle sweeps.", href: localizeLink("/sound-test/speaker-crackle-test", lang), badge: "Distortion Check", category: "WATER EJECT", icon: `<svg class="w-5 h-5 text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 .895-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 .895-2 3-2 3 .895 3 2zM9 10l12-3"/></svg>` }
+];
+
 const soundTools = [
-  { title: "Water Eject Sound & Speaker Water Removal", description: "Clear water from phone, iPhone, and laptop speakers using 165Hz acoustic resonant sweeps.", href: localizeLink("/sound-test/water-eject", lang), badge: "165Hz Water Eject", category: "SOUND", icon: `<svg class="w-5 h-5 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 13.5L12 21m0 0l-7.5-7.5M12 21V3"/></svg>` },
-  { title: "Online Speaker Cleaner Tool", description: "Dislodge dust, pocket lint, and debris from mobile speaker meshes using high-energy sawtooth wave bursts.", href: localizeLink("/sound-test/speaker-cleaner", lang), badge: "Dust Cleaner", category: "SOUND", icon: `<svg class="w-5 h-5 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>` },
-  { title: "Speaker Crackling & Distortion Test", description: "Diagnose mechanical buzzing, physical rattle, and blown speaker voice coils using triangle sweeps.", href: localizeLink("/sound-test/speaker-crackle-test", lang), badge: "Distortion Check", category: "SOUND", icon: `<svg class="w-5 h-5 text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 .895-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 .895-2 3-2 3 .895 3 2zM9 10l12-3"/></svg>` },
   { title: "Universal Sound & Speaker Test Hub", description: "Flagship Web Audio FFT spectrum analyzer, master volume/frequency sliders, L/R balance, and mic meter.", href: localizeLink("/sound-test", lang), badge: "Master Hub", category: "SOUND", icon: `<svg class="w-5 h-5 text-purple-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"/></svg>` },
   { title: "Speaker Polarity & Phase Test", description: "Stereo channel balance and in-phase vs out-of-phase soundwave destructive interference test.", href: localizeLink("/sound-test/speaker-test", lang), badge: "Phase", category: "SOUND", icon: `<svg class="w-5 h-5 text-purple-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 .895-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 .895-2 3-2 3 .895 3 2zM9 10l12-3"/></svg>` },
   { title: "Headphone Frequency Response (20Hz - 20kHz)", description: "AES17 compliant logarithmic frequency sweeps mapping driver response curves.", href: localizeLink("/sound-test/headphone-test", lang), badge: "20Hz-20kHz", category: "SOUND", icon: `<svg class="w-5 h-5 text-purple-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 100-6 3 3 0 000 6z"/></svg>` },
@@ -170,6 +173,28 @@ const cameraTools = [
         Instant access to over 40+ client-side web testing instruments for visual displays, high-refresh latency, mobile touch matrices, mechanical keyboards, mice, gamepads, audio, and hardware calculators.
       </p>
     </header>
+
+    <!-- Category 0: Speaker Water & Dust Ejection Suite (Emergency Hardware Utilities) -->
+    <section class="space-y-6">
+      <div class="flex items-center gap-3 border-b border-status-pass/40 pb-3 bg-status-pass/5 p-4 rounded-xl border">
+        <div class="w-8 h-8 rounded-lg bg-status-pass/20 border border-status-pass/40 flex items-center justify-center text-status-pass">
+          <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 13.5L12 21m0 0l-7.5-7.5M12 21V3"/></svg>
+        </div>
+        <div>
+          <h2 class="text-xl font-bold font-mono text-text-primary flex items-center gap-2">
+            <span>Speaker Water &amp; Dust Ejection Suite ({waterEjectTools.length} Tools)</span>
+            <span class="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-status-pass/20 text-status-pass border border-status-pass/40">Emergency Utility</span>
+          </h2>
+          <p class="text-xs text-text-muted">Acoustic 165Hz resonant frequency sweeps &amp; sawtooth waves to dislodge water, dust, and lint from mobile speaker grills.</p>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {waterEjectTools.map(tool => (
+          <DiagnosticCard title={tool.title} description={tool.description} href={tool.href} badge={tool.badge} category={tool.category} icon={tool.icon} />
+        ))}
+      </div>
+    </section>
 
     <!-- Category 1: Screen & Display Testing Suite -->
     <section class="space-y-6">

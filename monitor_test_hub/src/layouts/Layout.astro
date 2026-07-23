@@ -67,9 +67,23 @@ const { t, lang } = useTranslations(Astro.url.pathname);
         </div>
 
         <!-- Center Group: Streamlined Dedicated Navigation Deck (5 Plain English Pillars) -->
-        <!-- Center Group: Streamlined Dedicated Navigation Deck (5 Plain English Pillars) -->
+        <!-- Center Group: Streamlined Dedicated Navigation Deck -->
         <nav class="hidden xl:flex items-center gap-1 xl:gap-2 text-xs font-sans font-medium" aria-label="Main Navigation">
           
+          <!-- Standalone Pillar 0: Water Ejector (Emergency Hardware Utility) -->
+          <a 
+            href={localizeLink("/sound-test/water-eject", lang)}
+            class:list={[
+              "flex items-center gap-1.5 px-3 py-2 rounded-lg transition-all cursor-pointer font-sans text-xs font-bold shrink-0",
+              Astro.url.pathname.includes('/water-eject')
+                ? 'bg-status-pass/20 text-status-pass border border-status-pass/40 shadow-[0_0_12px_rgba(5,150,105,0.3)]' 
+                : 'text-emerald-400 bg-emerald-500/10 border border-emerald-500/30 hover:bg-emerald-500/20 hover:text-emerald-300'
+            ]}
+          >
+            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+            <span>Water Ejector</span>
+          </a>
+
           <!-- Pillar 1: Display Tests -->
           <div class="relative group">
             <button 
