@@ -18,7 +18,7 @@ export interface Props {
   schemaItems?: any[];
 }
 
-const { title, description, showBounceBanner = true, faqs = [], canonicalUrl, ogImage, ogType, noindex, schemaItems = [] } = Astro.props;
+const { title, description, showBounceBanner = false, faqs = [], canonicalUrl, ogImage, ogType, noindex, schemaItems = [] } = Astro.props;
 const { t, lang } = useTranslations(Astro.url.pathname);
 ---
 
