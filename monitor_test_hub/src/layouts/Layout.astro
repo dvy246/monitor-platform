@@ -58,10 +58,10 @@ const { t, lang } = useTranslations(Astro.url.pathname);
         <div class="flex items-center gap-3 shrink-0">
           <a href={localizeLink("/", lang)} class="flex items-center gap-2.5 group cursor-pointer">
             <div aria-hidden="true" class="w-7 h-7 rounded-lg border border-status-pass/50 bg-bg-surface flex items-center justify-center font-bold text-xs text-text-primary group-hover:border-status-pass group-hover:shadow-[0_0_16px_rgba(5,150,105,0.6)] transition-all duration-200">
-              H
+              D
             </div>
             <span class="text-xs font-bold tracking-widest text-text-primary uppercase group-hover:text-status-pass transition-colors">
-              HARDWARE TESTS<span class="text-status-pass">/</span>HUB
+              DISPLAY TEST<span class="text-status-pass">/</span>ONLINE
             </span>
           </a>
         </div>
@@ -1106,7 +1106,12 @@ const { t, lang } = useTranslations(Astro.url.pathname);
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
         <div class="flex flex-col md:flex-row justify-between gap-8">
           <div class="max-w-md space-y-2">
-            <span class="text-text-primary font-bold tracking-widest uppercase">HARDWARE TESTS / HUB</span>
+            <div class="flex items-center gap-2">
+              <div aria-hidden="true" class="w-6 h-6 rounded border border-status-pass/50 bg-bg-surface flex items-center justify-center font-bold text-xs text-text-primary">
+                D
+              </div>
+              <span class="text-text-primary font-bold tracking-widest uppercase">DISPLAY TEST / ONLINE</span>
+            </div>
             <p class="text-text-secondary leading-relaxed text-[11px] font-sans">
               Client-side engineering utility for evaluating, calibrating, and benchmarking computer displays and mobile touch digitizers. Built in compliance with ISO 9241-307, VESA DisplayHDR, IEC, and CIE colorimetry standards.
             </p>
