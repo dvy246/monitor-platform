@@ -149,6 +149,23 @@ const waterEjectFaqs = [
         </p>
       </div>
 
+      <!-- Quick Checklist (YMYL) -->
+      <div class="p-6 sm:p-8 rounded-2xl bg-status-fail/5 border border-status-fail/20 shadow-specular-top space-y-4">
+        <h2 class="text-xl font-bold font-mono text-status-fail flex items-center gap-2">
+          <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
+          Quick Emergency Checklist
+        </h2>
+        <ul class="space-y-2 text-sm text-text-secondary list-none font-mono">
+          <li class="flex items-start gap-2"><span class="text-status-fail mt-0.5">▪</span> Power off device immediately or enable airplane mode</li>
+          <li class="flex items-start gap-2"><span class="text-status-fail mt-0.5">▪</span> Remove SIM card tray to check moisture indicator</li>
+          <li class="flex items-start gap-2"><span class="text-status-fail mt-0.5">▪</span> Shake phone gently with speaker facing downward</li>
+          <li class="flex items-start gap-2"><span class="text-status-fail mt-0.5">▪</span> Play water eject tone at full volume for 60 seconds</li>
+          <li class="flex items-start gap-2"><span class="text-status-fail mt-0.5">▪</span> Use manufacturer app if available (Samsung has built-in feature)</li>
+          <li class="flex items-start gap-2"><span class="text-status-fail mt-0.5">▪</span> Dry in well-ventilated area for minimum 4 hours</li>
+          <li class="flex items-start gap-2"><span class="text-status-fail mt-0.5">▪</span> Check for moisture warning before charging</li>
+        </ul>
+      </div>
+
       <!-- Step by Step -->
       <div class="p-6 sm:p-8 rounded-2xl bg-bg-surface border border-border-hairline shadow-specular-top space-y-6">
         <h2 class="text-2xl font-bold font-mono text-text-primary border-b border-border-hairline pb-4">How to Remove Water From Speaker: Step-by-Step</h2>
@@ -204,39 +221,58 @@ const waterEjectFaqs = [
         </div>
       </div>
 
-      <!-- Common Mistakes -->
+      <!-- Things Not to Do -->
       <div class="space-y-6">
-        <h2 class="text-2xl font-bold font-mono text-text-primary">Common Mistakes When Fixing Wet Speakers</h2>
+        <h2 class="text-2xl font-bold font-mono text-text-primary">Things Not to Do</h2>
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div class="p-4 rounded-xl bg-status-fail/5 border border-status-fail/20 flex gap-3">
             <span class="text-status-fail font-bold mt-0.5">✗</span>
             <div>
-              <h4 class="font-bold text-text-primary text-sm mb-1">Using Rice</h4>
-              <p class="text-xs text-text-muted">Rice does not actively remove water and can leave starch residue and dust particles inside your device. This outdated method is less effective than sound-based water ejection.</p>
+              <h4 class="font-bold text-text-primary text-sm mb-1">Do not use rice</h4>
+              <p class="text-xs text-text-muted">It is ineffective and can leave starch residue and dust particles inside your device.</p>
             </div>
           </div>
           <div class="p-4 rounded-xl bg-status-fail/5 border border-status-fail/20 flex gap-3">
             <span class="text-status-fail font-bold mt-0.5">✗</span>
             <div>
-              <h4 class="font-bold text-text-primary text-sm mb-1">Using a Hair Dryer</h4>
-              <p class="text-xs text-text-muted">Heat from hair dryers can damage internal components, melt adhesives, and warp plastic parts. Never use direct heat on wet electronics.</p>
+              <h4 class="font-bold text-text-primary text-sm mb-1">Do not use heat sources</h4>
+              <p class="text-xs text-text-muted">Avoid hair dryers, ovens, or microwaves. Heat can melt internal adhesives and warp components.</p>
             </div>
           </div>
           <div class="p-4 rounded-xl bg-status-fail/5 border border-status-fail/20 flex gap-3">
             <span class="text-status-fail font-bold mt-0.5">✗</span>
             <div>
-              <h4 class="font-bold text-text-primary text-sm mb-1">Charging While Wet</h4>
-              <p class="text-xs text-text-muted">Plugging in a wet device can cause short circuits, corrosion, and permanent damage. Always wait until your device is completely dry before charging.</p>
+              <h4 class="font-bold text-text-primary text-sm mb-1">Do not insert objects</h4>
+              <p class="text-xs text-text-muted">Do not insert cotton swabs or toothpicks into speaker holes. You will push water deeper and puncture the speaker.</p>
             </div>
           </div>
           <div class="p-4 rounded-xl bg-status-fail/5 border border-status-fail/20 flex gap-3">
             <span class="text-status-fail font-bold mt-0.5">✗</span>
             <div>
-              <h4 class="font-bold text-text-primary text-sm mb-1">Ignoring the Problem</h4>
-              <p class="text-xs text-text-muted">Water left inside speakers can cause corrosion over time, leading to permanent speaker damage. Act quickly using water removal sound to prevent long-term issues.</p>
+              <h4 class="font-bold text-text-primary text-sm mb-1">Do not charge the phone</h4>
+              <p class="text-xs text-text-muted">Do not charge the phone while the moisture warning is active to avoid short circuits.</p>
+            </div>
+          </div>
+          <div class="p-4 rounded-xl bg-status-fail/5 border border-status-fail/20 flex gap-3 sm:col-span-2 lg:col-span-1">
+            <span class="text-status-fail font-bold mt-0.5">✗</span>
+            <div>
+              <h4 class="font-bold text-text-primary text-sm mb-1">Do not attempt to disassemble</h4>
+              <p class="text-xs text-text-muted">Do not attempt to disassemble the phone yourself unless you are a certified technician.</p>
             </div>
           </div>
         </div>
+      </div>
+
+      <!-- Test With Sample Music -->
+      <div class="p-6 rounded-2xl bg-indigo-500/10 border border-indigo-500/30 text-center space-y-4 shadow-specular-top">
+        <div class="w-12 h-12 rounded-full bg-indigo-500/20 text-indigo-400 flex items-center justify-center mx-auto mb-2">
+          <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3" /></svg>
+        </div>
+        <h2 class="text-xl font-bold font-mono text-indigo-400">Test With Sample Music</h2>
+        <p class="text-sm text-text-secondary max-w-lg mx-auto">Use our high-resolution audio samples to verify your speaker is working properly and sounding crisp after water removal.</p>
+        <a href="/sound-test/speaker-test-music" class="inline-flex items-center gap-2 px-6 py-2.5 rounded-lg bg-indigo-500 text-white font-bold hover:bg-indigo-400 transition-colors">
+          Open Speaker Test Music &rarr;
+        </a>
       </div>
 
       <!-- Device Compatibility -->
@@ -307,6 +343,22 @@ const waterEjectFaqs = [
             <p class="text-xs text-text-muted">No downloads, no apps, no registration required. Just open our tool and start removing water instantly. The sound frequencies we use are completely safe for all speakers.</p>
           </div>
         </div>
+      </div>
+
+      <!-- When to Seek Professional Repair (YMYL) -->
+      <div class="p-6 sm:p-8 rounded-2xl bg-amber-500/5 border border-amber-500/20 shadow-specular-top space-y-4">
+        <h2 class="text-xl font-bold font-mono text-amber-500 flex items-center gap-2">
+          <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+          When to Seek Professional Repair
+        </h2>
+        <p class="text-sm text-text-secondary">Consider professional help immediately if you observe any of the following:</p>
+        <ul class="space-y-2 text-sm text-text-secondary list-none">
+          <li class="flex items-start gap-2"><span class="text-amber-500 mt-0.5">⚠️</span> Moisture warning persists after 48 hours of drying.</li>
+          <li class="flex items-start gap-2"><span class="text-amber-500 mt-0.5">⚠️</span> Speaker produces absolutely no sound or severely distorted, unidentifiable audio.</li>
+          <li class="flex items-start gap-2"><span class="text-amber-500 mt-0.5">⚠️</span> Water damage indicator (LDI) shows red or pink color.</li>
+          <li class="flex items-start gap-2"><span class="text-amber-500 mt-0.5">⚠️</span> Phone shows other severe symptoms like screen flickering, boot looping, or battery swelling.</li>
+          <li class="flex items-start gap-2"><span class="text-amber-500 mt-0.5">⚠️</span> Warranty is still active and covers water damage (always check your policy first before voiding it).</li>
+        </ul>
       </div>
 
       <!-- FAQ Section Accordion UI -->
