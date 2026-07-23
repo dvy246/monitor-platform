@@ -3,10 +3,158 @@ import { useTranslations } from '../../utils/i18n';
 const { t } = useTranslations(Astro.url.pathname);
 ---
 
-<div class="w-full max-w-4xl mx-auto space-y-6 font-sans">
+<div class="w-full max-w-5xl mx-auto space-y-8 font-sans">
+
+  <!-- Section 1: Choose Your Device Selection Grid -->
+  <div class="space-y-4">
+    <div class="flex items-center justify-between">
+      <div>
+        <h2 class="text-xl sm:text-2xl font-bold font-mono text-text-primary uppercase tracking-tight">
+          Choose Your Device
+        </h2>
+        <p class="text-xs text-text-muted">
+          Select your device type for optimized water eject sound frequencies and device-specific instructions.
+        </p>
+      </div>
+      <span class="hidden sm:inline-flex px-2.5 py-1 rounded bg-status-pass/10 border border-status-pass/30 font-mono text-[10px] text-status-pass font-bold">
+        Hardware Tuned
+      </span>
+    </div>
+
+    <!-- 6 Device Cards Grid -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4" id="device-preset-grid">
+      
+      <!-- Card 1: Universal Mobile -->
+      <button data-preset="mobile" class="device-card active p-4 rounded-xl border border-status-pass bg-status-pass/10 text-left transition-all space-y-2 group cursor-pointer shadow-specular-top">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <svg class="w-5 h-5 text-status-pass" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
+            </svg>
+            <span class="font-bold font-mono text-sm text-text-primary group-hover:text-status-pass transition-colors">Mobile Water Eject</span>
+          </div>
+          <span class="text-[9px] font-mono font-bold px-2 py-0.5 rounded bg-status-pass/20 text-status-pass border border-status-pass/30">165Hz–300Hz</span>
+        </div>
+        <p class="text-xs text-text-muted leading-relaxed">
+          Universal water eject sound tool for all mobile phone speakers. Works with any smartphone brand.
+        </p>
+        <div class="flex items-center gap-2 text-[10px] font-mono text-text-secondary pt-1">
+          <span>✓ All Brands</span>
+          <span>•</span>
+          <span>✓ 30s Cycles</span>
+        </div>
+      </button>
+
+      <!-- Card 2: iPhone Water Eject -->
+      <button data-preset="iphone" class="device-card p-4 rounded-xl border border-border-hairline bg-bg-surface hover:border-border-interactive text-left transition-all space-y-2 group cursor-pointer shadow-specular-top">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <svg class="w-5 h-5 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
+            </svg>
+            <span class="font-bold font-mono text-sm text-text-primary group-hover:text-cyan-400 transition-colors">iPhone Water Eject</span>
+          </div>
+          <span class="text-[9px] font-mono font-bold px-2 py-0.5 rounded bg-cyan-400/10 text-cyan-400 border border-cyan-400/30">Apple Opt.</span>
+        </div>
+        <p class="text-xs text-text-muted leading-relaxed">
+          Optimized water removal sound specifically tuned for iPhone speaker systems and Apple devices.
+        </p>
+        <div class="flex items-center gap-2 text-[10px] font-mono text-text-secondary pt-1">
+          <span>✓ All iPhones</span>
+          <span>•</span>
+          <span>✓ Siri Shortcut info</span>
+        </div>
+      </button>
+
+      <!-- Card 3: Android Water Eject -->
+      <button data-preset="android" class="device-card p-4 rounded-xl border border-border-hairline bg-bg-surface hover:border-border-interactive text-left transition-all space-y-2 group cursor-pointer shadow-specular-top">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <svg class="w-5 h-5 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 1.5H8.25A2.25 2.25 0 006 3.75v16.5a2.25 2.25 0 002.25 2.25h7.5A2.25 2.25 0 0018 20.25V3.75a2.25 2.25 0 00-2.25-2.25H13.5m-3 0V3h3V1.5m-3 0h3" />
+            </svg>
+            <span class="font-bold font-mono text-sm text-text-primary group-hover:text-emerald-400 transition-colors">Android Water Eject</span>
+          </div>
+          <span class="text-[9px] font-mono font-bold px-2 py-0.5 rounded bg-emerald-400/10 text-emerald-400 border border-emerald-400/30">Android Opt.</span>
+        </div>
+        <p class="text-xs text-text-muted leading-relaxed">
+          Designed for Samsung Galaxy, Google Pixel, OnePlus, Xiaomi, and all Android devices.
+        </p>
+        <div class="flex items-center gap-2 text-[10px] font-mono text-text-secondary pt-1">
+          <span>✓ Samsung / Pixel</span>
+          <span>•</span>
+          <span>✓ All Brands</span>
+        </div>
+      </button>
+
+      <!-- Card 4: Tablet Water Eject -->
+      <button data-preset="tablet" class="device-card p-4 rounded-xl border border-border-hairline bg-bg-surface hover:border-border-interactive text-left transition-all space-y-2 group cursor-pointer shadow-specular-top">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <svg class="w-5 h-5 text-purple-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 18h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+            </svg>
+            <span class="font-bold font-mono text-sm text-text-primary group-hover:text-purple-400 transition-colors">Tablet Water Eject</span>
+          </div>
+          <span class="text-[9px] font-mono font-bold px-2 py-0.5 rounded bg-purple-400/10 text-purple-400 border border-purple-400/30">Larger Drivers</span>
+        </div>
+        <p class="text-xs text-text-muted leading-relaxed">
+          Powerful water removal sound for iPad, Samsung Galaxy Tab, and all tablet speakers.
+        </p>
+        <div class="flex items-center gap-2 text-[10px] font-mono text-text-secondary pt-1">
+          <span>✓ iPad / Tab</span>
+          <span>•</span>
+          <span>✓ Extended Cycles</span>
+        </div>
+      </button>
+
+      <!-- Card 5: Laptop Water Eject -->
+      <button data-preset="laptop" class="device-card p-4 rounded-xl border border-border-hairline bg-bg-surface hover:border-border-interactive text-left transition-all space-y-2 group cursor-pointer shadow-specular-top">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <svg class="w-5 h-5 text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+            </svg>
+            <span class="font-bold font-mono text-sm text-text-primary group-hover:text-amber-400 transition-colors">Laptop Water Eject</span>
+          </div>
+          <span class="text-[9px] font-mono font-bold px-2 py-0.5 rounded bg-amber-400/10 text-amber-400 border border-amber-400/30">Multi-Speaker</span>
+        </div>
+        <p class="text-xs text-text-muted leading-relaxed">
+          Safe water eject sound tool for MacBook, Windows laptops, and Chromebook speakers.
+        </p>
+        <div class="flex items-center gap-2 text-[10px] font-mono text-text-secondary pt-1">
+          <span>✓ MacBook Safe</span>
+          <span>•</span>
+          <span>✓ Windows / Chrome</span>
+        </div>
+      </button>
+
+      <!-- Card 6: Call Speaker / Earpiece -->
+      <button data-preset="earpiece" class="device-card p-4 rounded-xl border border-border-hairline bg-bg-surface hover:border-border-interactive text-left transition-all space-y-2 group cursor-pointer shadow-specular-top">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <svg class="w-5 h-5 text-rose-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 002.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-2.826-1.47-5.114-3.758-6.584-6.584l1.293-.97c.362-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 00-1.091-.852H4.5A2.25 2.25 0 002.25 4.5v2.25z" />
+            </svg>
+            <span class="font-bold font-mono text-sm text-text-primary group-hover:text-rose-400 transition-colors">Call Speaker Eject</span>
+          </div>
+          <span class="text-[9px] font-mono font-bold px-2 py-0.5 rounded bg-rose-400/10 text-rose-400 border border-rose-400/30">Higher Freq</span>
+        </div>
+        <p class="text-xs text-text-muted leading-relaxed">
+          Specialized tool for earpiece and call speaker water removal on any smartphone.
+        </p>
+        <div class="flex items-center gap-2 text-[10px] font-mono text-text-secondary pt-1">
+          <span>✓ Earpiece Focused</span>
+          <span>•</span>
+          <span>✓ Voice Clarity</span>
+        </div>
+      </button>
+
+    </div>
+  </div>
+
   <!-- Hardware Control Deck Container -->
   <div class="relative overflow-hidden rounded-2xl bg-bg-surface border border-border-hairline p-6 sm:p-8 shadow-specular-top">
-    <!-- Glowing background accent -->
     <div class="absolute -top-32 -right-32 w-80 h-80 bg-status-pass/10 blur-3xl rounded-full pointer-events-none z-0"></div>
     <div class="absolute -bottom-32 -left-32 w-80 h-80 bg-status-info/10 blur-3xl rounded-full pointer-events-none z-0"></div>
 
@@ -17,10 +165,10 @@ const { t } = useTranslations(Astro.url.pathname);
         <div>
           <div class="inline-flex items-center gap-2 px-2.5 py-1 rounded-md bg-status-pass/10 border border-status-pass/30 font-mono text-[10px] text-status-pass font-bold uppercase tracking-widest mb-1.5">
             <span class="w-1.5 h-1.5 rounded-full bg-status-pass animate-pulse"></span>
-            Acoustic Ejection Engine v2.4
+            <span id="active-preset-name">Universal Mobile Mode</span>
           </div>
-          <h2 class="text-xl sm:text-2xl font-bold font-mono text-text-primary tracking-tight">
-            Speaker Water &amp; Dust Ejector
+          <h2 class="text-xl sm:text-2xl font-bold font-mono text-text-primary tracking-tight" id="active-preset-title">
+            Mobile Water Eject Sound
           </h2>
         </div>
 
@@ -50,14 +198,13 @@ const { t } = useTranslations(Astro.url.pathname);
         </div>
 
         <div class="relative z-10 flex items-center justify-between font-mono text-[11px] text-text-muted">
-          <span id="mode-badge" class="px-2 py-0.5 rounded bg-bg-surface/80 border border-border-hairline">Mode: Water Eject Sweep</span>
+          <span id="mode-badge" class="px-2 py-0.5 rounded bg-bg-surface/80 border border-border-hairline">Target: 165Hz–300Hz Resonant Sweep</span>
           <span class="hidden sm:inline">Vibration Haptics: <strong id="haptic-status" class="text-status-pass">Active</strong></span>
         </div>
       </div>
 
       <!-- Main Action Hub: EJECT & Mode Controls -->
       <div class="grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
-        <!-- Big Eject Button -->
         <div class="md:col-span-6 flex flex-col items-center justify-center space-y-3 text-center">
           <button 
             id="btn-eject-toggle"
@@ -75,12 +222,12 @@ const { t } = useTranslations(Astro.url.pathname);
 
         <!-- Mode Presets Grid -->
         <div class="md:col-span-6 space-y-2 font-mono text-xs">
-          <div class="text-[10px] text-text-muted uppercase tracking-wider font-bold mb-1">Select Diagnostic Sound Mode</div>
+          <div class="text-[10px] text-text-muted uppercase tracking-wider font-bold mb-1">Select Diagnostic Mode</div>
 
           <button data-mode="water-sweep" class="mode-btn w-full p-3 rounded-xl border border-status-pass/50 bg-status-pass/10 text-text-primary text-left flex items-center justify-between hover:border-status-pass transition-all">
             <div>
               <div class="font-bold text-xs">1. Water Removal Sweep</div>
-              <div class="text-[10px] text-text-muted font-sans">150Hz – 175Hz continuous acoustic wave</div>
+              <div class="text-[10px] text-text-muted font-sans">Acoustic resonant sweep tailored to device profile</div>
             </div>
             <span class="text-[10px] font-bold text-status-pass bg-status-pass/20 px-2 py-0.5 rounded">Standard</span>
           </button>
@@ -106,70 +253,55 @@ const { t } = useTranslations(Astro.url.pathname);
     </div>
   </div>
 
-  <!-- Phone Speaker Doctor: Guided 4-Step Verification Matrix -->
-  <div class="border border-border-hairline rounded-2xl bg-bg-surface p-6 sm:p-8 space-y-5 shadow-specular-top">
-    <div class="flex items-center justify-between border-b border-border-hairline pb-4">
-      <div>
-        <h3 class="text-base sm:text-lg font-bold font-mono text-text-primary">
-          Phone Speaker Doctor: Guided Repair Flow
-        </h3>
-        <p class="text-xs text-text-muted">Follow this 4-step diagnostic protocol to verify speaker health.</p>
-      </div>
-      <span class="hidden sm:inline-block px-3 py-1 rounded-full text-[10px] font-mono font-bold bg-bg-canvas border border-border-hairline text-text-secondary">
-        Step-by-Step Diagnostic
-      </span>
+  <!-- Section 3: How Water Eject Sound Works (3-Step Workflow) -->
+  <div class="border border-border-hairline rounded-2xl bg-bg-surface p-6 sm:p-8 space-y-6 shadow-specular-top">
+    <div class="text-center space-y-1">
+      <div class="font-mono text-xs text-status-pass font-bold uppercase tracking-wider">Simple 3-Step Process</div>
+      <h3 class="text-2xl font-bold font-mono text-text-primary tracking-tight">
+        How Water Eject Sound Works
+      </h3>
     </div>
 
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-xs font-sans">
-      <div class="p-4 rounded-xl bg-bg-canvas border border-border-hairline space-y-2">
-        <div class="flex items-center justify-between">
-          <span class="font-mono text-status-pass font-bold text-sm">Step 01</span>
-          <span class="w-2 h-2 rounded-full bg-status-pass"></span>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 font-sans">
+      <!-- Step 1 -->
+      <div class="p-5 rounded-xl bg-bg-canvas border border-border-hairline relative space-y-3 shadow-specular-top">
+        <div class="w-9 h-9 rounded-xl bg-status-pass/10 border border-status-pass/30 flex items-center justify-center font-mono font-bold text-status-pass text-base">
+          1
         </div>
-        <div class="font-bold text-text-primary">Run Water Ejection</div>
-        <p class="text-[11px] text-text-muted leading-relaxed">
-          Play the 150-175Hz sweep for 60 seconds with device volume set to 100%.
+        <h4 class="font-bold text-text-primary text-base">Select Device</h4>
+        <p class="text-xs text-text-muted leading-relaxed">
+          Choose your specific device type above to load optimized acoustic frequencies (165Hz–300Hz) and driver parameters.
         </p>
       </div>
 
-      <div class="p-4 rounded-xl bg-bg-canvas border border-border-hairline space-y-2">
-        <div class="flex items-center justify-between">
-          <span class="font-mono text-cyan-400 font-bold text-sm">Step 02</span>
-          <span class="w-2 h-2 rounded-full bg-cyan-400"></span>
+      <!-- Step 2 -->
+      <div class="p-5 rounded-xl bg-bg-canvas border border-border-hairline relative space-y-3 shadow-specular-top">
+        <div class="w-9 h-9 rounded-xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center font-mono font-bold text-cyan-400 text-base">
+          2
         </div>
-        <div class="font-bold text-text-primary">Left &amp; Right Balance</div>
-        <p class="text-[11px] text-text-muted leading-relaxed">
-          Switch channel target to "Left" and "Right" to confirm both top &amp; bottom speakers fire.
+        <h4 class="font-bold text-text-primary text-base">Play Sound</h4>
+        <p class="text-xs text-text-muted leading-relaxed">
+          Turn your device volume up to 100%, point your speaker grill downward, and press "Start Water Eject".
         </p>
       </div>
 
-      <div class="p-4 rounded-xl bg-bg-canvas border border-border-hairline space-y-2">
-        <div class="flex items-center justify-between">
-          <span class="font-mono text-amber-400 font-bold text-sm">Step 03</span>
-          <span class="w-2 h-2 rounded-full bg-amber-400"></span>
+      <!-- Step 3 -->
+      <div class="p-5 rounded-xl bg-bg-canvas border border-border-hairline relative space-y-3 shadow-specular-top">
+        <div class="w-9 h-9 rounded-xl bg-purple-500/10 border border-purple-500/30 flex items-center justify-center font-mono font-bold text-purple-400 text-base">
+          3
         </div>
-        <div class="font-bold text-text-primary">Crackle &amp; Buzz Check</div>
-        <p class="text-[11px] text-text-muted leading-relaxed">
-          Run Mode 3 to verify if speaker cone has physical mechanical distortion.
-        </p>
-      </div>
-
-      <div class="p-4 rounded-xl bg-bg-canvas border border-border-hairline space-y-2">
-        <div class="flex items-center justify-between">
-          <span class="font-mono text-purple-400 font-bold text-sm">Step 04</span>
-          <span class="w-2 h-2 rounded-full bg-purple-400"></span>
-        </div>
-        <div class="font-bold text-text-primary">Microphone Audit</div>
-        <p class="text-[11px] text-text-muted leading-relaxed">
-          Visit our <a href="/sound-test/microphone-test" class="text-purple-400 underline font-semibold">Mic Test</a> to confirm water didn't enter microphone port.
+        <h4 class="font-bold text-text-primary text-base">Water Ejects</h4>
+        <p class="text-xs text-text-muted leading-relaxed">
+          High-intensity sound wave vibrations and synchronized haptic pulses physically push trapped water droplets out of your speaker.
         </p>
       </div>
     </div>
   </div>
+
 </div>
 
 <script>
-  import { AudioDiagnosticEngine, DiagnosticMode, EjectTarget } from '../../engine/AudioDiagnosticEngine';
+  import { AudioDiagnosticEngine, DiagnosticMode, EjectTarget, DevicePreset, DEVICE_PRESETS } from '../../engine/AudioDiagnosticEngine';
 
   function initWaterEjector() {
     const btnToggle = document.getElementById('btn-eject-toggle');
@@ -178,11 +310,14 @@ const { t } = useTranslations(Astro.url.pathname);
     const statusText = document.getElementById('status-text');
     const statusLed = document.getElementById('status-led');
     const modeBadge = document.getElementById('mode-badge');
+    const activePresetName = document.getElementById('active-preset-name');
+    const activePresetTitle = document.getElementById('active-preset-title');
     const canvas = document.getElementById('ejector-visualizer') as HTMLCanvasElement;
     const ctx = canvas ? canvas.getContext('2d') : null;
 
     if (!btnToggle || !btnLabel || !freqReadout) return;
 
+    let currentPreset: DevicePreset = 'mobile';
     let currentMode: DiagnosticMode = 'water-sweep';
     let currentTarget: EjectTarget = 'all';
 
@@ -203,7 +338,6 @@ const { t } = useTranslations(Astro.url.pathname);
       }
     );
 
-    // Resize canvas correctly
     function resizeCanvas() {
       if (canvas) {
         canvas.width = canvas.offsetWidth;
@@ -213,7 +347,36 @@ const { t } = useTranslations(Astro.url.pathname);
     resizeCanvas();
     window.addEventListener('resize', resizeCanvas);
 
-    // Mode Selector Buttons
+    // Device Preset Selection
+    const deviceCards = document.querySelectorAll('.device-card');
+    deviceCards.forEach((card) => {
+      card.addEventListener('click', (e) => {
+        const targetCard = e.currentTarget as HTMLElement;
+        const preset = targetCard.getAttribute('data-preset') as DevicePreset;
+        if (!preset || !DEVICE_PRESETS[preset]) return;
+
+        currentPreset = preset;
+        const pConfig = DEVICE_PRESETS[preset];
+
+        deviceCards.forEach((c) => {
+          c.classList.remove('border-status-pass', 'bg-status-pass/10');
+          c.classList.add('border-border-hairline', 'bg-bg-surface');
+        });
+        targetCard.classList.remove('border-border-hairline', 'bg-bg-surface');
+        targetCard.classList.add('border-status-pass', 'bg-status-pass/10');
+
+        if (activePresetName) activePresetName.textContent = pConfig.name;
+        if (activePresetTitle) activePresetTitle.textContent = `${pConfig.name} Water Eject`;
+        if (modeBadge) modeBadge.textContent = `Target: ${pConfig.baseFreq}Hz–${pConfig.endFreq}Hz Resonant Sweep`;
+        if (freqReadout) freqReadout.textContent = `${pConfig.baseFreq} Hz`;
+
+        if (engine.active) {
+          startEject();
+        }
+      });
+    });
+
+    // Diagnostic Mode Selector Buttons
     document.querySelectorAll('.mode-btn').forEach((btn) => {
       btn.addEventListener('click', (e) => {
         const targetBtn = e.currentTarget as HTMLElement;
@@ -227,12 +390,6 @@ const { t } = useTranslations(Astro.url.pathname);
         });
         targetBtn.classList.remove('border-border-hairline', 'bg-bg-canvas', 'text-text-secondary');
         targetBtn.classList.add('border-status-pass/50', 'bg-status-pass/10', 'text-text-primary');
-
-        if (modeBadge) {
-          if (mode === 'water-sweep') modeBadge.textContent = 'Mode: Water Eject Sweep';
-          if (mode === 'dust-blower') modeBadge.textContent = 'Mode: Dust Blower Wave';
-          if (mode === 'crackle-test') modeBadge.textContent = 'Mode: Crackle & Distortion Check';
-        }
 
         if (engine.active) {
           startEject();
@@ -264,11 +421,13 @@ const { t } = useTranslations(Astro.url.pathname);
     }
 
     function startEject() {
+      const pConfig = DEVICE_PRESETS[currentPreset] || DEVICE_PRESETS.mobile;
       engine.start({
         mode: currentMode,
         target: currentTarget,
-        baseFreq: currentMode === 'dust-blower' ? 220 : 165,
-        endFreq: currentMode === 'dust-blower' ? 260 : 175,
+        preset: currentPreset,
+        baseFreq: currentMode === 'dust-blower' ? 220 : pConfig.baseFreq,
+        endFreq: currentMode === 'dust-blower' ? 320 : pConfig.endFreq,
         intensity: 1.0,
         volume: 1.0
       });

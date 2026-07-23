@@ -2,34 +2,38 @@
 import Layout from '../../layouts/Layout.astro';
 import WaterEjectorCanvas from '../../components/diagnostics/WaterEjectorCanvas.astro';
 import FAQSection from '../../components/ui/FAQSection.astro';
-import { useTranslations, localizeLink } from '../../utils/i18n';
+import { useTranslations } from '../../utils/i18n';
 
 const { t, lang } = useTranslations(Astro.url.pathname);
 
 const waterEjectFaqs = [
   {
+    q: 'Is the water eject sound tool free to use?',
+    a: 'Yes, all our water eject sound tools are 100% free. No registration, no downloads, no hidden costs. Just select your device and play the sound.'
+  },
+  {
+    q: 'Which frequency should I use?',
+    a: 'Start with 165Hz as it works best for most devices. If water remains, try higher frequencies like 200Hz or 300Hz for stubborn moisture.'
+  },
+  {
+    q: 'How long should I play the water eject sound?',
+    a: 'Play for 30 seconds to 2 minutes. For heavy water exposure, repeat 3-5 times with short breaks between cycles.'
+  },
+  {
+    q: 'Will this damage my speakers?',
+    a: 'No, these frequencies are completely safe for all speakers. This is the same technology Apple uses in the Apple Watch Water Lock feature.'
+  },
+  {
+    q: 'Does it work on all phone brands?',
+    a: 'Yes, our water eject sound tools work on iPhone, Samsung, Google Pixel, OnePlus, Xiaomi, Motorola, Sony, LG, and all other smartphone brands.'
+  },
+  {
     q: 'How does a water eject sound work?',
-    a: 'Water ejection sounds generate low-frequency acoustic sine waves (typically between 150Hz and 175Hz). These low frequencies force the speaker diaphragm and voice coil to vibrate rapidly at high mechanical amplitude, pushing out trapped liquid droplets through physical air displacement.'
-  },
-  {
-    q: 'Why is 165Hz recommended for speaker water removal?',
-    a: '165Hz lies near the mechanical resonant frequency of modern smartphone micro-speakers (such as Apple iPhone, Samsung Galaxy, and Google Pixel speakers). At resonance, physical diaphragm displacement is maximized with minimal electrical strain.'
-  },
-  {
-    q: 'Will playing a water eject sound damage my phone speaker?',
-    a: 'No. Playing a 165Hz water eject sound at 100% volume for 60-120 seconds is completely safe. Modern smartphone speakers are factory-tested to withstand sustained maximum volume output without voice coil damage.'
-  },
-  {
-    q: 'How do I get water out of my iPhone speaker or Android earpiece?',
-    a: 'Turn your device volume up to 100%, point your device speaker mesh downward toward the ground, and press "Start Water Eject". Run the sweep for 60 seconds. Repeat 2 to 3 times if audio remains muffled.'
-  },
-  {
-    q: 'What should I do if my speaker still sounds muffled or crackling?',
-    a: 'If audio remains muffled after 3 cycles, use our "Left/Right Channel Target" controls to isolate the top earpiece speaker or bottom firing speaker individually. Follow with our "Crackle & Distortion Check" mode to diagnose mechanical cone damage.'
+    a: 'Water ejection sounds generate low-frequency acoustic sine waves (typically between 150Hz and 300Hz). These low frequencies force the speaker diaphragm and voice coil to vibrate rapidly at high mechanical amplitude, pushing out trapped liquid droplets through physical air displacement.'
   },
   {
     q: 'Can I remove water from Apple Watch or AirPods speakers?',
-    a: 'Yes. Open this page on your connected smartphone or laptop and play the sound while holding your AirPods or Apple Watch speaker mesh near the sound output, or use our mobile touch layout directly.'
+    a: 'Yes. Select our Mobile or Call Speaker mode, set volume to 100%, and hold your AirPods or Apple Watch speaker mesh near the output.'
   },
   {
     q: 'Does rice actually dry out a phone speaker faster than sound?',
@@ -40,12 +44,8 @@ const waterEjectFaqs = [
     a: 'After running the speaker water eject sound, visit our free online Microphone Test suite to record a 3-second audio loop and verify if your mic capsule captured clear audio without static floor noise.'
   },
   {
-    q: 'Does this tool work on tablets and laptop speakers?',
-    a: 'Yes. Our AudioDiagnosticEngine detects your browser audio hardware and supports multi-speaker arrays across MacBooks, Windows laptops, iPads, and Android tablets.'
-  },
-  {
-    q: 'Is this water eject tool completely free and private?',
-    a: 'Yes. Display Test Online is 100% free with zero ads, zero software downloads, and zero data collection. All audio sweeps execute locally inside your browser.'
+    q: 'What should I do if my speaker still sounds muffled or crackling?',
+    a: 'If audio remains muffled after 3 cycles, use our "Left/Right Channel Target" controls to isolate the top earpiece speaker or bottom firing speaker individually. Follow with our "Crackle & Distortion Check" mode to diagnose mechanical cone damage.'
   }
 ];
 ---
@@ -68,7 +68,7 @@ const waterEjectFaqs = [
       </h1>
 
       <p class="text-sm sm:text-base text-text-secondary max-w-2xl mx-auto leading-relaxed">
-        Dropped your phone in water or dealing with muffled audio? Run our free browser-native 165Hz acoustic sound wave generator to clear liquid and dust from your smartphone, tablet, or laptop speakers instantly.
+        Select your device type below for optimized water eject sound frequencies (165Hz–300Hz) and device-specific instructions to clear liquid instantly.
       </p>
     </section>
 
@@ -87,7 +87,7 @@ const waterEjectFaqs = [
           When liquid enters a smartphone speaker grill, surface tension traps microscopic water droplets directly against the speaker membrane (diaphragm). Because water is substantially denser than air, it restricts the voice coil from vibrating freely, suppressing higher frequencies and producing muffled, distorted audio output.
         </p>
         <p>
-          Standard drying methods like towels or blowing cannot break surface tension trapped inside micro-perforations. Our <strong>AudioDiagnosticEngine</strong> generates low-frequency resonant acoustic pressure waves (150Hz to 175Hz) that physically displace trapped moisture in seconds.
+          Standard drying methods like towels or blowing cannot break surface tension trapped inside micro-perforations. Our <strong>AudioDiagnosticEngine</strong> generates low-frequency resonant acoustic pressure waves (150Hz to 300Hz) that physically displace trapped moisture in seconds.
         </p>
       </div>
 

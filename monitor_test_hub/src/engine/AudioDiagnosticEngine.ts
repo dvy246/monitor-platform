@@ -1,13 +1,75 @@
-export type EjectTarget = 'all' | 'left' | 'right';
+export type EjectTarget = 'all' | 'left' | 'right' | 'earpiece';
 export type DiagnosticMode = 'water-sweep' | 'dust-blower' | 'constant-tone' | 'pulse' | 'crackle-test';
+export type DevicePreset = 'mobile' | 'iphone' | 'android' | 'tablet' | 'laptop' | 'earpiece';
+
+export interface DeviceConfig {
+  name: string;
+  baseFreq: number;
+  endFreq: number;
+  cycleTimeSec: number;
+  description: string;
+  badge: string;
+}
+
+export const DEVICE_PRESETS: Record<DevicePreset, DeviceConfig> = {
+  mobile: {
+    name: 'Universal Mobile',
+    baseFreq: 165,
+    endFreq: 300,
+    cycleTimeSec: 30,
+    description: 'Universal water eject sound tool for all mobile phone speakers.',
+    badge: '165Hz–300Hz'
+  },
+  iphone: {
+    name: 'iPhone & Apple',
+    baseFreq: 165,
+    endFreq: 250,
+    cycleTimeSec: 30,
+    description: 'Optimized water removal sound specifically tuned for iPhone speaker systems.',
+    badge: 'Apple Optimized'
+  },
+  android: {
+    name: 'Android Devices',
+    baseFreq: 160,
+    endFreq: 280,
+    cycleTimeSec: 30,
+    description: 'Designed for Samsung Galaxy, Google Pixel, OnePlus, Xiaomi, and Android devices.',
+    badge: 'Android Optimized'
+  },
+  tablet: {
+    name: 'Tablets & iPad',
+    baseFreq: 140,
+    endFreq: 220,
+    cycleTimeSec: 45,
+    description: 'Powerful water removal sound for iPad, Samsung Tab, and larger tablet drivers.',
+    badge: 'Larger Speakers'
+  },
+  laptop: {
+    name: 'Laptops & MacBook',
+    baseFreq: 120,
+    endFreq: 240,
+    cycleTimeSec: 60,
+    description: 'Safe water eject sound tool for MacBook, Windows laptops, and Chromebook speakers.',
+    badge: 'Multi-Speaker'
+  },
+  earpiece: {
+    name: 'Call Speaker & Earpiece',
+    baseFreq: 250,
+    endFreq: 400,
+    cycleTimeSec: 30,
+    description: 'Specialized high-frequency ejection for top earpiece and call speaker capsules.',
+    badge: 'Higher Freq'
+  }
+};
 
 export interface EngineConfig {
   mode: DiagnosticMode;
   target: EjectTarget;
-  baseFreq: number; // Hz (e.g., 165Hz default for water eject)
-  endFreq?: number;  // Hz (for sweeps e.g., 175Hz)
-  intensity: number; // 0.0 to 1.0
-  volume: number;    // 0.0 to 1.0
+  preset?: DevicePreset;
+  baseFreq: number;
+  endFreq?: number;
+  intensity: number;
+  volume: number;
 }
 
 function getAudioContextClass(): typeof AudioContext | null {
@@ -42,9 +104,6 @@ export class AudioDiagnosticEngine {
     this.onWaveformUpdate = onWaveformUpdate;
   }
 
-  /**
-   * Safe AudioContext initialization upon user interaction.
-   */
   public async initAudio(): Promise<void> {
     if (!this.ctx) {
       const AudioCtx = getAudioContextClass();
@@ -59,9 +118,6 @@ export class AudioDiagnosticEngine {
     }
   }
 
-  /**
-   * Start audio diagnostic signal generation.
-   */
   public start(config: EngineConfig): void {
     if (this.isRunning) {
       this.stop();
@@ -80,7 +136,6 @@ export class AudioDiagnosticEngine {
     }
 
     this.isRunning = true;
-
     const ctx = this.ctx;
     if (!ctx) return;
 
@@ -96,7 +151,6 @@ export class AudioDiagnosticEngine {
     this.analyserNode = ctx.createAnalyser();
     this.analyserNode.fftSize = 64;
 
-    // Configure Waveform type based on mode
     if (config.mode === 'dust-blower') {
       this.osc.type = 'sawtooth';
     } else if (config.mode === 'crackle-test') {
@@ -105,16 +159,13 @@ export class AudioDiagnosticEngine {
       this.osc.type = 'sine';
     }
 
-    // Set initial frequency
     const initialFreq = config.baseFreq || 165;
     this.osc.frequency.setValueAtTime(initialFreq, ctx.currentTime);
 
-    // Set gain with smooth ramp-up to prevent click/pop
     const targetGain = Math.max(0, Math.min(1, config.volume * config.intensity));
     this.gainNode.gain.setValueAtTime(0, ctx.currentTime);
     this.gainNode.gain.linearRampToValueAtTime(targetGain, ctx.currentTime + 0.05);
 
-    // Channel Panning
     let panVal = 0;
     if (config.target === 'left') panVal = -1;
     if (config.target === 'right') panVal = 1;
@@ -132,15 +183,11 @@ export class AudioDiagnosticEngine {
 
     this.osc.start();
 
-    // Mode-specific parameter automation
     this.applyModeAutomation(config);
     this.startHaptics();
     this.startVisualizationLoop();
   }
 
-  /**
-   * Stop audio signal and cleanup resources smoothly.
-   */
   public stop(): void {
     if (!this.isRunning) return;
     this.isRunning = false;
@@ -199,7 +246,7 @@ export class AudioDiagnosticEngine {
     const osc = this.osc;
     const gain = this.gainNode;
     const baseF = config.baseFreq || 165;
-    const endF = config.endFreq || (baseF + 25);
+    const endF = config.endFreq || (baseF + 35);
 
     if (config.mode === 'water-sweep') {
       const runSweepLoop = () => {
