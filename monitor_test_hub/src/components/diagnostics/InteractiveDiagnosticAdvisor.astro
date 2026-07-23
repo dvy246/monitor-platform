@@ -126,6 +126,7 @@
   });
 
   function renderSymptoms(deviceKey: string) {
+    if (!step2 || !symptomContainer || !resultContainer || !recTitle || !recDesc || !recLink) return;
     const list = symptomsMap[deviceKey] || symptomsMap.monitor;
     symptomContainer.innerHTML = list.map((item, idx) => `
       <button data-idx="${idx}" class="sym-btn bg-bg-elevated hover:bg-bg-surface border border-border-hairline p-3 rounded-xl text-left transition-all cursor-pointer min-h-[44px] hover:border-status-pass flex flex-col justify-between">

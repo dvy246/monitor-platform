@@ -74,7 +74,12 @@ const description = 'Contact the Monitor Test Hub team for support, feedback, or
           role="alert"
           aria-live="polite"
         >
-          ✓ Thank you! We will get back to you within 48 hours.
+          <div class="flex items-center gap-2">
+            <svg class="w-5 h-5 text-status-pass shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"></path>
+            </svg>
+            <span>Thank you! We will get back to you within 48 hours.</span>
+          </div>
         </div>
 
         <form id="contact-form" class="space-y-5" novalidate>

@@ -1,0 +1,177 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import FAQSection from '../../components/ui/FAQSection.astro';
+import Breadcrumbs from '../../components/ui/Breadcrumbs.astro';
+import SEOHead from '../../components/seo/SEOHead.astro';
+import PrivacyDisclaimerNotice from '../../components/disclaimers/PrivacyDisclaimerNotice.astro';
+
+const title = "Online Camera Test & Webcam Diagnostic Suite";
+const description = "Run a free online camera test for phone, laptop, or Windows 10 webcam. Test webcam and mic for Microsoft Teams, record video with 1-click download, and export photo strips.";
+
+const faqs = [
+  {
+    question: "How do I perform a phone camera test online on Android or iPhone?",
+    answer: "To run a phone camera test online, open this page in Chrome on Android or Safari on iOS and grant camera access. You can test both front selfie cameras and rear multi-lens sensors, measure real-time FPS frame rates, and verify 1080p or 4K resolution without installing apps."
+  },
+  {
+    question: "How do I test my webcam and microphone before a Microsoft Teams or Zoom meeting?",
+    answer: "Our Teams webcam test and webcam mic test suite verifies video resolution, frame rate pacing, and decibel (dBFS) audio level loopback in real-time. This guarantees your camera exposure and microphone audio are clear before joining remote meetings."
+  },
+  {
+    question: "How do I test a laptop camera on Windows 10 or Mac?",
+    answer: "To test your laptop camera on Windows 10, Mac, or Chromebook, click any diagnostic tool above and select 'Allow' when prompted by your browser. The tool evaluates built-in FaceTime HD cameras or USB webcams for resolution, exposure, and frame drops."
+  },
+  {
+    question: "Can I record video and download files without installing software (Camera test download)?",
+    answer: "Yes. Our Video Recording tool uses the W3C MediaRecorder API to capture HD camera video with microphone audio sync directly in browser memory. Once finished, click 'Download Video' for a 1-click WEBM file download with zero software installations."
+  },
+  {
+    question: "Is my webcam video feed private during an online camera test?",
+    answer: "Yes, 100% private. All camera video feeds, microphone inputs, photo booth filters, and video recording buffers execute strictly inside your device's local browser memory (RAM). Zero video data is ever sent across the network or stored on external servers."
+  },
+  {
+    question: "How does the Picabooth Photo Booth & 4-Shot Strip generator work?",
+    answer: "The Photo Booth features 7 real-time filters (Normal, Cyberpunk, Vintage Sepia, B&W Noir, Vaporwave, Invert Matrix, Warm Film), a 3s/5s countdown selfie timer, 4-shot burst mode, and lossless vertical photo strip PNG downloads."
+  },
+  {
+    question: "Why does my webcam show a black screen on Windows 10 or Android?",
+    answer: "A black screen is usually caused by browser permission blocks or hardware locking. Click the padlock icon in your browser address bar to set Camera permissions to 'Allow', and ensure background applications (Zoom, Teams, Skype) are closed."
+  },
+  {
+    question: "What is camera sensor frame rate (FPS) and why does it matter?",
+    answer: "FPS (Frames Per Second) measures how smoothly your camera sensor captures motion. Standard laptop webcams run at 30 FPS, while high-performance streaming webcams and phone cameras capture 60 FPS for ultra-smooth video."
+  },
+  {
+    question: "How do I mirror flip my camera view for a natural selfie perspective?",
+    answer: "Click the 'Mirror Flip' toggle on our control deck to horizontally invert your camera feed. This allows switching between natural mirror view and true unmirrored perspective for selfies and presentations."
+  },
+  {
+    question: "Does WebRTC provide better camera testing than third-party video apps?",
+    answer: "Yes. WebRTC streams uncompressed video frames directly to your browser's GPU canvas renderer, providing true physical resolution metrics without video call compression artifacts."
+  }
+];
+
+const breadcrumbs = [
+  { label: 'Home', href: '/' },
+  { label: 'Camera Test', href: '/camera-test' },
+  { label: title, href: '#' }
+];
+
+const tools = [
+  {
+    title: "HD Video Recording",
+    description: "Record camera video directly in your browser with audio sync, 100% local memory processing, and 1-click WEBM/MP4 file download.",
+    href: "/camera-test/video-recording",
+    badge: "MEDIARECORDER",
+    category: "HD VIDEO & AUDIO",
+    color: "from-rose-500/20 to-pink-500/10 border-rose-500/30 text-rose-400"
+  },
+  {
+    title: "Picabooth Photo Booth",
+    description: "Picabooth-style photo experience — 7 filters, 3s/5s countdown selfie, 4-shot burst mode, vertical photo strip PNG export.",
+    href: "/camera-test/photo-booth",
+    badge: "PICABOOTH",
+    category: "FILTERS & STRIPS",
+    color: "from-purple-500/20 to-indigo-500/10 border-purple-500/30 text-purple-400"
+  },
+  {
+    title: "Webcam FPS & Resolution Test",
+    description: "Real-time FPS frame rate counter, 1080p/4K resolution scanner, mirror flip, and studio virtual fill light.",
+    href: "/webcam-test",
+    badge: "1080P/4K FPS",
+    category: "SENSOR DIAGNOSTICS",
+    color: "from-cyan-500/20 to-blue-500/10 border-cyan-500/30 text-cyan-400"
+  },
+  {
+    title: "Camera & Mic Combined Suite",
+    description: "Unified video and audio test suite evaluating webcam resolution, camera FPS, mic decibel levels (dBFS), and instant voice playback.",
+    href: "/sound-test/camera-mic-test",
+    badge: "CAMERA & MIC",
+    category: "AUDIO/VIDEO COMBO",
+    color: "from-emerald-500/20 to-teal-500/10 border-emerald-500/30 text-emerald-400"
+  }
+];
+---
+
+<Layout title={title} description={description} faqs={faqs}>
+  <SEOHead slot="head" title={title} description={description} />
+  
+  <div class="max-w-7xl mx-auto px-4 py-6 sm:py-8 min-w-0 w-full overflow-hidden font-sans">
+    <Breadcrumbs items={breadcrumbs} />
+    
+    <!-- Hero Header Deck -->
+    <div class="relative w-full rounded-3xl border border-white/10 bg-[#121215] backdrop-blur-xl p-6 sm:p-8 md:p-10 shadow-2xl space-y-4 overflow-hidden group select-none mt-6">
+      <div class="absolute -top-24 -left-24 w-72 h-72 bg-rose-500/10 rounded-full blur-3xl pointer-events-none group-hover:bg-rose-500/15 transition-all duration-500"></div>
+      <div class="absolute -bottom-24 -right-24 w-72 h-72 bg-purple-500/10 rounded-full blur-3xl pointer-events-none group-hover:bg-purple-500/15 transition-all duration-500"></div>
+
+      <div class="relative z-10 space-y-4 max-w-3xl min-w-0 w-full">
+        <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#08080a] border border-white/10 text-rose-400 text-xs font-mono font-bold tracking-wide flex-wrap shadow-inner">
+          <span class="w-2 h-2 rounded-full bg-rose-400 animate-pulse shrink-0"></span>
+          <span>WEBRTC MEDIARECORDER CAMERA &amp; WEBCAM SUITE</span>
+        </div>
+        <h1 class="text-3xl sm:text-5xl font-extrabold text-white tracking-tight font-sans break-words min-w-0">{title}</h1>
+        <p class="text-sm sm:text-lg text-zinc-400 font-sans leading-relaxed min-w-0">
+          Run an online phone camera test, laptop camera test, or test your webcam for Microsoft Teams on Windows 10, Mac, and Android. Includes 1-click video recording downloads and retro photo booth strips.
+        </p>
+      </div>
+    </div>
+
+    <!-- Privacy & Security Disclaimer Banner -->
+    <PrivacyDisclaimerNotice class="mt-6" />
+
+    <!-- Tools Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 my-8">
+      {tools.map(tool => (
+        <a href={tool.href} class={`group relative rounded-3xl border bg-[#121215]/90 p-6 sm:p-8 backdrop-blur-xl shadow-2xl hover:border-white/20 transition-all duration-300 flex flex-col justify-between overflow-hidden bg-gradient-to-br ${tool.color}`}>
+          <div class="space-y-4">
+            <div class="flex items-center justify-between">
+              <span class="px-3 py-1 rounded-full bg-black/40 border border-white/10 text-[10px] font-mono font-bold uppercase tracking-wider text-white">{tool.category}</span>
+              <span class="px-2.5 py-0.5 rounded-full bg-white/10 text-[10px] font-mono font-extrabold tracking-wider">{tool.badge}</span>
+            </div>
+            <h2 class="text-2xl font-extrabold text-white font-sans group-hover:text-rose-400 transition-colors flex items-center justify-between">
+              <span>{tool.title}</span>
+              <svg class="w-5 h-5 transform group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+            </h2>
+            <p class="text-sm text-zinc-300 font-sans leading-relaxed">{tool.description}</p>
+          </div>
+        </a>
+      ))}
+    </div>
+
+    <!-- Technical SEO Helpful Content Article -->
+    <article class="bg-[#121215] border border-white/10 rounded-3xl p-6 sm:p-10 space-y-6 text-zinc-300 font-sans leading-relaxed shadow-2xl my-8">
+      <h2 class="text-2xl font-semibold text-white font-mono flex items-center gap-2">
+        <svg class="w-6 h-6 text-rose-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v14a2 2 0 002 2z" />
+        </svg>
+        <span>Comprehensive Camera &amp; Webcam Hardware Evaluation</span>
+      </h2>
+      <p>
+        Whether you are performing a <strong class="text-white">laptop camera test</strong> on Windows 10, running a <strong class="text-white">phone camera test online</strong> on Android or iOS, or preparing a <strong class="text-white">teams webcam test</strong> for remote meetings, verifying hardware stream performance requires clinical metrics. Our diagnostic tools use modern WebRTC and HTML5 MediaDevices APIs to measure exact sensor resolution, frame rates (30 FPS vs 60 FPS), and audio synchronization directly in your browser.
+      </p>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 my-6 text-xs font-mono">
+        <div class="bg-[#08080a] p-5 rounded-2xl border border-white/10 space-y-2">
+          <div class="text-rose-400 font-bold uppercase tracking-wider">Laptop &amp; Desktop Webcam Testing</div>
+          <p class="text-zinc-400 font-sans leading-relaxed">
+            Built-in laptop cameras and USB webcams on Windows 10 and Mac often suffer from poor exposure compensation or USB bandwidth bottlenecks. Our webcam mic test suite evaluates real-time FPS frame pacing, 1080p/4K resolution capabilities, and microphone gain levels (dBFS).
+          </p>
+        </div>
+
+        <div class="bg-[#08080a] p-5 rounded-2xl border border-white/10 space-y-2">
+          <div class="text-purple-400 font-bold uppercase tracking-wider">Phone Camera Test &amp; Photo Booth</div>
+          <p class="text-zinc-400 font-sans leading-relaxed">
+            On smartphones and tablets, testing front selfie cameras and rear multi-lens sensors ensures optimal clarity. Use our Picabooth Photo Booth to apply 7 real-time filters, run countdown timers, take 4-shot bursts, and export vertical photo strips.
+          </p>
+        </div>
+      </div>
+
+      <h3 class="text-xl font-semibold text-white font-mono mt-8">MediaRecorder Engine &amp; Instant Video Download</h3>
+      <p>
+        Traditional video recording tools require heavy software downloads. Our in-browser MediaRecorder engine captures uncompressed HD video and Opus microphone audio, compiling the stream into a native WEBM file inside local RAM. Once finished, you can preview the recording and perform a 1-click file download with complete privacy guarantee.
+      </p>
+    </article>
+
+    <FAQSection faqs={faqs} />
+  </div>
+</Layout>

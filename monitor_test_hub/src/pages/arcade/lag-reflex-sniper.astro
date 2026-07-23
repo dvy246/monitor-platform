@@ -6,6 +6,12 @@ import StepWorkflowSection from '../../components/ui/StepWorkflowSection.astro';
 import PanelTypeBreakdownSection from '../../components/ui/PanelTypeBreakdownSection.astro';
 import FAQSection from '../../components/ui/FAQSection.astro';
 
+// Right Sidebar Components
+import StatusCard from '../../components/ui/sidebar/StatusCard.astro';
+import TelemetryCard from '../../components/ui/sidebar/TelemetryCard.astro';
+import MetricCard from '../../components/ui/sidebar/MetricCard.astro';
+import ShortcutCard from '../../components/ui/sidebar/ShortcutCard.astro';
+
 const faqs = [
   {
     question: "What is human reaction time vs display input lag?",
@@ -59,8 +65,55 @@ const seoDescription = "Test your human visual reaction time combined with syste
   faqs={faqs}
 >
   <div class="py-8 px-4 max-w-7xl mx-auto space-y-12 font-sans">
-    <LagReflexSniper />
-    
+    <!-- 2-Column Responsive Layout -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+      <!-- Left Primary Arcade Canvas -->
+      <div class="lg:col-span-8 space-y-8">
+        <LagReflexSniper />
+      </div>
+
+      <!-- Right Modular Control & Telemetry Sidebar -->
+      <div class="lg:col-span-4 sticky top-24 space-y-6">
+        <StatusCard
+          status="pass"
+          label="Reflex Rank Tier"
+          subtitle="Human Reflex + Display Delay"
+          score="Pro Tier"
+          details={[
+            { label: "Best Reaction", value: "164 ms" },
+            { label: "Display Latency Est.", value: "1.2 ms" }
+          ]}
+        />
+
+        <TelemetryCard
+          title="Click Latency Event Stream"
+          subtitle="performance.now() Microseconds"
+          type="event-log"
+          badgeText="DOM Timer"
+        />
+
+        <MetricCard
+          title="Reaction Statistics"
+          subtitle="Reflex & Latency Summary"
+          badgeText="Statistics"
+          layout="list"
+          metrics={[
+            { id: "last-rx", label: "Last Click Latency", value: "182", unit: "ms", status: "pass" },
+            { id: "avg-5", label: "5-Attempt Average", value: "176", unit: "ms", target: "180", status: "pass" },
+            { id: "jitter-rx", label: "Standard Deviation σ", value: "4.2", unit: "ms", status: "pass" }
+          ]}
+        />
+
+        <ShortcutCard
+          shortcuts={[
+            { keys: ["Space"], label: "Trigger Shot / Click" },
+            { keys: ["R"], label: "Reset Round Statistics" }
+          ]}
+        />
+      </div>
+    </div>
+
+    <!-- Standard 4-Part Sections -->
     <StepWorkflowSection />
     <PanelTypeBreakdownSection />
 

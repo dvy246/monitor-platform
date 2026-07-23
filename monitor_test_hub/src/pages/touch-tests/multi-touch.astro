@@ -4,6 +4,13 @@ import Breadcrumbs from '../../components/ui/Breadcrumbs.astro';
 import MultiTouchDetector from '../../components/diagnostics/MultiTouchDetector.astro';
 import ErgonomicsNotice from '../../components/disclaimers/ErgonomicsNotice.astro';
 import TestSwitcherBar from '../../components/ui/TestSwitcherBar.astro';
+import FAQSection from '../../components/ui/FAQSection.astro';
+
+import StatusCard from '../../components/ui/sidebar/StatusCard.astro';
+import MetricCard from '../../components/ui/sidebar/MetricCard.astro';
+import TelemetryCard from '../../components/ui/sidebar/TelemetryCard.astro';
+import ShortcutCard from '../../components/ui/sidebar/ShortcutCard.astro';
+import InfoCard from '../../components/ui/sidebar/InfoCard.astro';
 
 const breadcrumbItems = [
   { label: 'Touch Suite', href: '/touch-tests' },
@@ -17,60 +24,165 @@ const touchTests = [
   { id: 'swipe-velocity', label: 'Swipe Velocity', href: '/touch-tests/swipe-velocity' },
   { id: 'input-lag', label: 'Input Lag Test', href: '/touch-tests/input-lag' }
 ];
+
+const faqs = [
+  {
+    question: "What is a multi-touch screen test?",
+    answer: "A multi-touch test evaluates how many concurrent physical touch contacts (finger taps or stylus presses) your touchscreen hardware and OS digitizer driver can accurately resolve simultaneously."
+  },
+  {
+    question: "How many touch points should my smartphone or tablet support?",
+    answer: "Modern flagship smartphones and tablets typically support 10-point multi-touch, allowing all 10 fingers to be tracked simultaneously. Budget or legacy devices may support 2 to 5 points."
+  },
+  {
+    question: "How does W3C PointerEvents handle multi-touch in modern browsers?",
+    answer: "The W3C PointerEvents API assigns a unique pointerId to every active contact point on the digitizer, streaming precise X/Y coordinates, pressure, width/height radii, and tilt angles."
+  },
+  {
+    question: "Why does my screen drop touch points when I use more than 2 or 5 fingers?",
+    answer: "Touch point drops occur when the digitizer IC reaches its hardware channel scanning capacity, or when touch driver firmware limits maximum simultaneous contacts to conserve power."
+  },
+  {
+    question: "What is touch contact radius and contact area sensing?",
+    answer: "Capacitive touch controllers measure the surface area of skin pressing against the glass (contact radius in mm²), which helps distinguish a light finger tap from a thumb or palm touch."
+  },
+  {
+    question: "Can palm rejection interfere with multi-touch testing?",
+    answer: "Yes, OS-level palm rejection algorithms (common on iPads and drawing tablets) automatically ignore large touch contact areas near screen edges, which may suppress additional touch points."
+  },
+  {
+    question: "What causes ghost touches during multi-touch gestures?",
+    answer: "Ghost touches occur when electrical noise (often from ungrounded chargers or wet screens) causes false mutual capacitance voltage spikes on adjacent ITO grid intersections."
+  },
+  {
+    question: "Does multi-touch performance affect mobile gaming performance?",
+    answer: "Yes! Fast-paced mobile games (RPGs, FPS shooters, rhythm games) require 3 to 6 simultaneous touch inputs for virtual d-pads, aiming, jumping, and shooting without touch input dropping."
+  },
+  {
+    question: "Can I test Apple Pencil or S-Pen multi-touch along with fingers?",
+    answer: "Yes, active styluses generate high-priority pointer events alongside finger touch contacts on supported digitizers."
+  },
+  {
+    question: "How can I clear active touch contact points on screen?",
+    answer: "Press the 'C' hotkey or tap the 'Clear Points' button on screen to reset the touch history and coordinate logs."
+  }
+];
 ---
 
 <Layout 
   title="Multi-Touch Counter & Point Tracker | Monitor Test Hub" 
   description="Verify hardware digitizer capabilities by tracking up to 10+ concurrent touch contact points in real-time with sub-millisecond W3C PointerEvent precision."
+  faqs={faqs}
 >
-  <div class="max-w-7xl mx-auto px-4 py-8 space-y-8">
+  <div class="max-w-7xl mx-auto px-4 py-6 sm:py-8 min-w-0 w-full overflow-hidden font-sans">
     <Breadcrumbs items={breadcrumbItems} />
 
-    <header class="space-y-3 border-b border-border-hairline pb-6">
-      <div class="flex items-center gap-2 text-status-pass text-xs font-mono font-bold uppercase tracking-wider">
-        <span class="w-2 h-2 rounded-full bg-status-pass led-glow-pass"></span>
-        W3C POINTEREVENTS MULTI-TOUCH CONTROLLER
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 mt-6">
+      
+      <!-- Left Primary Diagnostic Canvas (lg:col-span-8) -->
+      <div class="lg:col-span-8 space-y-8 min-w-0">
+        <header class="space-y-3 border-b border-border-hairline pb-6">
+          <div class="flex items-center gap-2 text-status-pass text-xs font-mono font-bold uppercase tracking-wider">
+            <span class="w-2 h-2 rounded-full bg-status-pass led-glow-pass"></span>
+            W3C POINTEREVENTS MULTI-TOUCH CONTROLLER
+          </div>
+          <h1 class="text-3xl sm:text-4xl font-extrabold text-text-primary tracking-tight">Multi-Touch Counter &amp; Tracker</h1>
+          <p class="text-sm text-text-secondary max-w-3xl">
+            Place multiple fingers on your touchscreen or tablet surface to test hardware digitizer IC multi-touch decoding limits, measure contact point tracking latency, and verify 2-point to 10-point gesture registers.
+          </p>
+        </header>
+
+        <MultiTouchDetector />
+
+        <!-- Multi-Touch Analysis Article -->
+        <article class="bg-[#121215] border border-white/10 rounded-3xl p-6 sm:p-8 space-y-6 shadow-2xl font-sans text-sm text-text-secondary leading-relaxed">
+          <div class="border-b border-white/10 pb-4">
+            <span class="font-mono text-[10px] font-bold text-emerald-400 uppercase tracking-widest block mb-1">POINTER EVENT API &amp; DIGITIZER MULTIPLEXING</span>
+            <h2 class="text-xl font-bold text-white">Multi-Touch Scanning, Touch IC Multiplexing &amp; Spatial Resolution</h2>
+          </div>
+
+          <p>
+            Hardware touch screen controllers utilize high-speed analog-to-digital converters (ADCs) to scan the capacitive ITO matrix at rates up to 240Hz. Through <strong>mutual capacitance sensing</strong>, the touch IC measures charge transfers at every row-column intersection, resolving multiple independent coordinate pairs simultaneously without <em>ghosting</em> or axis confusion.
+          </p>
+
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4 font-mono text-xs my-4">
+            <div class="bg-[#08080a] p-4 rounded-2xl border border-white/10 space-y-1">
+              <span class="text-zinc-400 text-[10px] uppercase block">5-Point Multi-Touch</span>
+              <strong class="text-white block text-sm">Basic Mobile Standard</strong>
+              <p class="font-sans text-[11px] text-zinc-400">Standard entry-level digitizer capable of tracking 5 simultaneous finger touch points.</p>
+            </div>
+            <div class="bg-[#08080a] p-4 rounded-2xl border border-white/10 space-y-1">
+              <span class="text-zinc-400 text-[10px] uppercase block">10-Point Multi-Touch</span>
+              <strong class="text-white block text-sm">Pro Tablet &amp; Flagship Standard</strong>
+              <p class="font-sans text-[11px] text-zinc-400">High-bandwidth touch IC capable of processing all 10 fingers for complex gestures and digital audio workstation controls.</p>
+            </div>
+            <div class="bg-[#08080a] p-4 rounded-2xl border border-white/10 space-y-1">
+              <span class="text-zinc-400 text-[10px] uppercase block">Active Stylus Co-processor</span>
+              <strong class="text-white block text-sm">Pressure &amp; Tilt Sensing</strong>
+              <p class="font-sans text-[11px] text-zinc-400">Integrates electro-magnetic resonance (EMR) or USI active protocols for sub-millimeter tip precision.</p>
+            </div>
+          </div>
+
+          <ErgonomicsNotice />
+        </article>
+
+        <FAQSection faqs={faqs} />
+        <TestSwitcherBar tests={touchTests} currentId="multi-touch" />
       </div>
-      <h1 class="text-3xl sm:text-4xl font-extrabold text-text-primary tracking-tight">Multi-Touch Counter &amp; Tracker</h1>
-      <p class="text-sm text-text-secondary max-w-3xl">
-        Place multiple fingers on your touchscreen or tablet surface to test hardware digitizer IC multi-touch decoding limits, measure contact point tracking latency, and verify 2-point to 10-point gesture registers.
-      </p>
-    </header>
 
-    <MultiTouchDetector />
+      <!-- Right Modular Control & Telemetry Sidebar (lg:col-span-4) -->
+      <div class="lg:col-span-4 space-y-6 sticky top-24 self-start min-w-0">
+        <StatusCard
+          status="pass"
+          label="10-POINT MULTI-TOUCH"
+          subtitle="Hardware Digitizer Capacity"
+          score="10"
+          maxScore="10"
+          details={[
+            { label: 'Active Contacts', value: '0 Points' },
+            { label: 'Peak Registered', value: '10 Points' }
+          ]}
+        />
 
-    <!-- Multi-Touch Analysis Article -->
-    <article class="bg-bg-surface border border-border-hairline rounded-2xl p-6 sm:p-8 space-y-6 shadow-specular-top font-sans text-sm text-text-secondary leading-relaxed">
-      <div class="border-b border-border-hairline pb-4">
-        <span class="font-mono text-[10px] font-bold text-status-pass uppercase tracking-widest block mb-1">POINTER EVENT API &amp; DIGITIZER MULTIPLEXING</span>
-        <h2 class="text-xl font-bold text-text-primary">Multi-Touch Scanning, Touch IC Multiplexing &amp; Spatial Resolution</h2>
+        <MetricCard
+          title="Contact Metrics"
+          subtitle="Digitizer Telemetry Readout"
+          badgeText="Live Contacts"
+          metrics={[
+            { id: 'activePoints', label: 'Active Touch Points', value: '0', target: '10', unit: 'points', status: 'pass' },
+            { id: 'maxPoints', label: 'Max Points Recorded', value: '10', unit: 'pts', status: 'pass' },
+            { id: 'avgRadius', label: 'Avg Contact Radius', value: '8.5', unit: 'mm', status: 'neutral' }
+          ]}
+        />
+
+        <TelemetryCard
+          title="Touch Coordinates"
+          subtitle="W3C PointerEvent Stream"
+          type="event-log"
+          badgeText="Multi-Touch W3C"
+        />
+
+        <ShortcutCard
+          shortcuts={[
+            { keys: ['F'], label: 'Toggle Fullscreen Canvas' },
+            { keys: ['C'], label: 'Clear Touch Log' }
+          ]}
+        />
+
+        <InfoCard
+          title="Multi-Touch Specifications"
+          subtitle="W3C PointerEvents Standard"
+          badgeText="W3C Spec"
+          citations={[
+            { standard: "W3C Pointer Events Level 3", clause: "pointerId Tracking", description: "Standardized multi-touch protocol providing unique tracking IDs, spatial coordinates, and contact surface geometry." }
+          ]}
+          osdTips={[
+            "Place all 10 fingers on screen to verify maximum hardware digitizer channels.",
+            "Avoid touching screen edges if OS palm rejection is active."
+          ]}
+        />
       </div>
 
-      <p>
-        Hardware touch screen controllers utilize high-speed analog-to-digital converters (ADCs) to scan the capacitive ITO matrix at rates up to 240Hz. Through <strong>mutual capacitance sensing</strong>, the touch IC measures charge transfers at every row-column intersection, resolving multiple independent coordinate pairs simultaneously without <em>ghosting</em> or axis confusion.
-      </p>
-
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 font-mono text-xs my-4">
-        <div class="bg-bg-canvas p-4 rounded-xl border border-border-hairline space-y-1">
-          <span class="text-text-muted text-[10px] uppercase block">5-Point Multi-Touch</span>
-          <strong class="text-text-primary block text-sm">Basic Mobile Standard</strong>
-          <p class="font-sans text-[11px] text-text-secondary">Standard entry-level digitizer capable of tracking 5 simultaneous finger touch points.</p>
-        </div>
-        <div class="bg-bg-canvas p-4 rounded-xl border border-border-hairline space-y-1">
-          <span class="text-text-muted text-[10px] uppercase block">10-Point Multi-Touch</span>
-          <strong class="text-text-primary block text-sm">Pro Tablet &amp; Flagship Standard</strong>
-          <p class="font-sans text-[11px] text-text-secondary">High-bandwidth touch IC capable of processing all 10 fingers for complex gestures and digital audio workstation controls.</p>
-        </div>
-        <div class="bg-bg-canvas p-4 rounded-xl border border-border-hairline space-y-1">
-          <span class="text-text-muted text-[10px] uppercase block">Active Stylus Co-processor</span>
-          <strong class="text-text-primary block text-sm">Pressure &amp; Tilt Sensing</strong>
-          <p class="font-sans text-[11px] text-text-secondary">Integrates electro-magnetic resonance (EMR) or USI active protocols for sub-millimeter tip precision.</p>
-        </div>
-      </div>
-
-      <ErgonomicsNotice />
-    </article>
-
-    <TestSwitcherBar tests={touchTests} currentId="multi-touch" />
+    </div>
   </div>
 </Layout>

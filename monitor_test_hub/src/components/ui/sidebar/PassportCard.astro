@@ -1,0 +1,115 @@
+---
+export interface Props {
+  title?: string;
+  passportHash?: string;
+  deviceModel?: string;
+  healthIndex?: number;
+  rmaStatus?: 'ELIGIBLE' | 'EXCEEDED' | 'CONDITIONAL';
+  rmaDetails?: string;
+  exportIccEnabled?: boolean;
+  submitTelemetryEnabled?: boolean;
+  class?: string;
+}
+
+const {
+  title = "Hardware Passport",
+  passportHash = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  deviceModel = "ASUS ROG Swift PG32UCDM",
+  healthIndex = 98,
+  rmaStatus = "ELIGIBLE",
+  rmaDetails = "Within ISO 9241-307 Class I warranty threshold",
+  exportIccEnabled = false,
+  submitTelemetryEnabled = true,
+  class: className = ""
+} = Astro.props;
+
+const rmaTheme = {
+  ELIGIBLE: { bg: 'bg-emerald-500/10', border: 'border-emerald-500/30', text: 'text-emerald-400' },
+  EXCEEDED: { bg: 'bg-rose-500/10', border: 'border-rose-500/30', text: 'text-rose-400' },
+  CONDITIONAL: { bg: 'bg-amber-500/10', border: 'border-amber-500/30', text: 'text-amber-400' }
+};
+
+const theme = rmaTheme[rmaStatus] || rmaTheme.ELIGIBLE;
+---
+
+<div class:list={[
+  "relative overflow-hidden rounded-3xl border border-white/10 bg-[#121215]/90 p-6 backdrop-blur-xl shadow-2xl font-sans space-y-5 select-none hover:border-white/20 transition-colors duration-200 group",
+  className
+]} data-passport-card>
+  <!-- Ambient Emerald Glow -->
+  <div class="absolute -top-12 -right-12 w-32 h-32 bg-emerald-500/10 rounded-full blur-2xl pointer-events-none group-hover:bg-emerald-500/20 transition-all duration-300"></div>
+
+  <!-- Header -->
+  <div class="flex items-center justify-between border-b border-white/10 pb-4 relative z-10">
+    <div class="flex items-center gap-3">
+      <div class="w-10 h-10 rounded-2xl bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center text-emerald-400 shrink-0 shadow-[inset_0_1px_1px_rgba(255,255,255,0.2)]">
+        <!-- SVG Icon: ShieldCheck -->
+        <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+        </svg>
+      </div>
+      <div>
+        <h3 class="text-base font-bold text-white tracking-tight">{title}</h3>
+        <p class="text-[11px] text-zinc-400 font-mono">Cryptographic Verification</p>
+      </div>
+    </div>
+    <span class="text-[11px] font-mono text-emerald-400 bg-emerald-500/10 px-2.5 py-1 rounded-full border border-emerald-500/20">
+      SHA-256
+    </span>
+  </div>
+
+  <!-- Passport Card Main Info -->
+  <div class="space-y-3 relative z-10">
+    <div class="p-3.5 rounded-2xl bg-white/[0.03] border border-white/[0.06] space-y-2">
+      <span class="text-[10px] font-mono text-zinc-400 block">Verified Model</span>
+      <span class="text-sm font-bold text-white block truncate" data-passport-device>{deviceModel}</span>
+      <div class="flex items-center justify-between pt-1 border-t border-white/10 text-xs font-mono">
+        <span class="text-zinc-400">Health Index</span>
+        <span class="text-emerald-400 font-bold" data-passport-health>{healthIndex} / 100</span>
+      </div>
+    </div>
+
+    <!-- RMA Return Window Inspector -->
+    <div class:list={["p-3 rounded-2xl border space-y-1 font-mono text-xs", theme.bg, theme.border]}>
+      <div class="flex items-center justify-between">
+        <span class="text-zinc-400 text-[10px]">30-Day RMA Status</span>
+        <span class:list={["font-bold text-[11px]", theme.text]} data-passport-rma-status>{rmaStatus}</span>
+      </div>
+      <p class="text-zinc-300 text-[11px] leading-tight" data-passport-rma-details>{rmaDetails}</p>
+    </div>
+
+    <!-- Cryptographic Hash Capsule -->
+    <div class="p-2.5 rounded-xl bg-black/40 border border-white/10 font-mono text-[10px] text-zinc-400 truncate">
+      Hash: <span class="text-emerald-400" data-passport-hash-display>{passportHash.slice(0, 16)}...{passportHash.slice(-8)}</span>
+    </div>
+
+    <!-- Action Triggers -->
+    <div class="space-y-2 pt-1">
+      {exportIccEnabled && (
+        <button
+          type="button"
+          class="w-full min-h-[44px] px-4 py-2.5 rounded-xl bg-emerald-500/20 border border-emerald-500/40 text-emerald-400 font-mono text-xs font-bold hover:bg-emerald-500/30 transition-colors duration-200 cursor-pointer focus:outline-none focus:ring-2 focus:ring-emerald-500/50 flex items-center justify-center gap-2"
+          data-export-icc-btn
+        >
+          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+          </svg>
+          <span>Export ICC v4.3 Profile (.icc)</span>
+        </button>
+      )}
+
+      {submitTelemetryEnabled && (
+        <button
+          type="button"
+          class="w-full min-h-[44px] px-4 py-2.5 rounded-xl bg-white/[0.05] border border-white/10 text-white font-mono text-xs font-bold hover:bg-white/[0.1] hover:border-white/20 transition-colors duration-200 cursor-pointer focus:outline-none focus:ring-2 focus:ring-emerald-500/50 flex items-center justify-center gap-2"
+          data-submit-passport-btn
+        >
+          <svg class="w-4 h-4 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          <span>Generate Signed Passport Receipt</span>
+        </button>
+      )}
+    </div>
+  </div>
+</div>

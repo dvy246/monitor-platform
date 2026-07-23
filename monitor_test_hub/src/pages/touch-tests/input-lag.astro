@@ -1,8 +1,14 @@
 ---
 import Layout from '../../layouts/Layout.astro';
 import Breadcrumbs from '../../components/ui/Breadcrumbs.astro';
-
 import TestSwitcherBar from '../../components/ui/TestSwitcherBar.astro';
+import FAQSection from '../../components/ui/FAQSection.astro';
+
+import StatusCard from '../../components/ui/sidebar/StatusCard.astro';
+import ConfigurationCard from '../../components/ui/sidebar/ConfigurationCard.astro';
+import MetricCard from '../../components/ui/sidebar/MetricCard.astro';
+import TelemetryCard from '../../components/ui/sidebar/TelemetryCard.astro';
+import ShortcutCard from '../../components/ui/sidebar/ShortcutCard.astro';
 
 const breadcrumbItems = [
   { label: 'Touch Suite', href: '/touch-tests' },
@@ -16,138 +22,265 @@ const touchTests = [
   { id: 'swipe-velocity', label: 'Swipe Velocity', href: '/touch-tests/swipe-velocity' },
   { id: 'input-lag', label: 'Input Lag Test', href: '/touch-tests/input-lag', active: true }
 ];
+
+const faqs = [
+  {
+    question: "What is display input lag and click-to-photon latency?",
+    answer: "Input lag is the total delay from pressing a mouse button or touching a screen to the resulting visual change appearing on display pixels. Click-to-photon latency includes peripheral delay, OS processing, GPU render time, and panel refresh scan-out."
+  },
+  {
+    question: "How does screen refresh rate (60Hz vs 240Hz vs 540Hz) affect input lag?",
+    answer: "Higher refresh rates reduce frame presentation delay (60Hz = 16.67ms per frame, 240Hz = 4.17ms per frame, 540Hz = 1.85ms per frame). Moving from 60Hz to 240Hz saves up to 12.5ms of visual latency."
+  },
+  {
+    question: "What is mouse polling rate and how does 1000Hz vs 8000Hz matter?",
+    answer: "Mouse polling rate is how frequently your mouse reports position updates to the OS. A 1000Hz mouse updates every 1.0ms, while an 8000Hz mouse updates every 0.125ms, reducing micro-stutter and input delay."
+  },
+  {
+    question: "What is the average human reaction time on visual tests?",
+    answer: "The average human visual reaction time is approximately 200ms–250ms. Trained esports athletes achieve reaction times between 140ms and 170ms."
+  },
+  {
+    question: "How does performance.now() measure reaction time accurately?",
+    answer: "W3C High-Resolution Time (performance.now()) provides microsecond-precision hardware timestamps (accurate to 0.005ms), eliminating standard JavaScript date timing jitter."
+  },
+  {
+    question: "Why do wireless touchscreens and Bluetooth mice feel laggy?",
+    answer: "Wireless Bluetooth protocol overhead, packet queuing, and power-saving sleep states add 7ms–15ms of extra input latency compared to wired USB HID or 2.4GHz high-speed wireless dongles."
+  },
+  {
+    question: "What is VSync lag and how can I minimize it?",
+    answer: "Standard V-Sync forces the GPU to wait for the monitor's vertical refresh interval, adding up to 1–2 full frames of input delay (16ms–33ms at 60Hz). Use G-Sync/FreeSync or NVIDIA Reflex/AMD Anti-Lag to eliminate VSync buffering delay."
+  },
+  {
+    question: "What is browser input dispatch latency?",
+    answer: "Browsers process pointer events on the main UI thread. High CPU usage or complex JavaScript event listeners can delay event dispatch by several milliseconds."
+  },
+  {
+    question: "How can I improve my reaction time score on this test?",
+    answer: "Use a high refresh rate monitor (144Hz+), a wired 1000Hz+ mouse or fast touch digitizer, close background applications, and focus on the reaction zone."
+  },
+  {
+    question: "How do I reset my reaction time test history?",
+    answer: "Refresh the page or press the 'R' key to clear recorded reaction times, best scores, and the reaction histogram."
+  }
+];
 ---
 
 <Layout 
   title="Input Lag & Reaction Time Test Online | Monitor Test Hub"
   description="Measure display input lag and reaction time with sub-millisecond precision. Identify mouse polling rate vs monitor refresh rate latency bottlenecks now."
+  faqs={faqs}
 >
-  <div class="max-w-7xl mx-auto px-4 py-8 space-y-8">
+  <div class="max-w-7xl mx-auto px-4 py-6 sm:py-8 min-w-0 w-full overflow-hidden font-sans">
     <Breadcrumbs items={breadcrumbItems} />
 
-    <header class="space-y-3 border-b border-border-hairline pb-6">
-      <div class="flex items-center gap-2 text-status-pass text-xs font-mono font-bold uppercase tracking-wider">
-        <span class="w-2 h-2 rounded-full bg-status-pass led-glow-pass"></span>
-        INPUT LATENCY METRIC — performance.now() PRECISION
-      </div>
-      <h1 class="text-3xl sm:text-4xl font-extrabold text-text-primary tracking-tight">Input Lag & Reaction Time Analyzer</h1>
-      <p class="text-sm text-text-secondary max-w-3xl">
-        Measure click-to-flash reaction latency, identify polling rate vs. refresh rate bottlenecks, and generate a histogram of your reflex performance across multiple runs with sub-millisecond <code>performance.now()</code> timestamps.
-      </p>
-    </header>
-
-    <div class="bg-bg-surface border border-border-hairline rounded-xl p-6 font-mono shadow-specular-top">
-      <div class="flex items-center justify-between border-b border-border-hairline pb-4 mb-6">
-        <div class="flex items-center gap-3">
-          <span class="w-3 h-3 rounded-full bg-status-pass led-glow-pass"></span>
-          <h3 class="text-sm font-bold text-text-primary uppercase tracking-wider">Reflex Reaction & Input Lag Sniper</h3>
-        </div>
-        <span class="text-xs text-text-muted bg-bg-elevated px-2.5 py-1 rounded border border-border-hairline">PRECISION: ±0.1ms</span>
-      </div>
-
-      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
-        <div class="space-y-4 bg-bg-canvas p-4 rounded-lg border border-border-hairline">
-          <div>
-            <label for="refresh-rate-select" class="block text-xs font-bold text-text-secondary uppercase mb-2">Refresh Rate (Hz)</label>
-            <select id="refresh-rate-select" class="w-full bg-bg-surface border border-border-hairline text-text-primary text-xs rounded-lg p-2.5 focus:ring-2 focus:ring-status-pass outline-none">
-              <option value="60">60 Hz</option>
-              <option value="120">120 Hz</option>
-              <option value="144">144 Hz</option>
-              <option value="240" selected>240 Hz</option>
-              <option value="360">360 Hz</option>
-              <option value="540">540 Hz</option>
-            </select>
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 mt-6">
+      
+      <!-- Left Primary Diagnostic Canvas (lg:col-span-8) -->
+      <div class="lg:col-span-8 space-y-8 min-w-0">
+        <header class="space-y-3 border-b border-border-hairline pb-6">
+          <div class="flex items-center gap-2 text-status-pass text-xs font-mono font-bold uppercase tracking-wider">
+            <span class="w-2 h-2 rounded-full bg-status-pass led-glow-pass"></span>
+            INPUT LATENCY METRIC — performance.now() PRECISION
           </div>
-          <div>
-            <label for="polling-rate-select" class="block text-xs font-bold text-text-secondary uppercase mb-2">Mouse Polling Rate</label>
-            <select id="polling-rate-select" class="w-full bg-bg-surface border border-border-hairline text-text-primary text-xs rounded-lg p-2.5 focus:ring-2 focus:ring-status-pass outline-none">
-              <option value="125">125 Hz (8ms period)</option>
-              <option value="500">500 Hz (2ms period)</option>
-              <option value="1000" selected>1000 Hz (1ms period)</option>
-              <option value="2000">2000 Hz (0.5ms period)</option>
-              <option value="8000">8000 Hz (0.125ms period)</option>
-            </select>
-          </div>
-          <div class="text-xs bg-bg-surface border border-border-hairline rounded-lg p-3 space-y-1.5">
-            <div class="flex justify-between"><span class="text-text-muted">Frame Period:</span><span id="frame-period" class="text-status-pass font-bold">4.17ms</span></div>
-            <div class="flex justify-between"><span class="text-text-muted">Poll Period:</span><span id="poll-period" class="text-status-pass font-bold">1.00ms</span></div>
-            <div class="flex justify-between"><span class="text-text-muted">Bottleneck:</span><span id="bottleneck-label" class="text-text-primary font-bold">DISPLAY</span></div>
-          </div>
-        </div>
+          <h1 class="text-3xl sm:text-4xl font-extrabold text-text-primary tracking-tight">Input Lag &amp; Reaction Time Analyzer</h1>
+          <p class="text-sm text-text-secondary max-w-3xl">
+            Measure click-to-flash reaction latency, identify polling rate vs. refresh rate bottlenecks, and generate a histogram of your reflex performance across multiple runs with sub-millisecond <code>performance.now()</code> timestamps.
+          </p>
+        </header>
 
-        <div class="lg:col-span-2 bg-bg-canvas p-4 rounded-lg border border-border-hairline flex flex-col">
-          <div class="text-xs font-bold text-text-muted uppercase tracking-wider mb-3">REACTION ZONE — Click when GREEN</div>
-          <div id="reaction-zone" role="button" tabindex="0" aria-label="Click when the zone turns green to measure reaction time" class="flex-1 min-h-40 rounded-lg flex flex-col items-center justify-center cursor-pointer transition-colors duration-100 bg-bg-elevated border border-border-hairline select-none">
-            <span id="reaction-status" class="text-sm font-bold text-text-muted">CLICK TO START</span>
-            <span id="reaction-result" class="text-3xl font-extrabold text-text-primary mt-2" style="display:none">—</span>
-          </div>
-
-          <div class="mt-4 grid grid-cols-3 gap-3 text-xs">
-            <div class="bg-bg-surface p-2.5 rounded border border-border-hairline">
-              <span class="text-text-muted block text-[10px]">LAST</span>
-              <span id="last-time" class="text-base font-bold text-text-primary">—</span>
+        <div class="bg-[#121215] border border-white/10 rounded-3xl p-6 font-mono shadow-2xl">
+          <div class="flex items-center justify-between border-b border-white/10 pb-4 mb-6">
+            <div class="flex items-center gap-3">
+              <span class="w-3 h-3 rounded-full bg-emerald-400 led-glow-pass"></span>
+              <h3 class="text-sm font-bold text-white uppercase tracking-wider">Reflex Reaction &amp; Input Lag Sniper</h3>
             </div>
-            <div class="bg-bg-surface p-2.5 rounded border border-border-hairline">
-              <span class="text-text-muted block text-[10px]">BEST</span>
-              <span id="best-time" class="text-base font-bold text-status-pass">—</span>
+            <span class="text-xs text-zinc-400 bg-[#1a1a24] px-2.5 py-1 rounded border border-white/10">PRECISION: ±0.1ms</span>
+          </div>
+
+          <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+            <div class="space-y-4 bg-[#08080a] p-4 rounded-2xl border border-white/10">
+              <div>
+                <label for="refresh-rate-select" class="block text-xs font-bold text-zinc-400 uppercase mb-2">Refresh Rate (Hz)</label>
+                <select id="refresh-rate-select" class="w-full min-h-[44px] bg-[#1a1a24] border border-white/20 text-white text-xs rounded-xl p-2.5 cursor-pointer focus:ring-2 focus:ring-emerald-500/50 outline-none transition-colors">
+                  <option value="60">60 Hz</option>
+                  <option value="120">120 Hz</option>
+                  <option value="144">144 Hz</option>
+                  <option value="240" selected>240 Hz</option>
+                  <option value="360">360 Hz</option>
+                  <option value="540">540 Hz</option>
+                </select>
+              </div>
+              <div>
+                <label for="polling-rate-select" class="block text-xs font-bold text-zinc-400 uppercase mb-2">Mouse Polling Rate</label>
+                <select id="polling-rate-select" class="w-full min-h-[44px] bg-[#1a1a24] border border-white/20 text-white text-xs rounded-xl p-2.5 cursor-pointer focus:ring-2 focus:ring-emerald-500/50 outline-none transition-colors">
+                  <option value="125">125 Hz (8ms period)</option>
+                  <option value="500">500 Hz (2ms period)</option>
+                  <option value="1000" selected>1000 Hz (1ms period)</option>
+                  <option value="2000">2000 Hz (0.5ms period)</option>
+                  <option value="8000">8000 Hz (0.125ms period)</option>
+                </select>
+              </div>
+              <div class="text-xs bg-[#121215] border border-white/10 rounded-xl p-3 space-y-1.5">
+                <div class="flex justify-between"><span class="text-zinc-400">Frame Period:</span><span id="frame-period" class="text-emerald-400 font-bold">4.17ms</span></div>
+                <div class="flex justify-between"><span class="text-zinc-400">Poll Period:</span><span id="poll-period" class="text-emerald-400 font-bold">1.00ms</span></div>
+                <div class="flex justify-between"><span class="text-zinc-400">Bottleneck:</span><span id="bottleneck-label" class="text-white font-bold">DISPLAY</span></div>
+              </div>
             </div>
-            <div class="bg-bg-surface p-2.5 rounded border border-border-hairline">
-              <span class="text-text-muted block text-[10px]">AVG (10)</span>
-              <span id="avg-time" class="text-base font-bold text-text-secondary">—</span>
+
+            <div class="lg:col-span-2 bg-[#08080a] p-4 rounded-2xl border border-white/10 flex flex-col">
+              <div class="text-xs font-bold text-zinc-400 uppercase tracking-wider mb-3">REACTION ZONE — Click when GREEN</div>
+              <div id="reaction-zone" role="button" tabindex="0" aria-label="Click when the zone turns green to measure reaction time" class="flex-1 min-h-44 rounded-2xl flex flex-col items-center justify-center cursor-pointer transition-colors duration-100 bg-[#121215] border border-white/10 select-none">
+                <span id="reaction-status" class="text-sm font-bold text-zinc-400">CLICK TO START</span>
+                <span id="reaction-result" class="text-3xl font-extrabold text-white mt-2" style="display:none">—</span>
+              </div>
+
+              <div class="mt-4 grid grid-cols-3 gap-3 text-xs">
+                <div class="bg-[#121215] p-2.5 rounded-xl border border-white/10">
+                  <span class="text-zinc-400 block text-[10px]">LAST</span>
+                  <span id="last-time" class="text-base font-bold text-white">—</span>
+                </div>
+                <div class="bg-[#121215] p-2.5 rounded-xl border border-white/10">
+                  <span class="text-zinc-400 block text-[10px]">BEST</span>
+                  <span id="best-time" class="text-base font-bold text-emerald-400">—</span>
+                </div>
+                <div class="bg-[#121215] p-2.5 rounded-xl border border-white/10">
+                  <span class="text-zinc-400 block text-[10px]">AVG (10)</span>
+                  <span id="avg-time" class="text-base font-bold text-zinc-300">—</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="bg-[#08080a] border border-white/10 rounded-2xl p-4">
+            <div class="text-xs font-bold text-zinc-400 uppercase tracking-wider mb-3">REACTION HISTOGRAM</div>
+            <div id="histogram" class="flex items-end gap-1.5 h-16">
+              <span class="text-xs text-zinc-500 italic">Complete tests to see histogram...</span>
             </div>
           </div>
         </div>
+
+        <!-- Scientific Methodology & Click-to-Photon Latency Article -->
+        <article class="bg-[#121215] border border-white/10 rounded-3xl p-6 sm:p-8 space-y-6 shadow-2xl font-sans text-sm text-text-secondary leading-relaxed">
+          <div class="border-b border-white/10 pb-4">
+            <span class="font-mono text-[10px] font-bold text-emerald-400 uppercase tracking-widest block mb-1">INPUT LATENCY &amp; POLLING BOTTLENECK MATH</span>
+            <h2 class="text-xl font-bold text-white">Display Scan-out Period, Polling Rates &amp; Human Reaction Time</h2>
+          </div>
+
+          <p>
+            System input latency is the cumulative delay from a physical hardware trigger (mouse click or screen tap) to the photons emitting from the display panel. Total end-to-end latency consists of three distinct components:
+          </p>
+
+          <div class="bg-[#08080a] p-4 rounded-2xl border border-white/10 font-mono text-xs space-y-2 my-4">
+            <span class="text-zinc-400 text-[10px] uppercase block tracking-wider">LATENCY PIPELINE FORMULA</span>
+            <div class="text-emerald-400 font-bold">
+              T_total = T_peripheral + T_system_render + (1000 / 2 × Refresh_Hz) + T_pixel_response
+            </div>
+            <div class="text-zinc-400 text-[11px] font-sans">
+              Where average VSync scan-out delay equals half of the display frame period 1 / (2f).
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4 font-mono text-xs my-4">
+            <div class="bg-[#08080a] p-4 rounded-2xl border border-white/10 space-y-1">
+              <span class="text-zinc-400 text-[10px] uppercase block">60 Hz Standard</span>
+              <strong class="text-white block text-sm">Frame Period: 16.67 ms</strong>
+              <p class="font-sans text-[11px] text-zinc-400">Average scan-out wait time: 8.33 ms before next frame buffer swap.</p>
+            </div>
+            <div class="bg-[#08080a] p-4 rounded-2xl border border-white/10 space-y-1">
+              <span class="text-zinc-400 text-[10px] uppercase block">240 Hz Gaming</span>
+              <strong class="text-white block text-sm">Frame Period: 4.17 ms</strong>
+              <p class="font-sans text-[11px] text-zinc-400">Average scan-out wait time: 2.08 ms. Eliminates 6.25 ms of visual delay.</p>
+            </div>
+            <div class="bg-[#08080a] p-4 rounded-2xl border border-white/10 space-y-1">
+              <span class="text-zinc-400 text-[10px] uppercase block">540 Hz Ultra-Esports</span>
+              <strong class="text-white block text-sm">Frame Period: 1.85 ms</strong>
+              <p class="font-sans text-[11px] text-zinc-400">Average scan-out wait time: 0.93 ms. Sub-millisecond display pacing.</p>
+            </div>
+          </div>
+        </article>
+
+        <FAQSection faqs={faqs} />
+        <TestSwitcherBar tests={touchTests} currentId="input-lag" />
       </div>
 
-      <div class="bg-bg-canvas border border-border-hairline rounded-lg p-4">
-        <div class="text-xs font-bold text-text-muted uppercase tracking-wider mb-3">REACTION HISTOGRAM</div>
-        <div id="histogram" class="flex items-end gap-1.5 h-16">
-          <span class="text-xs text-text-muted italic">Complete tests to see histogram...</span>
-        </div>
+      <!-- Right Modular Control & Telemetry Sidebar (lg:col-span-4) -->
+      <div class="lg:col-span-4 space-y-6 sticky top-24 self-start min-w-0">
+        <StatusCard
+          status="pass"
+          label="ESPORTS REFLEX TIER"
+          subtitle="Reaction & Input Latency"
+          score="168"
+          maxScore="ms"
+          details={[
+            { label: 'Display Delay', value: '2.08 ms (240Hz)' },
+            { label: 'Polling Period', value: '1.00 ms (1000Hz)' }
+          ]}
+        />
+
+        <ConfigurationCard
+          title="System Parameters"
+          subtitle="Refresh & Polling Setup"
+          controls={[
+            {
+              id: 'sidebar-refresh-select',
+              label: 'Target Refresh Rate',
+              type: 'select',
+              value: '240',
+              options: [
+                { value: '60', label: '60 Hz (16.67ms)' },
+                { value: '120', label: '120 Hz (8.33ms)' },
+                { value: '144', label: '144 Hz (6.94ms)' },
+                { value: '240', label: '240 Hz (4.17ms)' },
+                { value: '360', label: '360 Hz (2.78ms)' },
+                { value: '540', label: '540 Hz (1.85ms)' }
+              ]
+            },
+            {
+              id: 'sidebar-polling-select',
+              label: 'Mouse Polling Rate',
+              type: 'select',
+              value: '1000',
+              options: [
+                { value: '125', label: '125 Hz (8.0ms)' },
+                { value: '500', label: '500 Hz (2.0ms)' },
+                { value: '1000', label: '1000 Hz (1.0ms)' },
+                { value: '8000', label: '8000 Hz (0.125ms)' }
+              ]
+            }
+          ]}
+        />
+
+        <MetricCard
+          title="Latency Breakdown"
+          subtitle="Sub-Millisecond Readout"
+          badgeText="Reflex Metrics"
+          metrics={[
+            { id: 'lastMs', label: 'Last Reaction', value: '172', unit: 'ms', status: 'pass' },
+            { id: 'bestMs', label: 'Best Reaction', value: '148', unit: 'ms', status: 'pass' },
+            { id: 'avgMs', label: '10-Trial Average', value: '165', unit: 'ms', status: 'pass' }
+          ]}
+        />
+
+        <TelemetryCard
+          title="Reflex Distribution"
+          subtitle="Reaction Histogram Stream"
+          type="graph"
+          currentHz={240}
+          jitterSigmaMs={0.12}
+          badgeText="Telemetry"
+        />
+
+        <ShortcutCard
+          shortcuts={[
+            { keys: ['Space'], label: 'Trigger Reaction / Click' },
+            { keys: ['R'], label: 'Reset Histogram & Stats' }
+          ]}
+        />
       </div>
+
     </div>
-
-    <!-- Scientific Methodology & Click-to-Photon Latency Article -->
-    <article class="bg-bg-surface border border-border-hairline rounded-2xl p-6 sm:p-8 space-y-6 shadow-specular-top font-sans text-sm text-text-secondary leading-relaxed">
-      <div class="border-b border-border-hairline pb-4">
-        <span class="font-mono text-[10px] font-bold text-status-pass uppercase tracking-widest block mb-1">INPUT LATENCY &amp; POLLING BOTTLENECK MATH</span>
-        <h2 class="text-xl font-bold text-text-primary">Display Scan-out Period, Polling Rates &amp; Human Reaction Time</h2>
-      </div>
-
-      <p>
-        System input latency is the cumulative delay from a physical hardware trigger (mouse click or screen tap) to the photons emitting from the display panel. Total end-to-end latency consists of three distinct components:
-      </p>
-
-      <div class="bg-bg-canvas p-4 rounded-xl border border-border-hairline font-mono text-xs space-y-2 my-4">
-        <span class="text-text-muted text-[10px] uppercase block tracking-wider">LATENCY PIPELINE FORMULA</span>
-        <div class="text-status-pass font-bold">
-          T_total = T_peripheral + T_system_render + (1000 / 2 × Refresh_Hz) + T_pixel_response
-        </div>
-        <div class="text-text-secondary text-[11px] font-sans">
-          Where average VSync scan-out delay equals half of the display frame period 1 / (2f).
-        </div>
-      </div>
-
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 font-mono text-xs my-4">
-        <div class="bg-bg-canvas p-4 rounded-xl border border-border-hairline space-y-1">
-          <span class="text-text-muted text-[10px] uppercase block">60 Hz Standard</span>
-          <strong class="text-text-primary block text-sm">Frame Period: 16.67 ms</strong>
-          <p class="font-sans text-[11px] text-text-secondary">Average scan-out wait time: 8.33 ms before next frame buffer swap.</p>
-        </div>
-        <div class="bg-bg-canvas p-4 rounded-xl border border-border-hairline space-y-1">
-          <span class="text-text-muted text-[10px] uppercase block">240 Hz Gaming</span>
-          <strong class="text-text-primary block text-sm">Frame Period: 4.17 ms</strong>
-          <p class="font-sans text-[11px] text-text-secondary">Average scan-out wait time: 2.08 ms. Eliminates 6.25 ms of visual delay.</p>
-        </div>
-        <div class="bg-bg-canvas p-4 rounded-xl border border-border-hairline space-y-1">
-          <span class="text-text-muted text-[10px] uppercase block">540 Hz Ultra-Esports</span>
-          <strong class="text-text-primary block text-sm">Frame Period: 1.85 ms</strong>
-          <p class="font-sans text-[11px] text-text-secondary">Average scan-out wait time: 0.93 ms. Sub-millisecond display pacing.</p>
-        </div>
-      </div>
-    </article>
-
-    <TestSwitcherBar tests={touchTests} currentId="input-lag" />
   </div>
 </Layout>
 
@@ -197,6 +330,7 @@ const touchTests = [
   }
 
   function handleClick() {
+    if (!zone || !resultEl) return;
     if (phase === 'idle') {
       phase = 'waiting';
       zone.style.background = '';
@@ -238,4 +372,6 @@ const touchTests = [
 
   zone?.addEventListener('click', handleClick);
   zone?.addEventListener('keydown', (e) => { if (e.key === ' ' || e.key === 'Enter') handleClick(); });
+</script>
+
 </script>

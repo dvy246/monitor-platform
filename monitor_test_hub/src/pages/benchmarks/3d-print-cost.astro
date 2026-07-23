@@ -3,9 +3,17 @@ import Layout from '../../layouts/Layout.astro';
 import FilamentCostInspector from '../../components/diagnostics/FilamentCostInspector.astro';
 import SEOHead from '../../components/seo/SEOHead.astro';
 import SchemaGraph from '../../components/seo/SchemaGraph.astro';
-
 import { FilamentCostEngine } from '../../engine/FilamentCostEngine';
 import { useTranslations, localizeLink } from '../../utils/i18n';
+import StepWorkflowSection from '../../components/ui/StepWorkflowSection.astro';
+import PanelTypeBreakdownSection from '../../components/ui/PanelTypeBreakdownSection.astro';
+import FAQSection from '../../components/ui/FAQSection.astro';
+
+// Right Sidebar Components
+import StatusCard from '../../components/ui/sidebar/StatusCard.astro';
+import ConfigurationCard from '../../components/ui/sidebar/ConfigurationCard.astro';
+import MetricCard from '../../components/ui/sidebar/MetricCard.astro';
+import InfoCard from '../../components/ui/sidebar/InfoCard.astro';
 
 const { lang } = useTranslations(Astro.url.pathname);
 const materials = FilamentCostEngine.MATERIALS;
@@ -13,14 +21,56 @@ const materials = FilamentCostEngine.MATERIALS;
 const seoTitle = "3D Print Cost Calculator & Filament Material Estimator (2026)";
 const seoDescription = "Calculate 3D printing filament costs, electricity consumption, machine wear, failure rate cushions, and commercial Etsy retail selling prices.";
 const canonicalUrl = lang === 'en'
-  ? "https://monitortester.com/benchmarks/3d-print-cost"
-  : `https://monitortester.com/${lang}/benchmarks/3d-print-cost`;
+  ? "https://displaytestonline.com/benchmarks/3d-print-cost"
+  : `https://displaytestonline.com/${lang}/benchmarks/3d-print-cost`;
+
+const faqs = [
+  {
+    question: "How do I calculate 3D printing filament cost per print?",
+    answer: "Filament cost is calculated by multiplying the weight of the printed object (in grams) plus support material by the price per gram of the spool (Spool Price ÷ Spool Weight)."
+  },
+  {
+    question: "What electricity cost factor should I include in 3D print pricing?",
+    answer: "Electricity consumption is calculated by taking the average power draw of your 3D printer (typically 100W to 350W for heated beds) multiplied by print hours and your local utility rate ($/kWh)."
+  },
+  {
+    question: "How much should I charge for 3D printed items on Etsy or Shopify?",
+    answer: "Commercial retail pricing models typically apply a 3x to 4x multiplier on total manufacturing costs (material + electricity + machine wear cushion) to cover shop overhead, labor, and profit margin."
+  },
+  {
+    question: "Why should I add a failure rate cushion percentage?",
+    answer: "A 10% to 15% failure rate cushion accounts for bed detachment, warping, nozzle clogs, and test prototypes, preventing lost revenue on failed print jobs."
+  },
+  {
+    question: "What is the density difference between PLA, ABS, and PETG filaments?",
+    answer: "PLA has a density of ~1.24 g/cm³, PETG averages ~1.27 g/cm³, and ABS is lighter at ~1.04 g/cm³. Lighter materials yield slightly more filament length per kilogram."
+  },
+  {
+    question: "How do I factor 3D printer machine depreciation into print costs?",
+    answer: "Estimate machine wear by dividing the total purchase price of the printer by its expected lifespan in operating hours (e.g. $500 printer ÷ 2,000 hours = $0.25/hr machine wear)."
+  },
+  {
+    question: "Does slicer infill percentage affect material cost significantly?",
+    answer: "Yes. Reducing infill from 100% solid to 15-20% grid or gyroid infill dramatically lowers weight, print time, and raw material cost while preserving structural integrity."
+  },
+  {
+    question: "What is the cost difference between FDM and Resin (SLA) 3D printing?",
+    answer: "Resin printing involves higher consumable costs ($30-$60/kg resin, IPA washing, FEP film replacements) compared to standard PLA FDM spools ($15-$25/kg)."
+  },
+  {
+    question: "How do support structures impact total print material volume?",
+    answer: "Tree and breakaway supports can add 15% to 40% to total print weight depending on object overhang angles and slicer support density settings."
+  },
+  {
+    question: "How do I export my 3D printing cost estimation report?",
+    answer: "Click 'Export Passport' to download your itemized material cost breakdown, power consumption, and commercial pricing model in a JSON report."
+  }
+];
 ---
 
-<Layout title={seoTitle} description={seoDescription} canonicalUrl={canonicalUrl}>
-
-  <div class="min-h-screen bg-[#08080a] text-slate-100 py-12 px-4 font-sans">
-    <div class="max-w-5xl mx-auto space-y-12">
+<Layout title={seoTitle} description={seoDescription} faqs={faqs} canonicalUrl={canonicalUrl}>
+  <div class="min-h-screen bg-[#08080a] text-slate-100 font-sans">
+    <div class="max-w-7xl mx-auto px-4 py-6 sm:py-8 space-y-8">
       <section class="text-center space-y-4">
         <h1 class="text-4xl sm:text-5xl font-black text-white tracking-tight">
           3D Print Cost & <span class="text-purple-400">Filament Estimator</span>
@@ -30,36 +80,114 @@ const canonicalUrl = lang === 'en'
         </p>
       </section>
 
-      <FilamentCostInspector />
+      <!-- 2-Column Responsive Layout -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        <!-- Left Diagnostic Canvas & Directory -->
+        <div class="lg:col-span-8 space-y-8">
+          <FilamentCostInspector />
 
-      <!-- 3D Printing Filament Material Directory -->
-      <section class="space-y-6 bg-[#121215] p-6 sm:p-8 rounded-2xl border border-white/10">
-        <div class="border-b border-white/10 pb-4">
-          <h2 class="text-2xl font-bold text-white font-sans">3D Printing Filament Material Directory</h2>
-          <p class="text-slate-400 text-sm mt-1">Explore material density specifications, cost models, and retail pricing strategies for popular 3D printing filaments.</p>
+          <!-- 3D Printing Filament Material Directory -->
+          <section class="space-y-6 bg-[#121215] p-6 sm:p-8 rounded-3xl border border-white/10">
+            <div class="border-b border-white/10 pb-4">
+              <h2 class="text-2xl font-bold text-white font-sans">3D Printing Filament Material Directory</h2>
+              <p class="text-slate-400 text-sm mt-1">Explore material density specifications, cost models, and retail pricing strategies for popular 3D printing filaments.</p>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 font-mono text-xs">
+              {materials.map(mat => {
+                const href = localizeLink(`/benchmarks/3d-print-cost/${mat.id}`, lang);
+                return (
+                  <a
+                    href={href}
+                    class="p-3.5 rounded-xl bg-[#18181b] border border-white/5 hover:border-purple-400/50 hover:bg-purple-400/10 text-slate-300 hover:text-white transition-colors duration-200 cursor-pointer flex items-center justify-between group"
+                  >
+                    <div class="space-y-1 truncate pr-2 font-sans">
+                      <div class="font-bold text-purple-400 text-xs">{mat.name} Filament</div>
+                      <div class="text-[11px] text-slate-400 group-hover:text-slate-200 font-mono">
+                        Density: {mat.densityGcm3} g/cm³ | ${mat.defaultCostPerKgUsd}/kg
+                      </div>
+                    </div>
+                    <span class="text-purple-400 text-xs shrink-0">&rarr;</span>
+                  </a>
+                );
+              })}
+            </div>
+          </section>
         </div>
 
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 font-mono text-xs">
-          {materials.map(mat => {
-            const href = localizeLink(`/benchmarks/3d-print-cost/${mat.id}`, lang);
-            return (
-              <a
-                href={href}
-                class="p-3.5 rounded-xl bg-[#18181b] border border-white/5 hover:border-purple-400/50 hover:bg-purple-400/10 text-slate-300 hover:text-white transition-all flex items-center justify-between group"
-              >
-                <div class="space-y-1 truncate pr-2 font-sans">
-                  <div class="font-bold text-purple-400 text-xs">{mat.name} Filament</div>
-                  <div class="text-[11px] text-slate-400 group-hover:text-slate-200 font-mono">
-                    Density: {mat.densityGcm3} g/cm³ | ${mat.defaultCostPerKgUsd}/kg
-                  </div>
-                </div>
-                <span class="text-purple-400 group-hover:translate-x-0.5 transition-transform text-xs shrink-0">&rarr;</span>
-              </a>
-            );
-          })}
+        <!-- Right Modular Control & Telemetry Sidebar -->
+        <div class="lg:col-span-4 sticky top-24 space-y-6">
+          <StatusCard
+            status="pass"
+            label="Commercial Profit Margin"
+            subtitle="Etsy Retail Pricing Standard"
+            score="65%"
+            maxScore="100%"
+            details={[
+              { label: "Material Density", value: "1.24 g/cm³" },
+              { label: "Failure Cushion", value: "10% Buffer" }
+            ]}
+          />
+
+          <ConfigurationCard
+            title="Filament & Spool Setup"
+            subtitle="Material & Machine Cost Parameters"
+            badgeText="Materials"
+            controls={[
+              {
+                id: "material-type",
+                label: "Filament Material",
+                type: "select",
+                value: "pla",
+                options: [
+                  { value: "pla", label: "PLA (Polylactic Acid)" },
+                  { value: "abs", label: "ABS (Acrylonitrile)" },
+                  { value: "petg", label: "PETG (Glycol Modified)" },
+                  { value: "tpu", label: "TPU Flexible" }
+                ]
+              },
+              {
+                id: "spool-cost",
+                label: "Spool Cost",
+                type: "slider",
+                min: 10,
+                max: 100,
+                step: 5,
+                value: 20,
+                unit: "USD"
+              }
+            ]}
+          />
+
+          <MetricCard
+            title="Print Cost Breakdown"
+            subtitle="Unit & Commercial Estimates"
+            badgeText="Manufacturing"
+            layout="list"
+            metrics={[
+              { id: "raw-cost", label: "Raw Filament Material", value: "1.86", unit: "USD", status: "pass" },
+              { id: "total-cost", label: "Total Manufacturing Cost", value: "3.42", unit: "USD", status: "pass" },
+              { id: "retail-price", label: "Suggested Retail Price", value: "12.99", unit: "USD", status: "pass" }
+            ]}
+          />
+
+          <InfoCard
+            title="Material Physics Specifications"
+            subtitle="Density & Printing Mechanics"
+            badgeText="Material Specs"
+            accentColor="purple"
+            educationalNotes={[
+              "PLA density averages 1.24 g/cm³ with a lower extrusion temperature profile suited for detailed prints.",
+              "PETG provides superior layer adhesion and chemical resistance for functional prototype components."
+            ]}
+          />
         </div>
-      </section>
+      </div>
+
+      <!-- Standard 4-Part Sections -->
+      <StepWorkflowSection />
+      <PanelTypeBreakdownSection />
+      <FAQSection faqs={faqs} title="3D Print Cost & Filament FAQs" />
     </div>
   </div>
 </Layout>
-

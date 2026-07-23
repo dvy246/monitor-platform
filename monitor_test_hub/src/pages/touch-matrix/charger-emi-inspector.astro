@@ -4,10 +4,14 @@ import Breadcrumbs from '../../components/ui/Breadcrumbs.astro';
 import FAQSection from '../../components/ui/FAQSection.astro';
 import VectorPrecisionEngine from '../../components/diagnostics/VectorPrecisionEngine.astro';
 import ErgonomicsNotice from '../../components/disclaimers/ErgonomicsNotice.astro';
-import MasterBentoDiagnosticSuite from '../../components/diagnostics/MasterBentoDiagnosticSuite.astro';
 import StepWorkflowSection from '../../components/ui/StepWorkflowSection.astro';
 import PanelTypeBreakdownSection from '../../components/ui/PanelTypeBreakdownSection.astro';
 
+import StatusCard from '../../components/ui/sidebar/StatusCard.astro';
+import MetricCard from '../../components/ui/sidebar/MetricCard.astro';
+import ConfigurationCard from '../../components/ui/sidebar/ConfigurationCard.astro';
+import InspectorCard from '../../components/ui/sidebar/InspectorCard.astro';
+import ShortcutCard from '../../components/ui/sidebar/ShortcutCard.astro';
 
 const breadcrumbItems = [
   { label: 'Touch Suite', href: '/touch-tests' },
@@ -60,77 +64,141 @@ const faqs = [
 
 const seoTitle = "Touch Screen Charger EMI Noise & Ghost Touch Inspector | Monitor Test Hub";
 const seoDescription = "Fix phone screen clicking by itself while charging. Test touch digitizer EMI noise, charger ground ripple, ghost touches, and RMS vector drawing precision.";
-
-
-
 ---
 
 <Layout title={seoTitle} description={seoDescription} faqs={faqs}>
-  <div  font-sans">
+  <div class="max-w-7xl mx-auto px-4 py-6 sm:py-8 min-w-0 w-full overflow-hidden font-sans">
     <Breadcrumbs items={breadcrumbItems} />
 
-    <!-- Hero Header Deck -->
-    <header class="relative w-full rounded-3xl border border-white/10 bg-[#121215]/90 backdrop-blur-xl p-6 sm:p-8 md:p-10 shadow-2xl space-y-4 overflow-hidden group select-none">
-      <div class="absolute -top-24 -left-24 w-72 h-72 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none group-hover:bg-emerald-500/15 transition-all duration-500"></div>
-      <div class="absolute -bottom-24 -right-24 w-72 h-72 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none group-hover:bg-cyan-500/15 transition-all duration-500"></div>
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 mt-6">
+      
+      <!-- Left Primary Diagnostic Canvas (lg:col-span-8) -->
+      <div class="lg:col-span-8 space-y-8 min-w-0">
+        <!-- Hero Header Deck -->
+        <header class="relative w-full rounded-3xl border border-border-hairline bg-bg-surface backdrop-blur-xl p-6 sm:p-8 md:p-10 shadow-2xl space-y-4 overflow-hidden group select-none">
+          <div class="absolute -top-24 -left-24 w-72 h-72 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none group-hover:bg-emerald-500/15 transition-all duration-500"></div>
+          <div class="absolute -bottom-24 -right-24 w-72 h-72 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none group-hover:bg-cyan-500/15 transition-all duration-500"></div>
 
-      <div class="relative z-10 space-y-3 max-w-3xl min-w-0 w-full">
-        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-emerald-400 text-xs font-mono font-bold tracking-wide flex-wrap shadow-inner">
-          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shrink-0"></span>
-          <span>DIGITIZER EMI NOISE — RMS VECTOR PRECISION</span>
+          <div class="relative z-10 space-y-3 max-w-3xl min-w-0 w-full">
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-bg-canvas border border-border-hairline text-emerald-400 text-xs font-mono font-bold tracking-wide flex-wrap shadow-inner">
+              <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shrink-0"></span>
+              <span>DIGITIZER EMI NOISE — RMS VECTOR PRECISION</span>
+            </div>
+            <h1 class="text-3xl sm:text-5xl font-extrabold text-text-primary tracking-tight font-sans break-words min-w-0">
+              Touch Screen Charger EMI Noise &amp; Ghost Touch Inspector
+            </h1>
+            <p class="text-sm sm:text-base text-text-secondary font-sans leading-relaxed min-w-0">
+              Does your phone screen jump or register erratic ghost touches while charging? Connect your charger and draw a linear trajectory to measure Root Mean Square (RMS) subpixel noise injected by unshielded power supplies.
+            </p>
+          </div>
+        </header>
+
+        <!-- Main Diagnostic Instrument -->
+        <div class="rounded-3xl border border-white/10 bg-[#121215]/90 backdrop-blur-xl p-4 sm:p-6 shadow-2xl">
+          <VectorPrecisionEngine />
         </div>
-        <h1 class="text-3xl sm:text-5xl font-extrabold text-white tracking-tight font-sans break-words min-w-0">
-          Touch Screen Charger EMI Noise &amp; Ghost Touch Inspector
-        </h1>
-        <p class="text-sm sm:text-base text-zinc-300 font-sans leading-relaxed min-w-0">
-          Does your phone screen jump or register erratic ghost touches while charging? Connect your charger and draw a linear trajectory to measure Root Mean Square (RMS) subpixel noise injected by unshielded power supplies.
-        </p>
-      </div>
-    </header>
 
-    <!-- Main Diagnostic Instrument -->
-    <div class="rounded-3xl border border-white/10 bg-[#121215]/90 backdrop-blur-xl p-4 sm:p-6 shadow-2xl">
-      <VectorPrecisionEngine />
+        <!-- 3-Step Workflow Protocol -->
+        <StepWorkflowSection />
+
+        <!-- Panel Technology Breakdown -->
+        <PanelTypeBreakdownSection />
+
+        <!-- Technical Guide Section -->
+        <article class="bg-[#121215] border border-white/10 rounded-3xl p-6 sm:p-8 space-y-6 shadow-2xl font-sans text-sm text-zinc-300 leading-relaxed">
+          <div class="border-b border-white/10 pb-4">
+            <span class="font-mono text-[10px] font-bold text-emerald-400 uppercase tracking-widest block mb-1">CHARGER NOISE PHYSICS &amp; CAPACITIVE GROUNDING</span>
+            <h2 class="text-2xl font-bold text-white">Understanding Electromagnetic Interference (EMI) in Touchscreen Digitizers</h2>
+          </div>
+
+          <p>
+            Capacitive touchscreens function by transmitting high-frequency AC sensing signals across a grid of Indium Tin Oxide (ITO) electrodes. When an unshielded or low-quality USB charger is connected, high-frequency switching noise (100kHz–1MHz) bleeds through the charger's isolation transformer onto the device ground plane.
+          </p>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 font-mono text-xs my-4">
+            <div class="bg-[#08080a] p-5 rounded-2xl border border-white/10 space-y-2">
+              <span class="text-emerald-400 font-bold uppercase">Battery Power (Clean Signal)</span>
+              <p class="text-zinc-400 font-sans text-xs leading-relaxed">
+                Stable DC ground reference. Signal-to-Noise Ratio (SNR) remains high, producing smooth straight lines with RMS error under 1.0px.
+              </p>
+            </div>
+
+            <div class="bg-[#08080a] p-5 rounded-2xl border border-white/10 space-y-2">
+              <span class="text-rose-400 font-bold uppercase">Unshielded Charger (High EMI)</span>
+              <p class="text-zinc-400 font-sans text-xs leading-relaxed">
+                AC ground ripple bleeds onto capacitive sense nodes, causing drawn lines to wobble, jump erratically, or trigger ghost touches.
+              </p>
+            </div>
+          </div>
+
+          <ErgonomicsNotice />
+        </article>
+
+        <!-- 10 Structured FAQs Component -->
+        <FAQSection faqs={faqs} title="Charger EMI &amp; Ghost Touch FAQs" />
+      </div>
+
+      <!-- Right Modular Control & Telemetry Sidebar (lg:col-span-4) -->
+      <div class="lg:col-span-4 space-y-6 sticky top-24 self-start min-w-0">
+        <StatusCard
+          status="pass"
+          label="CLEAN POWER SIGNAL"
+          subtitle="Ground Loop EMI Rating"
+          score="98"
+          maxScore="100"
+          details={[
+            { label: 'RMS Noise', value: '0.74 px' },
+            { label: 'Ghost Touches', value: '0 Detected' }
+          ]}
+        />
+
+        <MetricCard
+          title="EMI Noise Telemetry"
+          subtitle="Capacitive Signal Readout"
+          badgeText="AC Ripple"
+          metrics={[
+            { id: 'rmsNoisePx', label: 'RMS Noise Error', value: '0.74', target: '< 1.5', unit: 'px', progress: 12, status: 'pass' },
+            { id: 'ghostTouches', label: 'Ghost Touches', value: '0', unit: 'events', status: 'pass' },
+            { id: 'snrDb', label: 'Signal-to-Noise Ratio', value: '42.8', unit: 'dB', status: 'pass' }
+          ]}
+        />
+
+        <ConfigurationCard
+          title="Power Source Setup"
+          subtitle="Filter & Power Profile"
+          controls={[
+            {
+              id: 'powerSource',
+              label: 'Power Source State',
+              type: 'presets',
+              value: 'battery',
+              options: [
+                { value: 'battery', label: 'DC Battery' },
+                { value: 'oem-charger', label: 'OEM Charger' },
+                { value: '3rd-party', label: '3rd Party Charger' }
+              ]
+            }
+          ]}
+        />
+
+        <InspectorCard
+          title="AC Ripple Inspection"
+          subtitle="Switching Power Supply"
+          rows={[
+            { key: 'AC Ground Loop', value: 'Isolated', highlight: true },
+            { key: 'Switching Noise', value: '100 kHz - 1 MHz' },
+            { key: 'Shielding Grade', value: 'Class II Isolated' }
+          ]}
+        />
+
+        <ShortcutCard
+          shortcuts={[
+            { keys: ['F'], label: 'Toggle Fullscreen' },
+            { keys: ['R'], label: 'Reset Line Test' }
+          ]}
+        />
+      </div>
+
     </div>
-
-    <!-- 3-Step Workflow Protocol -->
-    <StepWorkflowSection />
-
-    <!-- Panel Technology Breakdown -->
-    <PanelTypeBreakdownSection />
-
-    <!-- Technical Guide Section -->
-    <article class="bg-[#121215] border border-white/10 rounded-3xl p-6 sm:p-8 space-y-6 shadow-2xl font-sans text-sm text-zinc-300 leading-relaxed">
-      <div class="border-b border-white/10 pb-4">
-        <span class="font-mono text-[10px] font-bold text-emerald-400 uppercase tracking-widest block mb-1">CHARGER NOISE PHYSICS &amp; CAPACITIVE GROUNDING</span>
-        <h2 class="text-2xl font-bold text-white">Understanding Electromagnetic Interference (EMI) in Touchscreen Digitizers</h2>
-      </div>
-
-      <p>
-        Capacitive touchscreens function by transmitting high-frequency AC sensing signals across a grid of Indium Tin Oxide (ITO) electrodes. When an unshielded or low-quality USB charger is connected, high-frequency switching noise (100kHz–1MHz) bleeds through the charger's isolation transformer onto the device ground plane.
-      </p>
-
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 font-mono text-xs my-4">
-        <div class="bg-[#08080a] p-5 rounded-2xl border border-white/10 space-y-2">
-          <span class="text-emerald-400 font-bold uppercase">Battery Power (Clean Signal)</span>
-          <p class="text-zinc-400 font-sans text-xs leading-relaxed">
-            Stable DC ground reference. Signal-to-Noise Ratio (SNR) remains high, producing smooth straight lines with RMS error under 1.0px.
-          </p>
-        </div>
-
-        <div class="bg-[#08080a] p-5 rounded-2xl border border-white/10 space-y-2">
-          <span class="text-rose-400 font-bold uppercase">Unshielded Charger (High EMI)</span>
-          <p class="text-zinc-400 font-sans text-xs leading-relaxed">
-            AC ground ripple bleeds onto capacitive sense nodes, causing drawn lines to wobble, jump erratically, or trigger ghost touches.
-          </p>
-        </div>
-      </div>
-
-      <ErgonomicsNotice />
-    </article>
-
-    <!-- 10 Structured FAQs Component -->
-    <FAQSection faqs={faqs} title="Charger EMI & Ghost Touch FAQs" />
-
   </div>
 </Layout>

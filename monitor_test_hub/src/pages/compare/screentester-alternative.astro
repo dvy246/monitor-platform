@@ -3,7 +3,13 @@ import Layout from '../../layouts/Layout.astro';
 import Breadcrumbs from '../../components/ui/Breadcrumbs.astro';
 import FAQSection from '../../components/ui/FAQSection.astro';
 import { useTranslations, localizeLink } from '../../utils/i18n';
+import StepWorkflowSection from '../../components/ui/StepWorkflowSection.astro';
+import PanelTypeBreakdownSection from '../../components/ui/PanelTypeBreakdownSection.astro';
 
+// Right Sidebar Components
+import StatusCard from '../../components/ui/sidebar/StatusCard.astro';
+import PassportCard from '../../components/ui/sidebar/PassportCard.astro';
+import InfoCard from '../../components/ui/sidebar/InfoCard.astro';
 
 const { lang } = useTranslations(Astro.url.pathname);
 
@@ -37,9 +43,6 @@ const breadcrumbItems = [
 ];
 
 const canonicalUrl = "https://displaytestonline.com/compare/screentester-alternative";
-
-
-
 ---
 
 <Layout 
@@ -48,7 +51,7 @@ const canonicalUrl = "https://displaytestonline.com/compare/screentester-alterna
   faqs={faqs}
   canonicalUrl={canonicalUrl}
 >
-  <div class="max-w-7xl mx-auto px-4 py-8 space-y-10 font-sans">
+  <div class="max-w-7xl mx-auto px-4 py-6 sm:py-8 space-y-8 font-sans">
     <Breadcrumbs items={breadcrumbItems} />
 
     <header class="space-y-4 border-b border-border-hairline pb-8 font-mono">
@@ -64,116 +67,254 @@ const canonicalUrl = "https://displaytestonline.com/compare/screentester-alterna
       </p>
     </header>
 
-    <!-- Quick Verdict Banner -->
-    <div class="bg-bg-surface/90 border border-status-pass/40 rounded-2xl p-6 sm:p-8 space-y-4 backdrop-blur-xl">
-      <h2 class="text-xl font-bold text-text-primary flex items-center gap-2">
-        <span class="text-status-pass">✓</span> The Bottom Line Summary
-      </h2>
-      <p class="text-sm text-text-secondary leading-relaxed">
-        If you just opened your browser and need a quick 5-second color check to see if a red dot is stuck on your screen, <strong class="text-text-primary">either website works fine</strong>. Screentester.io provides clean fullscreen color blocks and basic refresh rate counters that handle casual checks well.
-      </p>
-      <p class="text-sm text-text-secondary leading-relaxed">
-        <strong class="text-text-primary">Display Test Online is built for users who need deeper technical verification</strong>: evaluating whether a dead pixel qualifies for a retail return under ISO 9241-307 standards, locking hardware results into SHA-256 signed receipts, testing QD-OLED versus WOLED text fringing, benchmarking 540Hz frame pacing, or measuring keyboard switch chatter.
-      </p>
-    </div>
+    <!-- 2-Column Responsive Layout -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+      <!-- Left Primary Content Area -->
+      <div class="lg:col-span-8 space-y-8">
+        <!-- Quick Verdict Banner -->
+        <div class="bg-bg-surface/90 border border-status-pass/40 rounded-2xl p-6 sm:p-8 space-y-4 backdrop-blur-xl">
+          <h2 class="text-xl font-bold text-text-primary flex items-center gap-2">
+            <svg class="w-5 h-5 text-status-pass shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+            </svg>
+            <span>The Bottom Line Summary</span>
+          </h2>
+          <p class="text-sm text-text-secondary leading-relaxed">
+            If you just opened your browser and need a quick 5-second color check to see if a red dot is stuck on your screen, <strong class="text-text-primary">either website works fine</strong>. Screentester.io provides clean fullscreen color blocks and basic refresh rate counters that handle casual checks well.
+          </p>
+          <p class="text-sm text-text-secondary leading-relaxed">
+            <strong class="text-text-primary">Display Test Online is built for users who need deeper technical verification</strong>: evaluating whether a dead pixel qualifies for a retail return under ISO 9241-307 standards, locking hardware results into SHA-256 signed receipts, testing QD-OLED versus WOLED text fringing, benchmarking 540Hz frame pacing, or measuring keyboard switch chatter.
+          </p>
+        </div>
 
-    <!-- Feature Comparison Table -->
-    <div class="space-y-4">
-      <h2 class="text-2xl font-bold text-text-primary font-sans">
-        Feature &amp; Capability Matrix
-      </h2>
-      <div class="overflow-x-auto border border-border-hairline rounded-2xl bg-bg-surface">
-        <table class="w-full text-left text-xs font-mono">
-          <thead class="bg-bg-elevated border-b border-border-hairline text-text-muted uppercase">
-            <tr>
-              <th class="p-4 font-semibold">Diagnostic Capability</th>
-              <th class="p-4 font-semibold text-text-secondary">ScreenTester.io</th>
-              <th class="p-4 font-semibold text-status-pass">Display Test Online</th>
-            </tr>
-          </thead>
-          <tbody class="divide-y divide-border-hairline/60 text-text-secondary">
-            <tr class="hover:bg-bg-elevated/40">
-              <td class="p-4 font-bold text-text-primary">Basic Fullscreen Color Cycle</td>
-              <td class="p-4 text-emerald-400">Yes (Solid colors)</td>
-              <td class="p-4 text-emerald-400 font-bold">Yes (RGBW + Custom HEX)</td>
-            </tr>
-            <tr class="hover:bg-bg-elevated/40">
-              <td class="p-4 font-bold text-text-primary">Warranty RMA Guidance</td>
-              <td class="p-4 text-rose-400">No (Generic advice)</td>
-              <td class="p-4 text-emerald-400 font-bold">Yes (ISO 9241-307 Class I-IV)</td>
-            </tr>
-            <tr class="hover:bg-bg-elevated/40">
-              <td class="p-4 font-bold text-text-primary">Cryptographic Hardware Proof</td>
-              <td class="p-4 text-rose-400">No</td>
-              <td class="p-4 text-emerald-400 font-bold">Yes (SHA-256 Receipts)</td>
-            </tr>
-            <tr class="hover:bg-bg-elevated/40">
-              <td class="p-4 font-bold text-text-primary">High-Refresh Rate Precision</td>
-              <td class="p-4 text-amber-400">Basic rAF counter</td>
-              <td class="p-4 text-emerald-400 font-bold">540Hz+ Microsecond Delta Math</td>
-            </tr>
-            <tr class="hover:bg-bg-elevated/40">
-              <td class="p-4 font-bold text-text-primary">OLED Subpixel Layout Inspection</td>
-              <td class="p-4 text-rose-400">No</td>
-              <td class="p-4 text-emerald-400 font-bold">Yes (QD-OLED / WOLED / ClearType)</td>
-            </tr>
-            <tr class="hover:bg-bg-elevated/40">
-              <td class="p-4 font-bold text-text-primary">8000Hz Mouse Polling Jitter</td>
-              <td class="p-4 text-rose-400">No</td>
-              <td class="p-4 text-emerald-400 font-bold">Yes (RFC 3550 Telemetry)</td>
-            </tr>
-            <tr class="hover:bg-bg-elevated/40">
-              <td class="p-4 font-bold text-text-primary">Crowdsourced Device Database</td>
-              <td class="p-4 text-rose-400">No</td>
-              <td class="p-4 text-emerald-400 font-bold">Yes (25+ Flagship Models)</td>
-            </tr>
-            <tr class="hover:bg-bg-elevated/40">
-              <td class="p-4 font-bold text-text-primary">Keyboard &amp; Switch Diagnostics</td>
-              <td class="p-4 text-rose-400">No</td>
-              <td class="p-4 text-emerald-400 font-bold">Yes (Key Chatter &amp; Bounce)</td>
-            </tr>
-            <tr class="hover:bg-bg-elevated/40">
-              <td class="p-4 font-bold text-text-primary">US Regional Utility Calculators</td>
-              <td class="p-4 text-rose-400">No</td>
-              <td class="p-4 text-emerald-400 font-bold">Yes (50 State EIA Rates, NEC 2026)</td>
-            </tr>
-          </tbody>
-        </table>
+        <!-- Feature Comparison Table -->
+        <div class="space-y-4">
+          <h2 class="text-2xl font-bold text-text-primary font-sans">
+            Feature &amp; Capability Matrix
+          </h2>
+          <div class="overflow-x-auto border border-border-hairline rounded-2xl bg-bg-surface">
+            <table class="w-full text-left text-xs font-mono">
+              <thead class="bg-bg-elevated border-b border-border-hairline text-text-muted uppercase">
+                <tr>
+                  <th class="p-4 font-semibold">Diagnostic Capability</th>
+                  <th class="p-4 font-semibold text-text-secondary">ScreenTester.io</th>
+                  <th class="p-4 font-semibold text-status-pass">Display Test Online</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-border-hairline/60 text-text-secondary">
+                <tr class="hover:bg-bg-elevated/40">
+                  <td class="p-4 font-bold text-text-primary">Basic Fullscreen Color Cycle</td>
+                  <td class="p-4 text-emerald-400">
+                    <span class="inline-flex items-center gap-1.5">
+                      <svg class="w-4 h-4 text-emerald-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+                      Yes (Solid colors)
+                    </span>
+                  </td>
+                  <td class="p-4 text-emerald-400 font-bold">
+                    <span class="inline-flex items-center gap-1.5">
+                      <svg class="w-4 h-4 text-emerald-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+                      Yes (RGBW + Custom HEX)
+                    </span>
+                  </td>
+                </tr>
+                <tr class="hover:bg-bg-elevated/40">
+                  <td class="p-4 font-bold text-text-primary">Warranty RMA Guidance</td>
+                  <td class="p-4 text-rose-400">
+                    <span class="inline-flex items-center gap-1.5">
+                      <svg class="w-4 h-4 text-rose-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+                      No (Generic advice)
+                    </span>
+                  </td>
+                  <td class="p-4 text-emerald-400 font-bold">
+                    <span class="inline-flex items-center gap-1.5">
+                      <svg class="w-4 h-4 text-emerald-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+                      Yes (ISO 9241-307 Class I-IV)
+                    </span>
+                  </td>
+                </tr>
+                <tr class="hover:bg-bg-elevated/40">
+                  <td class="p-4 font-bold text-text-primary">Cryptographic Hardware Proof</td>
+                  <td class="p-4 text-rose-400">
+                    <span class="inline-flex items-center gap-1.5">
+                      <svg class="w-4 h-4 text-rose-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+                      No
+                    </span>
+                  </td>
+                  <td class="p-4 text-emerald-400 font-bold">
+                    <span class="inline-flex items-center gap-1.5">
+                      <svg class="w-4 h-4 text-emerald-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+                      Yes (SHA-256 Receipts)
+                    </span>
+                  </td>
+                </tr>
+                <tr class="hover:bg-bg-elevated/40">
+                  <td class="p-4 font-bold text-text-primary">High-Refresh Rate Precision</td>
+                  <td class="p-4 text-amber-400">
+                    <span class="inline-flex items-center gap-1.5">
+                      <svg class="w-4 h-4 text-amber-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                      Basic rAF counter
+                    </span>
+                  </td>
+                  <td class="p-4 text-emerald-400 font-bold">
+                    <span class="inline-flex items-center gap-1.5">
+                      <svg class="w-4 h-4 text-emerald-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+                      540Hz+ Microsecond Delta Math
+                    </span>
+                  </td>
+                </tr>
+                <tr class="hover:bg-bg-elevated/40">
+                  <td class="p-4 font-bold text-text-primary">OLED Subpixel Layout Inspection</td>
+                  <td class="p-4 text-rose-400">
+                    <span class="inline-flex items-center gap-1.5">
+                      <svg class="w-4 h-4 text-rose-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+                      No
+                    </span>
+                  </td>
+                  <td class="p-4 text-emerald-400 font-bold">
+                    <span class="inline-flex items-center gap-1.5">
+                      <svg class="w-4 h-4 text-emerald-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+                      Yes (QD-OLED / WOLED / ClearType)
+                    </span>
+                  </td>
+                </tr>
+                <tr class="hover:bg-bg-elevated/40">
+                  <td class="p-4 font-bold text-text-primary">8000Hz Mouse Polling Jitter</td>
+                  <td class="p-4 text-rose-400">
+                    <span class="inline-flex items-center gap-1.5">
+                      <svg class="w-4 h-4 text-rose-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+                      No
+                    </span>
+                  </td>
+                  <td class="p-4 text-emerald-400 font-bold">
+                    <span class="inline-flex items-center gap-1.5">
+                      <svg class="w-4 h-4 text-emerald-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+                      Yes (RFC 3550 Telemetry)
+                    </span>
+                  </td>
+                </tr>
+                <tr class="hover:bg-bg-elevated/40">
+                  <td class="p-4 font-bold text-text-primary">Crowdsourced Device Database</td>
+                  <td class="p-4 text-rose-400">
+                    <span class="inline-flex items-center gap-1.5">
+                      <svg class="w-4 h-4 text-rose-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+                      No
+                    </span>
+                  </td>
+                  <td class="p-4 text-emerald-400 font-bold">
+                    <span class="inline-flex items-center gap-1.5">
+                      <svg class="w-4 h-4 text-emerald-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+                      Yes (25+ Flagship Models)
+                    </span>
+                  </td>
+                </tr>
+                <tr class="hover:bg-bg-elevated/40">
+                  <td class="p-4 font-bold text-text-primary">Keyboard &amp; Switch Diagnostics</td>
+                  <td class="p-4 text-rose-400">
+                    <span class="inline-flex items-center gap-1.5">
+                      <svg class="w-4 h-4 text-rose-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+                      No
+                    </span>
+                  </td>
+                  <td class="p-4 text-emerald-400 font-bold">
+                    <span class="inline-flex items-center gap-1.5">
+                      <svg class="w-4 h-4 text-emerald-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+                      Yes (Key Chatter &amp; Bounce)
+                    </span>
+                  </td>
+                </tr>
+                <tr class="hover:bg-bg-elevated/40">
+                  <td class="p-4 font-bold text-text-primary">US Regional Utility Calculators</td>
+                  <td class="p-4 text-rose-400">
+                    <span class="inline-flex items-center gap-1.5">
+                      <svg class="w-4 h-4 text-rose-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+                      No
+                    </span>
+                  </td>
+                  <td class="p-4 text-emerald-400 font-bold">
+                    <span class="inline-flex items-center gap-1.5">
+                      <svg class="w-4 h-4 text-emerald-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+                      Yes (50 State EIA Rates, NEC 2026)
+                    </span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Core Differentiators Breakdown -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 font-sans">
+          <div class="bg-bg-surface border border-border-hairline rounded-2xl p-6 space-y-3">
+            <h3 class="text-lg font-bold text-text-primary">1. ISO 9241-307 RMA Class Auditing</h3>
+            <p class="text-xs text-text-secondary leading-relaxed">
+              ScreenTester.io shows you where a dead pixel is located, but leaves you guessing if your manufacturer will replace it. Display Test Online evaluates defect density against ISO 9241-307 Class I (Zero Defect), Class II (Standard Consumer), and Class III/IV specs so you know whether to file an RMA or return the screen to your retailer.
+            </p>
+          </div>
+
+          <div class="bg-bg-surface border border-border-hairline rounded-2xl p-6 space-y-3">
+            <h3 class="text-lg font-bold text-text-primary">2. Immutable SHA-256 Receipts</h3>
+            <p class="text-xs text-text-secondary leading-relaxed">
+              Selling a monitor on Reddit, eBay, or Swappa? Screentester results cannot be saved or independently verified. Display Test Online cryptographically signs your screen metrics into a SHA-256 digital passport that buyers and sellers can verify at any time.
+            </p>
+          </div>
+
+          <div class="bg-bg-surface border border-border-hairline rounded-2xl p-6 space-y-3">
+            <h3 class="text-lg font-bold text-text-primary">3. Subpixel QD-OLED &amp; WOLED Fringing</h3>
+            <p class="text-xs text-text-secondary leading-relaxed">
+              Modern OLED displays use non-traditional subpixel layouts (Samsung QD-OLED triangular layout vs LG WOLED RWBG layout). Display Test Online provides custom reticle patterns to test font blurriness and ClearType fringing specific to high-end OLED screens.
+            </p>
+          </div>
+
+          <div class="bg-[#121215] border border-border-hairline rounded-2xl p-6 space-y-3">
+            <h3 class="text-lg font-bold text-text-primary">4. Beyond Display: Peripheral Diagnostics</h3>
+            <p class="text-xs text-text-secondary leading-relaxed">
+              Display Test Online expands hardware diagnostics to your entire desk setup, including mechanical keyboard switch chatter testing, 8000Hz USB mouse polling pacing, gamepad stick drift inspection, and mobile digitizer charger EMI noise tracking.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Modular Control & Telemetry Sidebar -->
+      <div class="lg:col-span-4 sticky top-24 space-y-6">
+        <StatusCard
+          status="pass"
+          label="Display Test Online Verdict"
+          subtitle="Engineering Diagnostic Suite"
+          score="99.8%"
+          maxScore="Rating"
+          details={[
+            { label: "ISO 9241-307 Support", value: "Class I-IV" },
+            { label: "SHA-256 Receipts", value: "Verified" }
+          ]}
+        />
+
+        <PassportCard
+          title="Cryptographic Proof"
+          deviceModel="Verified Alternative Benchmark"
+          healthIndex={99}
+          rmaStatus="ELIGIBLE"
+          rmaDetails="Includes ISO 9241-307 RMA limits and SHA-256 cryptographic hardware receipts."
+        />
+
+        <InfoCard
+          title="ISO & IEEE Standards"
+          subtitle="Engineering Suite Specs"
+          badgeText="ISO Standards"
+          accentColor="emerald"
+          citations={[
+            {
+              standard: "ISO 9241-307",
+              clause: "Display Defect Classes",
+              description: "Provides standardized mathematical limits for bright/dark sub-pixel defects."
+            }
+          ]}
+        />
       </div>
     </div>
 
-    <!-- Core Differentiators Breakdown -->
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 font-sans">
-      <div class="bg-bg-surface border border-border-hairline rounded-2xl p-6 space-y-3">
-        <h3 class="text-lg font-bold text-text-primary">1. ISO 9241-307 RMA Class Auditing</h3>
-        <p class="text-xs text-text-secondary leading-relaxed">
-          ScreenTester.io shows you where a dead pixel is located, but leaves you guessing if your manufacturer will replace it. Display Test Online evaluates defect density against ISO 9241-307 Class I (Zero Defect), Class II (Standard Consumer), and Class III/IV specs so you know whether to file an RMA or return the screen to your retailer.
-        </p>
-      </div>
-
-      <div class="bg-bg-surface border border-border-hairline rounded-2xl p-6 space-y-3">
-        <h3 class="text-lg font-bold text-text-primary">2. Immutable SHA-256 Receipts</h3>
-        <p class="text-xs text-text-secondary leading-relaxed">
-          Selling a monitor on Reddit, eBay, or Swappa? Screentester results cannot be saved or independently verified. Display Test Online cryptographically signs your screen metrics into a SHA-256 digital passport that buyers and sellers can verify at any time.
-        </p>
-      </div>
-
-      <div class="bg-bg-surface border border-border-hairline rounded-2xl p-6 space-y-3">
-        <h3 class="text-lg font-bold text-text-primary">3. Subpixel QD-OLED &amp; WOLED Fringing</h3>
-        <p class="text-xs text-text-secondary leading-relaxed">
-          Modern OLED displays use non-traditional subpixel layouts (Samsung QD-OLED triangular layout vs LG WOLED RWBG layout). Display Test Online provides custom reticle patterns to test font blurriness and ClearType fringing specific to high-end OLED screens.
-        </p>
-      </div>
-
-      <div class="bg-bg-surface border border-border-hairline rounded-2xl p-6 space-y-3">
-        <h3 class="text-lg font-bold text-text-primary">4. Beyond Display: Peripheral Diagnostics</h3>
-        <p class="text-xs text-text-secondary leading-relaxed">
-          Display Test Online expands hardware diagnostics to your entire desk setup, including mechanical keyboard switch chatter testing, 8000Hz USB mouse polling pacing, gamepad stick drift inspection, and mobile digitizer charger EMI noise tracking.
-        </p>
-      </div>
-    </div>
-
-    <!-- FAQ Accordion Section -->
+    <!-- Standard 4-Part Sections -->
+    <StepWorkflowSection />
+    <PanelTypeBreakdownSection />
     <FAQSection faqs={faqs} />
   </div>
 </Layout>

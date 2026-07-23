@@ -63,70 +63,42 @@
 }
 
 /* Light Mode Overrides & Contrast Harmonization */
-:root.light {
-  --color-bg-canvas: #f8fafc;
-  --color-bg-surface: #ffffff;
-  --color-bg-elevated: #f1f5f9;
-  --color-bg-subtle: rgba(0, 0, 0, 0.04);
+html.light, :root.light, .light {
+  --color-bg-canvas: #f8fafc !important;
+  --color-bg-surface: #ffffff !important;
+  --color-bg-elevated: #f1f5f9 !important;
+  --color-bg-subtle: rgba(0, 0, 0, 0.04) !important;
 
-  --color-border-hairline: rgba(0, 0, 0, 0.08);
-  --color-border-subtle: rgba(0, 0, 0, 0.12);
-  --color-border-interactive: rgba(0, 0, 0, 0.22);
+  --color-border-hairline: rgba(0, 0, 0, 0.08) !important;
+  --color-border-subtle: rgba(0, 0, 0, 0.12) !important;
+  --color-border-interactive: rgba(0, 0, 0, 0.22) !important;
 
-  --color-text-primary: #0f172a;
-  --color-text-secondary: #334155;
-  --color-text-muted: #64748b;
+  --color-text-primary: #0f172a !important;
+  --color-text-secondary: #334155 !important;
+  --color-text-muted: #64748b !important;
 
-  --color-status-pass: #059669;
-  --color-status-fail: #dc2626;
-  --color-status-info: #0891b2;
+  --color-status-pass: #059669 !important;
+  --color-status-fail: #dc2626 !important;
+  --color-status-info: #0891b2 !important;
 }
 
-/* Light Mode Explicit Contrast Overrides */
-:root.light .text-white,
-:root.light h1.text-white,
-:root.light h2.text-white,
-:root.light h3.text-white,
-:root.light h4.text-white {
+html.light .text-text-primary {
   color: #0f172a !important;
 }
 
-:root.light .text-slate-200,
-:root.light .text-slate-300,
-:root.light .text-slate-400,
-:root.light .text-zinc-200,
-:root.light .text-zinc-300,
-:root.light .text-zinc-400 {
+html.light .text-text-secondary {
   color: #334155 !important;
 }
 
-:root.light .text-slate-500,
-:root.light .text-zinc-500 {
+html.light .text-text-muted {
   color: #64748b !important;
 }
 
-:root.light .bg-\[\#121215\],
-:root.light .bg-\[\#08080a\],
-:root.light .bg-\[\#0a0a0d\] {
-  background-color: #ffffff !important;
-  border-color: rgba(0, 0, 0, 0.08) !important;
-}
-
-:root.light .border-white\/10,
-:root.light .border-white\/20 {
-  border-color: rgba(0, 0, 0, 0.08) !important;
-}
-
-:root.light .bg-white\/5,
-:root.light .bg-white\/10 {
-  background-color: rgba(0, 0, 0, 0.05) !important;
-}
-
-:root.light kbd,
-:root.light code {
-  background-color: #f1f5f9 !important;
-  border-color: rgba(0, 0, 0, 0.12) !important;
-  color: #0f172a !important;
+html.light kbd,
+html.light code {
+  background-color: #f1f5f9;
+  border-color: rgba(0, 0, 0, 0.12);
+  color: #0f172a;
 }
 
 /* Pure CSS Zero-CLS Theme Slider Initialization */

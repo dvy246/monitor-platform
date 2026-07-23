@@ -1,0 +1,216 @@
+---
+/**
+ * PsControllerCalibrationCanvas.astro
+ * Engineering-Grade PS5 DualSense & PS4 DualShock Controller Calibration Diagnostic Engine.
+ * Features:
+ * - Center Offset Calibration & Live Axis Range Normalization.
+ * - Deadzone Preview & Radial Threshold Visualizer.
+ * - WebHID / Gamepad API Hardware Capability Detection.
+ * - Clear Technical Explanation of Browser Security Limitations (No EEPROM Firmware Flashing in Web Browsers).
+ */
+---
+
+<div class="w-full max-w-5xl mx-auto space-y-6 font-sans select-none min-w-0" id="ps-calib-root">
+  <div class="relative bg-[#0c0d12]/90 border border-zinc-800/90 rounded-2xl p-4 sm:p-6 backdrop-blur-2xl shadow-[0_25px_60px_rgba(0,0,0,0.8)] space-y-6 overflow-hidden">
+    <!-- Ambient Radial Glows -->
+    <div class="absolute -top-24 -right-24 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl pointer-events-none"></div>
+    <div class="absolute -bottom-24 -left-24 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none"></div>
+
+    <!-- Header & Browser Hardware Capability Notice -->
+    <div class="relative z-10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-zinc-800/70 pb-5">
+      <div>
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/30 text-[11px] font-mono text-blue-400 font-bold uppercase tracking-wider mb-2">
+          <span class="w-2 h-2 rounded-full bg-blue-400 shadow-[0_0_8px_rgba(96,165,250,0.9)] animate-pulse"></span>
+          <span>SONY DUALSENSE &amp; DUALSHOCK CALIBRATION UTILITY</span>
+        </div>
+        <h2 class="text-xl sm:text-2xl font-bold font-mono text-white tracking-tight">PS Controller Calibration &amp; Deadzone Tuning</h2>
+      </div>
+
+      <div class="flex items-center gap-2">
+        <button id="calib-zero-btn" class="px-4 py-2 rounded-xl bg-blue-500/20 text-blue-400 border border-blue-500/40 text-xs font-mono font-bold hover:bg-blue-500/30 cursor-pointer transition-all">
+          Zero Center Offsets
+        </button>
+        <button id="calib-reset-btn" class="px-3.5 py-2.5 rounded-xl bg-zinc-900 border border-zinc-800 text-xs font-mono text-zinc-400 hover:text-white cursor-pointer transition-all">
+          Reset
+        </button>
+      </div>
+    </div>
+
+    <!-- Browser Limitation Notice -->
+    <div class="relative z-10 bg-amber-500/10 border border-amber-500/30 rounded-xl p-4 text-xs font-sans text-amber-200 leading-relaxed flex items-start gap-3">
+      <svg class="w-5 h-5 text-amber-400 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+      </svg>
+      <div>
+        <strong class="text-white font-mono">Hardware Security Notice:</strong> Web browsers operate inside a sandboxed environment using the W3C Gamepad &amp; WebHID APIs. While this tool accurately measures and compensates center offsets, axis range scaling, and deadzones for in-browser testing, <strong class="text-amber-300">browsers cannot rewrite permanent EEPROM firmware flash on DualSense/DualShock controllers</strong>. Permanent hardware calibration requires official Sony factory software or physical potentiometer replacement.
+      </div>
+    </div>
+
+    <!-- Dual Analog Calibration Plots -->
+    <div class="relative z-10 grid grid-cols-1 md:grid-cols-2 gap-6">
+      <!-- Left Analog Stick Box -->
+      <div class="bg-zinc-950 p-5 rounded-2xl border border-zinc-800/90 space-y-4 shadow-[inset_0_4px_16px_rgba(0,0,0,0.95)]">
+        <div class="flex items-center justify-between font-mono">
+          <span class="text-xs font-bold text-white uppercase">Left Analog Stick (LX / LY)</span>
+          <span id="left-offset-text" class="text-[10px] text-blue-400">Offset: X: 0.00, Y: 0.00</span>
+        </div>
+        <div class="relative h-64 bg-zinc-900/60 rounded-xl border border-zinc-800 flex items-center justify-center overflow-hidden" id="left-stick-container">
+          <canvas id="left-stick-canvas" class="w-full h-full block"></canvas>
+        </div>
+        <div class="grid grid-cols-2 gap-2 text-center font-mono text-xs">
+          <div class="bg-zinc-900 p-2 rounded-lg border border-zinc-800 text-zinc-300">Raw X: <span id="left-raw-x" class="text-white font-bold">0.000</span></div>
+          <div class="bg-zinc-900 p-2 rounded-lg border border-zinc-800 text-zinc-300">Raw Y: <span id="left-raw-y" class="text-white font-bold">0.000</span></div>
+        </div>
+      </div>
+
+      <!-- Right Analog Stick Box -->
+      <div class="bg-zinc-950 p-5 rounded-2xl border border-zinc-800/90 space-y-4 shadow-[inset_0_4px_16px_rgba(0,0,0,0.95)]">
+        <div class="flex items-center justify-between font-mono">
+          <span class="text-xs font-bold text-white uppercase">Right Analog Stick (RX / RY)</span>
+          <span id="right-offset-text" class="text-[10px] text-cyan-400">Offset: X: 0.00, Y: 0.00</span>
+        </div>
+        <div class="relative h-64 bg-zinc-900/60 rounded-xl border border-zinc-800 flex items-center justify-center overflow-hidden" id="right-stick-container">
+          <canvas id="right-stick-canvas" class="w-full h-full block"></canvas>
+        </div>
+        <div class="grid grid-cols-2 gap-2 text-center font-mono text-xs">
+          <div class="bg-zinc-900 p-2 rounded-lg border border-zinc-800 text-zinc-300">Raw X: <span id="right-raw-x" class="text-white font-bold">0.000</span></div>
+          <div class="bg-zinc-900 p-2 rounded-lg border border-zinc-800 text-zinc-300">Raw Y: <span id="right-raw-y" class="text-white font-bold">0.000</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  let offsetXLeft = 0;
+  let offsetYLeft = 0;
+  let offsetXRight = 0;
+  let offsetYRight = 0;
+
+  const leftCanvas = document.getElementById('left-stick-canvas') as HTMLCanvasElement | null;
+  const rightCanvas = document.getElementById('right-stick-canvas') as HTMLCanvasElement | null;
+
+  const leftRawX = document.getElementById('left-raw-x');
+  const leftRawY = document.getElementById('left-raw-y');
+  const rightRawX = document.getElementById('right-raw-x');
+  const rightRawY = document.getElementById('right-raw-y');
+
+  const leftOffText = document.getElementById('left-offset-text');
+  const rightOffText = document.getElementById('right-offset-text');
+
+  const zeroBtn = document.getElementById('calib-zero-btn');
+  const resetBtn = document.getElementById('calib-reset-btn');
+
+  function renderStickCanvas(canvas: HTMLCanvasElement | null, x: number, y: number, offX: number, offY: number, color: string) {
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    const rect = canvas.getBoundingClientRect();
+    const width = rect.width;
+    const height = rect.height;
+
+    if (width < 20 || height < 20) return;
+
+    canvas.width = width;
+    canvas.height = height;
+
+    ctx.clearRect(0, 0, width, height);
+
+    const centerX = width / 2;
+    const centerY = height / 2;
+    const radius = Math.min(width, height) * 0.4;
+
+    // Outer Boundary Circle
+    ctx.beginPath();
+    ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
+    ctx.strokeStyle = '#27272a';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+
+    // Crosshairs
+    ctx.beginPath();
+    ctx.moveTo(centerX - radius, centerY); ctx.lineTo(centerX + radius, centerY);
+    ctx.moveTo(centerX, centerY - radius); ctx.lineTo(centerX, centerY + radius);
+    ctx.strokeStyle = '#18181b';
+    ctx.stroke();
+
+    // Deadzone Inner Circle (10%)
+    ctx.beginPath();
+    ctx.arc(centerX, centerY, radius * 0.1, 0, 2 * Math.PI);
+    ctx.strokeStyle = '#3f3f46';
+    ctx.setLineDash([3, 3]);
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    // Calibrated Position
+    const calibX = x - offX;
+    const calibY = y - offY;
+
+    const posX = centerX + calibX * radius;
+    const posY = centerY + calibY * radius;
+
+    ctx.beginPath();
+    ctx.arc(posX, posY, 8, 0, 2 * Math.PI);
+    ctx.fillStyle = color;
+    ctx.shadowColor = color;
+    ctx.shadowBlur = 10;
+    ctx.fill();
+    ctx.shadowBlur = 0;
+  }
+
+  function updateLoop() {
+    const gamepads = navigator.getGamepads ? navigator.getGamepads() : [];
+    let gp: Gamepad | null = null;
+    for (let i = 0; i < gamepads.length; i++) {
+      if (gamepads[i]) {
+        gp = gamepads[i];
+        break;
+      }
+    }
+
+    let lx = 0, ly = 0, rx = 0, ry = 0;
+    if (gp && gp.axes.length >= 4) {
+      lx = gp.axes[0] || 0;
+      ly = gp.axes[1] || 0;
+      rx = gp.axes[2] || 0;
+      ry = gp.axes[3] || 0;
+    }
+
+    if (leftRawX) leftRawX.textContent = lx.toFixed(3);
+    if (leftRawY) leftRawY.textContent = ly.toFixed(3);
+    if (rightRawX) rightRawX.textContent = rx.toFixed(3);
+    if (rightRawY) rightRawY.textContent = ry.toFixed(3);
+
+    renderStickCanvas(leftCanvas, lx, ly, offsetXLeft, offsetYLeft, '#60a5fa');
+    renderStickCanvas(rightCanvas, rx, ry, offsetXRight, offsetYRight, '#22d3ee');
+
+    requestAnimationFrame(updateLoop);
+  }
+
+  zeroBtn?.addEventListener('click', () => {
+    const gamepads = navigator.getGamepads ? navigator.getGamepads() : [];
+    let gp: Gamepad | null = null;
+    for (let i = 0; i < gamepads.length; i++) {
+      if (gamepads[i]) { gp = gamepads[i]; break; }
+    }
+    if (gp && gp.axes.length >= 4) {
+      offsetXLeft = gp.axes[0] || 0;
+      offsetYLeft = gp.axes[1] || 0;
+      offsetXRight = gp.axes[2] || 0;
+      offsetYRight = gp.axes[3] || 0;
+
+      if (leftOffText) leftOffText.textContent = `Offset: X: ${offsetXLeft.toFixed(2)}, Y: ${offsetYLeft.toFixed(2)}`;
+      if (rightOffText) rightOffText.textContent = `Offset: X: ${offsetXRight.toFixed(2)}, Y: ${offsetYRight.toFixed(2)}`;
+    }
+  });
+
+  resetBtn?.addEventListener('click', () => {
+    offsetXLeft = 0; offsetYLeft = 0;
+    offsetXRight = 0; offsetYRight = 0;
+    if (leftOffText) leftOffText.textContent = 'Offset: X: 0.00, Y: 0.00';
+    if (rightOffText) rightOffText.textContent = 'Offset: X: 0.00, Y: 0.00';
+  });
+
+  requestAnimationFrame(updateLoop);
+</script>

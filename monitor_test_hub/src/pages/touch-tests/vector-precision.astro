@@ -4,6 +4,13 @@ import Breadcrumbs from '../../components/ui/Breadcrumbs.astro';
 import VectorPrecisionEngine from '../../components/diagnostics/VectorPrecisionEngine.astro';
 import ErgonomicsNotice from '../../components/disclaimers/ErgonomicsNotice.astro';
 import TestSwitcherBar from '../../components/ui/TestSwitcherBar.astro';
+import FAQSection from '../../components/ui/FAQSection.astro';
+
+import StatusCard from '../../components/ui/sidebar/StatusCard.astro';
+import MetricCard from '../../components/ui/sidebar/MetricCard.astro';
+import ConfigurationCard from '../../components/ui/sidebar/ConfigurationCard.astro';
+import InspectorCard from '../../components/ui/sidebar/InspectorCard.astro';
+import ShortcutCard from '../../components/ui/sidebar/ShortcutCard.astro';
 
 const breadcrumbItems = [
   { label: 'Touch Suite', href: '/touch-tests' },
@@ -17,52 +24,163 @@ const touchTests = [
   { id: 'swipe-velocity', label: 'Swipe Velocity', href: '/touch-tests/swipe-velocity' },
   { id: 'input-lag', label: 'Input Lag Test', href: '/touch-tests/input-lag' }
 ];
+
+const faqs = [
+  {
+    question: "What is the Vector Precision & Line Jitter Test?",
+    answer: "This test measures spatial trajectory accuracy and line jitter by calculating the Root Mean Square (RMS) perpendicular deviation between your drawn path and ideal linear vector anchors."
+  },
+  {
+    question: "What is active stylus diagonal waviness?",
+    answer: "Diagonal waviness occurs when drawing slow diagonal lines with an active pen (e.g. Apple Pencil, Surface Pen). Spatial quantization across ITO matrix channels creates small staircase ripples."
+  },
+  {
+    question: "How is Root Mean Square (RMS) error calculated?",
+    answer: "RMS Error is calculated as the square root of the average squared perpendicular distance (in pixels) of all sampled touch points relative to the reference vector path."
+  },
+  {
+    question: "What is an acceptable RMS error score for drawing and handwriting?",
+    answer: "Professional art and note-taking tablets aim for an RMS error below 1.5 pixels. RMS values above 3.5 pixels indicate noticeable line jitter or digitizer noise."
+  },
+  {
+    question: "Why does my drawn line wobble even when drawing with a ruler?",
+    answer: "Line wobble is caused by high-frequency electromagnetic noise from screen backlights, ungrounded power supplies, or low-resolution capacitive digitizer polling."
+  },
+  {
+    question: "Does drawing speed affect vector precision?",
+    answer: "Yes, drawing slowly exposes high-frequency digitizer sampling jitter, whereas fast strokes benefit from internal stroke smoothing and line interpolation."
+  },
+  {
+    question: "Can screen protectors increase stylus line jitter?",
+    answer: "Certain matte or thick glass protectors increase physical tip distance from the ITO sensing layer, slightly increasing spatial position error."
+  },
+  {
+    question: "What is the difference between active EMR pens and passive capacitive styluses?",
+    answer: "Active EMR/USI styluses use dedicated digitizer ICs to transmit sub-millimeter position and pressure data, while passive capacitive tips simulate a wide finger tap with lower spatial accuracy."
+  },
+  {
+    question: "How can I reduce line jitter on my touchscreen?",
+    answer: "Unplug third-party chargers, disable aggressive palm rejection overlays, and ensure the screen surface is clean and dry."
+  },
+  {
+    question: "How do I reset vector precision anchor points?",
+    answer: "Press the 'R' key or click the 'Reset Canvas' button to clear existing drawing paths and start a fresh precision trial."
+  }
+];
 ---
 
 <Layout 
   title="Vector Precision & Line Jitter Test | Monitor Test Hub" 
   description="Draw linear trajectories between target anchors to evaluate digitizer line noise, measure stylus waviness, and calculate Root Mean Square (RMS) deviation."
+  faqs={faqs}
 >
-  <div class="max-w-7xl mx-auto px-4 py-8 space-y-8">
+  <div class="max-w-7xl mx-auto px-4 py-6 sm:py-8 min-w-0 w-full overflow-hidden font-sans">
     <Breadcrumbs items={breadcrumbItems} />
 
-    <header class="space-y-3 border-b border-border-hairline pb-6">
-      <div class="flex items-center gap-2 text-status-pass text-xs font-mono font-bold uppercase tracking-wider">
-        <span class="w-2 h-2 rounded-full bg-status-pass led-glow-pass"></span>
-        DIGITIZER TRAJECTORY DRIFT — RMS ERROR ANALYSIS
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 mt-6">
+      
+      <!-- Left Primary Diagnostic Canvas (lg:col-span-8) -->
+      <div class="lg:col-span-8 space-y-8 min-w-0">
+        <header class="space-y-3 border-b border-border-hairline pb-6">
+          <div class="flex items-center gap-2 text-status-pass text-xs font-mono font-bold uppercase tracking-wider">
+            <span class="w-2 h-2 rounded-full bg-status-pass led-glow-pass"></span>
+            DIGITIZER TRAJECTORY DRIFT — RMS ERROR ANALYSIS
+          </div>
+          <h1 class="text-3xl sm:text-4xl font-extrabold text-text-primary tracking-tight">Vector Precision &amp; Line Jitter Test</h1>
+          <p class="text-sm text-text-secondary max-w-3xl">
+            Draw straight trajectories across target vector anchors to evaluate touch screen digitizer line noise, measure active stylus diagonal waviness, and compute Root Mean Square (RMS) spatial deviation.
+          </p>
+        </header>
+
+        <VectorPrecisionEngine />
+
+        <!-- Vector Precision Article -->
+        <article class="bg-[#121215] border border-white/10 rounded-3xl p-6 sm:p-8 space-y-6 shadow-2xl font-sans text-sm text-text-secondary leading-relaxed">
+          <div class="border-b border-white/10 pb-4">
+            <span class="font-mono text-[10px] font-bold text-emerald-400 uppercase tracking-widest block mb-1">DIGITIZER LINE NOISE MATHEMATICS</span>
+            <h2 class="text-xl font-bold text-white">Root Mean Square (RMS) Vector Drift &amp; Stylus Diagonal Waviness</h2>
+          </div>
+
+          <p>
+            Active digitizer styluses (Wacom EMR, Apple Pencil, Microsoft Pen Protocol) can exhibit subtle <strong>diagonal line jitter</strong> caused by spatial quantization between physical ITO grid channels. Spatial trajectory precision is quantified by measuring the perpendicular distance (\(d_i\)) of sampled touch points from the ideal linear vector:
+          </p>
+
+          <div class="bg-[#08080a] p-4 rounded-2xl border border-white/10 font-mono text-xs space-y-2 my-4">
+            <span class="text-zinc-400 text-[10px] uppercase block tracking-wider">RMS ERROR FORMULA</span>
+            <div class="text-emerald-400 font-bold">
+              RMS_Error = √( (1/N) × ∑(d_i)² )
+            </div>
+            <div class="text-zinc-400 text-[11px] font-sans">
+              Where lower RMS values (below 1.5 pixels) indicate professional drawing tablet accuracy.
+            </div>
+          </div>
+
+          <ErgonomicsNotice />
+        </article>
+
+        <FAQSection faqs={faqs} />
+        <TestSwitcherBar tests={touchTests} currentId="vector-precision" />
       </div>
-      <h1 class="text-3xl sm:text-4xl font-extrabold text-text-primary tracking-tight">Vector Precision &amp; Line Jitter Test</h1>
-      <p class="text-sm text-text-secondary max-w-3xl">
-        Draw straight trajectories across target vector anchors to evaluate touch screen digitizer line noise, measure active stylus diagonal waviness, and compute Root Mean Square (RMS) spatial deviation.
-      </p>
-    </header>
 
-    <VectorPrecisionEngine />
+      <!-- Right Modular Control & Telemetry Sidebar (lg:col-span-4) -->
+      <div class="lg:col-span-4 space-y-6 sticky top-24 self-start min-w-0">
+        <StatusCard
+          status="pass"
+          label="EXCELLENT PRECISION"
+          subtitle="RMS Line Noise Rating"
+          score="96"
+          maxScore="100"
+          details={[
+            { label: 'RMS Error', value: '0.82 px' },
+            { label: 'Peak Drift', value: '1.4 px' }
+          ]}
+        />
 
-    <!-- Vector Precision Article -->
-    <article class="bg-bg-surface border border-border-hairline rounded-2xl p-6 sm:p-8 space-y-6 shadow-specular-top font-sans text-sm text-text-secondary leading-relaxed">
-      <div class="border-b border-border-hairline pb-4">
-        <span class="font-mono text-[10px] font-bold text-status-pass uppercase tracking-widest block mb-1">DIGITIZER LINE NOISE MATHEMATICS</span>
-        <h2 class="text-xl font-bold text-text-primary">Root Mean Square (RMS) Vector Drift &amp; Stylus Diagonal Waviness</h2>
+        <MetricCard
+          title="Vector Readout"
+          subtitle="Trajectory Telemetry"
+          badgeText="RMS Noise"
+          metrics={[
+            { id: 'rmsError', label: 'RMS Error', value: '0.82', target: '< 1.5', unit: 'px', progress: 15, status: 'pass' },
+            { id: 'peakDrift', label: 'Peak Line Drift', value: '1.4', unit: 'px', status: 'pass' }
+          ]}
+        />
+
+        <ConfigurationCard
+          title="Test Setup"
+          subtitle="Anchor Parameters"
+          controls={[
+            {
+              id: 'toleranceWindow',
+              label: 'Tolerance Window',
+              type: 'slider',
+              min: 1,
+              max: 10,
+              step: 1,
+              value: 3,
+              unit: 'px'
+            }
+          ]}
+        />
+
+        <InspectorCard
+          title="ITO Noise Inspection"
+          subtitle="Digitizer Channel Noise"
+          rows={[
+            { key: 'Spatial Resolution', value: '0.1 mm', highlight: true },
+            { key: 'Noise Floor', value: '0.12 px' },
+            { key: 'Sampling Rate', value: '240 Hz' }
+          ]}
+        />
+
+        <ShortcutCard
+          shortcuts={[
+            { keys: ['F'], label: 'Toggle Fullscreen' },
+            { keys: ['R'], label: 'Reset Canvas' }
+          ]}
+        />
       </div>
 
-      <p>
-        Active digitizer styluses (Wacom EMR, Apple Pencil, Microsoft Pen Protocol) can exhibit subtle <strong>diagonal line jitter</strong> caused by spatial quantization between physical ITO grid channels. Spatial trajectory precision is quantified by measuring the perpendicular distance (\(d_i\)) of sampled touch points from the ideal linear vector:
-      </p>
-
-      <div class="bg-bg-canvas p-4 rounded-xl border border-border-hairline font-mono text-xs space-y-2 my-4">
-        <span class="text-text-muted text-[10px] uppercase block tracking-wider">RMS ERROR FORMULA</span>
-        <div class="text-status-pass font-bold">
-          RMS_Error = √( (1/N) × ∑(d_i)² )
-        </div>
-        <div class="text-text-secondary text-[11px] font-sans">
-          Where lower RMS values (below 1.5 pixels) indicate professional drawing tablet accuracy.
-        </div>
-      </div>
-
-      <ErgonomicsNotice />
-    </article>
-
-    <TestSwitcherBar tests={touchTests} currentId="vector-precision" />
+    </div>
   </div>
 </Layout>

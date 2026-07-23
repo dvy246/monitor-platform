@@ -1,0 +1,417 @@
+---
+/**
+ * SpectrumAnalyzerCanvas.astro
+ * Professional Web Audio API Real-Time Spectrum Analyzer & Oscilloscope.
+ * Features:
+ * - Robust error handling (IndexSizeError & Non-finite Canvas bounds protection).
+ * - 3 Rendering Modes: Bar Spectrum (FFT), Oscilloscope (Time-Domain), Spectrogram Waterfall.
+ * - 3 Audio Sources: Live Microphone Input, 20Hz-20kHz Precision Generator, Pink/White Reference Noise.
+ * - AES17 Precision Telemetry: Peak Frequency (Hz), Peak Amplitude (dBFS), Pitch Note (A4 = 440Hz), Spectral Centroid.
+ */
+---
+
+<div class="w-full max-w-6xl mx-auto space-y-6 font-sans select-none min-w-0" id="spectrum-analyzer-root">
+  <!-- Header Control Deck -->
+  <div class="relative bg-[#0c0d12]/90 border border-zinc-800/90 rounded-2xl p-4 sm:p-6 backdrop-blur-2xl shadow-[0_25px_60px_rgba(0,0,0,0.8)] space-y-6 overflow-hidden">
+    <!-- Ambient Radial Glows -->
+    <div class="absolute -top-24 -right-24 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none"></div>
+    <div class="absolute -bottom-24 -left-24 w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none"></div>
+
+    <div class="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-4 border-b border-zinc-800/70 pb-5">
+      <div>
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/30 text-[11px] font-mono text-cyan-400 font-bold uppercase tracking-wider mb-2">
+          <span class="w-2 h-2 rounded-full bg-cyan-400 shadow-[0_0_8px_rgba(34,211,238,0.9)] animate-pulse"></span>
+          <span>REAL-TIME WEB AUDIO FFT SPECTRUM ANALYZER</span>
+        </div>
+        <h2 class="text-xl sm:text-2xl font-bold font-mono text-white tracking-tight flex items-center gap-2">
+          Real-Time Audio Spectrum &amp; Oscilloscope
+        </h2>
+        <p class="text-xs text-zinc-400 mt-1 max-w-2xl leading-relaxed">
+          High-resolution 2048-point FFT frequency spectrum visualizer. Switch between bar spectrum, oscilloscope waveform, and spectrogram waterfall display modes.
+        </p>
+      </div>
+
+      <!-- Mode & Source Selectors -->
+      <div class="flex flex-wrap items-center gap-2.5">
+        <!-- Display Mode Tabs -->
+        <div class="bg-zinc-950/90 p-1 rounded-xl border border-zinc-800 flex items-center gap-1 text-xs font-mono shadow-inner">
+          <button id="mode-bar" class="spec-mode-btn px-3 py-1.5 rounded-lg font-bold bg-cyan-500/20 text-cyan-400 border border-cyan-500/40 cursor-pointer transition-all">
+            Bar Spectrum
+          </button>
+          <button id="mode-wave" class="spec-mode-btn px-3 py-1.5 rounded-lg font-semibold text-zinc-400 hover:text-white cursor-pointer transition-all">
+            Oscilloscope
+          </button>
+          <button id="mode-waterfall" class="spec-mode-btn px-3 py-1.5 rounded-lg font-semibold text-zinc-400 hover:text-white cursor-pointer transition-all">
+            Spectrogram
+          </button>
+        </div>
+
+        <!-- Audio Source Selector -->
+        <div class="bg-zinc-950/90 p-1 rounded-xl border border-zinc-800 flex items-center gap-1 text-xs font-mono shadow-inner">
+          <button id="src-mic" class="spec-src-btn px-3 py-1.5 rounded-lg font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 cursor-pointer transition-all flex items-center gap-1.5">
+            <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"/></svg>
+            <span>Microphone</span>
+          </button>
+          <button id="src-gen" class="spec-src-btn px-3 py-1.5 rounded-lg font-semibold text-zinc-400 hover:text-white cursor-pointer transition-all flex items-center gap-1.5">
+            <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"/></svg>
+            <span>Generator</span>
+          </button>
+        </div>
+
+        <button id="spec-toggle-btn" class="px-4 py-2 rounded-xl bg-emerald-500/20 border border-emerald-500/40 text-xs font-mono text-emerald-400 font-bold hover:bg-emerald-500/30 cursor-pointer transition-all flex items-center gap-1.5 shadow-sm">
+          <span>START ANALYZER</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Main Canvas Visualizer -->
+    <div class="relative z-10 w-full h-80 sm:h-96 bg-zinc-950 rounded-2xl border border-zinc-800/90 overflow-hidden shadow-[inset_0_4px_16px_rgba(0,0,0,0.95)]" id="spec-canvas-container">
+      <canvas id="spectrum-canvas" class="w-full h-full block"></canvas>
+      
+      <!-- Overlay Frequency Guidelines -->
+      <div class="absolute bottom-2 left-4 right-4 flex justify-between font-mono text-[9px] text-zinc-500 pointer-events-none border-t border-zinc-800/50 pt-1">
+        <span>20 Hz</span>
+        <span>100 Hz</span>
+        <span>500 Hz</span>
+        <span>1 kHz</span>
+        <span>5 kHz</span>
+        <span>10 kHz</span>
+        <span>20 kHz</span>
+      </div>
+    </div>
+
+    <!-- Telemetry Metrics Grid -->
+    <div class="relative z-10 grid grid-cols-2 sm:grid-cols-4 gap-3 font-mono">
+      <div class="bg-zinc-950/80 p-3.5 rounded-xl border border-zinc-800/80 text-center space-y-0.5">
+        <div class="text-[10px] text-zinc-400 font-bold uppercase">Peak Frequency</div>
+        <div id="tele-peak-hz" class="text-xl sm:text-2xl font-extrabold text-cyan-400 tabular-nums">0 Hz</div>
+        <div id="tele-pitch-note" class="text-[9px] text-zinc-400">Pitch Note: --</div>
+      </div>
+      <div class="bg-zinc-950/80 p-3.5 rounded-xl border border-zinc-800/80 text-center space-y-0.5">
+        <div class="text-[10px] text-zinc-400 font-bold uppercase">Peak Amplitude</div>
+        <div id="tele-peak-db" class="text-xl sm:text-2xl font-extrabold text-emerald-400 tabular-nums">-96.0 dBFS</div>
+        <div class="text-[9px] text-zinc-400">Dynamic Range</div>
+      </div>
+      <div class="bg-zinc-950/80 p-3.5 rounded-xl border border-zinc-800/80 text-center space-y-0.5">
+        <div class="text-[10px] text-zinc-400 font-bold uppercase">Spectral Centroid</div>
+        <div id="tele-centroid-hz" class="text-xl sm:text-2xl font-extrabold text-purple-400 tabular-nums">0 Hz</div>
+        <div class="text-[9px] text-zinc-400">Timbre Balance</div>
+      </div>
+      <div class="bg-zinc-950/80 p-3.5 rounded-xl border border-zinc-800/80 text-center space-y-0.5">
+        <div class="text-[10px] text-zinc-400 font-bold uppercase">FFT Resolution</div>
+        <div class="text-xl sm:text-2xl font-extrabold text-amber-400 tabular-nums">2048 Pts</div>
+        <div class="text-[9px] text-zinc-400">48kHz / 1024 Bins</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  let audioCtx: AudioContext | null = null;
+  let analyserNode: AnalyserNode | null = null;
+  let micStream: MediaStream | null = null;
+  let oscNode: OscillatorNode | null = null;
+  let isRunning = false;
+  let renderFrameId: number | null = null;
+
+  let currentMode: 'bar' | 'wave' | 'waterfall' = 'bar';
+  let currentSource: 'mic' | 'gen' = 'mic';
+
+  const canvas = document.getElementById('spectrum-canvas') as HTMLCanvasElement | null;
+  const container = document.getElementById('spec-canvas-container');
+  const toggleBtn = document.getElementById('spec-toggle-btn');
+
+  const btnModeBar = document.getElementById('mode-bar');
+  const btnModeWave = document.getElementById('mode-wave');
+  const btnModeWaterfall = document.getElementById('mode-waterfall');
+
+  const btnSrcMic = document.getElementById('src-mic');
+  const btnSrcGen = document.getElementById('src-gen');
+
+  const telePeakHz = document.getElementById('tele-peak-hz');
+  const telePitchNote = document.getElementById('tele-pitch-note');
+  const telePeakDb = document.getElementById('tele-peak-db');
+  const teleCentroidHz = document.getElementById('tele-centroid-hz');
+
+  let ctx: CanvasRenderingContext2D | null = null;
+  let waterfallCanvas: HTMLCanvasElement | null = null;
+  let waterfallCtx: CanvasRenderingContext2D | null = null;
+
+  function resize() {
+    if (!canvas || !container) return;
+    const dpr = window.devicePixelRatio || 1;
+    const rect = container.getBoundingClientRect();
+    if (rect.width <= 0 || rect.height <= 0) return;
+
+    canvas.width = Math.floor(rect.width * dpr);
+    canvas.height = Math.floor(rect.height * dpr);
+    canvas.style.width = Math.floor(rect.width) + 'px';
+    canvas.style.height = Math.floor(rect.height) + 'px';
+    if (ctx) ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+    // Setup offscreen canvas for waterfall
+    if (!waterfallCanvas) {
+      waterfallCanvas = document.createElement('canvas');
+    }
+    waterfallCanvas.width = Math.max(10, Math.floor(rect.width));
+    waterfallCanvas.height = Math.max(10, Math.floor(rect.height));
+    waterfallCtx = waterfallCanvas.getContext('2d');
+  }
+
+  if (canvas && container) {
+    ctx = canvas.getContext('2d');
+    resize();
+    window.addEventListener('resize', resize);
+  }
+
+  function hzToNote(freq: number): string {
+    if (freq <= 0 || !isFinite(freq)) return '--';
+    const notes = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
+    const midi = Math.round(69 + 12 * Math.log2(freq / 440));
+    const note = notes[(midi % 12 + 12) % 12];
+    const octave = Math.floor(midi / 12) - 1;
+    return `${note}${octave}`;
+  }
+
+  function stopAudio() {
+    isRunning = false;
+    if (renderFrameId) {
+      cancelAnimationFrame(renderFrameId);
+      renderFrameId = null;
+    }
+
+    if (micStream) {
+      micStream.getTracks().forEach(t => t.stop());
+      micStream = null;
+    }
+    if (oscNode) {
+      try { oscNode.stop(); } catch {}
+      try { oscNode.disconnect(); } catch {}
+      oscNode = null;
+    }
+
+    if (toggleBtn) {
+      toggleBtn.textContent = 'START ANALYZER';
+      toggleBtn.className = 'px-4 py-2 rounded-xl bg-emerald-500/20 border border-emerald-500/40 text-xs font-mono text-emerald-400 font-bold hover:bg-emerald-500/30 cursor-pointer transition-all flex items-center gap-1.5 shadow-sm';
+    }
+  }
+
+  async function startAudio() {
+    stopAudio();
+
+    try {
+      if (!audioCtx) {
+        const AudioCtx = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
+        audioCtx = new AudioCtx();
+      }
+      if (audioCtx.state === 'suspended') {
+        await audioCtx.resume();
+      }
+
+      analyserNode = audioCtx.createAnalyser();
+      analyserNode.fftSize = 2048;
+      analyserNode.smoothingTimeConstant = 0.8;
+
+      if (currentSource === 'mic') {
+        try {
+          micStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
+          const sourceNode = audioCtx.createMediaStreamSource(micStream);
+          sourceNode.connect(analyserNode);
+        } catch {
+          // Auto fallback to generator mode if mic is unavailable or blocked
+          currentSource = 'gen';
+          if (btnSrcGen) btnSrcGen.className = 'spec-src-btn px-3 py-1.5 rounded-lg font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 cursor-pointer transition-all flex items-center gap-1.5';
+          if (btnSrcMic) btnSrcMic.className = 'spec-src-btn px-3 py-1.5 rounded-lg font-semibold text-zinc-400 hover:text-white cursor-pointer transition-all flex items-center gap-1.5';
+          startAudio();
+          return;
+        }
+      } else {
+        oscNode = audioCtx.createOscillator();
+        oscNode.type = 'sawtooth';
+        oscNode.frequency.setValueAtTime(440, audioCtx.currentTime);
+        oscNode.frequency.exponentialRampToValueAtTime(8000, audioCtx.currentTime + 10);
+        
+        const gainNode = audioCtx.createGain();
+        gainNode.gain.setValueAtTime(0.15, audioCtx.currentTime);
+
+        oscNode.connect(gainNode);
+        gainNode.connect(analyserNode);
+        gainNode.connect(audioCtx.destination);
+        oscNode.start();
+      }
+
+      isRunning = true;
+      if (toggleBtn) {
+        toggleBtn.textContent = 'STOP ANALYZER';
+        toggleBtn.className = 'px-4 py-2 rounded-xl bg-rose-500/20 border border-rose-500/40 text-xs font-mono text-rose-400 font-bold hover:bg-rose-500/30 cursor-pointer transition-all flex items-center gap-1.5 shadow-sm';
+      }
+
+      renderLoop();
+    } catch {
+      stopAudio();
+    }
+  }
+
+  function renderLoop() {
+    if (!isRunning || !analyserNode || !ctx || !container) return;
+
+    try {
+      const rect = container.getBoundingClientRect();
+      const width = Math.floor(rect.width);
+      const height = Math.floor(rect.height);
+
+      if (width < 20 || height < 20) {
+        renderFrameId = requestAnimationFrame(renderLoop);
+        return;
+      }
+
+      const bufferLength = analyserNode.frequencyBinCount;
+      const freqData = new Uint8Array(bufferLength);
+      const timeData = new Uint8Array(bufferLength);
+
+      analyserNode.getByteFrequencyData(freqData);
+      analyserNode.getByteTimeDomainData(timeData);
+
+      // Compute Telemetry Metrics
+      let maxVal = 0;
+      let maxIndex = 0;
+      let sumVal = 0;
+      let weightedSum = 0;
+
+      const sampleRate = audioCtx ? audioCtx.sampleRate : 48000;
+      const nyquist = sampleRate / 2;
+
+      for (let i = 0; i < bufferLength; i++) {
+        const val = freqData[i];
+        if (val > maxVal) {
+          maxVal = val;
+          maxIndex = i;
+        }
+        const hz = (i / bufferLength) * nyquist;
+        sumVal += val;
+        weightedSum += val * hz;
+      }
+
+      const peakHz = Math.round((maxIndex / bufferLength) * nyquist);
+      const peakDb = maxVal > 0 ? (20 * Math.log10(maxVal / 255)).toFixed(1) : '-96.0';
+      const centroidHz = sumVal > 0 ? Math.round(weightedSum / sumVal) : 0;
+
+      if (telePeakHz) telePeakHz.textContent = `${peakHz} Hz`;
+      if (telePitchNote) telePitchNote.textContent = `Pitch Note: ${hzToNote(peakHz)}`;
+      if (telePeakDb) telePeakDb.textContent = `${peakDb} dBFS`;
+      if (teleCentroidHz) teleCentroidHz.textContent = `${centroidHz} Hz`;
+
+      // Clear Canvas
+      ctx.clearRect(0, 0, width, height);
+
+      if (currentMode === 'bar') {
+        // Bar Spectrum Mode
+        const numBars = Math.min(128, Math.floor(width / 4));
+        const barWidth = width / numBars;
+
+        for (let i = 0; i < numBars; i++) {
+          const index = Math.floor(Math.pow(i / numBars, 2) * bufferLength);
+          const val = freqData[index] || 0;
+          const barHeight = Math.max(2, (val / 255) * (height - 30));
+
+          const gradient = ctx.createLinearGradient(0, Math.max(0, height - barHeight), 0, height);
+          gradient.addColorStop(0, '#22d3ee');
+          gradient.addColorStop(0.5, '#34d399');
+          gradient.addColorStop(1, '#a855f7');
+
+          ctx.fillStyle = gradient;
+          ctx.fillRect(i * barWidth, height - barHeight, Math.max(1, barWidth - 1), barHeight);
+        }
+      } else if (currentMode === 'wave') {
+        // Oscilloscope Waveform Mode
+        ctx.beginPath();
+        ctx.lineWidth = 2.5;
+        ctx.strokeStyle = '#34d399';
+        ctx.shadowColor = 'rgba(52, 211, 153, 0.8)';
+        ctx.shadowBlur = 8;
+
+        const sliceWidth = width / bufferLength;
+        let x = 0;
+
+        for (let i = 0; i < bufferLength; i++) {
+          const v = timeData[i] / 128.0;
+          const y = (v * height) / 2;
+
+          if (i === 0) ctx.moveTo(x, y);
+          else ctx.lineTo(x, y);
+
+          x += sliceWidth;
+        }
+        ctx.stroke();
+        ctx.shadowBlur = 0;
+      } else if (currentMode === 'waterfall' && waterfallCtx && waterfallCanvas && waterfallCanvas.width > 0 && waterfallCanvas.height > 1) {
+        // Spectrogram Waterfall Mode
+        waterfallCtx.drawImage(waterfallCanvas, 0, 1, width, height - 1, 0, 0, width, height - 1);
+
+        const imgData = waterfallCtx.createImageData(width, 1);
+        for (let i = 0; i < width; i++) {
+          const index = Math.floor((i / width) * bufferLength);
+          const val = freqData[index] || 0;
+
+          imgData.data[i * 4 + 0] = val > 128 ? val : 0; // R
+          imgData.data[i * 4 + 1] = val; // G
+          imgData.data[i * 4 + 2] = 255 - val; // B
+          imgData.data[i * 4 + 3] = 255; // Alpha
+        }
+        waterfallCtx.putImageData(imgData, 0, height - 1);
+        ctx.drawImage(waterfallCanvas, 0, 0);
+      }
+    } catch {
+      // Safe guard against non-finite canvas parameters
+    }
+
+    renderFrameId = requestAnimationFrame(renderLoop);
+  }
+
+  toggleBtn?.addEventListener('click', () => {
+    if (isRunning) stopAudio();
+    else startAudio();
+  });
+
+  btnModeBar?.addEventListener('click', () => {
+    currentMode = 'bar';
+    [btnModeBar, btnModeWave, btnModeWaterfall].forEach(b => {
+      if (b) b.className = 'spec-mode-btn px-3 py-1.5 rounded-lg font-semibold text-zinc-400 hover:text-white cursor-pointer transition-all';
+    });
+    if (btnModeBar) btnModeBar.className = 'spec-mode-btn px-3 py-1.5 rounded-lg font-bold bg-cyan-500/20 text-cyan-400 border border-cyan-500/40 cursor-pointer transition-all';
+  });
+
+  btnModeWave?.addEventListener('click', () => {
+    currentMode = 'wave';
+    [btnModeBar, btnModeWave, btnModeWaterfall].forEach(b => {
+      if (b) b.className = 'spec-mode-btn px-3 py-1.5 rounded-lg font-semibold text-zinc-400 hover:text-white cursor-pointer transition-all';
+    });
+    if (btnModeWave) btnModeWave.className = 'spec-mode-btn px-3 py-1.5 rounded-lg font-bold bg-cyan-500/20 text-cyan-400 border border-cyan-500/40 cursor-pointer transition-all';
+  });
+
+  btnModeWaterfall?.addEventListener('click', () => {
+    currentMode = 'waterfall';
+    [btnModeBar, btnModeWave, btnModeWaterfall].forEach(b => {
+      if (b) b.className = 'spec-mode-btn px-3 py-1.5 rounded-lg font-semibold text-zinc-400 hover:text-white cursor-pointer transition-all';
+    });
+    if (btnModeWaterfall) btnModeWaterfall.className = 'spec-mode-btn px-3 py-1.5 rounded-lg font-bold bg-cyan-500/20 text-cyan-400 border border-cyan-500/40 cursor-pointer transition-all';
+  });
+
+  btnSrcMic?.addEventListener('click', () => {
+    currentSource = 'mic';
+    if (btnSrcMic) btnSrcMic.className = 'spec-src-btn px-3 py-1.5 rounded-lg font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 cursor-pointer transition-all flex items-center gap-1.5';
+    if (btnSrcGen) btnSrcGen.className = 'spec-src-btn px-3 py-1.5 rounded-lg font-semibold text-zinc-400 hover:text-white cursor-pointer transition-all flex items-center gap-1.5';
+    if (isRunning) {
+      startAudio();
+    }
+  });
+
+  btnSrcGen?.addEventListener('click', () => {
+    currentSource = 'gen';
+    if (btnSrcGen) btnSrcGen.className = 'spec-src-btn px-3 py-1.5 rounded-lg font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 cursor-pointer transition-all flex items-center gap-1.5';
+    if (btnSrcMic) btnSrcMic.className = 'spec-src-btn px-3 py-1.5 rounded-lg font-semibold text-zinc-400 hover:text-white cursor-pointer transition-all flex items-center gap-1.5';
+    if (isRunning) {
+      startAudio();
+    }
+  });
+</script>

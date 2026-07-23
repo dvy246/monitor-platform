@@ -113,7 +113,7 @@ export const ANSI_104_KEYS: IKeyInfo[] = [
   { code: 'KeyP', label: 'P', row: 2, width: 1 },
   { code: 'BracketLeft', label: '[', subLabel: '{', row: 2, width: 1 },
   { code: 'BracketRight', label: ']', subLabel: '}', row: 2, width: 1 },
-  { code: 'Backslash', label: '\\\\', subLabel: '|', row: 2, width: 1.5 },
+  { code: 'Backslash', label: '\\', subLabel: '|', row: 2, width: 1.5 },
   { code: 'Delete', label: 'Del', row: 2, width: 1 },
   { code: 'End', label: 'End', row: 2, width: 1 },
   { code: 'PageDown', label: 'PgDn', row: 2, width: 1 },
@@ -160,6 +160,100 @@ export const ANSI_104_KEYS: IKeyInfo[] = [
   { code: 'ArrowLeft', label: '◄', row: 5, width: 1 },
   { code: 'ArrowDown', label: '▼', row: 5, width: 1 },
   { code: 'ArrowRight', label: '►', row: 5, width: 1 }
+];
+
+/**
+ * Apple Mac Magic / MacBook layout definition (Row 0 to 5)
+ */
+export const MAC_KEYBOARD_KEYS: IKeyInfo[] = [
+  // Row 0 - Mac Function keys with media symbols
+  { code: 'Escape', label: 'esc', row: 0, width: 1.25 },
+  { code: 'F1', label: 'F1', subLabel: '🔅', row: 0, width: 1 },
+  { code: 'F2', label: 'F2', subLabel: '🔆', row: 0, width: 1 },
+  { code: 'F3', label: 'F3', subLabel: '🔲', row: 0, width: 1 },
+  { code: 'F4', label: 'F4', subLabel: '🔍', row: 0, width: 1 },
+  { code: 'F5', label: 'F5', subLabel: '🎤', row: 0, width: 1 },
+  { code: 'F6', label: 'F6', subLabel: '🌙', row: 0, width: 1 },
+  { code: 'F7', label: 'F7', subLabel: '⏮️', row: 0, width: 1 },
+  { code: 'F8', label: 'F8', subLabel: '⏯️', row: 0, width: 1 },
+  { code: 'F9', label: 'F9', subLabel: '⏭️', row: 0, width: 1 },
+  { code: 'F10', label: 'F10', subLabel: '🔇', row: 0, width: 1 },
+  { code: 'F11', label: 'F11', subLabel: '🔉', row: 0, width: 1 },
+  { code: 'F12', label: 'F12', subLabel: '🔊', row: 0, width: 1 },
+  { code: 'Power', label: '⏏️', subLabel: 'Touch ID', row: 0, width: 1.25 },
+
+  // Row 1 - Number row
+  { code: 'Backquote', label: '`', subLabel: '~', row: 1, width: 1 },
+  { code: 'Digit1', label: '1', subLabel: '!', row: 1, width: 1 },
+  { code: 'Digit2', label: '2', subLabel: '@', row: 1, width: 1 },
+  { code: 'Digit3', label: '3', subLabel: '#', row: 1, width: 1 },
+  { code: 'Digit4', label: '4', subLabel: '$', row: 1, width: 1 },
+  { code: 'Digit5', label: '5', subLabel: '%', row: 1, width: 1 },
+  { code: 'Digit6', label: '6', subLabel: '^', row: 1, width: 1 },
+  { code: 'Digit7', label: '7', subLabel: '&', row: 1, width: 1 },
+  { code: 'Digit8', label: '8', subLabel: '*', row: 1, width: 1 },
+  { code: 'Digit9', label: '9', subLabel: '(', row: 1, width: 1 },
+  { code: 'Digit0', label: '0', subLabel: ')', row: 1, width: 1 },
+  { code: 'Minus', label: '-', subLabel: '_', row: 1, width: 1 },
+  { code: 'Equal', label: '=', subLabel: '+', row: 1, width: 1 },
+  { code: 'Backspace', label: 'delete', subLabel: '⌫', row: 1, width: 2 },
+
+  // Row 2 - QWERTY
+  { code: 'Tab', label: 'tab', subLabel: '⇥', row: 2, width: 1.5 },
+  { code: 'KeyQ', label: 'Q', row: 2, width: 1 },
+  { code: 'KeyW', label: 'W', row: 2, width: 1 },
+  { code: 'KeyE', label: 'E', row: 2, width: 1 },
+  { code: 'KeyR', label: 'R', row: 2, width: 1 },
+  { code: 'KeyT', label: 'T', row: 2, width: 1 },
+  { code: 'KeyY', label: 'Y', row: 2, width: 1 },
+  { code: 'KeyU', label: 'U', row: 2, width: 1 },
+  { code: 'KeyI', label: 'I', row: 2, width: 1 },
+  { code: 'KeyO', label: 'O', row: 2, width: 1 },
+  { code: 'KeyP', label: 'P', row: 2, width: 1 },
+  { code: 'BracketLeft', label: '[', subLabel: '{', row: 2, width: 1 },
+  { code: 'BracketRight', label: ']', subLabel: '}', row: 2, width: 1 },
+  { code: 'Backslash', label: '\\', subLabel: '|', row: 2, width: 1.5 },
+
+  // Row 3 - ASDFGH
+  { code: 'CapsLock', label: 'caps lock', subLabel: '⇪', row: 3, width: 1.85 },
+  { code: 'KeyA', label: 'A', row: 3, width: 1 },
+  { code: 'KeyS', label: 'S', row: 3, width: 1 },
+  { code: 'KeyD', label: 'D', row: 3, width: 1 },
+  { code: 'KeyF', label: 'F', row: 3, width: 1 },
+  { code: 'KeyG', label: 'G', row: 3, width: 1 },
+  { code: 'KeyH', label: 'H', row: 3, width: 1 },
+  { code: 'KeyJ', label: 'J', row: 3, width: 1 },
+  { code: 'KeyK', label: 'K', row: 3, width: 1 },
+  { code: 'KeyL', label: 'L', row: 3, width: 1 },
+  { code: 'Semicolon', label: ';', subLabel: ':', row: 3, width: 1 },
+  { code: 'Quote', label: "'", subLabel: '"', row: 3, width: 1 },
+  { code: 'Enter', label: 'return', subLabel: '↩', row: 3, width: 2.15 },
+
+  // Row 4 - ZXCVBN
+  { code: 'ShiftLeft', label: 'shift', subLabel: '⇧', row: 4, width: 2.35 },
+  { code: 'KeyZ', label: 'Z', row: 4, width: 1 },
+  { code: 'KeyX', label: 'X', row: 4, width: 1 },
+  { code: 'KeyC', label: 'C', row: 4, width: 1 },
+  { code: 'KeyV', label: 'V', row: 4, width: 1 },
+  { code: 'KeyB', label: 'B', row: 4, width: 1 },
+  { code: 'KeyN', label: 'N', row: 4, width: 1 },
+  { code: 'KeyM', label: 'M', row: 4, width: 1 },
+  { code: 'Comma', label: ',', subLabel: '<', row: 4, width: 1 },
+  { code: 'Period', label: '.', subLabel: '>', row: 4, width: 1 },
+  { code: 'Slash', label: '/', subLabel: '?', row: 4, width: 1 },
+  { code: 'ShiftRight', label: 'shift', subLabel: '⇧', row: 4, width: 2.65 },
+
+  // Row 5 - Bottom row (Mac Modifier Order)
+  { code: 'Fn', label: 'fn', subLabel: '🌐', row: 5, width: 1.0 },
+  { code: 'ControlLeft', label: 'control', subLabel: '⌃', row: 5, width: 1.25 },
+  { code: 'AltLeft', label: 'option', subLabel: '⌥', row: 5, width: 1.25 },
+  { code: 'MetaLeft', label: 'command', subLabel: '⌘', row: 5, width: 1.5 },
+  { code: 'Space', label: 'spacebar', row: 5, width: 5.5 },
+  { code: 'MetaRight', label: 'command', subLabel: '⌘', row: 5, width: 1.5 },
+  { code: 'AltRight', label: 'option', subLabel: '⌥', row: 5, width: 1.25 },
+  { code: 'ArrowLeft', label: '◀', row: 5, width: 1 },
+  { code: 'ArrowUp', label: '▲', subLabel: '▼', row: 5, width: 1 },
+  { code: 'ArrowRight', label: '▶', row: 5, width: 1 }
 ];
 
 export class KeyboardTesterState {

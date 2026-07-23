@@ -6,6 +6,11 @@ import MasterBentoDiagnosticSuite from '../components/diagnostics/MasterBentoDia
 import TestGuideModal from '../components/ui/TestGuideModal.astro';
 import FAQSection from '../components/ui/FAQSection.astro';
 
+import PaletteCard from '../components/ui/sidebar/PaletteCard.astro';
+import MetricCard from '../components/ui/sidebar/MetricCard.astro';
+import PassportCard from '../components/ui/sidebar/PassportCard.astro';
+import InfoCard from '../components/ui/sidebar/InfoCard.astro';
+
 const colorGuideSteps = [
   "Select a 24-patch Macbeth ColorChecker reference target color or enter a custom hex code.",
   "Compare target reference vs measured output to compute perceptual CIEDE2000 (ΔE00) color error.",
@@ -62,91 +67,151 @@ const faqs = [
   description="Calibrate monitor color accuracy with CIE 1931 chromaticity maps, CIEDE2000 Delta-E errors, optical Gamma 2.2 alignment, and binary ICC v4.3 profile exports."
   faqs={faqs}
 >
-  <div class="max-w-7xl mx-auto px-4 py-6 sm:py-8 space-y-8 min-w-0 w-full overflow-hidden font-sans">
+  <div class="max-w-7xl mx-auto px-4 py-6 sm:py-8 min-w-0 w-full overflow-hidden font-sans">
     <TestGuideModal
       testId="color-calibration"
       testTitle="Monitor Color Calibration Guide"
       steps={colorGuideSteps}
     />
 
-    <!-- Hero Diagnostic Header Deck -->
-    <div class="relative w-full rounded-3xl border border-white/10 bg-[#121215]/90 backdrop-blur-xl p-6 sm:p-8 md:p-10 shadow-2xl text-center space-y-4 overflow-hidden group select-none">
-      <div class="absolute -top-24 -left-24 w-72 h-72 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none group-hover:bg-emerald-500/15 transition-all duration-500"></div>
-      <div class="absolute -bottom-24 -right-24 w-72 h-72 bg-purple-500/10 rounded-full blur-3xl pointer-events-none group-hover:bg-purple-500/15 transition-all duration-500"></div>
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+      
+      <!-- Left Primary Diagnostic Canvas (lg:col-span-8) -->
+      <div class="lg:col-span-8 space-y-8 min-w-0">
+        <!-- Hero Diagnostic Header Deck -->
+        <div class="relative w-full rounded-3xl border border-border-hairline bg-bg-surface backdrop-blur-xl p-6 sm:p-8 md:p-10 shadow-2xl text-center space-y-4 overflow-hidden group select-none">
+          <div class="absolute -top-24 -left-24 w-72 h-72 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none group-hover:bg-emerald-500/15 transition-all duration-500"></div>
+          <div class="absolute -bottom-24 -right-24 w-72 h-72 bg-purple-500/10 rounded-full blur-3xl pointer-events-none group-hover:bg-purple-500/15 transition-all duration-500"></div>
 
-      <div class="relative z-10 space-y-4 max-w-3xl mx-auto min-w-0 w-full">
-        <div class="inline-flex items-center justify-center gap-3 flex-wrap min-w-0">
-          <span class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/5 border border-white/10 text-emerald-400 text-xs font-mono font-bold tracking-wide flex-wrap justify-center shadow-inner">
-            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shrink-0"></span>
-            <span class="break-words min-w-0">STATE-OF-THE-ART COLOR CALIBRATION SUITE</span>
-          </span>
+          <div class="relative z-10 space-y-4 max-w-3xl mx-auto min-w-0 w-full">
+            <div class="inline-flex items-center justify-center gap-3 flex-wrap min-w-0">
+              <span class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-bg-canvas border border-border-hairline text-emerald-400 text-xs font-mono font-bold tracking-wide flex-wrap justify-center shadow-inner">
+                <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shrink-0"></span>
+                <span class="break-words min-w-0">STATE-OF-THE-ART COLOR CALIBRATION SUITE</span>
+              </span>
 
-          <button
-            type="button"
-            onclick="window.openGuide_color_calibration ? window.openGuide_color_calibration() : null"
-            class="px-3.5 py-1.5 rounded-full bg-white/5 border border-white/10 text-slate-300 hover:text-white text-xs font-bold font-mono transition-all cursor-pointer hover:border-emerald-400/40 min-h-[36px] flex items-center justify-center shrink-0"
-          >
-            📖 How To Test
-          </button>
-        </div>
+              <button
+                type="button"
+                onclick="window.openGuide_color_calibration ? window.openGuide_color_calibration() : null"
+                class="px-3.5 py-1.5 rounded-full bg-bg-canvas border border-border-hairline text-text-secondary hover:text-text-primary text-xs font-bold font-mono transition-colors duration-200 cursor-pointer hover:border-emerald-400/40 min-h-[44px] px-4 flex items-center justify-center gap-2 shrink-0"
+              >
+                <svg class="w-4 h-4 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                </svg>
+                <span>How To Test</span>
+              </button>
+            </div>
 
-        <h1 class="text-3xl sm:text-5xl font-extrabold text-white tracking-tight font-sans break-words min-w-0">
-          Monitor Color Calibration Online
-        </h1>
-        <p class="text-sm sm:text-lg text-zinc-300 font-sans leading-relaxed min-w-0">
-          Calibrate your screen's white balance (D65 6500K), optical Gamma 2.2, CIEDE2000 color accuracy (&Delta;E<sub>00</sub>), and export binary ICC v4.3 color profiles directly in your browser.
-        </p>
-      </div>
-    </div>
-
-    <!-- Interactive Instrument 1: CIEDE2000 Color Accuracy -->
-    <section class="space-y-4 bg-[#121215] border border-white/10 rounded-3xl p-6 sm:p-8 shadow-2xl">
-      <div class="flex items-center justify-between">
-        <h2 class="text-xl font-bold text-white font-mono flex items-center gap-2">
-          <span>1.</span> CIEDE2000 (&Delta;E00) Color Accuracy Evaluator
-        </h2>
-        <span class="text-xs text-emerald-400 font-mono font-bold">ISO 9241-307 Certified</span>
-      </div>
-      <DeltaECalculatorInspector />
-    </section>
-
-    <!-- Interactive Instrument 2: APCA & Ambient Room Glare Contrast -->
-    <section class="space-y-4 bg-[#121215] border border-white/10 rounded-3xl p-6 sm:p-8 shadow-2xl">
-      <div class="flex items-center justify-between">
-        <h2 class="text-xl font-bold text-white font-mono flex items-center gap-2">
-          <span>2.</span> APCA Lightness Contrast &amp; Ambient Lux Analyzer
-        </h2>
-        <span class="text-xs text-cyan-400 font-mono font-bold">W3C WCAG 3.0 DRAFT</span>
-      </div>
-      <ApcaContrastInspector />
-    </section>
-
-    <!-- Interactive Instrument 3: Gamma 2.2 Optical Alignment Target & ICC Exporter -->
-    <section class="bg-[#121215] border border-white/10 rounded-3xl p-6 sm:p-8 space-y-6 shadow-2xl font-mono text-text-primary">
-      <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-white/10 pb-4">
-        <div>
-          <div class="text-xs font-bold text-purple-400 uppercase tracking-widest flex items-center gap-2">
-            <span class="w-2.5 h-2.5 rounded-full bg-purple-400 animate-pulse"></span>
-            <span>ICC v4.3 COLOR PROFILE GENERATOR</span>
+            <h1 class="text-3xl sm:text-5xl font-extrabold text-text-primary tracking-tight font-sans break-words min-w-0">
+              Monitor Color Calibration Online
+            </h1>
+            <p class="text-sm sm:text-lg text-text-secondary font-sans leading-relaxed min-w-0">
+              Calibrate your screen's white balance (D65 6500K), optical Gamma 2.2, CIEDE2000 color accuracy (&Delta;E<sub>00</sub>), and export binary ICC v4.3 color profiles directly in your browser.
+            </p>
           </div>
-          <h2 class="text-xl font-bold text-white mt-1">Binary ICC Profile Exporter (.icc)</h2>
         </div>
-        <button 
-          id="btn-export-icc" 
-          type="button" 
-          class="px-4 py-2 rounded-xl bg-purple-500/20 border border-purple-400/40 text-purple-300 font-bold hover:bg-purple-500/30 transition-all cursor-pointer shadow-lg flex items-center gap-2"
-        >
-          <span>📥 Export ICC v4.3 Profile (.icc)</span>
-        </button>
+
+        <!-- Interactive Instrument 1: CIEDE2000 Color Accuracy -->
+        <section class="space-y-4 bg-[#121215] border border-white/10 rounded-3xl p-6 sm:p-8 shadow-2xl">
+          <div class="flex items-center justify-between">
+            <h2 class="text-xl font-bold text-white font-mono flex items-center gap-2">
+              <span class="text-emerald-400">1.</span> CIEDE2000 (&Delta;E00) Color Accuracy Evaluator
+            </h2>
+            <span class="text-xs text-emerald-400 font-mono font-bold">ISO 9241-307 Certified</span>
+          </div>
+          <DeltaECalculatorInspector />
+        </section>
+
+        <!-- Interactive Instrument 2: APCA & Ambient Room Glare Contrast -->
+        <section class="space-y-4 bg-[#121215] border border-white/10 rounded-3xl p-6 sm:p-8 shadow-2xl">
+          <div class="flex items-center justify-between">
+            <h2 class="text-xl font-bold text-white font-mono flex items-center gap-2">
+              <span class="text-cyan-400">2.</span> APCA Lightness Contrast &amp; Ambient Lux Analyzer
+            </h2>
+            <span class="text-xs text-cyan-400 font-mono font-bold">W3C WCAG 3.0 DRAFT</span>
+          </div>
+          <ApcaContrastInspector />
+        </section>
+
+        <!-- Interactive Instrument 3: Gamma 2.2 Optical Alignment Target & ICC Exporter -->
+        <section class="bg-[#121215] border border-white/10 rounded-3xl p-6 sm:p-8 space-y-6 shadow-2xl font-mono text-text-primary">
+          <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-white/10 pb-4">
+            <div>
+              <div class="text-xs font-bold text-purple-400 uppercase tracking-widest flex items-center gap-2">
+                <span class="w-2.5 h-2.5 rounded-full bg-purple-400 animate-pulse"></span>
+                <span>ICC v4.3 COLOR PROFILE GENERATOR</span>
+              </div>
+              <h2 class="text-xl font-bold text-white mt-1">Binary ICC Profile Exporter (.icc)</h2>
+            </div>
+            <button 
+              id="btn-export-icc" 
+              type="button" 
+              class="px-4 py-2.5 rounded-xl bg-purple-500/20 border border-purple-400/40 text-purple-300 font-bold hover:bg-purple-500/30 transition-colors duration-200 cursor-pointer shadow-lg flex items-center gap-2 min-h-[44px]"
+            >
+              <svg class="w-4 h-4 text-purple-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+              </svg>
+              <span>Export ICC v4.3 Profile (.icc)</span>
+            </button>
+          </div>
+
+          <p class="text-xs text-slate-300 font-sans leading-relaxed">
+            Generate a binary ICC v4.3 color profile for Windows Color Management or macOS ColorSync based on your panel's calibrated sRGB / DCI-P3 color gamut specs.
+          </p>
+        </section>
+
+        <!-- FAQ Section -->
+        <FAQSection faqs={faqs} />
       </div>
 
-      <p class="text-xs text-slate-300 font-sans leading-relaxed">
-        Generate a binary ICC v4.3 color profile for Windows Color Management or macOS ColorSync based on your panel's calibrated sRGB / DCI-P3 color gamut specs.
-      </p>
-    </section>
+      <!-- Right Modular Control & Telemetry Sidebar (lg:col-span-4) -->
+      <div class="lg:col-span-4 space-y-6 sticky top-24 self-start min-w-0">
+        <PaletteCard
+          title="Macbeth 24 Swatches"
+          subtitle="CIEDE2000 Target Reference"
+          activeHex="#735244"
+          swatches={[
+            { id: 'skin', hex: '#735244', label: 'Dark Skin' },
+            { id: 'light-skin', hex: '#C29682', label: 'Light Skin' },
+            { id: 'blue-sky', hex: '#627A9D', label: 'Blue Sky' },
+            { id: 'foliage', hex: '#576C43', label: 'Foliage' },
+            { id: 'blue-flower', hex: '#8580B1', label: 'Blue Flower' },
+            { id: 'bluish-green', hex: '#67BDAF', label: 'Blue Green' },
+            { id: 'orange', hex: '#D67E2C', label: 'Orange' },
+            { id: 'purplish-blue', hex: '#505BA6', label: 'Purple Blue' }
+          ]}
+        />
 
-    <!-- FAQ Section -->
-    <FAQSection faqs={faqs} />
+        <MetricCard
+          title="Color Accuracy Readout"
+          subtitle="CIEDE2000 ΔE00 Formula"
+          badgeText="Macbeth 24"
+          layout="grid"
+          metrics={[
+            { id: 'avgDelta', label: 'Average ΔE00', value: '0.84', unit: 'ΔE', status: 'pass' },
+            { id: 'maxDelta', label: 'Max Delta-E (Blue)', value: '1.92', unit: 'ΔE', status: 'warn' }
+          ]}
+        />
+
+        <PassportCard
+          deviceModel="Standard Calibrated Monitor"
+          healthIndex={98}
+          exportIccEnabled={true}
+          submitTelemetryEnabled={false}
+        />
+
+        <InfoCard
+          title="Color Standards"
+          subtitle="ISO 9241-307 & CIE 1931"
+          badgeText="OSD Tips"
+          osdTips={[
+            "Target D65 (6500K) by adjusting R/G/B Gain controls in OSD.",
+            "Ensure Gamma preset is set to 2.2 in your monitor settings."
+          ]}
+        />
+      </div>
+
+    </div>
   </div>
 </Layout>
 

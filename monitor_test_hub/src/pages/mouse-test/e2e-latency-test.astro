@@ -1,0 +1,89 @@
+---
+import FAQSection from '../../components/ui/FAQSection.astro';
+import Layout from '../../layouts/Layout.astro';
+import E2eLatencyAnalyzerCanvas from '../../components/diagnostics/E2eLatencyAnalyzerCanvas.astro';
+import { useTranslations } from '../../utils/i18n';
+
+import StatusCard from '../../components/ui/sidebar/StatusCard.astro';
+import MetricCard from '../../components/ui/sidebar/MetricCard.astro';
+
+const { lang } = useTranslations(Astro.url.pathname);
+const canonicalUrl = lang === 'en'
+  ? "https://displaytestonline.com/mouse-test/e2e-latency-test"
+  : `https://displaytestonline.com/${lang}/mouse-test/e2e-latency-test`;
+
+const faqs = [
+  { question: "What is End-to-End (E2E) System Latency?", answer: "E2E latency is the total absolute time it takes from physically clicking your mouse switch to the corresponding visual action (like a muzzle flash) appearing on your monitor's pixels." },
+  { question: "How does this browser tool measure latency?", answer: "By uploading a high-speed slow-motion video (e.g., 240fps) of you clicking your mouse and the screen reacting, this tool uses WebCodecs and the Web Audio API to find the exact millisecond of the click and the flash." },
+  { question: "Do I need an NVIDIA LDAT or Reflex Analyzer?", answer: "No. This tool Democratizes hardware forensics. Anyone with a modern smartphone capable of recording slow-motion video (120fps or 240fps) can test their true E2E latency for free." },
+  { question: "Is my uploaded video private?", answer: "Yes, 100%. All video demuxing, decoding, and analysis happens entirely locally in your browser's RAM using WebAssembly and WebCodecs. Zero bytes are uploaded to any server." },
+  { question: "Why is measuring software latency not enough?", answer: "Software latency tests (like generic click-speed tests) only measure browser API dispatch times. They completely ignore mouse firmware, USB polling, OS compositor delays, GPU render queues, and display pixel response times." },
+  { question: "How should I record the slow-motion video?", answer: "Hold your phone sideways. Ensure both your mouse and your monitor are clearly visible in the frame. Point the camera so it can hear the mouse click clearly. Click the mouse to trigger a bright flash or action on screen." },
+  { question: "Does this work on mobile browsers?", answer: "The analysis tool requires significant CPU processing and the WebCodecs API. It is heavily recommended to use a desktop browser (Chrome, Edge, or Safari 16.4+) for the analysis step." },
+  { question: "What is a good system latency?", answer: "For competitive esports titles (CS2, Valorant), exceptional E2E latency is under 15ms. Good is 15-25ms. Average console or casual PC latency is often 40-80ms." },
+  { question: "How can I reduce my system latency?", answer: "Enable NVIDIA Reflex or AMD Anti-Lag, ensure your monitor is set to its maximum refresh rate, use exclusive full-screen mode, disable V-Sync, and use a mouse with a 1000Hz+ polling rate." },
+  { question: "Why is 240fps video recommended over 60fps?", answer: "A 60fps video only captures frames every 16.6ms, meaning your measurement could be off by up to 16ms. A 240fps video captures every 4.1ms, providing much higher precision for latency analysis." }
+];
+
+const seoTitle = "System Latency & Input Lag Test Online (End-to-End)";
+const seoDescription = "Measure your true system latency and mouse input lag for free. Upload a slow-motion video of a mouse click to calculate exact millisecond delay without an NVIDIA LDAT.";
+---
+
+<Layout title={seoTitle} description={seoDescription} faqs={faqs} canonicalUrl={canonicalUrl}>
+  <div class="max-w-7xl mx-auto px-4 py-6 sm:py-8 min-w-0 w-full overflow-hidden font-sans">
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 mt-6">
+      
+      <div class="lg:col-span-8 space-y-8 min-w-0">
+        <section class="max-w-4xl mx-auto text-center space-y-4">
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-xs font-mono text-emerald-400 font-bold">
+            <span>BROWSER FORENSICS</span>
+          </div>
+          <h1 class="text-3xl sm:text-4xl font-extrabold font-mono tracking-tight text-white">
+            Input-to-Photon E2E Latency Analyzer
+          </h1>
+          <p class="text-sm sm:text-base text-zinc-400 leading-relaxed max-w-2xl mx-auto">
+            Measure absolute end-to-end system input lag without an NVIDIA LDAT. Record a 240fps slow-motion video of your mouse click and monitor flash, and drop it here for instant, 100% private client-side DSP analysis.
+          </p>
+        </section>
+
+        <E2eLatencyAnalyzerCanvas />
+
+        <article class="max-w-5xl mx-auto space-y-6 bg-[#121215] border border-white/10 rounded-3xl p-6 sm:p-8 backdrop-blur-xl text-sm text-zinc-300 leading-relaxed shadow-2xl">
+          <div class="border-b border-white/10 pb-4">
+            <h2 class="text-xl font-bold font-mono text-white">How This Works (Zero Uploads)</h2>
+            <p class="mt-2 text-zinc-400">
+              This tool utilizes the bleeding-edge <strong class="text-white">WebCodecs API</strong> and <strong class="text-white">Web Audio API</strong> to perform forensic video analysis directly in your browser's memory. When you drop a video, it extracts the acoustic transient (the mechanical switch click) and the optical transient (the screen luminance change) to calculate your exact system latency. Zero data ever leaves your computer.
+            </p>
+          </div>
+        </article>
+
+        <FAQSection faqs={faqs} />
+      </div>
+
+      <div class="lg:col-span-4 space-y-6 sticky top-24 self-start min-w-0">
+        <StatusCard
+          status="neutral"
+          label="AWAITING VIDEO"
+          subtitle="Analysis Status"
+          score="--"
+          maxScore="ms"
+          details={[
+            { label: 'Privacy', value: '100% Local' },
+            { label: 'Engine', value: 'WebCodecs / WASM' }
+          ]}
+        />
+        <MetricCard
+          title="Latency Telemetry"
+          subtitle="Timeline Milestones"
+          badgeText="DSP"
+          metrics={[
+            { id: 'audio-click', label: 'Audio Click Time', value: '--', unit: 'ms', status: 'neutral' },
+            { id: 'video-flash', label: 'Video Flash Time', value: '--', unit: 'ms', status: 'neutral' },
+            { id: 'delta-e2e', label: 'True E2E Latency', value: '--', unit: 'ms', status: 'neutral' }
+          ]}
+        />
+      </div>
+
+    </div>
+  </div>
+</Layout>

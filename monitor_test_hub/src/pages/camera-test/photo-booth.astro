@@ -1,0 +1,153 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import PhotoBoothCanvas from '../../components/diagnostics/PhotoBoothCanvas.astro';
+import FAQSection from '../../components/ui/FAQSection.astro';
+import Breadcrumbs from '../../components/ui/Breadcrumbs.astro';
+import PrivacyDisclaimerNotice from '../../components/disclaimers/PrivacyDisclaimerNotice.astro';
+import StepWorkflowSection from '../../components/ui/StepWorkflowSection.astro';
+import PanelTypeBreakdownSection from '../../components/ui/PanelTypeBreakdownSection.astro';
+
+import StatusCard from '../../components/ui/sidebar/StatusCard.astro';
+import MetricCard from '../../components/ui/sidebar/MetricCard.astro';
+import ConfigurationCard from '../../components/ui/sidebar/ConfigurationCard.astro';
+import ShortcutCard from '../../components/ui/sidebar/ShortcutCard.astro';
+
+const title = "Picabooth Webcam Photo Booth & Strip Generator";
+const description = "Retro Picabooth-style webcam photo booth experience — 7 filters, countdown selfie timer, 4-shot burst mode, and vertical photo strip PNG exporter.";
+
+const faqs = [
+  {
+    question: "What is the Picabooth Photo Booth?",
+    answer: "Our Photo Booth provides a retro booth selfie experience directly in your web browser. You can apply real-time filters, run countdown timers, take 4-shot bursts, and export high-resolution vertical photo strips."
+  },
+  {
+    question: "What 7 filters are available in the Photo Booth?",
+    answer: "The available filters are Normal, Cyberpunk (neon cyan-magenta), Vintage Sepia, B&W Noir (high contrast film), Retro Vaporwave, Invert Matrix (hacker green), and Warm Film."
+  },
+  {
+    question: "How does the countdown selfie timer work?",
+    answer: "Selecting a 3-second or 5-second countdown displays an animated timer overlay on your video feed, triggering a realistic white screen flash when the picture is snapped."
+  },
+  {
+    question: "How do I export a vertical 4-frame photo strip?",
+    answer: "Clicking '4-Shot Photo Strip' takes 4 sequential countdown snaps and renders them onto a dark retro photo strip canvas with custom borders and watermark, ready for 1-click PNG download."
+  },
+  {
+    question: "Are my photos stored on any external server?",
+    answer: "No. 100% of photo capture, filter processing, and photo strip compilation occurs locally inside your browser's Canvas RAM with zero cloud uploads."
+  },
+  {
+    question: "Can I download individual photo frames?",
+    answer: "Yes. Hovering over any captured photo card in the bottom gallery reveals a quick download button to save individual full-resolution PNG images."
+  },
+  {
+    question: "Does the Photo Booth work on smartphones?",
+    answer: "Yes! Open this page on iOS Safari or Android Chrome to snap selfie photos and export photo strips using your smartphone front camera."
+  },
+  {
+    question: "How do I change camera filter intensity?",
+    answer: "Clicking any filter button instantly applies CSS & HTML5 Canvas hardware acceleration, updating the live video feed and full-resolution PNG capture."
+  },
+  {
+    question: "Can I use external USB cameras with the Photo Booth?",
+    answer: "Yes, all webcam video hardware recognized by your OS (Logitech, Elgato, Razer, FaceTime HD) works seamlessly with the Photo Booth."
+  },
+  {
+    question: "What image format is used for exported photo strips?",
+    answer: "Photo strips are exported as lossless, high-resolution PNG files (`.png`) preserving original camera clarity and vibrant filter colors."
+  }
+];
+
+const breadcrumbs = [
+  { label: 'Home', href: '/' },
+  { label: 'Camera Test', href: '/camera-test' },
+  { label: title, href: '#' }
+];
+---
+
+<Layout title={title} description={description} faqs={faqs}>
+  <div class="max-w-7xl mx-auto px-4 py-6 sm:py-8 min-w-0 w-full overflow-hidden font-sans">
+    <Breadcrumbs items={breadcrumbs} />
+
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 mt-6">
+      
+      <!-- Left Primary Diagnostic Canvas (lg:col-span-8) -->
+      <div class="lg:col-span-8 space-y-8 min-w-0">
+        <!-- Hero Header Deck -->
+        <header class="relative w-full rounded-3xl border border-white/10 bg-[#121215]/90 backdrop-blur-xl p-6 sm:p-8 md:p-10 shadow-2xl space-y-4 overflow-hidden group select-none">
+          <div class="absolute -top-24 -left-24 w-72 h-72 bg-purple-500/10 rounded-full blur-3xl pointer-events-none group-hover:bg-purple-500/15 transition-all duration-500"></div>
+          <div class="absolute -bottom-24 -right-24 w-72 h-72 bg-pink-500/10 rounded-full blur-3xl pointer-events-none group-hover:bg-pink-500/15 transition-all duration-500"></div>
+
+          <div class="relative z-10 space-y-3 max-w-3xl min-w-0 w-full">
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-purple-400 text-xs font-mono font-bold tracking-wide flex-wrap shadow-inner">
+              <span class="w-2 h-2 rounded-full bg-purple-400 animate-pulse shrink-0"></span>
+              <span>RETRO PICABOOTH &amp; PHOTO STRIP EXPORTER</span>
+            </div>
+            <h1 class="text-3xl sm:text-5xl font-extrabold text-white tracking-tight font-sans break-words min-w-0">
+              {title}
+            </h1>
+            <p class="text-sm sm:text-base text-zinc-300 font-sans leading-relaxed min-w-0">
+              Capture retro selfies with 7 live filters, countdown timer, 4-shot burst mode, and 1-click vertical photo strip PNG download.
+            </p>
+          </div>
+        </header>
+
+        <!-- Privacy & Security Disclaimer Banner -->
+        <PrivacyDisclaimerNotice />
+
+        <!-- Main Diagnostic Instrument -->
+        <div class="rounded-3xl border border-white/10 bg-[#121215]/90 backdrop-blur-xl p-4 sm:p-6 shadow-2xl">
+          <PhotoBoothCanvas />
+        </div>
+
+        <StepWorkflowSection />
+        <PanelTypeBreakdownSection />
+
+        <FAQSection faqs={faqs} />
+      </div>
+
+      <!-- Right Sidebar (lg:col-span-4) -->
+      <div class="lg:col-span-4 space-y-6 sticky top-24 self-start min-w-0">
+        <StatusCard
+          status="pass"
+          label="PHOTO BOOTH READY"
+          subtitle="Picabooth Engine"
+          score="7"
+          maxScore="FILTERS"
+          details={[
+            { label: 'Capture Mode', value: '4-Shot Burst' },
+            { label: 'Export Format', value: 'Lossless PNG' }
+          ]}
+        />
+
+        <MetricCard
+          title="Booth Telemetry"
+          subtitle="Canvas Processing"
+          badgeText="7 Filters"
+          metrics={[
+            { id: 'filterState', label: 'Active Filter', value: 'Normal', unit: 'preset', status: 'pass' },
+            { id: 'photoCount', label: 'Captured Frames', value: '4', unit: 'photos', status: 'pass' }
+          ]}
+        />
+
+        <ConfigurationCard
+          title="Filter Studio"
+          subtitle="Visual Presets"
+          configs={[
+            { label: 'Cyberpunk', value: 'Neon Contrast' },
+            { label: 'Vintage Sepia', value: 'Warm Retro' },
+            { label: 'B&W Noir', value: 'Film Contrast' }
+          ]}
+        />
+
+        <ShortcutCard
+          shortcuts={[
+            { keys: ['Space'], label: 'Take Photo Snap' },
+            { keys: ['B'], label: 'Trigger 4-Shot Burst' }
+          ]}
+        />
+      </div>
+
+    </div>
+  </div>
+</Layout>

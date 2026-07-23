@@ -4,6 +4,13 @@ import Breadcrumbs from '../../components/ui/Breadcrumbs.astro';
 import DeadZoneMatrix from '../../components/diagnostics/DeadZoneMatrix.astro';
 import ErgonomicsNotice from '../../components/disclaimers/ErgonomicsNotice.astro';
 import TestSwitcherBar from '../../components/ui/TestSwitcherBar.astro';
+import FAQSection from '../../components/ui/FAQSection.astro';
+
+import StatusCard from '../../components/ui/sidebar/StatusCard.astro';
+import ConfigurationCard from '../../components/ui/sidebar/ConfigurationCard.astro';
+import MetricCard from '../../components/ui/sidebar/MetricCard.astro';
+import ShortcutCard from '../../components/ui/sidebar/ShortcutCard.astro';
+import InfoCard from '../../components/ui/sidebar/InfoCard.astro';
 
 const breadcrumbItems = [
   { label: 'Touch Suite', href: '/touch-tests' },
@@ -17,60 +24,175 @@ const touchTests = [
   { id: 'swipe-velocity', label: 'Swipe Velocity', href: '/touch-tests/swipe-velocity' },
   { id: 'input-lag', label: 'Input Lag Test', href: '/touch-tests/input-lag' }
 ];
+
+const faqs = [
+  {
+    question: "What is a digitizer dead-zone on a touchscreen?",
+    answer: "A digitizer dead-zone is a region of a touchscreen where touch inputs fail to register due to fractured Indium Tin Oxide (ITO) sensor lines, damaged controller IC channels, or physical glass separation."
+  },
+  {
+    question: "How does this online Touchscreen Dead-Zone Test work?",
+    answer: "The test renders an interactive cell grid overlay on your screen. As you drag your finger or stylus across the grid, active cells change color to record 100% matrix coverage and highlight unresponsive zones."
+  },
+  {
+    question: "Why is part of my screen not responding to touch?",
+    answer: "Unresponsive screen sections are usually caused by physical drop impacts severing ITO conductive traces, liquid ingress corrosion on the digitizer flex cable, or third-party screen replacement defects."
+  },
+  {
+    question: "Can software or factory reset fix a touch dead-zone?",
+    answer: "If the dead-zone is caused by hardware ITO trace breakage, software cannot fix it. However, if caused by digitizer driver calibration errors or OS touch filtering, restarting or recalibrating touch drivers may help."
+  },
+  {
+    question: "What is the difference between single-touch dead-zones and multi-touch failure?",
+    answer: "A single-touch dead-zone fails to detect any finger in a specific region, while multi-touch failure occurs when the screen registers single touches fine but drops extra touch points when multiple fingers contact the screen."
+  },
+  {
+    question: "How do non-original screen replacements cause dead spots?",
+    answer: "Low-quality aftermarket screens often use lower-density ITO sensor grids or poorly bonded controller flex ribbons, leading to dead edge zones and degraded touch sensitivity."
+  },
+  {
+    question: "Does screen protector glass affect touch matrix sensitivity?",
+    answer: "Thick tempered glass protectors or poorly aligned film can reduce mutual capacitance change, causing touch input drops along outer screen edges."
+  },
+  {
+    question: "Can charger EMI noise simulate a touch dead-zone?",
+    answer: "Yes, cheap or ungrounded AC chargers produce electromagnetic interference (EMI) that confuses the touch IC controller, causing ghost touches or temporary touch lockouts."
+  },
+  {
+    question: "Can I test active stylus input like Apple Pencil or S-Pen with this test?",
+    answer: "Yes, both capacitive fingers and active digital pens trigger W3C PointerEvents on the matrix grid."
+  },
+  {
+    question: "What should I do if my screen fails the dead-zone test during warranty?",
+    answer: "If dead zones are detected, capture a screenshot or screen recording of the grid coverage map to submit to the manufacturer or retailer for an RMA hardware repair."
+  }
+];
 ---
 
 <Layout 
   title="Touchscreen Digitizer Dead-Zone Test | Monitor Test Hub" 
   description="Sweep to test capacitive digitizer grid cells, detect dead touch trace lines, isolate unresponsive screen zones, and benchmark mobile touch matrix health."
+  faqs={faqs}
 >
-  <div class="max-w-7xl mx-auto px-4 py-8 space-y-8">
+  <div class="max-w-7xl mx-auto px-4 py-6 sm:py-8 min-w-0 w-full overflow-hidden font-sans">
     <Breadcrumbs items={breadcrumbItems} />
 
-    <header class="space-y-3 border-b border-border-hairline pb-6">
-      <div class="flex items-center gap-2 text-status-pass text-xs font-mono font-bold uppercase tracking-wider">
-        <span class="w-2 h-2 rounded-full bg-status-pass led-glow-pass"></span>
-        ANSI/NIST CAPACITIVE TOUCH MATRIX DIAGNOSTICS
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 mt-6">
+      
+      <!-- Left Primary Diagnostic Canvas (lg:col-span-8) -->
+      <div class="lg:col-span-8 space-y-8 min-w-0">
+        <header class="space-y-3 border-b border-border-hairline pb-6">
+          <div class="flex items-center gap-2 text-status-pass text-xs font-mono font-bold uppercase tracking-wider">
+            <span class="w-2 h-2 rounded-full bg-status-pass led-glow-pass"></span>
+            ANSI/NIST CAPACITIVE TOUCH MATRIX DIAGNOSTICS
+          </div>
+          <h1 class="text-3xl sm:text-4xl font-extrabold text-text-primary tracking-tight">Digitizer Dead-Zone Grid Test</h1>
+          <p class="text-sm text-text-secondary max-w-3xl">
+            Sweep your finger or stylus across the cell grid to verify complete capacitive digitizer coverage, isolate fractured Indium Tin Oxide (ITO) sensor traces, and detect unresponsive screen zones.
+          </p>
+        </header>
+
+        <DeadZoneMatrix />
+
+        <!-- Digitizer Analysis Article -->
+        <article class="bg-[#121215] border border-white/10 rounded-3xl p-6 sm:p-8 space-y-6 shadow-2xl font-sans text-sm text-text-secondary leading-relaxed">
+          <div class="border-b border-white/10 pb-4">
+            <span class="font-mono text-[10px] font-bold text-emerald-400 uppercase tracking-widest block mb-1">CAPACITIVE TOUCH SENSOR MATHEMATICS</span>
+            <h2 class="text-xl font-bold text-white">Capacitive Digitizer Traces, ITO Grid Physics &amp; Dead-Zone Isolation</h2>
+          </div>
+
+          <p>
+            Modern mobile screens and tablet displays utilize a <strong>Projected Capacitive Touch (Pcap)</strong> matrix consisting of a transparent <strong>Indium Tin Oxide (ITO)</strong> sensor layer arranged in orthogonal drive (\(X\)) and sense (\(Y\)) electrode channels. When a conductor (human finger or active stylus) approaches the glass surface, it alters the mutual capacitance (\(C_m\)) at the intersecting ITO matrix node.
+          </p>
+
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4 font-mono text-xs my-4">
+            <div class="bg-[#08080a] p-4 rounded-2xl border border-white/10 space-y-1">
+              <span class="text-zinc-400 text-[10px] uppercase block">ITO Circuit Fracture</span>
+              <strong class="text-white block text-sm">Dead Trace Row/Column</strong>
+              <p class="font-sans text-[11px] text-zinc-400">Physical drop damage can sever an ITO conductive line, disabling an entire horizontal or vertical grid strip.</p>
+            </div>
+            <div class="bg-[#08080a] p-4 rounded-2xl border border-white/10 space-y-1">
+              <span class="text-zinc-400 text-[10px] uppercase block">Localized Dead Spot</span>
+              <strong class="text-white block text-sm">Controller IC Node Failure</strong>
+              <p class="font-sans text-[11px] text-zinc-400">Individual capacitive cell node fails to register voltage change, creating isolated dead touch cells.</p>
+            </div>
+            <div class="bg-[#08080a] p-4 rounded-2xl border border-white/10 space-y-1">
+              <span class="text-zinc-400 text-[10px] uppercase block">Ghost Touch Events</span>
+              <strong class="text-white block text-sm">Noise &amp; Ground Loops</strong>
+              <p class="font-sans text-[11px] text-zinc-400">Third-party chargers or moisture film create erratic capacitive noise spikes without physical touch.</p>
+            </div>
+          </div>
+
+          <ErgonomicsNotice />
+        </article>
+
+        <FAQSection faqs={faqs} />
+        <TestSwitcherBar tests={touchTests} currentId="dead-zone" />
       </div>
-      <h1 class="text-3xl sm:text-4xl font-extrabold text-text-primary tracking-tight">Digitizer Dead-Zone Grid Test</h1>
-      <p class="text-sm text-text-secondary max-w-3xl">
-        Sweep your finger or stylus across the cell grid to verify complete capacitive digitizer coverage, isolate fractured Indium Tin Oxide (ITO) sensor traces, and detect unresponsive screen zones.
-      </p>
-    </header>
 
-    <DeadZoneMatrix />
+      <!-- Right Modular Control & Telemetry Sidebar (lg:col-span-4) -->
+      <div class="lg:col-span-4 space-y-6 sticky top-24 self-start min-w-0">
+        <StatusCard
+          status="pass"
+          label="100% GRID COVERAGE"
+          subtitle="Capacitive Digitizer Matrix"
+          score="100"
+          maxScore="100"
+          details={[
+            { label: 'Active Matrix', value: '10 x 10 Cells' },
+            { label: 'Dead Zones', value: '0 Detected' }
+          ]}
+        />
 
-    <!-- Digitizer Analysis Article -->
-    <article class="bg-bg-surface border border-border-hairline rounded-2xl p-6 sm:p-8 space-y-6 shadow-specular-top font-sans text-sm text-text-secondary leading-relaxed">
-      <div class="border-b border-border-hairline pb-4">
-        <span class="font-mono text-[10px] font-bold text-status-pass uppercase tracking-widest block mb-1">CAPACITIVE TOUCH SENSOR MATHEMATICS</span>
-        <h2 class="text-xl font-bold text-text-primary">Capacitive Digitizer Traces, ITO Grid Physics &amp; Dead-Zone Isolation</h2>
+        <ConfigurationCard
+          title="Grid Parameters"
+          subtitle="Matrix Resolution Density"
+          controls={[
+            {
+              id: 'gridDensity',
+              label: 'Grid Density',
+              type: 'presets',
+              value: '10x10',
+              options: [
+                { value: '5x5', label: '5 x 5 Coarse' },
+                { value: '10x10', label: '10 x 10 Medium' },
+                { value: '20x20', label: '20 x 20 Fine' }
+              ]
+            }
+          ]}
+        />
+
+        <MetricCard
+          title="Touch Readout"
+          subtitle="Capacitive Sensor Metrics"
+          badgeText="Digitizer Telemetry"
+          metrics={[
+            { id: 'touchedCells', label: 'Touched Cells', value: '0', target: '100', unit: 'cells', progress: 0, status: 'pass' },
+            { id: 'contactRadius', label: 'Touch Contact Radius', value: '12.4', unit: 'mm', status: 'neutral' }
+          ]}
+        />
+
+        <ShortcutCard
+          shortcuts={[
+            { keys: ['F'], label: 'Toggle Fullscreen Canvas' },
+            { keys: ['R'], label: 'Reset Grid Matrix' }
+          ]}
+        />
+
+        <InfoCard
+          title="Digitizer Specifications"
+          subtitle="Indium Tin Oxide Matrix"
+          badgeText="ISO 9241-307"
+          citations={[
+            { standard: "ISO 9241-307 & W3C PointerEvents", clause: "Capacitive Digitizer", description: "Mutual capacitance ITO matrix sensing with spatial resolution tracking down to 0.1mm." }
+          ]}
+          osdTips={[
+            "Clean the screen surface before testing to avoid false positive dead spots from moisture or oil.",
+            "Remove thick non-conductive screen protectors if edge cells fail to trigger."
+          ]}
+        />
       </div>
 
-      <p>
-        Modern mobile screens and tablet displays utilize a <strong>Projected Capacitive Touch (Pcap)</strong> matrix consisting of a transparent <strong>Indium Tin Oxide (ITO)</strong> sensor layer arranged in orthogonal drive (\(X\)) and sense (\(Y\)) electrode channels. When a conductor (human finger or active stylus) approaches the glass surface, it alters the mutual capacitance (\(C_m\)) at the intersecting ITO matrix node.
-      </p>
-
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 font-mono text-xs my-4">
-        <div class="bg-bg-canvas p-4 rounded-xl border border-border-hairline space-y-1">
-          <span class="text-text-muted text-[10px] uppercase block">ITO Circuit Fracture</span>
-          <strong class="text-text-primary block text-sm">Dead Trace Row/Column</strong>
-          <p class="font-sans text-[11px] text-text-secondary">Physical drop damage can sever an ITO conductive line, disabling an entire horizontal or vertical grid strip.</p>
-        </div>
-        <div class="bg-bg-canvas p-4 rounded-xl border border-border-hairline space-y-1">
-          <span class="text-text-muted text-[10px] uppercase block">Localized Dead Spot</span>
-          <strong class="text-text-primary block text-sm">Controller IC Node Failure</strong>
-          <p class="font-sans text-[11px] text-text-secondary">Individual capacitive cell node fails to register voltage change, creating isolated dead touch cells.</p>
-        </div>
-        <div class="bg-bg-canvas p-4 rounded-xl border border-border-hairline space-y-1">
-          <span class="text-text-muted text-[10px] uppercase block">Ghost Touch Events</span>
-          <strong class="text-text-primary block text-sm">Noise &amp; Ground Loops</strong>
-          <p class="font-sans text-[11px] text-text-secondary">Third-party chargers or moisture film create erratic capacitive noise spikes without physical touch.</p>
-        </div>
-      </div>
-
-      <ErgonomicsNotice />
-    </article>
-
-    <TestSwitcherBar tests={touchTests} currentId="dead-zone" />
+    </div>
   </div>
 </Layout>

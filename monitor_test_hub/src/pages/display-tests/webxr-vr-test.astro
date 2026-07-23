@@ -1,0 +1,225 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import Breadcrumbs from '../../components/ui/Breadcrumbs.astro';
+import WebXrVrCanvas from '../../components/diagnostics/WebXrVrCanvas.astro';
+import HardwareLimitationNotice from '../../components/disclaimers/HardwareLimitationNotice.astro';
+import EpilepsyWarning from '../../components/disclaimers/EpilepsyWarning.astro';
+import TestSwitcherBar from '../../components/ui/TestSwitcherBar.astro';
+import EmbedWidgetModal from '../../components/ui/EmbedWidgetModal.astro';
+
+import TelemetryCard from '../../components/ui/sidebar/TelemetryCard.astro';
+import StatusCard from '../../components/ui/sidebar/StatusCard.astro';
+import ConfigurationCard from '../../components/ui/sidebar/ConfigurationCard.astro';
+import ShortcutCard from '../../components/ui/sidebar/ShortcutCard.astro';
+import InfoCard from '../../components/ui/sidebar/InfoCard.astro';
+
+const breadcrumbItems = [
+  { label: 'Display Suite', href: '/display-tests' },
+  { label: 'WebXR VR Inspector' }
+];
+
+const displayTests = [
+  { id: 'dead-pixel', label: 'Dead Pixel Test', href: '/display-tests/dead-pixel' },
+  { id: 'sub-pixel', label: 'Sub-Pixel Analyzer', href: '/display-tests/sub-pixel' },
+  { id: 'uniformity', label: 'OLED Uniformity', href: '/display-tests/uniformity' },
+  { id: 'vrr', label: 'VRR Sync Engine', href: '/display-tests/vrr' },
+  { id: 'webxr-vr-test', label: 'WebXR VR Inspector', href: '/display-tests/webxr-vr-test', active: true },
+  { id: 'oled-burn-in', label: 'OLED Burn-In Risk', href: '/display-tests/oled-burn-in' },
+  { id: 'hdr-test', label: 'HDR Brightness', href: '/display-tests/hdr-test' },
+  { id: 'ppi-calculator', label: 'PPI Calculator', href: '/display-tests/ppi-calculator' }
+];
+
+const vrFaqs = [
+  {
+    question: "What is WebXR and how does it detect my VR headset?",
+    answer: "WebXR is a Web API that allows browsers to interface directly with virtual reality (VR) and augmented reality (AR) hardware. It enables direct access to the headset's sensors, refresh rate, and display panels without needing external software installs."
+  },
+  {
+    question: "Why is refresh rate important for VR headsets?",
+    answer: "A high refresh rate (usually 90Hz to 120Hz or higher) is critical in VR to prevent motion sickness. Lower refresh rates can cause a mismatch between your head movements and the rendered frame, leading to nausea and visual discomfort."
+  },
+  {
+    question: "What is IPD (Interpupillary Distance) and why does it matter?",
+    answer: "IPD is the distance in millimeters between the centers of your pupils. Properly matching the VR headset's physical lens distance to your IPD ensures optimal visual acuity, a larger 'sweet spot', and reduces eye strain."
+  },
+  {
+    question: "How do I check my VR headset's native resolution?",
+    answer: "While standard browser APIs report viewport size, the WebXR API can read the exact per-eye render target resolution negotiated between your headset driver (like SteamVR or Oculus) and the browser, verifying actual pixel density."
+  },
+  {
+    question: "Can I test Meta Quest, Valve Index, and HTC Vive here?",
+    answer: "Yes. Any headset that complies with the OpenXR standard and is connected to a WebXR-compatible browser (like Chrome, Edge, or Wolvic) can be detected and diagnosed using this tool."
+  },
+  {
+    question: "Why does my VR headset feel blurry or suffer from glare?",
+    answer: "Blurriness is often caused by an incorrect IPD setting, improper headset vertical positioning, or dirty lenses. Glare, or 'god rays', is a hardware limitation characteristic of the Fresnel lenses used in many HMDs."
+  },
+  {
+    question: "What does 'reprojection' or 'motion smoothing' mean?",
+    answer: "When your GPU cannot hit the target frame rate (e.g., 90 FPS on a 90Hz headset), reprojection algorithms artificially generate intermediate frames by warping previous frames based on head movement tracking data, preventing stutter but introducing artifacts."
+  },
+  {
+    question: "How can I reduce motion blur in VR?",
+    answer: "Motion blur in VR is mitigated by using low-persistence OLED or fast-switching LCD panels. Ensure your headset is set to its maximum native refresh rate and that you are maintaining frame rates equal to the refresh rate."
+  },
+  {
+    question: "Does this test support standalone WebXR browsers in mobile headsets?",
+    answer: "Yes, if you navigate to this page using the built-in browser inside a standalone headset (such as Meta Quest Browser or Pico Browser), the WebXR Device API can directly read local hardware capabilities."
+  },
+  {
+    question: "What is the 'sweet spot' of VR lenses?",
+    answer: "The sweet spot is the center region of a VR lens where the image is sharpest. Moving outside this area (either by shifting your eyes or misalignment) results in chromatic aberration and blur. Finding your exact IPD maximizes the sweet spot."
+  }
+];
+---
+
+<Layout 
+  title="WebXR VR Headset Refresh Rate & IPD Test | Monitor Test Hub" 
+  description="Test your VR headset's native IPD, display refresh rate, per-eye resolution, and lens acuity using the WebXR API for Meta Quest, Valve Index, and HTC Vive."
+  faqs={vrFaqs}
+>
+  <div class="max-w-7xl mx-auto px-4 py-8 space-y-8 min-w-0 w-full overflow-hidden font-sans">
+    <Breadcrumbs items={breadcrumbItems} />
+
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+      
+      <!-- Left Canvas (lg:col-span-8) -->
+      <div class="lg:col-span-8 space-y-8 min-w-0">
+        <header class="space-y-3 border-b border-border-hairline pb-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div class="space-y-2">
+            <div class="flex items-center gap-2 text-status-pass text-xs font-mono font-bold uppercase tracking-wider">
+              <span class="w-2 h-2 rounded-full bg-status-pass led-glow-pass"></span>
+              WEBXR HARDWARE TELEMETRY
+            </div>
+            <h1 class="text-3xl sm:text-4xl font-extrabold text-text-primary tracking-tight">VR Headset Refresh Rate & IPD Inspector</h1>
+            <p class="text-sm text-text-secondary max-w-3xl leading-relaxed">
+              Verify your Head-Mounted Display's (HMD) native refresh rate (90Hz, 120Hz, 144Hz), optimal Interpupillary Distance (IPD), and per-eye render resolution via the WebXR Device API.
+            </p>
+          </div>
+
+          <button 
+            id="btn-open-embed-modal" 
+            class="min-h-[44px] px-4 py-2.5 rounded-xl bg-bg-surface border border-border-hairline hover:border-status-pass text-text-primary font-mono text-xs font-bold transition-colors duration-200 shadow-specular-top cursor-pointer shrink-0 flex items-center gap-2"
+          >
+            <svg class="w-4 h-4 text-status-pass" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/></svg>
+            <span>EMBED THIS WIDGET</span>
+          </button>
+        </header>
+
+        <EpilepsyWarning />
+        <WebXrVrCanvas />
+
+        <!-- Scientific Methodology Article -->
+        <article class="bg-bg-surface border border-border-hairline rounded-2xl p-6 sm:p-8 space-y-6 shadow-specular-top font-sans text-sm text-text-secondary leading-relaxed">
+          <div class="border-b border-border-hairline pb-4">
+            <span class="font-mono text-[10px] font-bold text-status-pass uppercase tracking-widest block mb-1">WEBXR DEVICE API METHODOLOGY</span>
+            <h2 class="text-xl font-bold text-text-primary">VR Rendering Pipeline & Optical Acuity Constraints</h2>
+          </div>
+
+          <p>
+            The <strong>WebXR API</strong> establishes a secure hardware abstraction layer between the browser context and local runtime environments like <strong>OpenXR</strong> and <strong>SteamVR</strong>. This allows deep inspection of the display matrix—revealing true physical refresh boundaries, projection matrix parameters, and asymmetric field of view angles.
+          </p>
+
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4 font-mono text-xs my-4">
+            <div class="bg-bg-canvas p-4 rounded-xl border border-border-hairline space-y-1">
+              <span class="text-text-muted text-[10px] uppercase block">Per-Eye Resolution</span>
+              <strong class="text-text-primary block text-sm">Render Target Scaler</strong>
+              <p class="font-sans text-[11px] text-text-secondary">Detects the base render resolution required to overcome barrel distortion from the optical lenses.</p>
+            </div>
+            <div class="bg-bg-canvas p-4 rounded-xl border border-border-hairline space-y-1">
+              <span class="text-text-muted text-[10px] uppercase block">Low Persistence</span>
+              <strong class="text-text-primary block text-sm">&lt;2ms Strobe Illumination</strong>
+              <p class="font-sans text-[11px] text-text-secondary">Measures pulse modulation techniques used by VR OLED/LCDs to slash pixel smear during rapid head rotation.</p>
+            </div>
+            <div class="bg-bg-canvas p-4 rounded-xl border border-border-hairline space-y-1">
+              <span class="text-text-muted text-[10px] uppercase block">Motion-to-Photon</span>
+              <strong class="text-text-primary block text-sm">Latency &lt; 20ms Target</strong>
+              <p class="font-sans text-[11px] text-text-secondary">Evaluates tracking telemetry loop speed to ensure minimal delay between human neck rotation and the photon hitting the retina.</p>
+            </div>
+          </div>
+
+          <HardwareLimitationNotice />
+        </article>
+
+        <TestSwitcherBar tests={displayTests} currentId="webxr-vr-test" />
+        <EmbedWidgetModal widgetTitle="VR Headset Hardware Inspector" embedUrl="https://displaytestonline.com/embed/webxr-vr-test" />
+      </div>
+
+      <!-- Right Modular Sidebar (lg:col-span-4) -->
+      <div class="lg:col-span-4 space-y-6 sticky top-24 self-start min-w-0">
+        <TelemetryCard
+          title="HMD Telemetry"
+          subtitle="Target Refresh Frame Time"
+          currentHz={120.0}
+          jitterSigmaMs={0.03}
+          badgeText="WebXR Ready"
+        />
+
+        <StatusCard
+          status="warn"
+          label="IPD Sync Status"
+          subtitle="Interpupillary Alignment"
+          score="PENDING"
+          details={[
+            { label: 'Target Range', value: '58mm - 72mm' },
+            { label: 'Hardware Polling', value: 'Offline' }
+          ]}
+        />
+
+        <ConfigurationCard
+          title="API Handshake"
+          subtitle="Session Parameters"
+          controls={[
+            {
+              id: 'xrMode',
+              label: 'Rendering Environment Context',
+              type: 'presets',
+              value: 'immersive-vr',
+              options: [
+                { value: 'immersive-vr', label: 'Immersive VR (Opaque)' },
+                { value: 'immersive-ar', label: 'Immersive AR (Passthrough)' }
+              ]
+            }
+          ]}
+        />
+
+        <ShortcutCard
+          shortcuts={[
+            { keys: ['I'], label: 'Initialize WebXR Session' },
+            { keys: ['ESC'], label: 'Terminate VR Context' }
+          ]}
+        />
+
+        <InfoCard
+          title="OpenXR Specification"
+          subtitle="Cross-Platform Portability"
+          badgeText="Open Standard"
+          citations={[
+            { standard: "Khronos OpenXR", clause: "XR_KHR_vulkan_enable", description: "Provides high-performance, low-latency rendering paths for modern VR hardware." }
+          ]}
+          osdTips={[
+            "Always match your PC rendering resolution to the native hardware panel to avoid interpolation blur."
+          ]}
+        />
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    function initEmbedTrigger() {
+      const openBtn = document.getElementById('btn-open-embed-modal');
+      const modal = document.getElementById('embed-widget-modal');
+
+      openBtn?.addEventListener('click', () => {
+        modal?.classList.remove('hidden');
+      });
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initEmbedTrigger);
+    } else {
+      initEmbedTrigger();
+    }
+  </script>
+</Layout>

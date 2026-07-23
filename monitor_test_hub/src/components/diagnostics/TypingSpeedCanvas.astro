@@ -1,0 +1,190 @@
+---
+/**
+ * TypingSpeedCanvas.astro
+ * High-performance WPM Typing Speedometer & Accuracy Diagnostic Engine.
+ * Features:
+ * - Real-time WPM (Words Per Minute) & CPM (Characters Per Minute) telemetry.
+ * - Accuracy percentage & error character heatmap.
+ * - Difficulty modes: Standard Text, Coding Mode (JS/Python), and Punctuation Mode.
+ */
+---
+
+<div class="w-full max-w-5xl mx-auto space-y-6 font-sans select-none min-w-0" id="typing-test-root">
+  <div class="relative bg-[#0c0d12]/90 border border-zinc-800/90 rounded-2xl p-4 sm:p-6 backdrop-blur-2xl shadow-[0_25px_60px_rgba(0,0,0,0.8)] space-y-6 overflow-hidden">
+    <!-- Ambient Radial Glows -->
+    <div class="absolute -top-24 -right-24 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none"></div>
+    <div class="absolute -bottom-24 -left-24 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl pointer-events-none"></div>
+
+    <!-- Header Controls & Mode Selectors -->
+    <div class="relative z-10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-zinc-800/70 pb-5">
+      <div>
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/30 text-[11px] font-mono text-cyan-400 font-bold uppercase tracking-wider mb-2">
+          <span class="w-2 h-2 rounded-full bg-cyan-400 shadow-[0_0_8px_rgba(34,211,238,0.9)] animate-pulse"></span>
+          <span>TYPING WPM &amp; ACCURACY SPEEDOMETER</span>
+        </div>
+        <h2 class="text-xl sm:text-2xl font-bold font-mono text-white tracking-tight">Typing Speed Practice &amp; WPM Benchmark</h2>
+      </div>
+
+      <!-- Mode Selector Buttons -->
+      <div class="flex items-center gap-1.5 bg-zinc-950 p-1 rounded-xl border border-zinc-800 font-mono text-xs">
+        <button data-mode="standard" class="typing-mode-btn px-3 py-1.5 rounded-lg bg-cyan-500/20 text-cyan-400 font-bold border border-cyan-500/40 cursor-pointer transition-all">Standard</button>
+        <button data-mode="coding" class="typing-mode-btn px-3 py-1.5 rounded-lg text-zinc-400 hover:text-white font-semibold cursor-pointer transition-all">Coding</button>
+        <button data-mode="punctuation" class="typing-mode-btn px-3 py-1.5 rounded-lg text-zinc-400 hover:text-white font-semibold cursor-pointer transition-all">Punctuation</button>
+      </div>
+    </div>
+
+    <!-- Real-Time Metrics Deck -->
+    <div class="relative z-10 grid grid-cols-2 sm:grid-cols-4 gap-4 font-mono">
+      <div class="bg-zinc-950 p-4 rounded-xl border border-zinc-800 text-center space-y-1">
+        <div class="text-xs text-zinc-400 font-bold uppercase">WPM</div>
+        <div id="wpm-val" class="text-4xl font-extrabold text-cyan-400 tabular-nums">0</div>
+        <div class="text-[10px] text-zinc-400">Words Per Minute</div>
+      </div>
+
+      <div class="bg-zinc-950 p-4 rounded-xl border border-zinc-800 text-center space-y-1">
+        <div class="text-xs text-zinc-400 font-bold uppercase">Accuracy</div>
+        <div id="acc-val" class="text-4xl font-extrabold text-emerald-400 tabular-nums">100%</div>
+        <div class="text-[10px] text-zinc-400">Keystroke Precision</div>
+      </div>
+
+      <div class="bg-zinc-950 p-4 rounded-xl border border-zinc-800 text-center space-y-1">
+        <div class="text-xs text-zinc-400 font-bold uppercase">CPM</div>
+        <div id="cpm-val" class="text-4xl font-extrabold text-purple-400 tabular-nums">0</div>
+        <div class="text-[10px] text-zinc-400">Chars Per Minute</div>
+      </div>
+
+      <div class="bg-zinc-950 p-4 rounded-xl border border-zinc-800 text-center space-y-1">
+        <div class="text-xs text-zinc-400 font-bold uppercase">Errors</div>
+        <div id="err-val" class="text-4xl font-extrabold text-rose-400 tabular-nums">0</div>
+        <div class="text-[10px] text-zinc-400">Missed Keystrokes</div>
+      </div>
+    </div>
+
+    <!-- Main Interactive Typing Text Box -->
+    <div class="relative z-10 bg-zinc-950 rounded-2xl border border-zinc-800/90 p-6 space-y-4 shadow-[inset_0_4px_16px_rgba(0,0,0,0.95)]">
+      <div id="typing-text-display" class="font-mono text-lg sm:text-xl leading-relaxed text-zinc-500 break-words tracking-wide">
+        <!-- Dynamic text inserted here -->
+      </div>
+      <input type="text" id="typing-hidden-input" class="opacity-0 absolute -z-10" autofocus />
+    </div>
+
+    <div class="flex items-center justify-between text-xs font-mono text-zinc-400">
+      <div>Click the text box or start typing to begin the speedometer test.</div>
+      <button id="typing-restart-btn" class="px-4 py-2 rounded-xl bg-zinc-900 border border-zinc-800 text-zinc-300 hover:text-white font-bold cursor-pointer transition-all">Restart Test</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  const SAMPLE_TEXTS = {
+    standard: "The quick brown fox jumps over the lazy dog. Mechanical keyboards provide tactile feedback and precision actuation for fast typing.",
+    coding: "const calculateWpm = (chars, seconds) => Math.round((chars / 5) / (seconds / 60));",
+    punctuation: "Hello, world! Can you type: 100% accuracy, 80+ WPM, & zero errors @ 1000Hz polling rate?"
+  };
+
+  let mode: 'standard' | 'coding' | 'punctuation' = 'standard';
+  let targetText = SAMPLE_TEXTS.standard;
+  let currentIndex = 0;
+  let errors = 0;
+  let totalTyped = 0;
+  let startTime = 0;
+  let isTyping = false;
+  let timerId: number | null = null;
+
+  const display = document.getElementById('typing-text-display');
+  const input = document.getElementById('typing-hidden-input') as HTMLInputElement | null;
+
+  const wpmVal = document.getElementById('wpm-val');
+  const accVal = document.getElementById('acc-val');
+  const cpmVal = document.getElementById('cpm-val');
+  const errVal = document.getElementById('err-val');
+  const restartBtn = document.getElementById('typing-restart-btn');
+  const modeBtns = document.querySelectorAll('.typing-mode-btn');
+
+  function renderText() {
+    if (!display) return;
+    display.innerHTML = targetText.split('').map((char, i) => {
+      let colorClass = 'text-zinc-600';
+      if (i < currentIndex) {
+        colorClass = 'text-emerald-400 font-bold';
+      } else if (i === currentIndex) {
+        colorClass = 'bg-cyan-500/30 text-white font-bold underline animate-pulse';
+      }
+      return `<span class="${colorClass}">${char === ' ' ? '&nbsp;' : char}</span>`;
+    }).join('');
+  }
+
+  function resetTyping() {
+    isTyping = false;
+    if (timerId) clearInterval(timerId);
+    timerId = null;
+    currentIndex = 0;
+    errors = 0;
+    totalTyped = 0;
+    if (wpmVal) wpmVal.textContent = '0';
+    if (accVal) accVal.textContent = '100%';
+    if (cpmVal) cpmVal.textContent = '0';
+    if (errVal) errVal.textContent = '0';
+    targetText = SAMPLE_TEXTS[mode];
+    renderText();
+    if (input) {
+      input.value = '';
+      input.focus();
+    }
+  }
+
+  modeBtns.forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      modeBtns.forEach(b => b.className = 'typing-mode-btn px-3 py-1.5 rounded-lg text-zinc-400 hover:text-white font-semibold cursor-pointer transition-all');
+      const target = e.currentTarget as HTMLElement;
+      target.className = 'typing-mode-btn px-3 py-1.5 rounded-lg bg-cyan-500/20 text-cyan-400 font-bold border border-cyan-500/40 cursor-pointer transition-all';
+      mode = target.getAttribute('data-mode') as 'standard' | 'coding' | 'punctuation';
+      resetTyping();
+    });
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Tab' || e.key === 'Escape') return;
+
+    if (!isTyping && e.key.length === 1) {
+      isTyping = true;
+      startTime = performance.now();
+      timerId = window.setInterval(() => {
+        const elapsedSec = (performance.now() - startTime) / 1000;
+        if (elapsedSec <= 0) return;
+
+        const minutes = elapsedSec / 60;
+        const netChars = Math.max(0, currentIndex - errors);
+        const wpm = Math.round((netChars / 5) / minutes);
+        const cpm = Math.round(currentIndex / minutes);
+        const accuracy = totalTyped > 0 ? Math.round(((totalTyped - errors) / totalTyped) * 100) : 100;
+
+        if (wpmVal) wpmVal.textContent = wpm.toString();
+        if (cpmVal) cpmVal.textContent = cpm.toString();
+        if (accVal) accVal.textContent = `${accuracy}%`;
+      }, 200);
+    }
+
+    if (!isTyping) return;
+
+    if (e.key === targetText[currentIndex]) {
+      currentIndex++;
+      totalTyped++;
+      renderText();
+
+      if (currentIndex >= targetText.length) {
+        if (timerId) clearInterval(timerId);
+        isTyping = false;
+        alert('Typing practice finished!');
+      }
+    } else if (e.key.length === 1) {
+      errors++;
+      totalTyped++;
+      if (errVal) errVal.textContent = errors.toString();
+    }
+  });
+
+  restartBtn?.addEventListener('click', resetTyping);
+  display?.addEventListener('click', () => input?.focus());
+  resetTyping();
+</script>

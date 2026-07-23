@@ -1,0 +1,87 @@
+---
+import FAQSection from '../../components/ui/FAQSection.astro';
+import Layout from '../../layouts/Layout.astro';
+import SpatialAudioCanvas from '../../components/diagnostics/SpatialAudioCanvas.astro';
+import { useTranslations } from '../../utils/i18n';
+
+import StatusCard from '../../components/ui/sidebar/StatusCard.astro';
+import MetricCard from '../../components/ui/sidebar/MetricCard.astro';
+
+const { lang } = useTranslations(Astro.url.pathname);
+const canonicalUrl = lang === 'en'
+  ? "https://displaytestonline.com/sound-test/spatial-audio-test"
+  : `https://displaytestonline.com/${lang}/sound-test/spatial-audio-test`;
+
+const faqs = [
+  { question: "What is HRTF Spatial Audio?", answer: "HRTF (Head-Related Transfer Function) is an audio rendering technique that mathematically simulates how sound waves interact with human ear shapes to create true 3D spatial positioning on standard stereo headphones." },
+  { question: "Do I need special surround sound headphones for this?", answer: "No. In fact, standard stereo headphones work best. HRTF processing is done via software, and 'gaming surround' hardware often interferes with accurate 3D processing." },
+  { question: "Why is 3D audio important for gaming?", answer: "In competitive shooters (like CS:GO, Valorant, or Escape from Tarkov), accurate spatial audio allows you to pinpoint the exact 360-degree direction and elevation of enemy footsteps." },
+  { question: "How does the HRTF Panner work?", answer: "The browser's Web Audio API uses a PannerNode to apply interaural time delays and frequency filtering, tricking your brain into perceiving front/back and up/down elevations." },
+  { question: "Why can't I hear the difference between front and back?", answer: "Front-back confusion is a common psychoacoustic limitation. Turning your in-game character slightly while moving helps your brain resolve the exact direction using parallax cues." },
+  { question: "Should I turn on Windows Sonic or Dolby Atmos?", answer: "If you are running this test, you should turn off any OS-level spatial audio (Windows Sonic, Dolby Atmos, DTS:X) to avoid double-processing, which ruins accuracy." },
+  { question: "Can I use speakers for this test?", answer: "No, HRTF relies on total channel isolation (left ear only hears left channel, right ear only hears right). Cross-talk from speakers breaks the 3D illusion." },
+  { question: "What is interaural time difference (ITD)?", answer: "It is the tiny microsecond delay it takes for a sound wave to reach your left ear after hitting your right ear, which your brain uses to compute direction." },
+  { question: "Does audio latency affect spatial audio?", answer: "Yes, high Bluetooth audio lag will make the audio cue misalign with the visual cue on screen, disrupting your reaction time." },
+  { question: "Are IEMs good for spatial audio?", answer: "Yes, high-quality In-Ear Monitors (IEMs) often provide excellent imaging and separation, making them highly preferred by esports pros." }
+];
+
+const seoTitle = "Spatial Audio 7.1 HRTF 3D Footstep Test Online";
+const seoDescription = "Test your headphones for 3D spatial audio accuracy using Web Audio API HRTF. Pinpoint 360-degree footsteps and verify stereo imaging for competitive gaming.";
+---
+
+<Layout title={seoTitle} description={seoDescription} faqs={faqs} canonicalUrl={canonicalUrl}>
+  <div class="max-w-7xl mx-auto px-4 py-6 sm:py-8 min-w-0 w-full overflow-hidden font-sans">
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 mt-6">
+      
+      <div class="lg:col-span-8 space-y-8 min-w-0">
+        <section class="max-w-4xl mx-auto text-center space-y-4">
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/30 text-xs font-mono text-cyan-400 font-bold">
+            <span>WEB AUDIO API HRTF PANNER</span>
+          </div>
+          <h1 class="text-3xl sm:text-4xl font-extrabold font-mono tracking-tight text-white">
+            3D Spatial Audio & Imaging Test
+          </h1>
+          <p class="text-sm sm:text-base text-zinc-400 leading-relaxed max-w-2xl mx-auto">
+            Evaluate your headphone's soundstage and directional imaging. Using advanced HRTF algorithms to simulate 360-degree surround sound on stereo headsets.
+          </p>
+        </section>
+
+        <SpatialAudioCanvas />
+
+        <article class="max-w-5xl mx-auto space-y-6 bg-[#121215] border border-white/10 rounded-3xl p-6 sm:p-8 backdrop-blur-xl text-sm text-zinc-300 leading-relaxed shadow-2xl">
+          <div class="border-b border-white/10 pb-4">
+            <h2 class="text-xl font-bold font-mono text-white">Psychoacoustics & Sound Localization</h2>
+            <p class="mt-2 text-zinc-400">
+              Humans locate sound sources using Interaural Time Differences (ITD) and Interaural Level Differences (ILD), modified by the shape of the outer ear. This engine simulates these physical acoustic properties, rendering pinpoint 3D coordinates (Azimuth and Elevation) over standard two-channel stereo.
+            </p>
+          </div>
+        </article>
+
+        <FAQSection faqs={faqs} />
+      </div>
+
+      <div class="lg:col-span-4 space-y-6 sticky top-24 self-start min-w-0">
+        <StatusCard
+          status="pass"
+          label="AUDIO ENGINE READY"
+          subtitle="PannerNode Status"
+          score="360"
+          maxScore="360"
+          details={[
+            { label: 'Model', value: 'HRTF' }
+          ]}
+        />
+        <MetricCard
+          title="Spatial Coordinates"
+          subtitle="Relative to Listener"
+          badgeText="Azimuth"
+          metrics={[
+            { id: 'azimuth', label: 'Azimuth Angle', value: '0.0', unit: '°', status: 'pass' },
+            { id: 'elevation', label: 'Elevation', value: '0.0', unit: '°', status: 'neutral' }
+          ]}
+        />
+      </div>
+
+    </div>
+  </div>
+</Layout>

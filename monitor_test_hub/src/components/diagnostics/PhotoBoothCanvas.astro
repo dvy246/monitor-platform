@@ -1,0 +1,291 @@
+---
+/**
+ * PhotoBoothCanvas.astro
+ * Picabooth-style in-browser Photo Booth suite.
+ * Features:
+ * - 7 Live Filter Presets (Normal, Cyberpunk, Vintage Sepia, B&W Noir, Vaporwave, Invert Matrix, Warm Film).
+ * - 3s / 5s Countdown Selfie Timer with screen flash.
+ * - 4-Shot Burst Mode & Vertical Photo Strip Exporter.
+ * - 100% Local In-Browser Canvas PNG Export.
+ */
+---
+
+<div class="w-full max-w-6xl mx-auto space-y-6 font-sans select-none min-w-0" id="photo-booth-root">
+  <!-- Control Deck -->
+  <div class="relative bg-[#0c0d12]/90 border border-zinc-800/90 rounded-2xl p-4 sm:p-6 backdrop-blur-2xl shadow-[0_25px_60px_rgba(0,0,0,0.8)] space-y-6 overflow-hidden">
+    <!-- Ambient Radial Glows -->
+    <div class="absolute -top-24 -right-24 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl pointer-events-none"></div>
+    <div class="absolute -bottom-24 -left-24 w-96 h-96 bg-pink-500/10 rounded-full blur-3xl pointer-events-none"></div>
+
+    <div class="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-4 border-b border-zinc-800/70 pb-5">
+      <div>
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-500/10 border border-purple-500/30 text-[11px] font-mono text-purple-400 font-bold uppercase tracking-wider mb-2">
+          <span class="w-2 h-2 rounded-full bg-purple-400 shadow-[0_0_8px_rgba(192,132,252,0.9)] animate-pulse"></span>
+          <span>PICABOOTH RETRO PHOTO BOOTH</span>
+        </div>
+        <h2 class="text-xl sm:text-2xl font-bold font-mono text-white tracking-tight flex items-center gap-2">
+          Webcam Photo Booth &amp; Filter Studio
+        </h2>
+        <p class="text-xs text-zinc-400 mt-1 max-w-2xl leading-relaxed">
+          Capture countdown selfies, 4-shot burst photos, and export classic vertical photo strips with 7 real-time filters.
+        </p>
+      </div>
+
+      <!-- Capture Controls -->
+      <div class="flex flex-wrap items-center gap-2.5">
+        <select id="booth-timer-select" class="px-3 py-2 rounded-xl bg-zinc-950 border border-zinc-800 text-xs font-mono text-zinc-300 focus:outline-none focus:border-purple-500 transition-colors">
+          <option value="3">3s Countdown</option>
+          <option value="5">5s Countdown</option>
+          <option value="0">Instant Snap</option>
+        </select>
+
+        <button id="booth-snap-btn" class="px-4 py-2 rounded-xl bg-purple-500/20 border border-purple-500/40 text-xs font-mono text-purple-300 font-bold hover:bg-purple-500/30 cursor-pointer transition-all flex items-center gap-1.5 shadow-sm">
+          <svg class="w-4 h-4 text-purple-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/><circle cx="12" cy="13" r="3"/></svg>
+          <span>SNAP PHOTO</span>
+        </button>
+
+        <button id="booth-burst-btn" class="px-4 py-2 rounded-xl bg-pink-500/20 border border-pink-500/40 text-xs font-mono text-pink-300 font-bold hover:bg-pink-500/30 cursor-pointer transition-all flex items-center gap-1.5 shadow-sm">
+          <span>4-SHOT PHOTO STRIP</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Filter Buttons Bar -->
+    <div class="relative z-10 flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
+      <span class="text-xs font-mono text-zinc-400 font-bold uppercase shrink-0 mr-1">Filters:</span>
+      <button data-filter="normal" class="booth-filter-btn px-3 py-1.5 rounded-lg text-xs font-mono font-bold bg-purple-500/20 text-purple-300 border border-purple-500/40 cursor-pointer transition-all shrink-0">Normal</button>
+      <button data-filter="cyberpunk" class="booth-filter-btn px-3 py-1.5 rounded-lg text-xs font-mono font-semibold text-zinc-400 hover:text-white cursor-pointer transition-all shrink-0">Cyberpunk</button>
+      <button data-filter="sepia" class="booth-filter-btn px-3 py-1.5 rounded-lg text-xs font-mono font-semibold text-zinc-400 hover:text-white cursor-pointer transition-all shrink-0">Vintage Sepia</button>
+      <button data-filter="noir" class="booth-filter-btn px-3 py-1.5 rounded-lg text-xs font-mono font-semibold text-zinc-400 hover:text-white cursor-pointer transition-all shrink-0">B&amp;W Noir</button>
+      <button data-filter="vaporwave" class="booth-filter-btn px-3 py-1.5 rounded-lg text-xs font-mono font-semibold text-zinc-400 hover:text-white cursor-pointer transition-all shrink-0">Vaporwave</button>
+      <button data-filter="matrix" class="booth-filter-btn px-3 py-1.5 rounded-lg text-xs font-mono font-semibold text-zinc-400 hover:text-white cursor-pointer transition-all shrink-0">Invert Matrix</button>
+      <button data-filter="warm" class="booth-filter-btn px-3 py-1.5 rounded-lg text-xs font-mono font-semibold text-zinc-400 hover:text-white cursor-pointer transition-all shrink-0">Warm Film</button>
+    </div>
+
+    <!-- Camera Preview Container -->
+    <div class="relative z-10 w-full h-80 sm:h-[420px] bg-zinc-950 rounded-2xl border border-zinc-800/90 overflow-hidden shadow-[inset_0_4px_16px_rgba(0,0,0,0.95)] flex items-center justify-center" id="booth-preview-container">
+      <video id="booth-video" autoplay playsinline muted class="w-full h-full object-cover block transition-all duration-300"></video>
+      <canvas id="booth-offscreen-canvas" class="hidden"></canvas>
+
+      <!-- Countdown Overlay -->
+      <div id="booth-countdown-overlay" class="hidden absolute inset-0 z-30 flex items-center justify-center bg-black/40 backdrop-blur-xs">
+        <span id="booth-countdown-num" class="text-7xl sm:text-9xl font-extrabold font-mono text-purple-400 animate-ping">3</span>
+      </div>
+
+      <!-- Flash Overlay -->
+      <div id="booth-flash-overlay" class="hidden absolute inset-0 z-40 bg-white opacity-0 pointer-events-none transition-opacity duration-150"></div>
+    </div>
+
+    <!-- Photo Strip & Gallery Container -->
+    <div class="relative z-10 space-y-3">
+      <div class="flex items-center justify-between">
+        <h3 class="text-sm font-bold font-mono text-white uppercase tracking-wider">Photo Strip &amp; Captures</h3>
+        <button id="booth-export-strip-btn" disabled class="px-3.5 py-1.5 rounded-xl bg-zinc-900 border border-zinc-800 text-xs font-mono text-zinc-500 font-bold cursor-not-allowed transition-all flex items-center gap-1.5">
+          <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+          <span>EXPORT PHOTO STRIP (PNG)</span>
+        </button>
+      </div>
+
+      <div id="booth-gallery" class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        <div class="bg-zinc-950/80 rounded-xl border border-zinc-800/80 h-32 flex items-center justify-center text-zinc-600 text-xs font-mono">Frame 1</div>
+        <div class="bg-zinc-950/80 rounded-xl border border-zinc-800/80 h-32 flex items-center justify-center text-zinc-600 text-xs font-mono">Frame 2</div>
+        <div class="bg-zinc-950/80 rounded-xl border border-zinc-800/80 h-32 flex items-center justify-center text-zinc-600 text-xs font-mono">Frame 3</div>
+        <div class="bg-zinc-950/80 rounded-xl border border-zinc-800/80 h-32 flex items-center justify-center text-zinc-600 text-xs font-mono">Frame 4</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  let videoStream: MediaStream | null = null;
+  let currentFilter = 'normal';
+  let capturedFrames: string[] = [];
+
+  const video = document.getElementById('booth-video') as HTMLVideoElement | null;
+  const offscreenCanvas = document.getElementById('booth-offscreen-canvas') as HTMLCanvasElement | null;
+
+  const snapBtn = document.getElementById('booth-snap-btn');
+  const burstBtn = document.getElementById('booth-burst-btn');
+  const exportStripBtn = document.getElementById('booth-export-strip-btn') as HTMLButtonElement | null;
+
+  const timerSelect = document.getElementById('booth-timer-select') as HTMLSelectElement | null;
+  const countdownOverlay = document.getElementById('booth-countdown-overlay');
+  const countdownNum = document.getElementById('booth-countdown-num');
+  const flashOverlay = document.getElementById('booth-flash-overlay');
+
+  const filterBtns = document.querySelectorAll('.booth-filter-btn');
+  const gallery = document.getElementById('booth-gallery');
+
+  const filterStyles: Record<string, string> = {
+    normal: 'none',
+    cyberpunk: 'contrast(150%) hue-rotate(180deg) saturate(200%)',
+    sepia: 'sepia(100%) contrast(110%) brightness(90%)',
+    noir: 'grayscale(100%) contrast(160%)',
+    vaporwave: 'hue-rotate(280deg) saturate(180%) contrast(120%)',
+    matrix: 'invert(100%) hue-rotate(90deg)',
+    warm: 'sepia(30%) saturate(140%) contrast(110%)'
+  };
+
+  async function initCamera() {
+    try {
+      videoStream = await navigator.mediaDevices.getUserMedia({
+        video: { width: { ideal: 1920 }, height: { ideal: 1080 } },
+        audio: false
+      });
+      if (video) {
+        video.srcObject = videoStream;
+        video.play();
+      }
+    } catch {
+      alert('Camera access required for Photo Booth experience.');
+    }
+  }
+
+  function applyFilter(filterName: string) {
+    currentFilter = filterName;
+    if (video) {
+      video.style.filter = filterStyles[filterName] || 'none';
+    }
+    filterBtns.forEach(btn => {
+      const f = btn.getAttribute('data-filter');
+      if (f === filterName) {
+        btn.className = 'booth-filter-btn px-3 py-1.5 rounded-lg text-xs font-mono font-bold bg-purple-500/20 text-purple-300 border border-purple-500/40 cursor-pointer transition-all shrink-0';
+      } else {
+        btn.className = 'booth-filter-btn px-3 py-1.5 rounded-lg text-xs font-mono font-semibold text-zinc-400 hover:text-white cursor-pointer transition-all shrink-0';
+      }
+    });
+  }
+
+  function triggerFlash() {
+    if (!flashOverlay) return;
+    flashOverlay.classList.remove('hidden');
+    flashOverlay.style.opacity = '1';
+    setTimeout(() => {
+      flashOverlay.style.opacity = '0';
+      setTimeout(() => flashOverlay.classList.add('hidden'), 150);
+    }, 100);
+  }
+
+  function captureFrame(): string | null {
+    if (!video || !offscreenCanvas) return null;
+    const width = video.videoWidth || 1280;
+    const height = video.videoHeight || 720;
+
+    offscreenCanvas.width = width;
+    offscreenCanvas.height = height;
+    const ctx = offscreenCanvas.getContext('2d');
+    if (!ctx) return null;
+
+    ctx.filter = filterStyles[currentFilter] || 'none';
+    ctx.drawImage(video, 0, 0, width, height);
+
+    triggerFlash();
+    return offscreenCanvas.toDataURL('image/png');
+  }
+
+  function updateGallery() {
+    if (!gallery) return;
+    gallery.innerHTML = '';
+
+    capturedFrames.forEach((src, idx) => {
+      const card = document.createElement('div');
+      card.className = 'relative bg-zinc-950 rounded-xl border border-zinc-800 overflow-hidden group h-32';
+      card.innerHTML = `
+        <img src="${src}" class="w-full h-full object-cover block" />
+        <a href="${src}" download="picabooth-frame-${idx + 1}.png" class="absolute bottom-2 right-2 p-1.5 rounded-lg bg-zinc-900/90 text-purple-300 border border-purple-500/30 opacity-0 group-hover:opacity-100 transition-opacity">
+          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+        </a>
+      `;
+      gallery.appendChild(card);
+    });
+
+    if (exportStripBtn) {
+      if (capturedFrames.length > 0) {
+        exportStripBtn.disabled = false;
+        exportStripBtn.className = 'px-3.5 py-1.5 rounded-xl bg-purple-500/20 border border-purple-500/40 text-purple-300 font-mono text-xs font-bold hover:bg-purple-500/30 cursor-pointer transition-all flex items-center gap-1.5';
+      }
+    }
+  }
+
+  async function runCountdown(sec: number): Promise<void> {
+    if (sec <= 0) return;
+    if (countdownOverlay && countdownNum) {
+      countdownOverlay.classList.remove('hidden');
+      for (let i = sec; i > 0; i--) {
+        countdownNum.textContent = i.toString();
+        await new Promise(r => setTimeout(r, 1000));
+      }
+      countdownOverlay.classList.add('hidden');
+    }
+  }
+
+  snapBtn?.addEventListener('click', async () => {
+    const sec = parseInt(timerSelect?.value || '0', 10);
+    await runCountdown(sec);
+    const dataUrl = captureFrame();
+    if (dataUrl) {
+      capturedFrames.push(dataUrl);
+      if (capturedFrames.length > 4) capturedFrames.shift();
+      updateGallery();
+    }
+  });
+
+  burstBtn?.addEventListener('click', async () => {
+    capturedFrames = [];
+    for (let i = 0; i < 4; i++) {
+      await runCountdown(2);
+      const dataUrl = captureFrame();
+      if (dataUrl) capturedFrames.push(dataUrl);
+      updateGallery();
+      await new Promise(r => setTimeout(r, 400));
+    }
+  });
+
+  exportStripBtn?.addEventListener('click', () => {
+    if (capturedFrames.length === 0) return;
+
+    const stripCanvas = document.createElement('canvas');
+    const width = 400;
+    const height = capturedFrames.length * 280 + 100;
+    stripCanvas.width = width;
+    stripCanvas.height = height;
+
+    const ctx = stripCanvas.getContext('2d');
+    if (!ctx) return;
+
+    // Outer Photo Strip Frame
+    ctx.fillStyle = '#09090b';
+    ctx.fillRect(0, 0, width, height);
+
+    let loadedCount = 0;
+    capturedFrames.forEach((src, idx) => {
+      const img = new Image();
+      img.onload = () => {
+        ctx.drawImage(img, 20, 20 + idx * 280, 360, 260);
+        loadedCount++;
+        if (loadedCount === capturedFrames.length) {
+          // Add Footer Branding
+          ctx.fillStyle = '#a855f7';
+          ctx.font = 'bold 14px monospace';
+          ctx.textAlign = 'center';
+          ctx.fillText('DISPLAYTEST ONLINE — PHOTO BOOTH', width / 2, height - 35);
+
+          const link = document.createElement('a');
+          link.download = 'picabooth-photostrip.png';
+          link.href = stripCanvas.toDataURL('image/png');
+          link.click();
+        }
+      };
+      img.src = src;
+    });
+  });
+
+  filterBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const f = btn.getAttribute('data-filter') || 'normal';
+      applyFilter(f);
+    });
+  });
+
+  initCamera();
+</script>

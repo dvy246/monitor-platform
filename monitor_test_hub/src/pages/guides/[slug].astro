@@ -15,7 +15,7 @@ export interface Props {
 }
 
 const { guide } = Astro.props;
-const canonicalUrl = `https://monitortester.com/guides/${guide.slug}`;
+const canonicalUrl = `https://displaytestonline.com/guides/${guide.slug}`;
 
 const articleSchema = {
   "@context": "https://schema.org",
@@ -35,7 +35,7 @@ const articleSchema = {
         "name": "Monitor Test Hub",
         "logo": {
           "@type": "ImageObject",
-          "url": "https://monitortester.com/favicon.svg"
+          "url": "https://displaytestonline.com/favicon.svg"
         }
       },
       "about": [
@@ -51,8 +51,8 @@ const articleSchema = {
       "@type": "BreadcrumbList",
       "@id": `${canonicalUrl}#breadcrumb`,
       "itemListElement": [
-        { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://monitortester.com" },
-        { "@type": "ListItem", "position": 2, "name": "Guides", "item": "https://monitortester.com/guides" },
+        { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://displaytestonline.com" },
+        { "@type": "ListItem", "position": 2, "name": "Guides", "item": "https://displaytestonline.com/guides" },
         { "@type": "ListItem", "position": 3, "name": guide.title, "item": canonicalUrl }
       ]
     }

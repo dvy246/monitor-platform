@@ -1,0 +1,150 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import SpectrumAnalyzerCanvas from '../../components/diagnostics/SpectrumAnalyzerCanvas.astro';
+import FAQSection from '../../components/ui/FAQSection.astro';
+import Breadcrumbs from '../../components/ui/Breadcrumbs.astro';
+import StepWorkflowSection from '../../components/ui/StepWorkflowSection.astro';
+import PanelTypeBreakdownSection from '../../components/ui/PanelTypeBreakdownSection.astro';
+
+import StatusCard from '../../components/ui/sidebar/StatusCard.astro';
+import MetricCard from '../../components/ui/sidebar/MetricCard.astro';
+import ConfigurationCard from '../../components/ui/sidebar/ConfigurationCard.astro';
+import ShortcutCard from '../../components/ui/sidebar/ShortcutCard.astro';
+
+const title = "Real-Time Spectrum Analyzer & FFT Visualizer";
+const description = "Real-time FFT audio frequency spectrum analyzer with bar spectrum, time-domain oscilloscope, and spectrogram waterfall visualizer modes.";
+
+const faqs = [
+  {
+    question: "What is an FFT audio spectrum analyzer?",
+    answer: "An FFT (Fast Fourier Transform) audio spectrum analyzer converts time-domain audio signals into their constituent frequency components, displaying volume intensity across the 20Hz to 20kHz audible spectrum."
+  },
+  {
+    question: "How do I switch between bar spectrum, oscilloscope, and spectrogram waterfall modes?",
+    answer: "Use the mode toggle buttons in the top control bar to switch between 128-band bar spectrum, high-speed oscilloscope waveform, and rolling spectrogram waterfall displays."
+  },
+  {
+    question: "Can I analyze my live microphone or external audio input?",
+    answer: "Yes. Selecting the 'Microphone' source mode requests browser permission to analyze your live microphone, ambient room noise, or line-in audio interface."
+  },
+  {
+    question: "What is spectral centroid in audio engineering?",
+    answer: "Spectral centroid indicates the center of mass of an audio spectrum. A higher centroid (e.g. >3000Hz) corresponds to a brighter, sharper sound, while a lower centroid indicates a warmer, bass-heavy timbre."
+  },
+  {
+    question: "What frequency range does this spectrum analyzer cover?",
+    answer: "Our Web Audio FFT engine analyzes frequencies from 20Hz (deep sub-bass) up to 20,000Hz (20kHz high treble) at standard 48kHz sampling rates."
+  },
+  {
+    question: "How does the pitch note indicator work?",
+    answer: "The pitch note calculator identifies the fundamental musical frequency (e.g., A4 = 440Hz, C4 = 261.6Hz) based on standard 12-tone equal temperament Tuning."
+  },
+  {
+    question: "Why is an uncompressed Web Audio spectrum analyzer superior to software downloads?",
+    answer: "Web Audio runs direct 64-bit floating-point mathematical calculations in browser RAM with zero installation overhead and zero lossy compression artifacts."
+  },
+  {
+    question: "Can I test speaker crossover points using the built-in generator?",
+    answer: "Yes. Selecting the 'Generator' source mode sweeps from 20Hz to 20kHz, allowing you to observe where subwoofers transition into desktop monitors."
+  },
+  {
+    question: "What is peak amplitude dBFS?",
+    answer: "dBFS (Decibels relative to Full Scale) measures digital audio signal amplitude where 0 dBFS represents maximum clipping threshold and -96 dBFS represents silence."
+  },
+  {
+    question: "Does sample rate affect FFT frequency resolution?",
+    answer: "Yes. A 2048-point FFT at 48kHz sample rate yields a resolution bin width of approximately 23.4Hz per frequency bin across 1024 distinct bands."
+  }
+];
+
+const breadcrumbs = [
+  { label: 'Home', href: '/' },
+  { label: 'Sound Test', href: '/sound-test' },
+  { label: title, href: '#' }
+];
+---
+
+<Layout title={title} description={description} faqs={faqs}>
+  <div class="max-w-7xl mx-auto px-4 py-6 sm:py-8 min-w-0 w-full overflow-hidden font-sans">
+    <Breadcrumbs items={breadcrumbs} />
+
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 mt-6">
+      
+      <!-- Left Primary Diagnostic Canvas (lg:col-span-8) -->
+      <div class="lg:col-span-8 space-y-8 min-w-0">
+        <!-- Hero Header Deck -->
+        <header class="relative w-full rounded-3xl border border-white/10 bg-[#121215]/90 backdrop-blur-xl p-6 sm:p-8 md:p-10 shadow-2xl space-y-4 overflow-hidden group select-none">
+          <div class="absolute -top-24 -left-24 w-72 h-72 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none group-hover:bg-cyan-500/15 transition-all duration-500"></div>
+          <div class="absolute -bottom-24 -right-24 w-72 h-72 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none group-hover:bg-emerald-500/15 transition-all duration-500"></div>
+
+          <div class="relative z-10 space-y-3 max-w-3xl min-w-0 w-full">
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-cyan-400 text-xs font-mono font-bold tracking-wide flex-wrap shadow-inner">
+              <span class="w-2 h-2 rounded-full bg-cyan-400 animate-pulse shrink-0"></span>
+              <span>2048-POINT FFT SPECTRUM &amp; OSCILLOSCOPE</span>
+            </div>
+            <h1 class="text-3xl sm:text-5xl font-extrabold text-white tracking-tight font-sans break-words min-w-0">
+              {title}
+            </h1>
+            <p class="text-sm sm:text-base text-zinc-300 font-sans leading-relaxed min-w-0">
+              Visualize real-time frequency distribution, time-domain waveform oscilloscope traces, and spectrogram waterfall intensity using high-precision Web Audio FFT calculations.
+            </p>
+          </div>
+        </header>
+
+        <!-- Main Diagnostic Instrument -->
+        <div class="rounded-3xl border border-white/10 bg-[#121215]/90 backdrop-blur-xl p-4 sm:p-6 shadow-2xl">
+          <SpectrumAnalyzerCanvas />
+        </div>
+
+        <StepWorkflowSection />
+        <PanelTypeBreakdownSection />
+
+        <FAQSection faqs={faqs} />
+      </div>
+
+      <!-- Right Sidebar (lg:col-span-4) -->
+      <div class="lg:col-span-4 space-y-6 sticky top-24 self-start min-w-0">
+        <StatusCard
+          status="pass"
+          label="FFT ENGINE READY"
+          subtitle="Web Audio AnalyserNode"
+          score="2048"
+          maxScore="FFT"
+          details={[
+            { label: 'Bin Width', value: '23.4 Hz' },
+            { label: 'Refresh Rate', value: '60 fps' }
+          ]}
+        />
+
+        <MetricCard
+          title="Spectrum Telemetry"
+          subtitle="AES17 Real-Time Data"
+          badgeText="FFT Engine"
+          metrics={[
+            { id: 'peakHz', label: 'Peak Frequency', value: '1000', unit: 'Hz', status: 'pass' },
+            { id: 'peakDb', label: 'Peak Amplitude', value: '-6.0', unit: 'dBFS', status: 'pass' },
+            { id: 'centroidHz', label: 'Spectral Centroid', value: '1420', unit: 'Hz', status: 'pass' }
+          ]}
+        />
+
+        <ConfigurationCard
+          title="Analyzer Controls"
+          subtitle="Display & Source Options"
+          configs={[
+            { label: 'FFT Window Size', value: '2048 Points' },
+            { label: 'Smoothing Constant', value: '0.80' },
+            { label: 'Frequency Scale', value: 'Logarithmic 20Hz-20kHz' }
+          ]}
+        />
+
+        <ShortcutCard
+          shortcuts={[
+            { keys: ['Space'], label: 'Toggle Start / Stop' },
+            { keys: ['M'], label: 'Cycle Display Modes' }
+          ]}
+        />
+      </div>
+
+    </div>
+  </div>
+</Layout>

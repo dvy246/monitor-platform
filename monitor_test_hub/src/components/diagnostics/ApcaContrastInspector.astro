@@ -266,6 +266,10 @@ import HardwareLimitationNotice from '../disclaimers/HardwareLimitationNotice.as
     const statGlareSeverity = document.getElementById('stat-glare-severity');
     const ergoAdviceList = document.getElementById('ergo-advice-list');
 
+    if (!textHexInput || !bgHexInput || !fontWeightSelect || !fontSizeSelect || !panelPresetSelect || !reflectancePresetSelect || !roomLuxSlider || !peakNitsSlider) {
+      return;
+    }
+
     function update() {
       const txtHex = textHexInput.value.startsWith('#') ? textHexInput.value : `#${textHexInput.value}`;
       const bgHex = bgHexInput.value.startsWith('#') ? bgHexInput.value : `#${bgHexInput.value}`;

@@ -1,0 +1,153 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import VideoRecorderCanvas from '../../components/diagnostics/VideoRecorderCanvas.astro';
+import FAQSection from '../../components/ui/FAQSection.astro';
+import Breadcrumbs from '../../components/ui/Breadcrumbs.astro';
+import PrivacyDisclaimerNotice from '../../components/disclaimers/PrivacyDisclaimerNotice.astro';
+import StepWorkflowSection from '../../components/ui/StepWorkflowSection.astro';
+import PanelTypeBreakdownSection from '../../components/ui/PanelTypeBreakdownSection.astro';
+
+import StatusCard from '../../components/ui/sidebar/StatusCard.astro';
+import MetricCard from '../../components/ui/sidebar/MetricCard.astro';
+import ConfigurationCard from '../../components/ui/sidebar/ConfigurationCard.astro';
+import ShortcutCard from '../../components/ui/sidebar/ShortcutCard.astro';
+
+const title = "Browser Camera Video & Audio Recorder";
+const description = "Record HD camera video directly in your browser with audio sync, 100% local memory processing, and 1-click WEBM/MP4 file download.";
+
+const faqs = [
+  {
+    question: "How does in-browser camera video recording work?",
+    answer: "Our Video Recording tool uses the W3C MediaRecorder API to capture your webcam stream and microphone audio track simultaneously, encoding the video stream into high-quality VP9/WebM format directly in browser memory."
+  },
+  {
+    question: "Are my recorded video files uploaded to any server?",
+    answer: "No. 100% of the video recording and encoding takes place inside your device's browser memory (RAM). Zero video data is ever sent across the network, ensuring complete privacy."
+  },
+  {
+    question: "How do I download my recorded video file?",
+    answer: "Once you click 'Stop & Save', an instant video preview player appears along with a 'Download Video' button that exports the recorded WEBM video directly to your downloads folder."
+  },
+  {
+    question: "Can I switch between multiple cameras and external webcams?",
+    answer: "Yes. Use the camera device drop-down selector in the top bar to switch between built-in laptop cameras, USB webcams, and mobile camera sensors."
+  },
+  {
+    question: "Why does my browser request microphone permission?",
+    answer: "Microphone permission is required to synchronize live audio with your video feed so your recorded file includes crisp speech and sound."
+  },
+  {
+    question: "What video codecs are supported for recording?",
+    answer: "The MediaRecorder engine automatically selects modern VP9 or VP8 video codecs combined with Opus audio encoding for optimal clarity and small file size."
+  },
+  {
+    question: "Is there a limit on how long I can record?",
+    answer: "Recording length is limited only by your computer's available browser RAM memory. For standard 1080p recordings, several minutes of video consume less than 100MB of RAM."
+  },
+  {
+    question: "Can I pause and resume my recording?",
+    answer: "Yes. Clicking 'Pause' halts video chunk collection without stopping the session. Click 'Resume' when you are ready to continue capturing video."
+  },
+  {
+    question: "Does this video recorder work on mobile devices?",
+    answer: "Yes. Opening this tool in Chrome on Android or Safari on iOS allows recording front or rear camera video directly to your camera roll or downloads."
+  },
+  {
+    question: "Why is WebRTC video recording faster than desktop software?",
+    answer: "WebRTC interacts directly with hardware GPU video encoders built into modern browsers, providing hardware-accelerated encoding without installing heavy desktop software."
+  }
+];
+
+const breadcrumbs = [
+  { label: 'Home', href: '/' },
+  { label: 'Camera Test', href: '/camera-test' },
+  { label: title, href: '#' }
+];
+---
+
+<Layout title={title} description={description} faqs={faqs}>
+  <div class="max-w-7xl mx-auto px-4 py-6 sm:py-8 min-w-0 w-full overflow-hidden font-sans">
+    <Breadcrumbs items={breadcrumbs} />
+
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 mt-6">
+      
+      <!-- Left Primary Diagnostic Canvas (lg:col-span-8) -->
+      <div class="lg:col-span-8 space-y-8 min-w-0">
+        <!-- Hero Header Deck -->
+        <header class="relative w-full rounded-3xl border border-white/10 bg-[#121215]/90 backdrop-blur-xl p-6 sm:p-8 md:p-10 shadow-2xl space-y-4 overflow-hidden group select-none">
+          <div class="absolute -top-24 -left-24 w-72 h-72 bg-rose-500/10 rounded-full blur-3xl pointer-events-none group-hover:bg-rose-500/15 transition-all duration-500"></div>
+          <div class="absolute -bottom-24 -right-24 w-72 h-72 bg-pink-500/10 rounded-full blur-3xl pointer-events-none group-hover:bg-pink-500/15 transition-all duration-500"></div>
+
+          <div class="relative z-10 space-y-3 max-w-3xl min-w-0 w-full">
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-rose-400 text-xs font-mono font-bold tracking-wide flex-wrap shadow-inner">
+              <span class="w-2 h-2 rounded-full bg-rose-400 animate-pulse shrink-0"></span>
+              <span>100% LOCAL BROWSER MEDIARECORDER</span>
+            </div>
+            <h1 class="text-3xl sm:text-5xl font-extrabold text-white tracking-tight font-sans break-words min-w-0">
+              {title}
+            </h1>
+            <p class="text-sm sm:text-base text-zinc-300 font-sans leading-relaxed min-w-0">
+              Record HD camera video with audio sync in your browser. All video buffers are processed locally with 0% cloud uploads and 1-click file download.
+            </p>
+          </div>
+        </header>
+
+        <!-- Privacy & Security Disclaimer Banner -->
+        <PrivacyDisclaimerNotice />
+
+        <!-- Main Diagnostic Instrument -->
+        <div class="rounded-3xl border border-white/10 bg-[#121215]/90 backdrop-blur-xl p-4 sm:p-6 shadow-2xl">
+          <VideoRecorderCanvas />
+        </div>
+
+        <StepWorkflowSection />
+        <PanelTypeBreakdownSection />
+
+        <FAQSection faqs={faqs} />
+      </div>
+
+      <!-- Right Sidebar (lg:col-span-4) -->
+      <div class="lg:col-span-4 space-y-6 sticky top-24 self-start min-w-0">
+        <StatusCard
+          status="pass"
+          label="MEDIARECORDER ACTIVE"
+          subtitle="WebRTC Camera Engine"
+          score="1080p"
+          maxScore="HD"
+          details={[
+            { label: 'Audio Track', value: 'Enabled (Opus)' },
+            { label: 'Privacy Mode', value: '100% Local RAM' }
+          ]}
+        />
+
+        <MetricCard
+          title="Recording Telemetry"
+          subtitle="MediaStream Metrics"
+          badgeText="Local Encoding"
+          metrics={[
+            { id: 'recTime', label: 'Duration', value: '00:00', unit: 'sec', status: 'pass' },
+            { id: 'recSize', label: 'Buffer Size', value: '0.0', unit: 'MB', status: 'pass' }
+          ]}
+        />
+
+        <ConfigurationCard
+          title="Recorder Options"
+          subtitle="Codec & Storage"
+          configs={[
+            { label: 'Container', value: 'WEBM / MP4' },
+            { label: 'Video Codec', value: 'VP9 / H.264' },
+            { label: 'Audio Codec', value: 'Opus 48kHz' }
+          ]}
+        />
+
+        <ShortcutCard
+          shortcuts={[
+            { keys: ['R'], label: 'Start / Stop Recording' },
+            { keys: ['P'], label: 'Pause / Resume' }
+          ]}
+        />
+      </div>
+
+    </div>
+  </div>
+</Layout>

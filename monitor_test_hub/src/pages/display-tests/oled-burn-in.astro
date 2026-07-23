@@ -4,6 +4,11 @@ import Breadcrumbs from '../../components/ui/Breadcrumbs.astro';
 import TestSwitcherBar from '../../components/ui/TestSwitcherBar.astro';
 import OledBurnInAnalyzer from '../../components/diagnostics/OledBurnInAnalyzer.astro';
 
+import ConfigurationCard from '../../components/ui/sidebar/ConfigurationCard.astro';
+import MetricCard from '../../components/ui/sidebar/MetricCard.astro';
+import StatusCard from '../../components/ui/sidebar/StatusCard.astro';
+import InfoCard from '../../components/ui/sidebar/InfoCard.astro';
+
 const breadcrumbItems = [
   { label: 'Display Suite', href: '/display-tests' },
   { label: 'OLED Burn-In Risk Analyzer' }
@@ -21,22 +26,87 @@ const displayTests = [
   title="OLED Burn-In & Image Retention Risk Analyzer | Monitor Test Hub"
   description="Client-side OLED burn-in risk calculator and 5% near-black uniformity inspector for QD-OLED, WOLED, and AMOLED displays. Estimate panel lifespan and retention."
 >
-  <div class="max-w-7xl mx-auto px-4 py-8 space-y-8">
+  <div class="max-w-7xl mx-auto px-4 py-8 space-y-8 min-w-0 w-full overflow-hidden font-sans">
     <Breadcrumbs items={breadcrumbItems} />
 
-    <header class="space-y-3 border-b border-border-hairline pb-6">
-      <div class="flex items-center gap-2 text-status-pass text-xs font-mono font-bold uppercase tracking-wider">
-        <span class="w-2 h-2 rounded-full bg-status-pass led-glow-pass"></span>
-        HARDWARE LIFESPAN METRIC
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+      
+      <!-- Left Canvas (lg:col-span-8) -->
+      <div class="lg:col-span-8 space-y-8 min-w-0">
+        <header class="space-y-3 border-b border-border-hairline pb-6">
+          <div class="flex items-center gap-2 text-status-pass text-xs font-mono font-bold uppercase tracking-wider">
+            <span class="w-2 h-2 rounded-full bg-status-pass led-glow-pass"></span>
+            HARDWARE LIFESPAN METRIC
+          </div>
+          <h1 class="text-3xl sm:text-4xl font-extrabold text-text-primary tracking-tight">OLED Burn-In Risk Analyzer</h1>
+          <p class="text-sm text-text-secondary max-w-3xl leading-relaxed">
+            Inspect 5% near-black uniformity, calculate cumulative image retention risk, and evaluate luminance degradation across QD-OLED, WOLED, and AMOLED panels under ISO 9241-307 standards.
+          </p>
+        </header>
+
+        <OledBurnInAnalyzer />
+
+        <TestSwitcherBar tests={displayTests} currentId="oled-burn-in" />
       </div>
-      <h1 class="text-3xl sm:text-4xl font-extrabold text-text-primary tracking-tight">OLED Burn-In Risk Analyzer</h1>
-      <p class="text-sm text-text-secondary max-w-3xl">
-        Inspect 5% near-black uniformity, calculate cumulative image retention risk, and evaluate luminance degradation across QD-OLED, WOLED, and AMOLED panels under ISO 9241-307 standards.
-      </p>
-    </header>
 
-    <OledBurnInAnalyzer />
+      <!-- Right Modular Sidebar (lg:col-span-4) -->
+      <div class="lg:col-span-4 space-y-6 sticky top-24 self-start min-w-0">
+        <ConfigurationCard
+          title="Usage Parameters"
+          subtitle="Hours & Brightness"
+          controls={[
+            {
+              id: 'panelTech',
+              label: 'OLED Panel Generation',
+              type: 'select',
+              value: 'QD-OLED-Gen2',
+              options: [
+                { value: 'WOLED-LG', label: 'LG WOLED (WBE/EX)' },
+                { value: 'QD-OLED-Gen1', label: 'Samsung QD-OLED Gen 1' },
+                { value: 'QD-OLED-Gen2', label: 'Samsung QD-OLED Gen 2/3' },
+                { value: 'AMOLED', label: 'Mobile AMOLED' }
+              ]
+            },
+            { id: 'dailyHours', label: 'Daily Operating Hours', type: 'slider', min: 1, max: 18, step: 1, value: 8, unit: 'hrs/day' },
+            { id: 'brightnessNits', label: 'Static SDR Brightness', type: 'slider', min: 100, max: 400, step: 25, value: 200, unit: 'nits' }
+          ]}
+        />
 
-    <TestSwitcherBar tests={displayTests} currentId="oled-burn-in" />
+        <MetricCard
+          title="Decay Projection"
+          subtitle="Subpixel Degradation Model"
+          badgeText="Lifespan"
+          layout="list"
+          metrics={[
+            { id: 'subpixelDecay', label: 'Blue Subpixel Decay (5 Yrs)', value: '3.4', unit: '%', status: 'pass' },
+            { id: 'estimatedLifespan', label: 'Projected Panel Lifespan', value: '7.8', unit: 'Years', status: 'pass' }
+          ]}
+        />
+
+        <StatusCard
+          status="pass"
+          label="LOW BURN-IN RISK"
+          subtitle="Sub-Pixel Decay Model"
+          score="94"
+          maxScore="100"
+          details={[
+            { label: 'Pixel Shift API', value: 'ENABLED' },
+            { label: 'Logo Dimming', value: 'HIGH' }
+          ]}
+        />
+
+        <InfoCard
+          title="OLED Panel Care Tips"
+          subtitle="Maintenance Best Practices"
+          badgeText="OLED Care"
+          osdTips={[
+            "Enable OS taskbar auto-hide to prevent static UI element retention.",
+            "Run Pixel Refresh / Panel Clean after 4 cumulative operating hours.",
+            "Set SDR desktop brightness to <= 200 nits for general productivity."
+          ]}
+        />
+      </div>
+
+    </div>
   </div>
 </Layout>

@@ -1,0 +1,55 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import Breadcrumbs from '../../components/ui/Breadcrumbs.astro';
+import FAQSection from '../../components/ui/FAQSection.astro';
+import LoadCellPedalCanvas from '../../components/diagnostics/LoadCellPedalCanvas.astro';
+
+const breadcrumbs = [
+  { label: 'Controller Diagnostic Suite', href: '/controller-test' },
+  { label: 'Load-Cell Pedal Linearity Test' }
+];
+
+const faqs = [
+  { question: "What is a load-cell pedal?", answer: "A load-cell pedal measures the actual pressure/force applied to the pedal using a strain gauge, rather than the physical travel distance measured by a standard potentiometer. This perfectly mimics real car brakes." },
+  { question: "How does the linearity curve inspector work?", answer: "It captures the raw telemetry from the W3C Gamepad API in real-time and plots the input curve over a HTML5 canvas, allowing you to identify spiking, deadzones, or non-linear response curves in your sim racing pedals." },
+  { question: "Does this support Fanatec or Heusinkveld load-cell pedals?", answer: "Yes, as long as they are connected as a USB HID Gamepad or Racing Wheel device and exposed to the browser via the standard W3C Gamepad API." },
+  { question: "Why is my brake pedal registering 50% when idle?", answer: "Many racing wheels use a -1.0 to +1.0 axis for pedals, which can sometimes incorrectly report 50% (0.0) until fully depressed once to calibrate the browser's raw input range." },
+  { question: "What is pedal deadzone?", answer: "A deadzone is the initial portion of pedal travel where no input is registered, often configured in sim racing software to prevent accidental braking from simply resting your foot on the pedal." },
+  { question: "How can I fix a spiking potentiometer pedal?", answer: "Spiking is usually caused by dust, hair, or carbon track wear in a potentiometer. Cleaning it with compressed air or contact cleaner can often resolve the jitter shown on the telemetry graph." },
+  { question: "Can I test my clutch pedal bite point?", answer: "Yes, you can monitor the green clutch telemetry curve to see exactly when the clutch engages digitally and evaluate its throw distance." },
+  { question: "Are drivers required for this test?", answer: "No, this test uses native HTML5 Web APIs and operates 100% within your browser sandbox, requiring zero driver installations or external telemetry software." },
+  { question: "Why do some pedals use Hall Effect sensors instead of load-cells?", answer: "Hall Effect sensors use magnets to measure pedal position without physical contact, making them immune to dust and wear. However, they measure distance, not pressure like a load-cell." },
+  { question: "Does this save my telemetry data?", answer: "No. All telemetry and canvas rendering is processed locally in real-time. We do not store, log, or transmit your pedal input data." }
+];
+---
+
+<Layout
+  title="Load-Cell Pedal Linearity & Strain Gauge Inspector | Monitor Test Hub"
+  description="Test racing wheel load-cell pedals, strain gauges, and potentiometer linearity curves in real-time. Compatible with Fanatec, Heusinkveld, Logitech, and Thrustmaster."
+  faqs={faqs}
+>
+  <div class="max-w-7xl mx-auto px-4 py-6 sm:py-8 min-w-0 w-full overflow-hidden font-sans">
+    <Breadcrumbs items={breadcrumbs} />
+
+    <div class="space-y-8 min-w-0 mt-6">
+      <header class="space-y-4 text-center max-w-4xl mx-auto min-w-0 w-full">
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-red-500/10 border border-red-500/30 text-xs font-mono text-red-400 font-bold uppercase tracking-wider flex-wrap min-w-0 justify-center">
+          <svg class="w-4 h-4 text-red-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"/></svg>
+          <span class="break-words min-w-0">SIM RACING DIAGNOSTICS</span>
+        </div>
+        <h1 class="text-2xl sm:text-5xl font-extrabold text-text-primary tracking-tight font-sans break-words min-w-0">
+          Load-Cell Pedal Linearity Inspector
+        </h1>
+        <p class="text-sm sm:text-base text-text-secondary max-w-3xl mx-auto leading-relaxed font-sans min-w-0">
+          Real-time HTML5 strain gauge telemetry for sim racing load-cell pedals. Identify deadzones, signal spiking, and potentiometer noise directly in your browser.
+        </p>
+      </header>
+
+      <LoadCellPedalCanvas />
+
+      <div class="pt-8">
+        <FAQSection faqs={faqs} />
+      </div>
+    </div>
+  </div>
+</Layout>

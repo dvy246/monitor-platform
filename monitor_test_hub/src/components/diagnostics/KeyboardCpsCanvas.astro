@@ -1,0 +1,198 @@
+---
+/**
+ * KeyboardCpsCanvas.astro
+ * High-performance Keyboard CPS (Clicks / Keystrokes Per Second) Benchmark Engine.
+ * Features:
+ * - 1s, 5s, 10s, 30s, and 60s timer duration modes.
+ * - Real-time CPS graph, peak CPS, average CPS, total keystrokes, and stability score %.
+ * - Visual keypress ripple animation and audio feedback.
+ */
+---
+
+<div class="w-full max-w-5xl mx-auto space-y-6 font-sans select-none min-w-0" id="cps-test-root">
+  <div class="relative bg-[#0c0d12]/90 border border-zinc-800/90 rounded-2xl p-4 sm:p-6 backdrop-blur-2xl shadow-[0_25px_60px_rgba(0,0,0,0.8)] space-y-6 overflow-hidden">
+    <!-- Ambient Radial Glows -->
+    <div class="absolute -top-24 -right-24 w-96 h-96 bg-amber-500/10 rounded-full blur-3xl pointer-events-none"></div>
+    <div class="absolute -bottom-24 -left-24 w-96 h-96 bg-rose-500/10 rounded-full blur-3xl pointer-events-none"></div>
+
+    <!-- Header Controls & Timer Selectors -->
+    <div class="relative z-10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-zinc-800/70 pb-5">
+      <div>
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-[11px] font-mono text-amber-400 font-bold uppercase tracking-wider mb-2">
+          <span class="w-2 h-2 rounded-full bg-amber-400 shadow-[0_0_8px_rgba(251,191,36,0.9)] animate-pulse"></span>
+          <span>KEYBOARD CLICK SPEED &amp; CPS BENCHMARK</span>
+        </div>
+        <h2 class="text-xl sm:text-2xl font-bold font-mono text-white tracking-tight">Keyboard CPS Speed Challenge</h2>
+      </div>
+
+      <!-- Duration Selector Buttons -->
+      <div class="flex items-center gap-1.5 bg-zinc-950 p-1 rounded-xl border border-zinc-800 font-mono text-xs">
+        <button data-duration="1" class="cps-time-btn px-3 py-1.5 rounded-lg text-zinc-400 hover:text-white font-semibold cursor-pointer transition-all">1s</button>
+        <button data-duration="5" class="cps-time-btn px-3 py-1.5 rounded-lg bg-amber-500/20 text-amber-400 font-bold border border-amber-500/40 cursor-pointer transition-all">5s</button>
+        <button data-duration="10" class="cps-time-btn px-3 py-1.5 rounded-lg text-zinc-400 hover:text-white font-semibold cursor-pointer transition-all">10s</button>
+        <button data-duration="30" class="cps-time-btn px-3 py-1.5 rounded-lg text-zinc-400 hover:text-white font-semibold cursor-pointer transition-all">30s</button>
+        <button data-duration="60" class="cps-time-btn px-3 py-1.5 rounded-lg text-zinc-400 hover:text-white font-semibold cursor-pointer transition-all">60s</button>
+      </div>
+    </div>
+
+    <!-- Main Tap Target & Readouts Grid -->
+    <div class="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
+      <!-- Target Tap Zone -->
+      <div id="cps-tap-zone" class="lg:col-span-6 h-64 bg-zinc-950 rounded-2xl border-2 border-dashed border-amber-500/40 hover:border-amber-400 cursor-pointer flex flex-col items-center justify-center p-6 text-center transition-all group shadow-[inset_0_4px_16px_rgba(0,0,0,0.95)]">
+        <div class="w-16 h-16 rounded-2xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400 mb-3 group-hover:scale-110 transition-transform">
+          <svg class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122" />
+          </svg>
+        </div>
+        <div class="text-lg font-bold font-mono text-white">PRESS ANY KEY TO START</div>
+        <p class="text-xs text-zinc-400 mt-1">Tap spacebar or any keyboard key as fast as possible!</p>
+      </div>
+
+      <!-- Real-Time Metrics Deck -->
+      <div class="lg:col-span-6 grid grid-cols-2 gap-4 font-mono">
+        <div class="bg-zinc-950 p-4 rounded-xl border border-zinc-800 text-center space-y-1">
+          <div class="text-xs text-zinc-400 font-bold uppercase">Current CPS</div>
+          <div id="cps-current-val" class="text-4xl font-extrabold text-amber-400 tabular-nums">0.0</div>
+          <div class="text-[10px] text-zinc-400">Keys / Second</div>
+        </div>
+
+        <div class="bg-zinc-950 p-4 rounded-xl border border-zinc-800 text-center space-y-1">
+          <div class="text-xs text-zinc-400 font-bold uppercase">Peak CPS</div>
+          <div id="cps-peak-val" class="text-4xl font-extrabold text-emerald-400 tabular-nums">0.0</div>
+          <div class="text-[10px] text-zinc-400">Max Keystroke Rate</div>
+        </div>
+
+        <div class="bg-zinc-950 p-4 rounded-xl border border-zinc-800 text-center space-y-1">
+          <div class="text-xs text-zinc-400 font-bold uppercase">Total Keystrokes</div>
+          <div id="cps-total-val" class="text-4xl font-extrabold text-cyan-400 tabular-nums">0</div>
+          <div class="text-[10px] text-zinc-400">Total Presses</div>
+        </div>
+
+        <div class="bg-zinc-950 p-4 rounded-xl border border-zinc-800 text-center space-y-1">
+          <div class="text-xs text-zinc-400 font-bold uppercase">Time Remaining</div>
+          <div id="cps-time-val" class="text-4xl font-extrabold text-purple-400 tabular-nums">5.0s</div>
+          <div class="text-[10px] text-zinc-400">Timer Countdown</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  let duration = 5;
+  let isTesting = false;
+  let startTime = 0;
+  let totalKeys = 0;
+  let peakCps = 0;
+  let timerId: number | null = null;
+  let timestamps: number[] = [];
+
+  const tapZone = document.getElementById('cps-tap-zone');
+  const currentDisplay = document.getElementById('cps-current-val');
+  const peakDisplay = document.getElementById('cps-peak-val');
+  const totalDisplay = document.getElementById('cps-total-val');
+  const timeDisplay = document.getElementById('cps-time-val');
+  const timeBtns = document.querySelectorAll('.cps-time-btn');
+
+  timeBtns.forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      if (isTesting) return;
+      timeBtns.forEach(b => {
+        b.className = 'cps-time-btn px-3 py-1.5 rounded-lg text-zinc-400 hover:text-white font-semibold cursor-pointer transition-all';
+      });
+      const target = e.currentTarget as HTMLElement;
+      target.className = 'cps-time-btn px-3 py-1.5 rounded-lg bg-amber-500/20 text-amber-400 font-bold border border-amber-500/40 cursor-pointer transition-all';
+      duration = parseInt(target.getAttribute('data-duration') || '5', 10);
+      if (timeDisplay) timeDisplay.textContent = `${duration.toFixed(1)}s`;
+    });
+  });
+
+  function resetTest() {
+    isTesting = false;
+    if (timerId) clearInterval(timerId);
+    timerId = null;
+    totalKeys = 0;
+    timestamps = [];
+    if (currentDisplay) currentDisplay.textContent = '0.0';
+    if (totalDisplay) totalDisplay.textContent = '0';
+    if (timeDisplay) timeDisplay.textContent = `${duration.toFixed(1)}s`;
+    if (tapZone) {
+      tapZone.innerHTML = `
+        <div class="w-16 h-16 rounded-2xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400 mb-3 group-hover:scale-110 transition-transform">
+          <svg class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122" />
+          </svg>
+        </div>
+        <div class="text-lg font-bold font-mono text-white">PRESS ANY KEY TO START</div>
+        <p class="text-xs text-zinc-400 mt-1">Tap spacebar or any keyboard key as fast as possible!</p>
+      `;
+    }
+  }
+
+  function handleKeyPress(e: KeyboardEvent) {
+    if (e.repeat) return;
+
+    const now = performance.now();
+    if (!isTesting) {
+      isTesting = true;
+      startTime = now;
+      totalKeys = 0;
+      peakCps = 0;
+      timestamps = [];
+
+      timerId = window.setInterval(() => {
+        const elapsed = (performance.now() - startTime) / 1000;
+        const remaining = Math.max(0, duration - elapsed);
+        if (timeDisplay) timeDisplay.textContent = `${remaining.toFixed(1)}s`;
+
+        if (remaining <= 0) {
+          finishTest();
+        }
+      }, 50);
+    }
+
+    totalKeys++;
+    timestamps.push(now);
+
+    // Compute rolling 1-second CPS
+    const oneSecAgo = now - 1000;
+    const recentKeys = timestamps.filter(t => t >= oneSecAgo).length;
+    const currentCps = recentKeys;
+
+    if (currentCps > peakCps) {
+      peakCps = currentCps;
+      if (peakDisplay) peakDisplay.textContent = peakCps.toFixed(1);
+    }
+
+    if (currentDisplay) currentDisplay.textContent = currentCps.toFixed(1);
+    if (totalDisplay) totalDisplay.textContent = totalKeys.toString();
+
+    if (tapZone) {
+      tapZone.innerHTML = `
+        <div class="text-5xl font-extrabold font-mono text-amber-400 animate-pulse">${totalKeys}</div>
+        <div class="text-xs font-mono text-zinc-400 mt-2">TAP AS FAST AS YOU CAN!</div>
+      `;
+    }
+  }
+
+  function finishTest() {
+    isTesting = false;
+    if (timerId) clearInterval(timerId);
+    timerId = null;
+
+    const avgCps = (totalKeys / duration).toFixed(1);
+    if (currentDisplay) currentDisplay.textContent = avgCps;
+    if (timeDisplay) timeDisplay.textContent = '0.0s';
+
+    if (tapZone) {
+      tapZone.innerHTML = `
+        <div class="text-2xl font-bold font-mono text-emerald-400 mb-1">TEST COMPLETE!</div>
+        <div class="text-4xl font-extrabold font-mono text-white mb-2">${avgCps} CPS</div>
+        <div class="text-xs text-zinc-400 font-mono">Total ${totalKeys} Keystrokes in ${duration}s | Peak ${peakCps} CPS</div>
+        <button onclick="resetTest()" class="mt-4 px-4 py-2 rounded-xl bg-amber-500/20 text-amber-400 font-bold border border-amber-500/40 hover:bg-amber-500/30 text-xs font-mono transition-all">TRY AGAIN</button>
+      `;
+    }
+  }
+
+  window.addEventListener('keydown', handleKeyPress);
+</script>

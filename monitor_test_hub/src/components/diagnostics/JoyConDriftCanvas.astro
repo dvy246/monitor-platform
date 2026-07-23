@@ -1,0 +1,92 @@
+---
+/**
+ * JoyConDriftCanvas.astro
+ * Nintendo Joy-Con Split Left/Right Drift & SL/SR Button Diagnostic Engine.
+ * Features:
+ * - Left Joy-Con & Right Joy-Con Dual Layout Matrix.
+ * - SL & SR Shoulder Button Actuation Check.
+ * - Stick Drift Coordinate Plot & Centering Offset.
+ */
+---
+
+<div class="w-full max-w-5xl mx-auto space-y-6 font-sans select-none min-w-0" id="joycon-test-root">
+  <div class="relative bg-[#0c0d12]/90 border border-zinc-800/90 rounded-2xl p-4 sm:p-6 backdrop-blur-2xl shadow-[0_25px_60px_rgba(0,0,0,0.8)] space-y-6 overflow-hidden">
+    <!-- Ambient Glows (Joy-Con Neon Blue & Neon Red) -->
+    <div class="absolute -top-24 -left-24 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none"></div>
+    <div class="absolute -bottom-24 -right-24 w-96 h-96 bg-rose-500/10 rounded-full blur-3xl pointer-events-none"></div>
+
+    <div class="relative z-10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-zinc-800/70 pb-5">
+      <div>
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/30 text-[11px] font-mono text-cyan-400 font-bold uppercase tracking-wider mb-2">
+          <span class="w-2 h-2 rounded-full bg-cyan-400 shadow-[0_0_8px_rgba(34,211,238,0.9)] animate-pulse"></span>
+          <span>NINTENDO JOY-CON DRIFT &amp; SL/SR DIAGNOSTIC SUITE</span>
+        </div>
+        <h2 class="text-xl sm:text-2xl font-bold font-mono text-white tracking-tight">Joy-Con Drift &amp; Button Matrix Tester</h2>
+      </div>
+
+      <div class="text-xs font-mono text-zinc-400 bg-zinc-950 px-3 py-1.5 rounded-lg border border-zinc-800">
+        Left &amp; Right Joy-Con Pair Mode
+      </div>
+    </div>
+
+    <!-- Joy-Con Split Layout (Left Blue vs Right Red) -->
+    <div class="relative z-10 grid grid-cols-1 md:grid-cols-2 gap-6">
+      <!-- Left Joy-Con (Neon Cyan / Blue) -->
+      <div class="bg-zinc-950 p-5 rounded-2xl border border-cyan-500/30 space-y-4 shadow-[inset_0_4px_16px_rgba(0,0,0,0.95)]">
+        <div class="flex items-center justify-between font-mono">
+          <span class="text-xs font-bold text-cyan-400 uppercase">LEFT JOY-CON</span>
+          <div class="flex items-center gap-2">
+            <span class="px-2 py-0.5 rounded bg-zinc-900 text-[10px] font-bold text-zinc-400 border border-zinc-800">SL</span>
+            <span class="px-2 py-0.5 rounded bg-zinc-900 text-[10px] font-bold text-zinc-400 border border-zinc-800">SR</span>
+          </div>
+        </div>
+        <div class="text-center font-mono text-xs text-zinc-400">
+          Analog Drift: <span id="joycon-left-drift" class="text-cyan-400 font-bold">0.00%</span>
+        </div>
+      </div>
+
+      <!-- Right Joy-Con (Neon Red) -->
+      <div class="bg-zinc-950 p-5 rounded-2xl border border-rose-500/30 space-y-4 shadow-[inset_0_4px_16px_rgba(0,0,0,0.95)]">
+        <div class="flex items-center justify-between font-mono">
+          <span class="text-xs font-bold text-rose-400 uppercase">RIGHT JOY-CON</span>
+          <div class="flex items-center gap-2">
+            <span class="px-2 py-0.5 rounded bg-zinc-900 text-[10px] font-bold text-zinc-400 border border-zinc-800">SL</span>
+            <span class="px-2 py-0.5 rounded bg-zinc-900 text-[10px] font-bold text-zinc-400 border border-zinc-800">SR</span>
+          </div>
+        </div>
+        <div class="text-center font-mono text-xs text-zinc-400">
+          Analog Drift: <span id="joycon-right-drift" class="text-rose-400 font-bold">0.00%</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  function loop() {
+    const gamepads = navigator.getGamepads ? navigator.getGamepads() : [];
+    let gp: Gamepad | null = null;
+    for (let i = 0; i < gamepads.length; i++) {
+      if (gamepads[i]) { gp = gamepads[i]; break; }
+    }
+
+    if (gp && gp.axes.length >= 4) {
+      const lx = gp.axes[0] || 0;
+      const ly = gp.axes[1] || 0;
+      const rx = gp.axes[2] || 0;
+      const ry = gp.axes[3] || 0;
+
+      const lDist = Math.sqrt(lx * lx + ly * ly);
+      const rDist = Math.sqrt(rx * rx + ry * ry);
+
+      const lDriftEl = document.getElementById('joycon-left-drift');
+      const rDriftEl = document.getElementById('joycon-right-drift');
+
+      if (lDriftEl) lDriftEl.textContent = `${(lDist * 100).toFixed(2)}%`;
+      if (rDriftEl) rDriftEl.textContent = `${(rDist * 100).toFixed(2)}%`;
+    }
+
+    requestAnimationFrame(loop);
+  }
+  requestAnimationFrame(loop);
+</script>

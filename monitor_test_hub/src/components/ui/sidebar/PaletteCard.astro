@@ -1,0 +1,123 @@
+---
+export interface ColorSwatch {
+  id: string;
+  hex: string;
+  label?: string;
+  deltaE?: number;
+}
+
+export interface LayoutPreset {
+  id: string;
+  name: string;
+  keyCount?: number;
+}
+
+export interface Props {
+  title: string;
+  subtitle?: string;
+  swatches?: ColorSwatch[];
+  activeHex?: string;
+  allowCustomHex?: boolean;
+  layoutPresets?: LayoutPreset[];
+  activePresetId?: string;
+  badgeText?: string;
+  class?: string;
+}
+
+const {
+  title,
+  subtitle = "Color & Pattern Selection",
+  swatches = [],
+  activeHex = "#FFFFFF",
+  allowCustomHex = true,
+  layoutPresets = [],
+  activePresetId,
+  badgeText = "Swatches",
+  class: className = ""
+} = Astro.props;
+---
+
+<div class:list={[
+  "relative overflow-hidden rounded-3xl border border-white/10 bg-[#121215]/90 p-6 backdrop-blur-xl shadow-2xl font-sans space-y-5 select-none hover:border-white/20 transition-colors duration-200 group",
+  className
+]} data-palette-card>
+  <!-- Header -->
+  <div class="flex items-center justify-between border-b border-white/10 pb-4 relative z-10">
+    <div class="flex items-center gap-3">
+      <div class="w-10 h-10 rounded-2xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center text-purple-400 shrink-0 shadow-[inset_0_1px_1px_rgba(255,255,255,0.2)]">
+        <!-- SVG Icon: Swatch -->
+        <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01" />
+        </svg>
+      </div>
+      <div>
+        <h3 class="text-base font-bold text-white tracking-tight">{title}</h3>
+        <p class="text-[11px] text-zinc-400 font-mono">{subtitle}</p>
+      </div>
+    </div>
+    <span class="text-[11px] font-mono text-purple-400 bg-purple-500/10 px-2.5 py-1 rounded-full border border-purple-500/20">
+      {badgeText}
+    </span>
+  </div>
+
+  <!-- Swatches Grid -->
+  {swatches.length > 0 && (
+    <div class="grid grid-cols-4 gap-2.5 relative z-10">
+      {swatches.map(s => (
+        <button
+          type="button"
+          data-swatch-hex={s.hex}
+          class:list={[
+            "w-full min-h-[44px] rounded-xl border transition-colors duration-200 cursor-pointer focus:outline-none focus:ring-2 focus:ring-emerald-500/50 flex flex-col items-center justify-center p-1 relative group/swatch",
+            activeHex.toLowerCase() === s.hex.toLowerCase()
+              ? "border-emerald-400 ring-2 ring-emerald-400/50"
+              : "border-white/10 hover:border-white/30"
+          ]}
+          style={`background-color: ${s.hex}`}
+          title={s.label || s.hex}
+        >
+          {s.label && (
+            <span class="text-[9px] font-mono font-bold px-1 rounded bg-black/60 text-white backdrop-blur-sm">
+              {s.label}
+            </span>
+          )}
+        </button>
+      ))}
+    </div>
+  )}
+
+  <!-- Layout Presets Grid -->
+  {layoutPresets.length > 0 && (
+    <div class="grid grid-cols-2 gap-2 relative z-10">
+      {layoutPresets.map(lp => (
+        <button
+          type="button"
+          data-layout-id={lp.id}
+          class:list={[
+            "min-h-[44px] px-3 py-2.5 rounded-xl border text-xs font-mono font-bold transition-colors duration-200 cursor-pointer focus:outline-none focus:ring-2 focus:ring-emerald-500/50 flex items-center justify-between",
+            activePresetId === lp.id
+              ? "bg-purple-500/20 border-purple-500/50 text-purple-300"
+              : "bg-[#1a1a24] border-white/10 text-zinc-300 hover:bg-white/[0.08]"
+          ]}
+        >
+          <span>{lp.name}</span>
+          {lp.keyCount !== undefined && <span class="text-[10px] text-zinc-500">{lp.keyCount} Keys</span>}
+        </button>
+      ))}
+    </div>
+  )}
+
+  <!-- Custom Hex Input -->
+  {allowCustomHex && (
+    <div class="flex items-center gap-2 pt-2 border-t border-white/10 relative z-10 font-mono text-xs">
+      <span class="text-zinc-400">Hex:</span>
+      <input
+        type="text"
+        value={activeHex}
+        placeholder="#FFFFFF"
+        class="w-full min-h-[44px] px-3.5 rounded-xl bg-[#1a1a24] border border-white/20 text-white font-mono text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500/50"
+        data-custom-hex-input
+      />
+    </div>
+  )}
+</div>

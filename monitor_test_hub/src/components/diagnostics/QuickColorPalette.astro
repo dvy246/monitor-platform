@@ -39,7 +39,7 @@ const presetColors = [
   <!-- Header -->
   <div class="flex items-center justify-between border-b border-white/10 pb-3.5 relative z-10">
     <div class="flex items-center gap-3">
-      <div class="w-10 h-10 rounded-2xl bg-purple-500/15 border border-purple-500/30 flex items-center justify-center text-purple-400 shadow-[inset_0_1px_1px_rgba(255,255,255,0.3),0_0_15px_rgba(168,85,247,0.2)] shrink-0 transition-transform duration-300 group-hover:scale-105">
+      <div class="w-10 h-10 rounded-2xl bg-purple-500/15 border border-purple-500/30 flex items-center justify-center text-purple-400 shadow-[inset_0_1px_1px_rgba(255,255,255,0.3),0_0_15px_rgba(168,85,247,0.2)] shrink-0 transition-colors duration-300 group-hover:border-purple-400">
         <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
           <path stroke-linecap="round" stroke-linejoin="round" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"/>
         </svg>
@@ -62,9 +62,9 @@ const presetColors = [
           data-palette-hex={c.hex}
           data-palette-name={c.name}
           class:list={[
-            "quick-palette-swatch w-full h-11 rounded-2xl border transition-all duration-200 ease-[cubic-bezier(0.16,1,0.3,1)] transform hover:scale-105 active:scale-95 cursor-pointer flex items-center justify-center relative group/swatch focus:outline-none focus:ring-2 focus:ring-purple-400/50 shadow-[inset_0_1px_1px_rgba(255,255,255,0.3)]",
+            "quick-palette-swatch w-full h-11 min-h-[44px] min-w-[44px] rounded-2xl border transition-all duration-200 ease-[cubic-bezier(0.16,1,0.3,1)] cursor-pointer flex items-center justify-center relative group/swatch focus:outline-none focus:ring-2 focus:ring-purple-400/50 shadow-[inset_0_1px_1px_rgba(255,255,255,0.3)]",
             isActive 
-              ? "border-white scale-105 ring-2 ring-purple-500/60 shadow-[0_0_20px_rgba(168,85,247,0.4)]" 
+              ? "border-white ring-2 ring-purple-500/60 shadow-[0_0_20px_rgba(168,85,247,0.4)]" 
               : "border-white/20 hover:border-white/60 hover:shadow-[0_4px_12px_rgba(0,0,0,0.4)]"
           ]}
           style={`background-color: ${c.hex};`}
@@ -76,7 +76,7 @@ const presetColors = [
             class:list={[
               "w-4 h-4 transition-all duration-200 ease-[cubic-bezier(0.16,1,0.3,1)]",
               c.isLight ? "text-black drop-shadow-xs" : "text-white drop-shadow-md",
-              isActive ? "scale-100 opacity-100" : "scale-50 opacity-0 group-hover/swatch:opacity-50 group-hover/swatch:scale-75"
+              isActive ? "scale-100 opacity-100" : "opacity-0 group-hover/swatch:opacity-50"
             ]} 
             fill="none" 
             viewBox="0 0 24 24" 
@@ -120,14 +120,14 @@ const presetColors = [
         const swatchHex = (swatch.getAttribute('data-palette-hex') || '').toUpperCase();
         const icon = swatch.querySelector('svg');
         if (swatchHex === cleanHex) {
-          swatch.classList.add('border-white', 'scale-105', 'ring-2', 'ring-purple-500/60', 'shadow-[0_0_20px_rgba(168,85,247,0.4)]');
+          swatch.classList.add('border-white', 'ring-2', 'ring-purple-500/60', 'shadow-[0_0_20px_rgba(168,85,247,0.4)]');
           swatch.classList.remove('border-white/20');
           if (icon) {
             icon.classList.remove('scale-50', 'opacity-0');
             icon.classList.add('scale-100', 'opacity-100');
           }
         } else {
-          swatch.classList.remove('border-white', 'scale-105', 'ring-2', 'ring-purple-500/60', 'shadow-[0_0_20px_rgba(168,85,247,0.4)]');
+          swatch.classList.remove('border-white', 'ring-2', 'ring-purple-500/60', 'shadow-[0_0_20px_rgba(168,85,247,0.4)]');
           swatch.classList.add('border-white/20');
           if (icon) {
             icon.classList.remove('scale-100', 'opacity-100');

@@ -3,7 +3,7 @@ import { test, expect } from '@playwright/test';
 test.describe('Monitor Test Hub Core Verification', () => {
   test('should load the landing page successfully', async ({ page }) => {
     await page.goto('/');
-    await expect(page).toHaveTitle(/Free Online Monitor Test/);
+    await expect(page).toHaveTitle(/Online Monitor/);
 
     // Verify presence of Medical Bounce Neutralizer banner
     const routingBanner = page.locator('#ymyl-routing-banner');

@@ -1,0 +1,119 @@
+---
+export interface Props {
+  status?: 'pass' | 'warn' | 'fail' | 'testing' | 'neutral';
+  label: string;
+  subtitle?: string;
+  score?: number | string;
+  maxScore?: number | string;
+  ringGlow?: boolean;
+  details?: { label: string; value: string }[];
+  class?: string;
+}
+
+const {
+  status = "pass",
+  label,
+  subtitle = "Hardware Diagnostic Status",
+  score,
+  maxScore,
+  ringGlow = true,
+  details = [],
+  class: className = ""
+} = Astro.props;
+
+const statusTheme = {
+  pass: {
+    bg: 'bg-emerald-500/10',
+    border: 'border-emerald-500/30',
+    text: 'text-emerald-400',
+    ring: 'shadow-[0_0_30px_rgba(16,185,129,0.3)]',
+    badge: 'PASS',
+    iconPath: 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z'
+  },
+  warn: {
+    bg: 'bg-amber-500/10',
+    border: 'border-amber-500/30',
+    text: 'text-amber-400',
+    ring: 'shadow-[0_0_30px_rgba(245,158,11,0.3)]',
+    badge: 'WARN',
+    iconPath: 'M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z'
+  },
+  fail: {
+    bg: 'bg-rose-500/10',
+    border: 'border-rose-500/30',
+    text: 'text-rose-400',
+    ring: 'shadow-[0_0_30px_rgba(244,63,94,0.3)]',
+    badge: 'FAIL',
+    iconPath: 'M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z'
+  },
+  testing: {
+    bg: 'bg-cyan-500/10',
+    border: 'border-cyan-500/30',
+    text: 'text-cyan-400',
+    ring: 'shadow-[0_0_30px_rgba(6,182,212,0.3)]',
+    badge: 'TESTING',
+    iconPath: 'M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15'
+  },
+  neutral: {
+    bg: 'bg-white/10',
+    border: 'border-white/20',
+    text: 'text-white',
+    ring: '',
+    badge: 'INFO',
+    iconPath: 'M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z'
+  }
+};
+
+const theme = statusTheme[status] || statusTheme.pass;
+---
+
+<div class:list={[
+  "relative overflow-hidden rounded-3xl border bg-[#121215]/90 p-6 backdrop-blur-xl shadow-2xl font-sans space-y-5 select-none transition-colors duration-200 group",
+  theme.border,
+  ringGlow && theme.ring,
+  className
+]}>
+  <!-- Ambient LED Ring Glow -->
+  <div class:list={["absolute -top-12 -right-12 w-32 h-32 rounded-full blur-2xl pointer-events-none opacity-60", theme.bg]}></div>
+
+  <!-- Main Status Readout -->
+  <div class="flex items-center justify-between relative z-10">
+    <div class="flex items-center gap-3.5">
+      <!-- LED Indicator Ring -->
+      <div class:list={["w-12 h-12 rounded-2xl flex items-center justify-center border shrink-0 shadow-[inset_0_1px_1px_rgba(255,255,255,0.2)]", theme.bg, theme.border, theme.text]}>
+        <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d={theme.iconPath} />
+        </svg>
+      </div>
+
+      <div>
+        <div class="flex items-center gap-2">
+          <span class:list={["font-mono text-xs font-black uppercase px-2 py-0.5 rounded-md border", theme.bg, theme.border, theme.text]}>
+            {theme.badge}
+          </span>
+          <h3 class="text-base font-bold text-white tracking-tight">{label}</h3>
+        </div>
+        <p class="text-[11px] text-zinc-400 font-mono pt-0.5">{subtitle}</p>
+      </div>
+    </div>
+
+    {score !== undefined && (
+      <div class="text-right font-mono">
+        <span class:list={["text-2xl font-black tracking-tight", theme.text]}>{score}</span>
+        {maxScore !== undefined && <span class="text-zinc-500 text-xs">/{maxScore}</span>}
+      </div>
+    )}
+  </div>
+
+  <!-- Detail Key-Value Grid -->
+  {details.length > 0 && (
+    <div class="grid grid-cols-2 gap-2 pt-2 border-t border-white/10 font-mono text-xs relative z-10">
+      {details.map(d => (
+        <div class="p-2.5 rounded-xl bg-white/[0.03] border border-white/[0.05]">
+          <span class="text-zinc-400 text-[10px] block">{d.label}</span>
+          <span class="text-white font-bold">{d.value}</span>
+        </div>
+      ))}
+    </div>
+  )}
+</div>

@@ -1,0 +1,123 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import DecibelMeterCanvas from '../../components/diagnostics/DecibelMeterCanvas.astro';
+import FAQSection from '../../components/ui/FAQSection.astro';
+import Breadcrumbs from '../../components/ui/Breadcrumbs.astro';
+import StepWorkflowSection from '../../components/ui/StepWorkflowSection.astro';
+import PrivacyDisclaimerNotice from '../../components/disclaimers/PrivacyDisclaimerNotice.astro';
+
+import StatusCard from '../../components/ui/sidebar/StatusCard.astro';
+import MetricCard from '../../components/ui/sidebar/MetricCard.astro';
+import ConfigurationCard from '../../components/ui/sidebar/ConfigurationCard.astro';
+import ShortcutCard from '../../components/ui/sidebar/ShortcutCard.astro';
+
+const title = "Real-Time Online Decibel Meter & Sound Level Test";
+const description = "Measure ambient room noise and microphone sound levels in real-time dBA SPL directly from your browser. Includes peak hold meter and OSHA safety thresholds.";
+
+const faqs = [
+  {
+    question: "How does this online decibel meter measure sound levels in dBA?",
+    answer: "Our decibel meter uses the Web Audio API AnalyserNode to process real-time microphone RMS amplitude data. It scales incoming signal voltage into dBA Sound Pressure Level (SPL) estimates from 30 dBA (quiet room) to 120+ dBA (extreme noise)."
+  },
+  {
+    question: "Is my microphone audio recorded or sent to any server?",
+    answer: "No. 100% private and browser-based. All microphone audio data is processed strictly inside your device's local RAM memory. Zero audio buffers are saved, recorded, or transmitted."
+  },
+  {
+    question: "What is the difference between dBA, dBFS, and SPL decibel scales?",
+    answer: "dBFS (Decibels Full Scale) measures digital audio signal levels relative to 0 dBFS clipping. dBA (A-weighted decibels) measures acoustic Sound Pressure Level (SPL) weighted to match human ear frequency sensitivity."
+  },
+  {
+    question: "What are safe decibel noise exposure limits according to OSHA?",
+    answer: "OSHA mandates that 85 dBA is the threshold for 8-hour continuous exposure without hearing protection. Continuous sounds above 90–100 dBA cause permanent hearing damage, while sound levels over 120 dBA cause immediate pain."
+  },
+  {
+    question: "Can I use this decibel meter on smartphone mobile browsers?",
+    answer: "Yes! Open this page in Safari on iPhone or Chrome on Android, tap 'Allow' when prompted for microphone access, and measure room noise instantly on mobile."
+  },
+  {
+    question: "How accurate is a browser-based microphone decibel meter?",
+    answer: "Internal device microphones provide highly accurate relative decibel readings and peak tracking. For certified ISO acoustic compliance, physical hardware calibrators are recommended."
+  },
+  {
+    question: "What is Peak Hold and why is it useful?",
+    answer: "Peak Hold tracks the absolute highest decibel spike recorded during your session. This helps identify sudden transient noise spikes like door slams or clap peaks."
+  },
+  {
+    question: "How do I test my room's ambient noise floor before recording podcasts or streaming?",
+    answer: "Leave your room silent for 5 seconds while running the meter. An ideal podcasting studio noise floor should stay under 35–40 dBA."
+  },
+  {
+    question: "Why does my microphone decibel reading stay at zero?",
+    answer: "Check your browser address bar permissions (click the lock icon) to verify Microphone permissions are set to 'Allow', and ensure no background app (Zoom, Teams) has locked the microphone."
+  },
+  {
+    question: "What are typical ambient decibel levels for daily environments?",
+    answer: "Silent bedroom (30 dBA), Quiet office (45 dBA), Normal conversation (60 dBA), Vacuum cleaner (75 dBA), Heavy traffic (85 dBA), Lawn mower (90 dBA), Rock concert (110 dBA)."
+  }
+];
+
+const breadcrumbs = [
+  { label: 'Home', href: '/' },
+  { label: 'Sound Suite', href: '/sound-test' },
+  { label: title, href: '#' }
+];
+---
+
+<Layout title={title} description={description} faqs={faqs}>
+  <div class="max-w-7xl mx-auto px-4 py-6 sm:py-8 min-w-0 w-full overflow-hidden font-sans">
+    <Breadcrumbs items={breadcrumbs} />
+
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 my-6">
+      <!-- Main Workstation -->
+      <div class="lg:col-span-8 space-y-6 min-w-0">
+        <!-- Hero Header -->
+        <header class="space-y-3">
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-mono font-bold tracking-wide">
+            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+            <span>OSHA COMPLIANT SPL METER</span>
+          </div>
+          <h1 class="text-3xl sm:text-4xl font-extrabold text-white tracking-tight font-sans break-words">{title}</h1>
+          <p class="text-sm sm:text-base text-zinc-400 leading-relaxed font-sans">
+            Measure ambient noise, room noise floors, and microphone peak sound levels in real-time dBA SPL directly inside your browser.
+          </p>
+        </header>
+
+        <PrivacyDisclaimerNotice />
+
+        <!-- Main Meter Component -->
+        <div class="rounded-3xl border border-white/10 bg-[#121215]/90 backdrop-blur-xl p-4 sm:p-6 shadow-2xl">
+          <DecibelMeterCanvas />
+        </div>
+
+        <StepWorkflowSection
+          title="How to Measure Ambient Decibels"
+          subtitle="Simple 3-Step Decibel Calibration"
+          steps={[
+            { step: "01", title: "Allow Mic Access", description: "Click 'Start Decibel Meter' and select Allow when prompted by your browser." },
+            { step: "02", title: "Measure Room Noise", description: "Remain silent for 5 seconds to establish your baseline ambient room noise floor (dBA)." },
+            { step: "03", title: "Track Peak Noise", description: "Speak or produce ambient sounds to view real-time dBA needle sweeps and peak hold values." }
+          ]}
+        />
+      </div>
+
+      <!-- Sidebar Controls -->
+      <div class="lg:col-span-4 space-y-6 min-w-0">
+        <StatusCard status="pass" primaryText="Mic Active" secondaryText="Real-time dBA FFT Analyzer" />
+        <MetricCard label="SPL Baseline" value="30 dBA" subtext="Quiet Room Scale" />
+        <ConfigurationCard
+          title="Sound Scale Ranges"
+          options={[
+            { label: "Whisper / Silence", value: "< 40 dBA" },
+            { label: "Quiet Office", value: "45-55 dBA" },
+            { label: "Loud Traffic", value: "70-85 dBA" },
+            { label: "Dangerous Peak", value: "> 95 dBA" }
+          ]}
+        />
+        <ShortcutCard shortcuts={[{ keys: ["Space"], label: "Start / Stop Meter" }, { keys: ["R"], label: "Reset Peak Hold" }]} />
+      </div>
+    </div>
+
+    <FAQSection faqs={faqs} />
+  </div>
+</Layout>

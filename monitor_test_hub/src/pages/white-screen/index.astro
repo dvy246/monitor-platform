@@ -4,6 +4,11 @@ import Breadcrumbs from '../../components/ui/Breadcrumbs.astro';
 import WhiteScreenCanvas from '../../components/diagnostics/WhiteScreenCanvas.astro';
 import FaqSchema from '../../components/seo/FaqSchema.astro';
 
+import PaletteCard from '../../components/ui/sidebar/PaletteCard.astro';
+import ConfigurationCard from '../../components/ui/sidebar/ConfigurationCard.astro';
+import ShortcutCard from '../../components/ui/sidebar/ShortcutCard.astro';
+import InfoCard from '../../components/ui/sidebar/InfoCard.astro';
+
 const whiteScreenFaqs = [
   {
     question: "What is a full white screen used for?",
@@ -113,60 +118,113 @@ const schemaGraph = {
 <Layout title={pageTitle} description={pageDescription}>
   <script type="application/ld+json" set:html={JSON.stringify(schemaGraph)} />
 
-  <div class="max-w-7xl mx-auto px-4 py-8 space-y-8">
+  <div class="max-w-7xl mx-auto px-4 py-8 space-y-8 min-w-0 w-full overflow-hidden font-sans">
     <Breadcrumbs items={breadcrumbItems} />
 
-    <header class="space-y-3 border-b border-border-hairline pb-6 font-mono">
-      <div class="flex items-center gap-2 text-status-pass text-xs font-bold uppercase tracking-wider">
-        <span class="w-2 h-2 rounded-full bg-status-pass led-glow-pass"></span>
-        TOP-OF-FUNNEL SCREEN LIGHTING & CLEANING UTILITY
-      </div>
-      <h1 class="text-3xl sm:text-4xl font-extrabold text-text-primary tracking-tight">
-        White Screen &amp; Fill Lighting Utility
-      </h1>
-      <p class="text-sm text-text-secondary max-w-3xl font-sans">
-        Turn your monitor, laptop, or smartphone into an instant high-contrast full-screen white canvas. Built-in Screen Wake Lock, 2700K–6500K webcam fill lighting temperature slider, and physical smudge-cleaning contrast grid.
-      </p>
-    </header>
-
-    <!-- Main Interactive Lighting Canvas Component -->
-    <WhiteScreenCanvas initialColor="#ffffff" initialKelvin={6500} activeColorName="Pure White" />
-
-    <!-- Educational & AdSense Policy Safe Content Section -->
-    <section class="bg-bg-surface border border-border-hairline rounded-2xl p-6 sm:p-8 space-y-6 font-sans">
-      <div class="space-y-2 border-b border-border-hairline pb-4">
-        <h2 class="text-xl font-extrabold font-mono text-text-primary tracking-tight">
-          How to Use the Full White Screen Utility
-        </h2>
-        <p class="text-xs text-text-muted">
-          Optimized for video call illumination, macro photography fill light, screen cleaning, and white balance calibration.
-        </p>
-      </div>
-
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div class="bg-bg-canvas p-5 rounded-xl border border-border-hairline space-y-2 font-mono">
-          <div class="text-status-pass font-bold text-sm">[ 01 ] WEBCAM FILL LIGHT</div>
-          <p class="text-xs text-text-secondary font-sans leading-relaxed">
-            Position your monitor facing your face during Zoom or Google Meet calls. Adjust the Kelvin slider to 2700K for warm indoor skin tones or 4500K for clean studio lighting.
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+      
+      <!-- Left Canvas (lg:col-span-8) -->
+      <div class="lg:col-span-8 space-y-8 min-w-0">
+        <header class="space-y-3 border-b border-border-hairline pb-6 font-mono">
+          <div class="flex items-center gap-2 text-status-pass text-xs font-bold uppercase tracking-wider">
+            <span class="w-2 h-2 rounded-full bg-status-pass led-glow-pass"></span>
+            TOP-OF-FUNNEL SCREEN LIGHTING &amp; CLEANING UTILITY
+          </div>
+          <h1 class="text-3xl sm:text-4xl font-extrabold text-text-primary tracking-tight">
+            White Screen &amp; Fill Lighting Utility
+          </h1>
+          <p class="text-sm text-text-secondary max-w-3xl font-sans leading-relaxed">
+            Turn your monitor, laptop, or smartphone into an instant high-contrast full-screen white canvas. Built-in Screen Wake Lock, 2700K–6500K webcam fill lighting temperature slider, and physical smudge-cleaning contrast grid.
           </p>
-        </div>
+        </header>
 
-        <div class="bg-bg-canvas p-5 rounded-xl border border-border-hairline space-y-2 font-mono">
-          <div class="text-status-pass font-bold text-sm">[ 02 ] SCREEN CLEANING & DUST</div>
-          <p class="text-xs text-text-secondary font-sans leading-relaxed">
-            Enable the <strong>Smudge Grid</strong> overlay to illuminate fingerprints, dust particles, and dried oil spots on glass or matte display surfaces before wiping with microfiber.
-          </p>
-        </div>
+        <!-- Main Interactive Lighting Canvas Component -->
+        <WhiteScreenCanvas initialColor="#ffffff" initialKelvin={6500} activeColorName="Pure White" />
 
-        <div class="bg-bg-canvas p-5 rounded-xl border border-border-hairline space-y-2 font-mono">
-          <div class="text-status-pass font-bold text-sm">[ 03 ] DEAD PIXEL INSPECTION</div>
-          <p class="text-xs text-text-secondary font-sans leading-relaxed">
-            Toggle through solid RGB colors to isolate stuck or dead sub-pixels on new laptops, handheld gaming devices, or high-refresh rate monitors.
-          </p>
-        </div>
+        <!-- Educational Section -->
+        <section class="bg-bg-surface border border-border-hairline rounded-2xl p-6 sm:p-8 space-y-6 font-sans">
+          <div class="space-y-2 border-b border-border-hairline pb-4">
+            <h2 class="text-xl font-extrabold font-mono text-text-primary tracking-tight">
+              How to Use the Full White Screen Utility
+            </h2>
+            <p class="text-xs text-text-muted">
+              Optimized for video call illumination, macro photography fill light, screen cleaning, and white balance calibration.
+            </p>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="bg-bg-canvas p-5 rounded-xl border border-border-hairline space-y-2 font-mono">
+              <div class="text-status-pass font-bold text-sm">[ 01 ] WEBCAM FILL LIGHT</div>
+              <p class="text-xs text-text-secondary font-sans leading-relaxed">
+                Position your monitor facing your face during Zoom or Google Meet calls. Adjust the Kelvin slider to 2700K for warm indoor skin tones or 4500K for clean studio lighting.
+              </p>
+            </div>
+
+            <div class="bg-bg-canvas p-5 rounded-xl border border-border-hairline space-y-2 font-mono">
+              <div class="text-status-pass font-bold text-sm">[ 02 ] SCREEN CLEANING &amp; DUST</div>
+              <p class="text-xs text-text-secondary font-sans leading-relaxed">
+                Enable the <strong>Smudge Grid</strong> overlay to illuminate fingerprints, dust particles, and dried oil spots on glass or matte display surfaces before wiping with microfiber.
+              </p>
+            </div>
+
+            <div class="bg-bg-canvas p-5 rounded-xl border border-border-hairline space-y-2 font-mono">
+              <div class="text-status-pass font-bold text-sm">[ 03 ] DEAD PIXEL INSPECTION</div>
+              <p class="text-xs text-text-secondary font-sans leading-relaxed">
+                Toggle through solid RGB colors to isolate stuck or dead sub-pixels on new laptops, handheld gaming devices, or high-refresh rate monitors.
+              </p>
+            </div>
+          </div>
+
+          <FaqSchema faqs={whiteScreenFaqs} emitSchema={false} title="Frequently Asked Questions" className="pt-6 border-t border-border-hairline" />
+        </section>
       </div>
 
-      <FaqSchema faqs={whiteScreenFaqs} emitSchema={false} title="Frequently Asked Questions" className="pt-6 border-t border-border-hairline" />
-    </section>
+      <!-- Right Modular Sidebar (lg:col-span-4) -->
+      <div class="lg:col-span-4 space-y-6 sticky top-24 self-start min-w-0">
+        <PaletteCard
+          title="Fill Color Selection"
+          subtitle="Solid Color Canvas"
+          activeHex="#FFFFFF"
+          swatches={[
+            { id: 'white', hex: '#FFFFFF', label: 'WHITE' },
+            { id: 'black', hex: '#000000', label: 'BLACK' },
+            { id: 'red', hex: '#FF0000', label: 'RED' },
+            { id: 'green', hex: '#00FF00', label: 'GREEN' },
+            { id: 'blue', hex: '#0000FF', label: 'BLUE' },
+            { id: 'yellow', hex: '#FFFF00', label: 'YELLOW' }
+          ]}
+        />
+
+        <ConfigurationCard
+          title="Lighting & Grid Parameters"
+          subtitle="Kelvin & Surface Tuning"
+          controls={[
+            { id: 'kelvinSlider', label: 'Color Temperature', type: 'slider', min: 2700, max: 6500, step: 100, value: 6500, unit: 'K' },
+            { id: 'smudgeGridToggle', label: 'Smudge & Dust Grid Overlay', type: 'toggle', value: false },
+            { id: 'wakeLockToggle', label: 'Screen Wake Lock API', type: 'toggle', value: true }
+          ]}
+        />
+
+        <ShortcutCard
+          shortcuts={[
+            { keys: ['1', '2', '3', '4', '5'], label: 'Switch RGB Colors' },
+            { keys: ['F'], label: 'Toggle Fullscreen' },
+            { keys: ['G'], label: 'Toggle Smudge Grid' },
+            { keys: ['Esc'], label: 'Exit Fullscreen' }
+          ]}
+        />
+
+        <InfoCard
+          title="Webcam & Lightbox Tips"
+          subtitle="Lighting & Tracing Usage"
+          badgeText="Webcam Light"
+          osdTips={[
+            "Use 2700K Warm Soft Light for evening Zoom calls to soften skin tones.",
+            "Use 6500K D65 Daylight for accurate photo fill light and tracing paper backgrounds."
+          ]}
+        />
+      </div>
+
+    </div>
   </div>
 </Layout>

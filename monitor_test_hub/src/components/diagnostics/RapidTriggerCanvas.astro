@@ -1,0 +1,52 @@
+---
+---
+<div class="relative w-full aspect-video sm:aspect-[21/9] bg-[#08080a] rounded-3xl border border-white/10 overflow-hidden shadow-2xl group">
+  <div class="absolute inset-0 pointer-events-none bg-[url('/data/noise.png')] opacity-[0.03] mix-blend-overlay"></div>
+  <div class="absolute inset-0 flex flex-col items-center justify-center">
+    <div class="w-32 h-32 relative flex items-center justify-center">
+      <!-- Switch Housing -->
+      <div class="absolute inset-0 border-2 border-white/20 rounded-xl bg-[#121215]"></div>
+      <!-- Stem -->
+      <div id="switch-stem" class="absolute top-4 w-16 h-16 bg-rose-500/80 border border-rose-400 rounded shadow-[0_0_15px_rgba(244,63,94,0.5)] transition-transform duration-75" style="transform: translateY(0px)"></div>
+      <!-- Sensor -->
+      <div class="absolute bottom-2 w-24 h-2 bg-emerald-500/30 rounded-full blur-[2px]"></div>
+    </div>
+    
+    <div class="mt-8 flex gap-8 font-mono text-center">
+      <div>
+        <div class="text-zinc-500 text-xs">Actuation Point</div>
+        <div class="text-white text-xl font-bold" id="rt-actuation">0.0mm</div>
+      </div>
+      <div>
+        <div class="text-zinc-500 text-xs">Rapid Trigger</div>
+        <div class="text-emerald-400 text-xl font-bold" id="rt-status">READY</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  class RapidTriggerEngine {
+    private stem: HTMLElement;
+    private actDisplay: HTMLElement;
+    
+    constructor() {
+      this.stem = document.getElementById('switch-stem')!;
+      this.actDisplay = document.getElementById('rt-actuation')!;
+      
+      window.addEventListener('keydown', (e) => {
+        if(e.key === 'a' || e.key === 'w' || e.key === 's' || e.key === 'd') {
+          this.stem.style.transform = 'translateY(24px)';
+          this.actDisplay.innerText = '1.2mm';
+        }
+      });
+      window.addEventListener('keyup', (e) => {
+        if(e.key === 'a' || e.key === 'w' || e.key === 's' || e.key === 'd') {
+          this.stem.style.transform = 'translateY(0px)';
+          this.actDisplay.innerText = '0.0mm';
+        }
+      });
+    }
+  }
+  new RapidTriggerEngine();
+</script>

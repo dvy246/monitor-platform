@@ -5,6 +5,15 @@ import SEOHead from '../../components/seo/SEOHead.astro';
 import SchemaGraph from '../../components/seo/SchemaGraph.astro';
 import { ApplianceEnergyEngine } from '../../engine/ApplianceEnergyEngine';
 import { useTranslations, localizeLink } from '../../utils/i18n';
+import StepWorkflowSection from '../../components/ui/StepWorkflowSection.astro';
+import PanelTypeBreakdownSection from '../../components/ui/PanelTypeBreakdownSection.astro';
+import FAQSection from '../../components/ui/FAQSection.astro';
+
+// Right Sidebar Components
+import StatusCard from '../../components/ui/sidebar/StatusCard.astro';
+import ConfigurationCard from '../../components/ui/sidebar/ConfigurationCard.astro';
+import MetricCard from '../../components/ui/sidebar/MetricCard.astro';
+import InfoCard from '../../components/ui/sidebar/InfoCard.astro';
 
 const { lang } = useTranslations(Astro.url.pathname);
 const states = ApplianceEnergyEngine.US_STATES;
@@ -12,12 +21,54 @@ const states = ApplianceEnergyEngine.US_STATES;
 const seoTitle = "Appliance Electricity Cost Calculator (2026) — 50 US State kWh Rates";
 const seoDescription = "Calculate how much space heaters, air conditioners, gaming PCs, and home appliances cost to run monthly and annually across all 50 US states.";
 const canonicalUrl = "https://displaytestonline.com/display-tests/electricity-cost";
+
+const faqs = [
+  {
+    question: "How is appliance electricity cost calculated?",
+    answer: "Electricity cost is calculated using the formula: Cost = (Appliance Wattage × Hours Used Per Day ÷ 1,000) × 30 Days × Electricity Rate ($/kWh)."
+  },
+  {
+    question: "What is the average electricity rate per kWh in the United States?",
+    answer: "According to US Energy Information Administration (EIA) 2026 data, the national average residential electricity rate is approximately 16.8¢ per kilowatt-hour (kWh), ranging from ~10.5¢ in Idaho to ~42.0¢ in Hawaii."
+  },
+  {
+    question: "How much does it cost to run a space heater per month?",
+    answer: "A standard 1,500W space heater running for 8 hours per day consumes 12 kWh daily (360 kWh monthly), costing approximately $60.48 per month at average US electricity rates."
+  },
+  {
+    question: "How much electricity does a high-end gaming PC consume?",
+    answer: "A high-performance gaming PC drawing 650 watts under heavy load for 6 hours daily consumes 3.9 kWh per day (~117 kWh monthly), costing about $19.65 per month."
+  },
+  {
+    question: "Does an OLED TV consume more electricity than an LED TV?",
+    answer: "OLED TVs vary in power draw based on image content (ABL window size). A 65-inch OLED TV averages 120W to 180W, drawing comparable power to traditional LED/Mini-LED displays."
+  },
+  {
+    question: "How can I lower my monthly appliance electric bill?",
+    answer: "Lower electric bills by unplugging phantom load devices, using smart plugs with schedules, upgrading to Energy Star certified appliances, and utilizing LED lighting."
+  },
+  {
+    question: "What is the difference between peak and off-peak electricity rates?",
+    answer: "Time-of-use (TOU) utility plans charge higher electricity rates during peak demand hours (typically 4 PM to 9 PM) and lower rates during off-peak nighttime hours."
+  },
+  {
+    question: "How do I find my state's official EIA electricity rate?",
+    answer: "Our calculator automatically populates official 2026 US Energy Information Administration (EIA) Form 861M residential retail rates for all 50 states."
+  },
+  {
+    question: "What is phantom or standby power draw?",
+    answer: "Phantom load refers to energy consumed by electronic devices while plugged in but turned off or in standby mode, accounting for 5% to 10% of residential energy use."
+  },
+  {
+    question: "How do I export my electricity cost calculation summary?",
+    answer: "Click 'Export Passport' to save your daily, monthly, and annual utility cost estimates in a downloadable JSON telemetry report."
+  }
+];
 ---
 
-<Layout title={seoTitle} description={seoDescription} canonicalUrl={canonicalUrl}>
-
-  <div class="min-h-screen bg-[#08080a] text-slate-100 py-12 px-4 font-sans">
-    <div class="max-w-5xl mx-auto space-y-12">
+<Layout title={seoTitle} description={seoDescription} faqs={faqs} canonicalUrl={canonicalUrl}>
+  <div class="min-h-screen bg-[#08080a] text-slate-100 font-sans">
+    <div class="max-w-7xl mx-auto px-4 py-6 sm:py-8 space-y-8">
       <section class="text-center space-y-4">
         <h1 class="text-4xl sm:text-5xl font-black text-white tracking-tight font-sans">
           Appliance <span class="text-amber-400">Electricity Cost</span> Calculator
@@ -27,33 +78,112 @@ const canonicalUrl = "https://displaytestonline.com/display-tests/electricity-co
         </p>
       </section>
 
-      <ApplianceEnergyInspector />
+      <!-- 2-Column Responsive Layout -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        <!-- Left Diagnostic Canvas & Directory -->
+        <div class="lg:col-span-8 space-y-8">
+          <ApplianceEnergyInspector />
 
-      <!-- 50 US States Electricity Cost Directory -->
-      <section class="space-y-6 bg-[#121215] p-6 sm:p-8 rounded-2xl border border-white/10">
-        <div class="border-b border-white/10 pb-4">
-          <h2 class="text-2xl font-bold text-white font-sans">50 US State Electricity Rates Directory</h2>
-          <p class="text-slate-400 text-sm mt-1">Select your US state to load official 2026 EIA residential kWh utility rates and localized cost estimates.</p>
+          <!-- 50 US States Electricity Cost Directory -->
+          <section class="space-y-6 bg-[#121215] p-6 sm:p-8 rounded-3xl border border-white/10">
+            <div class="border-b border-white/10 pb-4">
+              <h2 class="text-2xl font-bold text-white font-sans">50 US State Electricity Rates Directory</h2>
+              <p class="text-slate-400 text-sm mt-1">Select your US state to load official 2026 EIA residential kWh utility rates and localized cost estimates.</p>
+            </div>
+
+            <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 font-mono text-xs">
+              {states.map(st => {
+                const slug = st.name.toLowerCase().replace(/\s+/g, '-');
+                const href = localizeLink(`/display-tests/electricity-cost/${slug}`, lang);
+                return (
+                  <a
+                    href={href}
+                    class="p-2.5 rounded-xl bg-[#18181b] border border-white/5 hover:border-amber-400/50 hover:bg-amber-400/10 text-slate-300 hover:text-white transition-colors duration-200 cursor-pointer flex flex-col justify-between group"
+                  >
+                    <div class="font-bold text-amber-400 text-xs font-sans truncate">{st.name}</div>
+                    <div class="text-[11px] text-slate-400 group-hover:text-slate-200 font-mono mt-1">
+                      {st.rateCentsPerKwh}¢ / kWh
+                    </div>
+                  </a>
+                );
+              })}
+            </div>
+          </section>
         </div>
 
-        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 font-mono text-xs">
-          {states.map(st => {
-            const slug = st.name.toLowerCase().replace(/\s+/g, '-');
-            const href = localizeLink(`/display-tests/electricity-cost/${slug}`, lang);
-            return (
-              <a
-                href={href}
-                class="p-2.5 rounded-xl bg-[#18181b] border border-white/5 hover:border-amber-400/50 hover:bg-amber-400/10 text-slate-300 hover:text-white transition-all flex flex-col justify-between group"
-              >
-                <div class="font-bold text-amber-400 text-xs font-sans truncate">{st.name}</div>
-                <div class="text-[11px] text-slate-400 group-hover:text-slate-200 font-mono mt-1">
-                  {st.rateCentsPerKwh}¢ / kWh
-                </div>
-              </a>
-            );
-          })}
+        <!-- Right Modular Control & Telemetry Sidebar -->
+        <div class="lg:col-span-4 sticky top-24 space-y-6">
+          <StatusCard
+            status="pass"
+            label="Energy Efficiency Tier"
+            subtitle="US EIA Residential Rates"
+            details={[
+              { label: "US Avg Rate", value: "16.8¢ / kWh" },
+              { label: "Data Source", value: "US EIA 2026" }
+            ]}
+          />
+
+          <ConfigurationCard
+            title="Appliance & Usage Setup"
+            subtitle="Wattage & Daily Operating Hours"
+            badgeText="Presets"
+            controls={[
+              {
+                id: "app-preset",
+                label: "Appliance Preset",
+                type: "select",
+                value: "space-heater",
+                options: [
+                  { value: "space-heater", label: "Space Heater (1500W)" },
+                  { value: "gaming-pc", label: "Gaming PC (650W)" },
+                  { value: "oled-tv", label: "65-Inch OLED TV (180W)" }
+                ]
+              },
+              {
+                id: "daily-hours",
+                label: "Daily Usage",
+                type: "slider",
+                min: 1,
+                max: 24,
+                step: 1,
+                value: 8,
+                unit: "hrs"
+              }
+            ]}
+          />
+
+          <MetricCard
+            title="Utility Consumption Readout"
+            subtitle="Monthly & Annual Expenses"
+            badgeText="Cost Readout"
+            layout="list"
+            metrics={[
+              { id: "daily-kwh", label: "Daily Consumption", value: "12.0", unit: "kWh", status: "pass" },
+              { id: "monthly-usd", label: "Estimated Monthly Cost", value: "60.48", unit: "USD", status: "pass" },
+              { id: "annual-usd", label: "Estimated Annual Cost", value: "725.76", unit: "USD", status: "pass" }
+            ]}
+          />
+
+          <InfoCard
+            title="US Utility Rate Reference"
+            subtitle="EIA Residential Benchmark"
+            badgeText="EIA Benchmark"
+            accentColor="amber"
+            citations={[
+              {
+                standard: "US EIA Form 861M",
+                clause: "Monthly Retail Rates",
+                description: "Monthly Electric Power Industry Report tracking state-by-state residential kWh retail pricing."
+              }
+            ]}
+          />
         </div>
-      </section>
+      </div>
+
+      <!-- Standard 4-Part Sections -->
+      <StepWorkflowSection />
+      <PanelTypeBreakdownSection />
+      <FAQSection faqs={faqs} title="Appliance Electricity Cost FAQs" />
     </div>
   </div>
 </Layout>

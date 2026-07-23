@@ -1,0 +1,171 @@
+---
+/**
+ * MicNoiseGateCanvas.astro
+ * Premium, dark-glassmorphic Microphone Noise Gate visualizer component.
+ */
+---
+
+<div class="w-full max-w-5xl mx-auto space-y-6">
+  <div class="bg-bg-surface/90 border border-border-hairline rounded-2xl p-6 backdrop-blur-xl shadow-2xl space-y-6">
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-border-hairline/60 pb-4">
+      <div>
+        <div class="flex items-center gap-2">
+          <span id="gate-status-dot" class="w-2.5 h-2.5 rounded-full bg-status-error shadow-[0_0_8px_rgba(239,68,68,0.8)] transition-colors duration-200"></span>
+          <h2 class="text-lg font-bold font-mono text-text-primary tracking-wide">Noise Gate Visualizer</h2>
+        </div>
+        <p class="text-xs text-text-muted mt-1">Real-time Web Audio noise gate threshold monitoring and visualizer.</p>
+      </div>
+
+      <div class="flex items-center gap-3">
+        <button id="start-mic-btn" class="px-4 py-2 text-xs font-mono font-semibold rounded-lg bg-status-pass/10 text-status-pass border border-status-pass/30 hover:bg-status-pass/20 transition-all cursor-pointer">
+          Start Mic Test
+        </button>
+      </div>
+    </div>
+
+    <!-- Controls -->
+    <div class="flex flex-col sm:flex-row gap-4 items-center">
+      <div class="flex-1 w-full flex flex-col gap-2">
+        <label for="threshold-slider" class="text-xs font-mono text-text-muted uppercase flex justify-between">
+          <span>Gate Threshold (dBFS)</span>
+          <span id="threshold-val" class="font-bold text-text-primary">-40 dB</span>
+        </label>
+        <input id="threshold-slider" type="range" min="-80" max="0" value="-40" class="w-full accent-status-pass bg-bg-elevated h-2 rounded-lg appearance-none cursor-pointer">
+      </div>
+      <div class="flex-1 w-full flex flex-col gap-2">
+        <div class="text-xs font-mono text-text-muted uppercase">Gate Status</div>
+        <div id="metric-gate-state" class="text-sm font-mono font-bold text-red-500 mt-1">CLOSED</div>
+      </div>
+    </div>
+
+    <!-- Live Audio Visualizer Box -->
+    <div class="relative w-full h-48 rounded-xl bg-bg-canvas border border-border-subtle overflow-hidden flex flex-col justify-center p-6 space-y-4">
+      <canvas id="noise-gate-canvas" class="absolute inset-0 w-full h-full pointer-events-none opacity-80"></canvas>
+      <div class="relative z-10 flex justify-between text-xs font-mono text-text-muted">
+        <span>Audio Input Level:</span>
+        <span id="live-dbfs" class="font-bold text-text-primary">-100.0 dBFS</span>
+      </div>
+
+      <!-- Meter Bar -->
+      <div class="relative z-10 w-full h-6 rounded-full bg-bg-surface border border-border-hairline p-1 overflow-hidden">
+        <div id="meter-bar" class="h-full rounded-full bg-status-pass transition-all duration-75" style="width: 0%;"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  import { MicNoiseGateEngine } from '../../engine/MicNoiseGateEngine';
+
+  const startBtn = document.getElementById('start-mic-btn');
+  const liveDbfs = document.getElementById('live-dbfs');
+  const meterBar = document.getElementById('meter-bar');
+  const gateStateMetric = document.getElementById('metric-gate-state');
+  const gateStatusDot = document.getElementById('gate-status-dot');
+  
+  const thresholdSlider = document.getElementById('threshold-slider') as HTMLInputElement;
+  const thresholdVal = document.getElementById('threshold-val');
+
+  const canvas = document.getElementById('noise-gate-canvas') as HTMLCanvasElement;
+  let ctx: CanvasRenderingContext2D | null = null;
+  if (canvas) {
+    ctx = canvas.getContext('2d');
+    canvas.width = canvas.clientWidth;
+    canvas.height = canvas.clientHeight;
+  }
+
+  let audioCtx: AudioContext | null = null;
+  let isTesting = false;
+
+  const engine = new MicNoiseGateEngine(-40, 10, 200);
+
+  if (thresholdSlider) {
+    thresholdSlider.addEventListener('input', (e) => {
+      const val = parseInt((e.target as HTMLInputElement).value, 10);
+      if (thresholdVal) thresholdVal.textContent = `${val} dB`;
+      engine.setThreshold(val);
+    });
+  }
+
+  startBtn?.addEventListener('click', async () => {
+    if (isTesting) return;
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      audioCtx = new AudioContext();
+      const source = audioCtx.createMediaStreamSource(stream);
+      const analyser = audioCtx.createAnalyser();
+      analyser.fftSize = 2048;
+      source.connect(analyser);
+
+      isTesting = true;
+      if (startBtn) startBtn.textContent = 'Mic Active';
+
+      const pcm = new Float32Array(analyser.fftSize);
+      let timeHistory: number[] = [];
+      const historySize = 200;
+
+      function pollAudio() {
+        if (!isTesting) return;
+        analyser.getFloatTimeDomainData(pcm);
+        const dbfs = MicNoiseGateEngine.calculateDbfsFromSamples(pcm);
+        
+        const gateAnalysis = engine.evaluateGate(dbfs, performance.now());
+
+        const meterPct = Math.max(0, Math.min(100, (dbfs + 80) * 1.25));
+        if (liveDbfs) liveDbfs.textContent = `${dbfs} dBFS`;
+        if (meterBar) {
+          meterBar.style.width = `${meterPct}%`;
+          meterBar.className = gateAnalysis.isOpen 
+            ? 'h-full rounded-full bg-status-pass transition-all duration-75'
+            : 'h-full rounded-full bg-border-subtle transition-all duration-75 opacity-50';
+        }
+
+        if (gateStateMetric) {
+          gateStateMetric.textContent = gateAnalysis.gateState;
+          gateStateMetric.className = gateAnalysis.isOpen ? 'text-sm font-mono font-bold text-status-pass mt-1' : 'text-sm font-mono font-bold text-red-500 mt-1';
+        }
+        
+        if (gateStatusDot) {
+          gateStatusDot.className = gateAnalysis.isOpen 
+            ? 'w-2.5 h-2.5 rounded-full bg-status-pass shadow-[0_0_8px_rgba(5,150,105,0.8)] transition-colors duration-200' 
+            : 'w-2.5 h-2.5 rounded-full bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.8)] transition-colors duration-200';
+        }
+
+        if (ctx && canvas) {
+          timeHistory.push(dbfs);
+          if (timeHistory.length > historySize) timeHistory.shift();
+
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+          
+          const thresholdDb = parseInt(thresholdSlider?.value || '-40', 10);
+          const thresholdY = canvas.height - ((thresholdDb + 80) / 80) * canvas.height;
+          
+          ctx.beginPath();
+          ctx.moveTo(0, thresholdY);
+          ctx.lineTo(canvas.width, thresholdY);
+          ctx.strokeStyle = 'rgba(239,68,68,0.5)';
+          ctx.lineWidth = 2;
+          ctx.setLineDash([5, 5]);
+          ctx.stroke();
+          ctx.setLineDash([]);
+
+          ctx.beginPath();
+          for (let i = 0; i < timeHistory.length; i++) {
+            const x = (i / historySize) * canvas.width;
+            const y = canvas.height - ((timeHistory[i] + 80) / 80) * canvas.height;
+            if (i === 0) ctx.moveTo(x, y);
+            else ctx.lineTo(x, y);
+          }
+          ctx.strokeStyle = gateAnalysis.isOpen ? '#059669' : '#52525b';
+          ctx.lineWidth = 3;
+          ctx.stroke();
+        }
+
+        requestAnimationFrame(pollAudio);
+      }
+      pollAudio();
+    } catch (err) {
+      alert('Microphone access permission required to run noise gate test.');
+    }
+  });
+</script>

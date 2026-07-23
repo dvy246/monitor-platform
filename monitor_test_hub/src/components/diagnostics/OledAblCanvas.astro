@@ -1,0 +1,26 @@
+---
+---
+<div class="relative w-full aspect-video sm:aspect-[21/9] bg-[#08080a] rounded-3xl border border-white/10 overflow-hidden shadow-2xl group flex flex-col items-center justify-center transition-colors duration-500" id="abl-container">
+  <div id="abl-window" class="bg-white rounded shadow-[0_0_50px_rgba(255,255,255,0.5)] flex items-center justify-center transition-all duration-300" style="width: 10%; height: 10%;">
+    <span class="text-black font-mono font-bold text-sm" id="abl-text">1% Window</span>
+  </div>
+  
+  <div class="absolute bottom-4 flex gap-4 font-mono text-xs z-20">
+    <button class="px-4 py-2 bg-[#121215] border border-white/20 rounded-lg text-white hover:bg-white/10 transition-colors" onclick="setAbl(10, '1% Window')">1%</button>
+    <button class="px-4 py-2 bg-[#121215] border border-white/20 rounded-lg text-white hover:bg-white/10 transition-colors" onclick="setAbl(31.6, '10% Window')">10%</button>
+    <button class="px-4 py-2 bg-[#121215] border border-white/20 rounded-lg text-white hover:bg-white/10 transition-colors" onclick="setAbl(70.7, '50% Window')">50%</button>
+    <button class="px-4 py-2 bg-[#121215] border border-white/20 rounded-lg text-white hover:bg-white/10 transition-colors" onclick="setAbl(100, '100% Full Screen')">100%</button>
+  </div>
+</div>
+
+<script is:inline>
+  function setAbl(size, text) {
+    const win = document.getElementById('abl-window');
+    const txt = document.getElementById('abl-text');
+    if(win && txt) {
+      win.style.width = `${size}%`;
+      win.style.height = `${size}%`;
+      txt.innerText = text;
+    }
+  }
+</script>

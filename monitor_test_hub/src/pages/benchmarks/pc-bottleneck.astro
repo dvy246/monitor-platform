@@ -5,6 +5,15 @@ import SEOHead from '../../components/seo/SEOHead.astro';
 import SchemaGraph from '../../components/seo/SchemaGraph.astro';
 import { PcBottleneckEngine } from '../../engine/PcBottleneckEngine';
 import { useTranslations, localizeLink } from '../../utils/i18n';
+import StepWorkflowSection from '../../components/ui/StepWorkflowSection.astro';
+import PanelTypeBreakdownSection from '../../components/ui/PanelTypeBreakdownSection.astro';
+import FAQSection from '../../components/ui/FAQSection.astro';
+
+// Right Sidebar Components
+import StatusCard from '../../components/ui/sidebar/StatusCard.astro';
+import ConfigurationCard from '../../components/ui/sidebar/ConfigurationCard.astro';
+import MetricCard from '../../components/ui/sidebar/MetricCard.astro';
+import PassportCard from '../../components/ui/sidebar/PassportCard.astro';
 
 const { lang } = useTranslations(Astro.url.pathname);
 const cpus = PcBottleneckEngine.CPUS;
@@ -13,12 +22,54 @@ const gpus = PcBottleneckEngine.GPUS;
 const seoTitle = "PC Bottleneck & FPS Estimator (2026) — CPU vs GPU Calculator";
 const seoDescription = "Calculate PC bottleneck percentages, CPU vs GPU utilization balance across 1080p, 1440p, and 4K, and estimate real-world game FPS without biased algorithms.";
 const canonicalUrl = "https://displaytestonline.com/benchmarks/pc-bottleneck";
+
+const faqs = [
+  {
+    question: "What is a PC bottleneck?",
+    answer: "A PC bottleneck occurs when one hardware component (typically the CPU or GPU) limits the overall performance of the system because it reaches 100% utilization while other components wait."
+  },
+  {
+    question: "How do I know if my PC is CPU bottlenecked or GPU bottlenecked?",
+    answer: "If your GPU utilization is below 95% while playing games at uncapped frame rates, your system is likely CPU bottlenecked. High GPU utilization (97-100%) indicates a GPU bottleneck, which is ideal for maximum graphical fidelity."
+  },
+  {
+    question: "Does resolution affect CPU vs GPU bottlenecking?",
+    answer: "Yes. Lower resolutions like 1080p place a higher demand on the CPU to prepare draw calls for high frame rates. Higher resolutions like 4K shift the workload heavily to the GPU due to rendering 8.3 million pixels per frame."
+  },
+  {
+    question: "Is 100% GPU utilization good for gaming?",
+    answer: "Yes, 95% to 100% GPU utilization is optimal. It means your graphics card is working at peak capacity to render maximum visual quality and frame rates without being held back by the processor."
+  },
+  {
+    question: "Can RAM speed cause a CPU bottleneck?",
+    answer: "Slow RAM speed or single-channel memory configurations can starve the CPU of data, artificially increasing CPU draw call delays and low 1% frame time spikes."
+  },
+  {
+    question: "What is a bottleneck percentage score?",
+    answer: "A bottleneck percentage estimates the performance disparity between your CPU and GPU for a given resolution. A score below 10% indicates a well-balanced system."
+  },
+  {
+    question: "How do I fix a CPU bottleneck?",
+    answer: "You can fix a CPU bottleneck by increasing game resolution, enabling ray tracing or higher graphic presets to shift load to the GPU, capping frame rates, or upgrading your CPU."
+  },
+  {
+    question: "How do I fix a GPU bottleneck?",
+    answer: "To reduce a GPU bottleneck, lower resolution or demanding graphics settings like shadows and volumetric lighting, or enable AI upscaling technologies like DLSS, FSR, or XeSS."
+  },
+  {
+    question: "Does DLSS or FSR reduce CPU bottlenecking?",
+    answer: "No. Upscaling technologies like DLSS and FSR render games at lower internal resolutions, which increases frame rates and shifts more work to the CPU, potentially increasing CPU bottlenecking if the CPU is weak."
+  },
+  {
+    question: "Does V-Sync affect component bottleneck measurements?",
+    answer: "Yes. V-Sync or frame rate limiters cap your FPS to match your display refresh rate, reducing component utilization below 100% and preventing natural bottleneck detection."
+  }
+];
 ---
 
-<Layout title={seoTitle} description={seoDescription} canonicalUrl={canonicalUrl}>
-
-  <div class="min-h-screen bg-[#08080a] text-slate-100 py-12 px-4">
-    <div class="max-w-5xl mx-auto space-y-12">
+<Layout title={seoTitle} description={seoDescription} faqs={faqs} canonicalUrl={canonicalUrl}>
+  <div class="min-h-screen bg-[#08080a] text-slate-100 font-sans">
+    <div class="max-w-7xl mx-auto px-4 py-6 sm:py-8 space-y-8">
       <section class="text-center space-y-4">
         <h1 class="text-4xl sm:text-5xl font-black text-white tracking-tight">
           PC Bottleneck & <span class="text-emerald-400">FPS Estimator</span>
@@ -28,48 +79,112 @@ const canonicalUrl = "https://displaytestonline.com/benchmarks/pc-bottleneck";
         </p>
       </section>
 
-      <PcBottleneckInspector />
+      <!-- 2-Column Responsive Layout -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        <!-- Left Diagnostic Canvas & Directory -->
+        <div class="lg:col-span-8 space-y-8">
+          <PcBottleneckInspector />
 
-      <!-- Programmatic pSEO Child Route Directory for Hardware Pairings -->
-      <section class="space-y-6 bg-[#121215] p-6 sm:p-8 rounded-2xl border border-white/10">
-        <div class="border-b border-white/10 pb-4">
-          <h2 class="text-2xl font-bold text-white">Hardware Benchmark Pairings Directory</h2>
-          <p class="text-slate-400 text-sm mt-1">Explore pre-computed bottleneck evaluations and game FPS benchmarks for 64 CPU and GPU pairings.</p>
+          <!-- Programmatic pSEO Child Route Directory for Hardware Pairings -->
+          <section class="space-y-6 bg-[#121215] p-6 sm:p-8 rounded-3xl border border-white/10">
+            <div class="border-b border-white/10 pb-4">
+              <h2 class="text-2xl font-bold text-white">Hardware Benchmark Pairings Directory</h2>
+              <p class="text-slate-400 text-sm mt-1">Explore pre-computed bottleneck evaluations and game FPS benchmarks for 64 CPU and GPU pairings.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 font-mono text-xs">
+              {cpus.flatMap(cpu => 
+                gpus.map(gpu => {
+                  const slug = `${cpu.id}-with-${gpu.id}`;
+                  const href = localizeLink(`/benchmarks/pc-bottleneck/${slug}`, lang);
+                  return (
+                    <a
+                      href={href}
+                      class="p-3 rounded-xl bg-[#18181b] border border-white/5 hover:border-emerald-500/50 hover:bg-emerald-500/10 text-slate-300 hover:text-white transition-colors duration-200 cursor-pointer flex items-center justify-between group"
+                    >
+                      <span class="truncate font-sans text-xs font-semibold">
+                        {cpu.name.replace(/AMD |Intel /g, '')} + {gpu.name.replace(/NVIDIA GeForce |AMD Radeon /g, '')}
+                      </span>
+                      <span class="text-emerald-400 text-xs shrink-0 ml-2">&rarr;</span>
+                    </a>
+                  );
+                })
+              )}
+            </div>
+          </section>
+
+          <!-- Editorial pSEO Educational Guide -->
+          <article class="prose prose-invert max-w-none bg-[#121215] p-8 rounded-3xl border border-white/10 space-y-6">
+            <h2 class="text-2xl font-bold text-white">Understanding PC Hardware Bottlenecks</h2>
+            <p class="text-slate-300 text-sm leading-relaxed">
+              A bottleneck in a personal computer occurs when one component—most commonly either the processor (CPU) or graphics card (GPU)—reaches 100% capacity, preventing the remaining system components from achieving their full performance potential.
+            </p>
+            
+            <h3 class="text-xl font-semibold text-emerald-400">Resolution Shifts: CPU-Bound vs GPU-Bound</h3>
+            <p class="text-slate-300 text-sm leading-relaxed">
+              At 1080p resolution, games process frames so rapidly that the CPU often becomes the primary limiting factor in preparing draw calls. However, as resolution increases to 1440p and 4K UHD, the workload shifts dramatically to the GPU due to the exponential increase in pixel counts (8.3 million pixels at 4K vs 2.07 million at 1080p).
+            </p>
+          </article>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 font-mono text-xs">
-          {cpus.flatMap(cpu => 
-            gpus.map(gpu => {
-              const slug = `${cpu.id}-with-${gpu.id}`;
-              const href = localizeLink(`/benchmarks/pc-bottleneck/${slug}`, lang);
-              return (
-                <a
-                  href={href}
-                  class="p-3 rounded-xl bg-[#18181b] border border-white/5 hover:border-emerald-500/50 hover:bg-emerald-500/10 text-slate-300 hover:text-white transition-all flex items-center justify-between group"
-                >
-                  <span class="truncate font-sans text-xs font-semibold">
-                    {cpu.name.replace(/AMD |Intel /g, '')} + {gpu.name.replace(/NVIDIA GeForce |AMD Radeon /g, '')}
-                  </span>
-                  <span class="text-emerald-400 group-hover:translate-x-0.5 transition-transform text-xs shrink-0 ml-2">&rarr;</span>
-                </a>
-              );
-            })
-          )}
-        </div>
-      </section>
+        <!-- Right Modular Control & Telemetry Sidebar -->
+        <div class="lg:col-span-4 sticky top-24 space-y-6">
+          <StatusCard
+            status="pass"
+            label="Hardware System Balance"
+            subtitle="Resolution-Aware Evaluation"
+            score="0%"
+            maxScore="100%"
+            details={[
+              { label: "Primary Limit", value: "Balanced" },
+              { label: "Target Resolution", value: "1440p QHD" }
+            ]}
+          />
 
-      <!-- Editorial pSEO Educational Guide -->
-      <article class="prose prose-invert max-w-none bg-[#121215] p-8 rounded-2xl border border-white/10 space-y-6">
-        <h2 class="text-2xl font-bold text-white">Understanding PC Hardware Bottlenecks</h2>
-        <p class="text-slate-300 text-sm leading-relaxed">
-          A bottleneck in a personal computer occurs when one component—most commonly either the processor (CPU) or graphics card (GPU)—reaches 100% capacity, preventing the remaining system components from achieving their full performance potential.
-        </p>
-        
-        <h3 class="text-xl font-semibold text-emerald-400">Resolution Shifts: CPU-Bound vs GPU-Bound</h3>
-        <p class="text-slate-300 text-sm leading-relaxed">
-          At 1080p resolution, games process frames so rapidly that the CPU often becomes the primary limiting factor in preparing draw calls. However, as resolution increases to 1440p and 4K UHD, the workload shifts dramatically to the GPU due to the exponential increase in pixel counts (8.3 million pixels at 4K vs 2.07 million at 1080p).
-        </p>
-      </article>
+          <ConfigurationCard
+            title="Benchmark Setup"
+            subtitle="Resolution & Hardware Presets"
+            badgeText="Presets"
+            controls={[
+              {
+                id: "res-preset",
+                label: "Target Resolution",
+                type: "presets",
+                value: "1440p",
+                options: [
+                  { value: "1080p", label: "1080p FHD" },
+                  { value: "1440p", label: "1440p QHD" },
+                  { value: "4K", label: "4K UHD" }
+                ]
+              }
+            ]}
+          />
+
+          <MetricCard
+            title="Estimated Gaming FPS"
+            subtitle="Average Game Performance"
+            badgeText="FPS Output"
+            layout="grid"
+            metrics={[
+              { id: "cp2077", label: "Cyberpunk 2077", value: "142", unit: "FPS", status: "pass" },
+              { id: "cs2", label: "Counter-Strike 2", value: "480", unit: "FPS", status: "pass" }
+            ]}
+          />
+
+          <PassportCard
+            deviceModel="Ryzen 7 7800X3D + RTX 4070 Super"
+            healthIndex={98}
+            rmaStatus="ELIGIBLE"
+            rmaDetails="Balanced hardware configuration for 1440p QHD high-refresh gaming."
+          />
+        </div>
+      </div>
+
+      <!-- Standard 4-Part Sections -->
+      <StepWorkflowSection />
+      <PanelTypeBreakdownSection />
+      <FAQSection faqs={faqs} title="PC Bottleneck & FPS Estimator FAQs" />
     </div>
   </div>
 </Layout>
+

@@ -7,6 +7,13 @@ import StepWorkflowSection from '../../components/ui/StepWorkflowSection.astro';
 import PanelTypeBreakdownSection from '../../components/ui/PanelTypeBreakdownSection.astro';
 import FAQSection from '../../components/ui/FAQSection.astro';
 
+// Right Sidebar Components
+import StatusCard from '../../components/ui/sidebar/StatusCard.astro';
+import TelemetryCard from '../../components/ui/sidebar/TelemetryCard.astro';
+import ConfigurationCard from '../../components/ui/sidebar/ConfigurationCard.astro';
+import MetricCard from '../../components/ui/sidebar/MetricCard.astro';
+import ShortcutCard from '../../components/ui/sidebar/ShortcutCard.astro';
+
 const faqs = [
   {
     question: "What is display ghosting and motion blur trailing?",
@@ -60,8 +67,86 @@ const seoDescription = "Evaluate display Gray-to-Gray (GtG) response time, motio
   faqs={faqs}
 >
   <div class="py-8 px-4 max-w-7xl mx-auto space-y-12 font-sans">
-    <GhostingInvaders />
-    
+    <!-- 2-Column Responsive Layout -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+      <!-- Left Primary Arcade Canvas -->
+      <div class="lg:col-span-8 space-y-8">
+        <GhostingInvaders />
+      </div>
+
+      <!-- Right Modular Control & Telemetry Sidebar -->
+      <div class="lg:col-span-4 sticky top-24 space-y-6">
+        <StatusCard
+          status="pass"
+          label="Motion Blur Grade"
+          subtitle="GtG & MPRT Response Evaluation"
+          score="Grade A"
+          details={[
+            { label: "Panel Technology", value: "Fast-IPS / OLED" },
+            { label: "Trailing Coronas", value: "None Detected" }
+          ]}
+        />
+
+        <TelemetryCard
+          title="Microsecond Motion Stream"
+          subtitle="rAF Frame Pacing Telemetry"
+          type="graph"
+          currentHz={240.0}
+          jitterSigmaMs={0.12}
+          badgeText="240Hz V-Sync"
+        />
+
+        <ConfigurationCard
+          title="Reticle Controls"
+          subtitle="Speed & Overdrive Tuning"
+          badgeText="Reticle"
+          controls={[
+            {
+              id: "invader-speed",
+              label: "Pursuit Velocity",
+              type: "slider",
+              min: 480,
+              max: 3840,
+              step: 240,
+              value: 960,
+              unit: "px/s"
+            },
+            {
+              id: "overdrive-mode",
+              label: "Overdrive Profile",
+              type: "presets",
+              value: "normal",
+              options: [
+                { value: "off", label: "Off" },
+                { value: "normal", label: "Normal" },
+                { value: "extreme", label: "Extreme" }
+              ]
+            }
+          ]}
+        />
+
+        <MetricCard
+          title="Motion Clarity Metrics"
+          subtitle="MPRT & Overshoot Specs"
+          badgeText="Metrics"
+          layout="list"
+          metrics={[
+            { id: "mprt-ms", label: "Measured MPRT", value: "1.0", unit: "ms", status: "pass" },
+            { id: "overshoot-pct", label: "Overdrive Overshoot", value: "0.4", unit: "%", status: "pass" }
+          ]}
+        />
+
+        <ShortcutCard
+          shortcuts={[
+            { keys: ["F"], label: "Toggle Fullscreen" },
+            { keys: ["Space"], label: "Pause / Resume Sweep" },
+            { keys: ["1-3"], label: "Change Speed Presets" }
+          ]}
+        />
+      </div>
+    </div>
+
+    <!-- Standard 4-Part Sections -->
     <StepWorkflowSection />
     <PanelTypeBreakdownSection />
 

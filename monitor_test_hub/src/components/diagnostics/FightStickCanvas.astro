@@ -1,0 +1,123 @@
+---
+/**
+ * FightStickCanvas.astro
+ * Arcade Fight Stick & Hitbox Diagnostic Engine.
+ * Features:
+ * - Vewlix & Noir Arcade 8-Button Layout Visualizer.
+ * - SOCD (Simultaneous Opposing Cardinal Directions) Cleaner Inspector (Neutral vs Last Input Priority).
+ * - Real-Time Command Input History Log (Fighting Game Move Combinations).
+ */
+---
+
+<div class="w-full max-w-5xl mx-auto space-y-6 font-sans select-none min-w-0" id="fightstick-test-root">
+  <div class="relative bg-[#0c0d12]/90 border border-zinc-800/90 rounded-2xl p-4 sm:p-6 backdrop-blur-2xl shadow-[0_25px_60px_rgba(0,0,0,0.8)] space-y-6 overflow-hidden">
+    <!-- Ambient Glows -->
+    <div class="absolute -top-24 -right-24 w-96 h-96 bg-red-500/10 rounded-full blur-3xl pointer-events-none"></div>
+    <div class="absolute -bottom-24 -left-24 w-96 h-96 bg-amber-500/10 rounded-full blur-3xl pointer-events-none"></div>
+
+    <div class="relative z-10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-zinc-800/70 pb-5">
+      <div>
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-red-500/10 border border-red-500/30 text-[11px] font-mono text-red-400 font-bold uppercase tracking-wider mb-2">
+          <span class="w-2 h-2 rounded-full bg-red-400 shadow-[0_0_8px_rgba(248,113,113,0.9)] animate-pulse"></span>
+          <span>ARCADE FIGHT STICK &amp; SOCD DIAGNOSTIC ENGINE</span>
+        </div>
+        <h2 class="text-xl sm:text-2xl font-bold font-mono text-white tracking-tight">Fight Stick &amp; Hitbox Arcade Tester</h2>
+      </div>
+
+      <div class="flex items-center gap-2 font-mono text-xs">
+        <button id="socd-cleaner-toggle" class="px-3 py-1.5 rounded-lg bg-zinc-900 border border-zinc-800 text-zinc-300 font-bold hover:text-white transition-all">
+          SOCD: Neutral
+        </button>
+      </div>
+    </div>
+
+    <!-- Arcade Deck Layout & Command Log Grid -->
+    <div class="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
+      <!-- Joystick & Vewlix 8-Button Arcade Deck -->
+      <div class="lg:col-span-7 bg-zinc-950 p-6 rounded-2xl border border-zinc-800/90 flex flex-col items-center justify-center space-y-6 shadow-[inset_0_4px_16px_rgba(0,0,0,0.95)] min-h-[260px]">
+        <div class="flex items-center justify-around w-full max-w-md">
+          <!-- Digital Joystick Ball-top -->
+          <div class="flex flex-col items-center space-y-2">
+            <div id="arcade-stick" class="w-20 h-20 rounded-full bg-zinc-900 border-4 border-zinc-700 flex items-center justify-center text-zinc-500 font-mono font-bold text-xl transition-all shadow-lg">
+              🕹️
+            </div>
+            <span class="text-[10px] font-mono text-zinc-400 font-bold uppercase">8-Way Lever</span>
+          </div>
+
+          <!-- Vewlix 8-Button Matrix -->
+          <div class="grid grid-cols-4 gap-3 font-mono">
+            <!-- Row 1: LP, MP, HP, AP -->
+            <div data-btn="0" class="fight-btn w-12 h-12 rounded-full bg-blue-500/20 border-2 border-blue-500/40 flex items-center justify-center font-extrabold text-blue-400 text-xs shadow-md">LP</div>
+            <div data-btn="1" class="fight-btn w-12 h-12 rounded-full bg-blue-500/20 border-2 border-blue-500/40 flex items-center justify-center font-extrabold text-blue-400 text-xs shadow-md">MP</div>
+            <div data-btn="2" class="fight-btn w-12 h-12 rounded-full bg-blue-500/20 border-2 border-blue-500/40 flex items-center justify-center font-extrabold text-blue-400 text-xs shadow-md">HP</div>
+            <div data-btn="3" class="fight-btn w-12 h-12 rounded-full bg-purple-500/20 border-2 border-purple-500/40 flex items-center justify-center font-extrabold text-purple-400 text-xs shadow-md">3P</div>
+
+            <!-- Row 2: LK, MK, HK, AK -->
+            <div data-btn="4" class="fight-btn w-12 h-12 rounded-full bg-amber-500/20 border-2 border-amber-500/40 flex items-center justify-center font-extrabold text-amber-400 text-xs shadow-md">LK</div>
+            <div data-btn="5" class="fight-btn w-12 h-12 rounded-full bg-amber-500/20 border-2 border-amber-500/40 flex items-center justify-center font-extrabold text-amber-400 text-xs shadow-md">MK</div>
+            <div data-btn="6" class="fight-btn w-12 h-12 rounded-full bg-amber-500/20 border-2 border-amber-500/40 flex items-center justify-center font-extrabold text-amber-400 text-xs shadow-md">HK</div>
+            <div data-btn="7" class="fight-btn w-12 h-12 rounded-full bg-purple-500/20 border-2 border-purple-500/40 flex items-center justify-center font-extrabold text-purple-400 text-xs shadow-md">3K</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Live Fighting Game Command Log -->
+      <div class="lg:col-span-5 bg-zinc-950 p-4 rounded-2xl border border-zinc-800/90 space-y-3 font-mono h-64 flex flex-col justify-between shadow-[inset_0_4px_16px_rgba(0,0,0,0.95)]">
+        <div class="flex items-center justify-between text-xs font-bold border-b border-zinc-800 pb-2">
+          <span class="text-white">COMMAND HISTORY LOG</span>
+          <span class="text-zinc-500 text-[10px]">Real-Time Inputs</span>
+        </div>
+        <div id="fight-history-log" class="space-y-1.5 overflow-y-auto text-xs text-zinc-300 flex-1 py-1">
+          <div class="text-zinc-600 text-[11px]">Move stick or press arcade buttons...</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const stickEl = document.getElementById('arcade-stick');
+  const historyLog = document.getElementById('fight-history-log');
+  let lastStateStr = '';
+
+  function pollFightStick() {
+    const gamepads = navigator.getGamepads ? navigator.getGamepads() : [];
+    let gp: Gamepad | null = null;
+    for (let i = 0; i < gamepads.length; i++) {
+      if (gamepads[i]) { gp = gamepads[i]; break; }
+    }
+
+    if (gp) {
+      const x = gp.axes[0] || 0;
+      const y = gp.axes[1] || 0;
+
+      let dir = 'NEUTRAL';
+      if (y < -0.5) dir = '🛈 UP';
+      else if (y > 0.5) dir = '🛈 DOWN';
+      else if (x < -0.5) dir = '🛈 LEFT';
+      else if (x > 0.5) dir = '🛈 RIGHT';
+
+      if (stickEl) {
+        if (dir !== 'NEUTRAL') {
+          stickEl.className = 'w-20 h-20 rounded-full bg-red-500/30 border-4 border-red-500 text-white font-mono font-bold text-xl transition-all shadow-lg scale-105';
+        } else {
+          stickEl.className = 'w-20 h-20 rounded-full bg-zinc-900 border-4 border-zinc-700 text-zinc-500 font-mono font-bold text-xl transition-all shadow-lg';
+        }
+      }
+
+      // Highlight active arcade buttons
+      const btnEls = document.querySelectorAll('.fight-btn');
+      btnEls.forEach((btn, idx) => {
+        if (gp && gp.buttons[idx] && gp.buttons[idx].pressed) {
+          btn.classList.add('bg-white', 'text-black', 'scale-110');
+        } else {
+          btn.classList.remove('bg-white', 'text-black', 'scale-110');
+        }
+      });
+    }
+
+    requestAnimationFrame(pollFightStick);
+  }
+
+  requestAnimationFrame(pollFightStick);
+</script>

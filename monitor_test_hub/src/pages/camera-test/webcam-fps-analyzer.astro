@@ -1,0 +1,80 @@
+---
+import FAQSection from '../../components/ui/FAQSection.astro';
+import Layout from '../../layouts/Layout.astro';
+import WebcamFpsAnalyzerCanvas from '../../components/diagnostics/WebcamFpsAnalyzerCanvas.astro';
+import { useTranslations } from '../../utils/i18n';
+
+const { lang } = useTranslations(Astro.url.pathname);
+const canonicalUrl = lang === 'en'
+  ? "https://displaytestonline.com/camera-test/webcam-fps-analyzer"
+  : `https://displaytestonline.com/${lang}/camera-test/webcam-fps-analyzer`;
+
+const faqs = [
+  { question: "What is a Webcam FPS & Frame Drop Analyzer?", answer: "This diagnostic tool measures the real-time frame rate (FPS), sensor resolution, and frame delivery pacing (jitter) of your connected webcam using browser-native APIs." },
+  { question: "How does the tool detect dropped webcam frames?", answer: "Using the HTMLVideoElement.requestVideoFrameCallback() API, we track the microsecond timing of each video frame presented by your camera. Spikes in inter-frame deltas indicate dropped or delayed frames." },
+  { question: "Is my webcam video feed private and secure?", answer: "Yes, 100% private. All video decoding and frame processing occur directly inside your browser's local RAM. Zero bytes are recorded, stored, or transmitted to any server." },
+  { question: "Why does my 60fps webcam only show 24fps or 30fps?", answer: "Webcams automatically lower their frame rate in low-light environments to allow more light per frame (exposure compensation). Adding external lighting often restores the full 60fps output." },
+  { question: "Does this tool support 4K webcams?", answer: "Yes. The diagnostic engine requests ideal hardware constraints (up to 3840x2160) and reports the exact stream resolution provided by your device drivers." },
+  { question: "What causes webcam video stuttering during video calls?", answer: "Stuttering is usually caused by CPU throttling, low ambient lighting forcing high exposure times, or USB bandwidth saturation when multiple devices share a single hub." },
+  { question: "How do I fix camera frame drops on Windows 11 / macOS?", answer: "Ensure direct USB connection (avoid cheap hubs), disable low-light compensation in your camera software (Logitech G HUB, Elgato Camera Hub), and increase room illumination." },
+  { question: "Can I test multiple cameras using this tool?", answer: "Yes. Use the drop-down device selector at the top of the diagnostic deck to switch between built-in laptop cameras and external USB webcams." },
+  { question: "What is frame pacing variance (jitter)?", answer: "Jitter measures the inconsistency in time intervals between consecutive video frames. High jitter causes visual micro-stutters even if the average FPS appears normal." },
+  { question: "Do I need to install any drivers or software to run this test?", answer: "No. This tool operates 100% natively in any modern web browser (Chrome, Edge, Firefox, Safari) with zero downloads required." }
+];
+
+const seoTitle = "Webcam FPS & Frame Drop Test Online | Real-Time Camera Diagnostics";
+const seoDescription = "Test your webcam frame rate (FPS), sensor resolution, and hardware frame drops for free. 100% private browser diagnostic—no software required.";
+---
+
+<Layout title={seoTitle} description={seoDescription} faqs={faqs} canonicalUrl={canonicalUrl}>
+  <div class="max-w-7xl mx-auto px-4 py-6 sm:py-8 min-w-0 w-full overflow-hidden font-sans">
+    <div class="space-y-6">
+      
+      <!-- Page Header -->
+      <section class="max-w-3xl space-y-3">
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-status-pass/10 border border-status-pass/30 text-xs font-mono text-status-pass font-bold">
+          <span>HARDWARE DIAGNOSTIC SUITE</span>
+        </div>
+        <h1 class="text-3xl sm:text-4xl font-extrabold font-mono tracking-tight text-text-primary">
+          Webcam FPS &amp; Frame Drop Analyzer
+        </h1>
+        <p class="text-sm sm:text-base text-text-secondary leading-relaxed font-sans">
+          Measure real-time camera framerate, audit sensor resolutions (1080p / 4K), and detect hardware frame drops using high-precision browser microsecond timing.
+        </p>
+      </section>
+
+      <!-- Main Canvas Component -->
+      <WebcamFpsAnalyzerCanvas />
+
+      <!-- Educational Content Section -->
+      <article class="max-w-5xl mx-auto space-y-6 bg-bg-surface border border-border-hairline rounded-2xl p-6 sm:p-8 text-sm text-text-secondary leading-relaxed shadow-specular-top">
+        <div class="border-b border-border-hairline pb-4 space-y-2">
+          <h2 class="text-xl font-bold font-mono text-text-primary">Understanding Camera Frame Drops &amp; Sensor Pacing</h2>
+          <p>
+            When diagnosing video quality issues for remote work, streaming, or content creation, looking at nominal resolution alone is not enough. Sensor frame pacing and exposure compensation play a critical role in smooth video delivery.
+          </p>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-2">
+          <div class="space-y-2">
+            <h3 class="font-mono font-bold text-text-primary">Low-Light Throttling</h3>
+            <p class="text-xs text-text-muted leading-relaxed">
+              Most consumer webcams default to automatic exposure. In dimly lit rooms, the camera shutter stays open longer to capture more light, reducing max FPS from 60fps to 30fps or even 15fps.
+            </p>
+          </div>
+
+          <div class="space-y-2">
+            <h3 class="font-mono font-bold text-text-primary">USB Bus Bandwidth</h3>
+            <p class="text-xs text-text-muted leading-relaxed">
+              Uncompressed 1080p/60fps video requires high USB bandwidth. Connecting your camera through an unpowered USB hub alongside keyboards, mice, and external drives can cause packet loss and dropped frames.
+            </p>
+          </div>
+        </div>
+      </article>
+
+      <!-- FAQ Section -->
+      <FAQSection faqs={faqs} />
+
+    </div>
+  </div>
+</Layout>

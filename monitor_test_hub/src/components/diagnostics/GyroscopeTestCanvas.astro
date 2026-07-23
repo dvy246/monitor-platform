@@ -1,0 +1,127 @@
+---
+/**
+ * GyroscopeTestCanvas.astro
+ * Controller Gyroscope & Accelerometer 6-Axis Motion Diagnostic Engine.
+ * Features:
+ * - 3D Gyro Rotation Canvas (Pitch, Roll, Yaw).
+ * - Real-Time Accelerometer Vector Telemetry.
+ * - Browser Motion Sensor Capability Detection & Security Notices.
+ */
+---
+
+<div class="w-full max-w-5xl mx-auto space-y-6 font-sans select-none min-w-0" id="gyro-test-root">
+  <div class="relative bg-[#0c0d12]/90 border border-zinc-800/90 rounded-2xl p-4 sm:p-6 backdrop-blur-2xl shadow-[0_25px_60px_rgba(0,0,0,0.8)] space-y-6 overflow-hidden">
+    <!-- Ambient Glows -->
+    <div class="absolute -top-24 -right-24 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl pointer-events-none"></div>
+    <div class="absolute -bottom-24 -left-24 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none"></div>
+
+    <div class="relative z-10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-zinc-800/70 pb-5">
+      <div>
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-500/10 border border-purple-500/30 text-[11px] font-mono text-purple-400 font-bold uppercase tracking-wider mb-2">
+          <span class="w-2 h-2 rounded-full bg-purple-400 shadow-[0_0_8px_rgba(192,132,252,0.9)] animate-pulse"></span>
+          <span>6-AXIS IMU GYROSCOPE &amp; ACCELEROMETER DIAGNOSTIC</span>
+        </div>
+        <h2 class="text-xl sm:text-2xl font-bold font-mono text-white tracking-tight">Controller Gyro &amp; Motion Sensor Tester</h2>
+      </div>
+
+      <button id="gyro-sensor-btn" class="px-4 py-2 rounded-xl bg-purple-500/20 text-purple-400 border border-purple-500/40 text-xs font-mono font-bold hover:bg-purple-500/30 cursor-pointer transition-all">
+        Request Motion Access
+      </button>
+    </div>
+
+    <!-- Telemetry Cards -->
+    <div class="relative z-10 grid grid-cols-3 gap-4 font-mono">
+      <div class="bg-zinc-950 p-4 rounded-xl border border-zinc-800 text-center space-y-1">
+        <div class="text-xs text-zinc-400 font-bold uppercase">Pitch (X-Axis)</div>
+        <div id="gyro-pitch-val" class="text-3xl sm:text-4xl font-extrabold text-purple-400 tabular-nums">0.0°</div>
+        <div class="text-[10px] text-zinc-400">Nose Up / Down</div>
+      </div>
+
+      <div class="bg-zinc-950 p-4 rounded-xl border border-zinc-800 text-center space-y-1">
+        <div class="text-xs text-zinc-400 font-bold uppercase">Roll (Y-Axis)</div>
+        <div id="gyro-roll-val" class="text-3xl sm:text-4xl font-extrabold text-cyan-400 tabular-nums">0.0°</div>
+        <div class="text-[10px] text-zinc-400">Tilt Left / Right</div>
+      </div>
+
+      <div class="bg-zinc-950 p-4 rounded-xl border border-zinc-800 text-center space-y-1">
+        <div class="text-xs text-zinc-400 font-bold uppercase">Yaw (Z-Axis)</div>
+        <div id="gyro-yaw-val" class="text-3xl sm:text-4xl font-extrabold text-emerald-400 tabular-nums">0.0°</div>
+        <div class="text-[10px] text-zinc-400">Rotation Heading</div>
+      </div>
+    </div>
+
+    <!-- 3D Gyro Canvas Box Visualizer -->
+    <div class="relative z-10 h-64 bg-zinc-950 rounded-2xl border border-zinc-800/90 flex items-center justify-center overflow-hidden shadow-[inset_0_4px_16px_rgba(0,0,0,0.95)]" id="gyro-canvas-container">
+      <canvas id="gyro-3d-canvas" class="w-full h-full block"></canvas>
+    </div>
+  </div>
+</div>
+
+<script>
+  let pitch = 0, roll = 0, yaw = 0;
+  const pitchVal = document.getElementById('gyro-pitch-val');
+  const rollVal = document.getElementById('gyro-roll-val');
+  const yawVal = document.getElementById('gyro-yaw-val');
+  const sensorBtn = document.getElementById('gyro-sensor-btn');
+
+  const canvas = document.getElementById('gyro-3d-canvas') as HTMLCanvasElement | null;
+
+  function render3DCube() {
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    const width = canvas.clientWidth;
+    const height = canvas.clientHeight;
+    if (width < 20 || height < 20) return;
+
+    canvas.width = width;
+    canvas.height = height;
+
+    ctx.clearRect(0, 0, width, height);
+
+    const cx = width / 2;
+    const cy = height / 2;
+    const size = Math.min(width, height) * 0.25;
+
+    ctx.save();
+    ctx.translate(cx, cy);
+
+    ctx.rotate((roll * Math.PI) / 180);
+
+    ctx.beginPath();
+    ctx.rect(-size, -size * 0.6, size * 2, size * 1.2);
+    ctx.lineWidth = 3;
+    ctx.strokeStyle = '#c084fc';
+    ctx.shadowColor = '#c084fc';
+    ctx.shadowBlur = 12;
+    ctx.stroke();
+
+    ctx.restore();
+  }
+
+  function handleOrientation(e: DeviceOrientationEvent) {
+    pitch = e.beta || 0;
+    roll = e.gamma || 0;
+    yaw = e.alpha || 0;
+
+    if (pitchVal) pitchVal.textContent = `${pitch.toFixed(1)}°`;
+    if (rollVal) rollVal.textContent = `${roll.toFixed(1)}°`;
+    if (yawVal) yawVal.textContent = `${yaw.toFixed(1)}°`;
+
+    render3DCube();
+  }
+
+  sensorBtn?.addEventListener('click', async () => {
+    if (typeof (DeviceOrientationEvent as unknown as { requestPermission?: () => Promise<string> }).requestPermission === 'function') {
+      const resp = await (DeviceOrientationEvent as unknown as { requestPermission: () => Promise<string> }).requestPermission();
+      if (resp === 'granted') {
+        window.addEventListener('deviceorientation', handleOrientation);
+      }
+    } else {
+      window.addEventListener('deviceorientation', handleOrientation);
+    }
+  });
+
+  render3DCube();
+</script>

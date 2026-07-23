@@ -1,0 +1,113 @@
+---
+export interface Citation {
+  standard: string;
+  clause?: string;
+  description: string;
+}
+
+export interface Props {
+  title?: string;
+  subtitle?: string;
+  citations?: Citation[];
+  osdTips?: string[];
+  educationalNotes?: string[];
+  badgeText?: string;
+  accentColor?: 'emerald' | 'cyan' | 'amber' | 'purple' | 'blue';
+  class?: string;
+}
+
+const {
+  title = "Standards & Engineering Context",
+  subtitle = "International Specifications",
+  citations = [],
+  osdTips = [],
+  educationalNotes = [],
+  badgeText = "ISO Citation",
+  accentColor = "emerald",
+  class: className = ""
+} = Astro.props;
+
+const accentMap = {
+  emerald: { bg: 'bg-emerald-500/10', border: 'border-emerald-500/20', text: 'text-emerald-400', glow: 'bg-emerald-500/10' },
+  cyan: { bg: 'bg-cyan-500/10', border: 'border-cyan-500/20', text: 'text-cyan-400', glow: 'bg-cyan-500/10' },
+  amber: { bg: 'bg-amber-500/10', border: 'border-amber-500/20', text: 'text-amber-400', glow: 'bg-amber-500/10' },
+  purple: { bg: 'bg-purple-500/10', border: 'border-purple-500/20', text: 'text-purple-400', glow: 'bg-purple-500/10' },
+  blue: { bg: 'bg-blue-500/10', border: 'border-blue-500/20', text: 'text-blue-400', glow: 'bg-blue-500/10' },
+};
+
+const theme = accentMap[accentColor] || accentMap.emerald;
+---
+
+<div class:list={[
+  "relative overflow-hidden rounded-3xl border border-white/10 bg-[#121215]/90 p-6 backdrop-blur-xl shadow-2xl font-sans space-y-5 select-none hover:border-white/20 transition-colors duration-200 group",
+  className
+]}>
+  <!-- Ambient Accent Glow -->
+  <div class:list={["absolute -top-12 -right-12 w-32 h-32 rounded-full blur-2xl pointer-events-none transition-opacity duration-300 group-hover:opacity-100 opacity-60", theme.glow]}></div>
+
+  <!-- Header -->
+  <div class="flex items-center justify-between border-b border-white/10 pb-4 relative z-10">
+    <div class="flex items-center gap-3">
+      <div class:list={["w-10 h-10 rounded-2xl flex items-center justify-center border shrink-0 shadow-[inset_0_1px_1px_rgba(255,255,255,0.2)]", theme.bg, theme.border, theme.text]}>
+        <!-- SVG Icon: BookOpen -->
+        <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+        </svg>
+      </div>
+      <div>
+        <h3 class="text-base font-bold text-white tracking-tight">{title}</h3>
+        <p class="text-[11px] text-zinc-400 font-mono">{subtitle}</p>
+      </div>
+    </div>
+    <span class:list={["text-[11px] font-mono px-2.5 py-1 rounded-full border", theme.bg, theme.border, theme.text]}>
+      {badgeText}
+    </span>
+  </div>
+
+  <!-- Content Section -->
+  <div class="space-y-3 relative z-10 text-xs text-zinc-300">
+    <!-- Citations List -->
+    {citations.length > 0 && (
+      <div class="space-y-2">
+        <span class="text-[10px] font-mono uppercase tracking-wider text-zinc-400 font-bold block">Standard Citations</span>
+        {citations.map(c => (
+          <div class="p-3 rounded-2xl bg-white/[0.03] border border-white/[0.06] space-y-1 hover:border-emerald-500/30 transition-colors duration-200">
+            <div class="flex items-center justify-between font-mono text-[11px] font-bold text-emerald-400">
+              <span>{c.standard}</span>
+              {c.clause && <span class="text-zinc-500 text-[10px]">{c.clause}</span>}
+            </div>
+            <p class="text-zinc-300 text-xs leading-relaxed">{c.description}</p>
+          </div>
+        ))}
+      </div>
+    )}
+
+    <!-- OSD Tips List -->
+    {osdTips.length > 0 && (
+      <div class="space-y-2">
+        <span class="text-[10px] font-mono uppercase tracking-wider text-zinc-400 font-bold block">Monitor OSD Calibration</span>
+        <ul class="space-y-1.5 font-mono text-[11px] text-zinc-300">
+          {osdTips.map(tip => (
+            <li class="flex items-start gap-2 p-2 rounded-xl bg-white/[0.02] border border-white/[0.04]">
+              <svg class="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <span>{tip}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+    )}
+
+    <!-- Educational Notes -->
+    {educationalNotes.length > 0 && (
+      <div class="space-y-1.5 pt-1">
+        {educationalNotes.map(note => (
+          <p class="text-zinc-400 text-xs leading-relaxed italic border-l-2 border-emerald-500/40 pl-3">
+            {note}
+          </p>
+        ))}
+      </div>
+    )}
+  </div>
+</div>

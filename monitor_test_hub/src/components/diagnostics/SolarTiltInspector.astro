@@ -80,6 +80,8 @@
     const annualKwhDisp = document.getElementById('annual-kwh-disp');
     const annualSavingsDisp = document.getElementById('annual-savings-disp');
 
+    if (!stateSelect || !capacitySlider) return;
+
     function update() {
       const lat = parseFloat(stateSelect.value);
       const kw = parseFloat(capacitySlider.value);

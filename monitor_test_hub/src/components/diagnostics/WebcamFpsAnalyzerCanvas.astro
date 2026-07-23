@@ -1,0 +1,285 @@
+---
+---
+<div class="space-y-6 text-text-primary">
+  <!-- Controls & Setup Deck -->
+  <div class="flex flex-wrap items-center justify-between gap-4 p-4 rounded-xl bg-bg-surface border border-border-hairline shadow-specular-top">
+    <div class="flex items-center gap-3">
+      <select id="camera-select" class="px-3 py-2 rounded-lg bg-bg-canvas border border-border-subtle text-xs font-mono text-text-primary focus:outline-none focus:border-status-pass">
+        <option value="">Select Camera Device...</option>
+      </select>
+      <button id="btn-start" class="px-5 py-2 rounded-lg bg-status-pass hover:opacity-90 text-bg-canvas font-mono font-bold text-xs transition-colors shadow-specular-top flex items-center gap-2 cursor-pointer">
+        <span>START WEBCAM TEST</span>
+      </button>
+      <button id="btn-stop" class="hidden px-5 py-2 rounded-lg bg-status-fail hover:opacity-90 text-text-primary font-mono font-bold text-xs transition-colors shadow-specular-top cursor-pointer">
+        STOP STREAM
+      </button>
+    </div>
+
+    <div class="flex items-center gap-3 text-xs font-mono">
+      <span class="px-2.5 py-1 rounded bg-bg-canvas border border-border-subtle text-text-muted flex items-center gap-1.5">
+        <span id="privacy-indicator" class="w-2 h-2 rounded-full bg-status-pass animate-pulse"></span>
+        100% LOCAL PRIVACY
+      </span>
+    </div>
+  </div>
+
+  <!-- Main Viewport + Live Metrics Grid -->
+  <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+    <!-- Camera Feed Viewport (8 Cols) -->
+    <div class="lg:col-span-8 relative min-h-[360px] sm:min-h-[440px] rounded-2xl bg-bg-canvas border border-border-hairline overflow-hidden flex items-center justify-center shadow-specular-top group">
+      <!-- Fallback / Idle Screen -->
+      <div id="idle-screen" class="flex flex-col items-center justify-center p-8 text-center space-y-3">
+        <div class="w-16 h-16 rounded-full bg-bg-surface border border-border-hairline flex items-center justify-center text-text-muted">
+          <svg class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 10.5l4.72-4.72a.75.75 0 011.28.53v11.38a.75.75 0 01-1.28.53l-4.72-4.72M4.5 18.75h9a2.25 2.25 0 002.25-2.25v-9a2.25 2.25 0 00-2.25-2.25h-9A2.25 2.25 0 002.25 7.5v9a2.25 2.25 0 002.25 2.25z" />
+          </svg>
+        </div>
+        <div class="font-mono text-sm font-bold">Camera Feed Offline</div>
+        <p class="text-xs text-text-muted max-w-sm">
+          Click "Start Webcam Test" above to initialize your camera stream and begin microsecond frame pacing diagnostics.
+        </p>
+      </div>
+
+      <!-- Live Video Element (Hidden rendering surface) -->
+      <video id="webcam-video" autoplay playsinline muted class="hidden"></video>
+
+      <!-- Canvas Render Target with Visual Overlay -->
+      <canvas id="webcam-canvas" class="hidden w-full h-full object-contain"></canvas>
+
+      <!-- HUD Overlay -->
+      <div id="hud-overlay" class="hidden absolute top-4 left-4 right-4 flex items-center justify-between pointer-events-none font-mono text-xs">
+        <div class="px-3 py-1.5 rounded-lg bg-bg-surface/80 backdrop-blur-md border border-border-hairline text-status-pass font-bold flex items-center gap-2">
+          <span class="w-2 h-2 rounded-full bg-status-pass animate-pulse"></span>
+          <span id="hud-fps">0.0 FPS</span>
+        </div>
+        <div class="px-3 py-1.5 rounded-lg bg-bg-surface/80 backdrop-blur-md border border-border-hairline text-text-primary">
+          <span id="hud-res">0 x 0</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Live Telemetry Deck (4 Cols) -->
+    <div class="lg:col-span-4 space-y-4 font-mono text-xs">
+      <!-- Stat Card 1: FPS & Stability -->
+      <div class="p-4 rounded-xl bg-bg-surface border border-border-hairline space-y-3 shadow-specular-top">
+        <div class="text-text-muted text-[10px] uppercase tracking-wider font-bold flex justify-between">
+          <span>Real-Time Framerate</span>
+          <span class="text-status-pass">requestVideoFrameCallback</span>
+        </div>
+        <div class="text-3xl font-extrabold text-text-primary tracking-tight" id="metric-fps">
+          -- <span class="text-sm font-normal text-text-muted">FPS</span>
+        </div>
+        <div class="w-full bg-bg-canvas h-1.5 rounded-full overflow-hidden border border-border-hairline">
+          <div id="fps-bar" class="bg-status-pass h-full w-0 transition-all duration-200"></div>
+        </div>
+      </div>
+
+      <!-- Stat Card 2: Frame Drops & Stutters -->
+      <div class="p-4 rounded-xl bg-bg-surface border border-border-hairline space-y-3 shadow-specular-top">
+        <div class="text-text-muted text-[10px] uppercase tracking-wider font-bold flex justify-between">
+          <span>Hardware Frame Drops</span>
+          <span id="drop-status" class="text-status-pass">HEALTHY</span>
+        </div>
+        <div class="flex items-baseline justify-between">
+          <div class="text-2xl font-bold text-text-primary" id="metric-drops">0</div>
+          <div class="text-text-muted text-[10px]" id="metric-total-frames">Total: 0 frames</div>
+        </div>
+      </div>
+
+      <!-- Stat Card 3: Camera Hardware Specs -->
+      <div class="p-4 rounded-xl bg-bg-surface border border-border-hairline space-y-2.5 shadow-specular-top">
+        <div class="text-text-muted text-[10px] uppercase tracking-wider font-bold">Sensor Specification</div>
+        <div class="flex justify-between py-1 border-b border-border-hairline">
+          <span class="text-text-muted">Resolution</span>
+          <span class="font-bold text-text-primary" id="spec-res">--</span>
+        </div>
+        <div class="flex justify-between py-1 border-b border-border-hairline">
+          <span class="text-text-muted">Aspect Ratio</span>
+          <span class="font-bold text-text-primary" id="spec-aspect">--</span>
+        </div>
+        <div class="flex justify-between py-1 border-b border-border-hairline">
+          <span class="text-text-muted">Pacing Variance</span>
+          <span class="font-bold text-text-primary" id="spec-jitter">-- ms</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  class WebcamFpsEngine {
+    private videoEl: HTMLVideoElement;
+    private canvasEl: HTMLCanvasElement;
+    private ctx: CanvasRenderingContext2D;
+    private stream: MediaStream | null = null;
+    private isRunning = false;
+
+    private lastFrameTime = 0;
+    private frameTimes: number[] = [];
+    private totalFrames = 0;
+    private droppedFrames = 0;
+
+    constructor() {
+      this.videoEl = document.getElementById('webcam-video') as HTMLVideoElement;
+      this.canvasEl = document.getElementById('webcam-canvas') as HTMLCanvasElement;
+      this.ctx = this.canvasEl.getContext('2d')!;
+
+      this.initDevices();
+      this.bindEvents();
+    }
+
+    private async initDevices() {
+      const select = document.getElementById('camera-select') as HTMLSelectElement;
+      if (!select || !navigator.mediaDevices?.enumerateDevices) return;
+
+      try {
+        const devices = await navigator.mediaDevices.enumerateDevices();
+        const videoDevices = devices.filter(d => d.kind === 'videoinput');
+
+        select.innerHTML = '<option value="">Default Camera</option>';
+        videoDevices.forEach((device, idx) => {
+          const opt = document.createElement('option');
+          opt.value = device.deviceId;
+          opt.textContent = device.label || `Camera ${idx + 1}`;
+          select.appendChild(opt);
+        });
+      } catch (e) {
+        console.warn('Unable to enumerate camera devices:', e);
+      }
+    }
+
+    private bindEvents() {
+      document.getElementById('btn-start')?.addEventListener('click', () => this.start());
+      document.getElementById('btn-stop')?.addEventListener('click', () => this.stop());
+    }
+
+    public async start() {
+      const select = document.getElementById('camera-select') as HTMLSelectElement;
+      const deviceId = select?.value;
+
+      const constraints: MediaStreamConstraints = {
+        video: deviceId ? { deviceId: { exact: deviceId } } : { width: { ideal: 3840 }, height: { ideal: 2160 } }
+      };
+
+      try {
+        this.stream = await navigator.mediaDevices.getUserMedia(constraints);
+        this.videoEl.srcObject = this.stream;
+        await this.videoEl.play();
+
+        this.isRunning = true;
+        this.totalFrames = 0;
+        this.droppedFrames = 0;
+        this.frameTimes = [];
+        this.lastFrameTime = 0;
+
+        document.getElementById('idle-screen')?.classList.add('hidden');
+        document.getElementById('webcam-canvas')?.classList.remove('hidden');
+        document.getElementById('hud-overlay')?.classList.remove('hidden');
+        document.getElementById('btn-start')?.classList.add('hidden');
+        document.getElementById('btn-stop')?.classList.remove('hidden');
+
+        this.canvasEl.width = this.videoEl.videoWidth;
+        this.canvasEl.height = this.videoEl.videoHeight;
+
+        this.updateSpecs();
+        this.loop();
+      } catch (err) {
+        alert('Failed to access webcam. Please ensure permissions are granted.');
+        console.error(err);
+      }
+    }
+
+    private updateSpecs() {
+      const w = this.videoEl.videoWidth;
+      const h = this.videoEl.videoHeight;
+      const resEl = document.getElementById('spec-res');
+      const aspectEl = document.getElementById('spec-aspect');
+      const hudRes = document.getElementById('hud-res');
+
+      if (resEl) resEl.textContent = `${w} x ${h}`;
+      if (hudRes) hudRes.textContent = `${w} x ${h}`;
+      if (aspectEl) {
+        const gcd = (a: number, b: number): number => b === 0 ? a : gcd(b, a % b);
+        const divisor = gcd(w, h);
+        aspectEl.textContent = `${w / divisor}:${h / divisor}`;
+      }
+    }
+
+    private loop = (now?: number, metadata?: Record<string, any>) => {
+      if (!this.isRunning) return;
+
+      // Render frame to canvas
+      this.ctx.drawImage(this.videoEl, 0, 0, this.canvasEl.width, this.canvasEl.height);
+
+      const timestamp = metadata?.mediaTime ? metadata.mediaTime * 1000 : performance.now();
+
+      if (this.lastFrameTime > 0) {
+        const delta = timestamp - this.lastFrameTime;
+        this.frameTimes.push(delta);
+        if (this.frameTimes.length > 60) this.frameTimes.shift();
+
+        // Detect frame drop (delta > 1.75x average expected frame duration)
+        const avgDelta = this.frameTimes.reduce((a, b) => a + b, 0) / this.frameTimes.length;
+        if (delta > avgDelta * 1.75) {
+          this.droppedFrames++;
+        }
+      }
+
+      this.lastFrameTime = timestamp;
+      this.totalFrames++;
+
+      this.updateTelemetry();
+
+      if ('requestVideoFrameCallback' in this.videoEl) {
+        (this.videoEl as any).requestVideoFrameCallback(this.loop);
+      } else {
+        requestAnimationFrame(() => this.loop());
+      }
+    };
+
+    private updateTelemetry() {
+      if (this.frameTimes.length === 0) return;
+
+      const avgDelta = this.frameTimes.reduce((a, b) => a + b, 0) / this.frameTimes.length;
+      const fps = 1000 / avgDelta;
+
+      // Jitter
+      const variance = this.frameTimes.reduce((sum, d) => sum + Math.pow(d - avgDelta, 2), 0) / this.frameTimes.length;
+      const jitter = Math.sqrt(variance);
+
+      const metricFps = document.getElementById('metric-fps');
+      const hudFps = document.getElementById('hud-fps');
+      const metricDrops = document.getElementById('metric-drops');
+      const metricTotal = document.getElementById('metric-total-frames');
+      const specJitter = document.getElementById('spec-jitter');
+      const fpsBar = document.getElementById('fps-bar');
+
+      if (metricFps) metricFps.innerHTML = `${fps.toFixed(1)} <span class="text-sm font-normal text-text-muted">FPS</span>`;
+      if (hudFps) hudFps.textContent = `${fps.toFixed(1)} FPS`;
+      if (metricDrops) metricDrops.textContent = `${this.droppedFrames}`;
+      if (metricTotal) metricTotal.textContent = `Total: ${this.totalFrames} frames`;
+      if (specJitter) specJitter.textContent = `${jitter.toFixed(2)} ms`;
+      if (fpsBar) fpsBar.style.width = `${Math.min(100, (fps / 60) * 100)}%`;
+    }
+
+    public stop() {
+      this.isRunning = false;
+      if (this.stream) {
+        this.stream.getTracks().forEach(track => track.stop());
+        this.stream = null;
+      }
+
+      document.getElementById('idle-screen')?.classList.remove('hidden');
+      document.getElementById('webcam-canvas')?.classList.add('hidden');
+      document.getElementById('hud-overlay')?.classList.add('hidden');
+      document.getElementById('btn-start')?.classList.remove('hidden');
+      document.getElementById('btn-stop')?.classList.add('hidden');
+    }
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => new WebcamFpsEngine());
+  } else {
+    new WebcamFpsEngine();
+  }
+</script>

@@ -1,0 +1,39 @@
+---
+/**
+ * PrivacyDisclaimerNotice.astro
+ * Reusable 100% Client-Side Browser Privacy & Security Disclaimer Banner.
+ * Features:
+ * - Emerald glassmorphic container with shield lock icon.
+ * - Explicit guarantee of zero cloud server uploads and 100% local RAM execution.
+ */
+interface Props {
+  class?: string;
+}
+
+const { class: className = "" } = Astro.props;
+---
+
+<div class:list={[
+  "relative w-full rounded-2xl border border-emerald-500/30 bg-emerald-500/10 p-4 sm:p-5 backdrop-blur-xl shadow-lg font-sans select-none overflow-hidden group",
+  className
+]}>
+  <div class="absolute -top-12 -right-12 w-32 h-32 bg-emerald-500/10 rounded-full blur-2xl pointer-events-none group-hover:bg-emerald-500/20 transition-all duration-300"></div>
+
+  <div class="relative z-10 flex flex-col sm:flex-row items-start sm:items-center gap-3.5">
+    <div class="w-10 h-10 rounded-xl bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center text-emerald-400 shrink-0 shadow-inner">
+      <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+      </svg>
+    </div>
+
+    <div class="space-y-1 flex-1 min-w-0">
+      <div class="flex items-center gap-2 flex-wrap">
+        <span class="text-xs font-mono font-bold text-emerald-400 uppercase tracking-wider">100% PRIVATE &amp; BROWSER-BASED</span>
+        <span class="text-[9px] font-mono font-bold px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">ZERO SERVER UPLOADS</span>
+      </div>
+      <p class="text-xs text-zinc-300 font-sans leading-relaxed">
+        All camera video feeds, microphone recordings, and photo booth captures execute <strong class="text-white">strictly inside your device's browser memory (RAM)</strong>. We <strong class="text-emerald-300">do not collect, store, or transmit your media data</strong> to any cloud server.
+      </p>
+    </div>
+  </div>
+</div>

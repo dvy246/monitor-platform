@@ -3,10 +3,13 @@ import Layout from '../../layouts/Layout.astro';
 import AudioTesterCanvas from '../../components/diagnostics/AudioTesterCanvas.astro';
 import FAQSection from '../../components/ui/FAQSection.astro';
 import Breadcrumbs from '../../components/ui/Breadcrumbs.astro';
-import MasterBentoDiagnosticSuite from '../../components/diagnostics/MasterBentoDiagnosticSuite.astro';
 import StepWorkflowSection from '../../components/ui/StepWorkflowSection.astro';
 import PanelTypeBreakdownSection from '../../components/ui/PanelTypeBreakdownSection.astro';
 
+import StatusCard from '../../components/ui/sidebar/StatusCard.astro';
+import MetricCard from '../../components/ui/sidebar/MetricCard.astro';
+import ConfigurationCard from '../../components/ui/sidebar/ConfigurationCard.astro';
+import ShortcutCard from '../../components/ui/sidebar/ShortcutCard.astro';
 
 const title = "5.1 & 7.1 Surround Sound Channel Test";
 const description = "Test 5.1 and 7.1 multichannel surround sound speaker setups online. Verify discrete channel routing for Center, LFE Subwoofer, Surround, and Rear speakers.";
@@ -62,71 +65,139 @@ const breadcrumbs = [
 ---
 
 <Layout title={title} description={description} faqs={faqs}>
-  <div  font-sans">
+  <div class="max-w-7xl mx-auto px-4 py-6 sm:py-8 min-w-0 w-full overflow-hidden font-sans">
     <Breadcrumbs items={breadcrumbs} />
 
-    <!-- Hero Header Deck -->
-    <header class="relative w-full rounded-3xl border border-white/10 bg-[#121215]/90 backdrop-blur-xl p-6 sm:p-8 md:p-10 shadow-2xl space-y-4 overflow-hidden group select-none">
-      <div class="absolute -top-24 -left-24 w-72 h-72 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none group-hover:bg-emerald-500/15 transition-all duration-500"></div>
-      <div class="absolute -bottom-24 -right-24 w-72 h-72 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none group-hover:bg-cyan-500/15 transition-all duration-500"></div>
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 mt-6">
+      
+      <!-- Left Primary Diagnostic Canvas (lg:col-span-8) -->
+      <div class="lg:col-span-8 space-y-8 min-w-0">
+        <!-- Hero Header Deck -->
+        <header class="relative w-full rounded-3xl border border-white/10 bg-[#121215]/90 backdrop-blur-xl p-6 sm:p-8 md:p-10 shadow-2xl space-y-4 overflow-hidden group select-none">
+          <div class="absolute -top-24 -left-24 w-72 h-72 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none group-hover:bg-emerald-500/15 transition-all duration-500"></div>
+          <div class="absolute -bottom-24 -right-24 w-72 h-72 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none group-hover:bg-cyan-500/15 transition-all duration-500"></div>
 
-      <div class="relative z-10 space-y-3 max-w-3xl min-w-0 w-full">
-        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-emerald-400 text-xs font-mono font-bold tracking-wide flex-wrap shadow-inner">
-          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shrink-0"></span>
-          <span>MULTICHANNEL W3C WEBAUDIO CHANNEL ROUTING</span>
+          <div class="relative z-10 space-y-3 max-w-3xl min-w-0 w-full">
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-emerald-400 text-xs font-mono font-bold tracking-wide flex-wrap shadow-inner">
+              <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shrink-0"></span>
+              <span>MULTICHANNEL W3C WEBAUDIO CHANNEL ROUTING</span>
+            </div>
+            <h1 class="text-3xl sm:text-5xl font-extrabold text-white tracking-tight font-sans break-words min-w-0">
+              {title}
+            </h1>
+            <p class="text-sm sm:text-base text-zinc-300 font-sans leading-relaxed min-w-0">
+              Verify discrete channel routing for 5.1 and 7.1 surround sound setups. Test Front Left, Center, Front Right, LFE Subwoofer, Surround L/R, and Rear L/R channels.
+            </p>
+          </div>
+        </header>
+
+        <!-- Main Diagnostic Instrument -->
+        <div class="rounded-3xl border border-white/10 bg-[#121215]/90 backdrop-blur-xl p-4 sm:p-6 shadow-2xl">
+          <AudioTesterCanvas />
         </div>
-        <h1 class="text-3xl sm:text-5xl font-extrabold text-white tracking-tight font-sans break-words min-w-0">
-          {title}
-        </h1>
-        <p class="text-sm sm:text-base text-zinc-300 font-sans leading-relaxed min-w-0">
-          Verify discrete channel routing for 5.1 and 7.1 surround sound setups. Test Front Left, Center, Front Right, LFE Subwoofer, Surround L/R, and Rear L/R channels.
-        </p>
-      </div>
-    </header>
 
-    <!-- Main Diagnostic Instrument -->
-    <div class="rounded-3xl border border-white/10 bg-[#121215]/90 backdrop-blur-xl p-4 sm:p-6 shadow-2xl">
-      <AudioTesterCanvas />
+        <!-- 3-Step Workflow Protocol -->
+        <StepWorkflowSection />
+
+        <!-- Panel Technology Breakdown -->
+        <PanelTypeBreakdownSection />
+
+        <!-- Article Section -->
+        <article class="bg-[#121215] border border-white/10 rounded-3xl p-6 sm:p-8 space-y-6 shadow-2xl font-sans text-sm text-zinc-300 leading-relaxed">
+          <div class="border-b border-white/10 pb-4 font-mono">
+            <span class="text-xs font-bold text-emerald-400 uppercase tracking-widest block mb-1">MULTICHANNEL ACOUSTICS</span>
+            <h2 class="text-2xl font-bold text-white">Multichannel Speaker Routing, LFE Channel &amp; HRTF Spatial 3D</h2>
+          </div>
+
+          <p>
+            Multichannel surround sound setups require independent verification of discrete audio channels to ensure that speakers are physically positioned and wired correctly. Using Web Audio API channel splitter nodes, our diagnostic tool isolates every channel in 5.1 and 7.1 configurations.
+          </p>
+
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4 font-mono text-xs my-4">
+            <div class="bg-[#08080a] p-5 rounded-2xl border border-white/10 space-y-2">
+              <span class="text-cyan-400 text-[10px] uppercase font-bold block">Front &amp; Center</span>
+              <strong class="text-white block text-sm">FL, FC, FR</strong>
+              <p class="font-sans text-[11px] text-zinc-400 leading-relaxed">Anchors dialogue and front soundstage imaging directly on-screen.</p>
+            </div>
+            <div class="bg-[#08080a] p-5 rounded-2xl border border-white/10 space-y-2">
+              <span class="text-emerald-400 text-[10px] uppercase font-bold block">LFE Subwoofer</span>
+              <strong class="text-white block text-sm">Low-Frequency Effects</strong>
+              <p class="font-sans text-[11px] text-zinc-400 leading-relaxed">Delivers dedicated sub-120Hz bass impact to active subwoofers.</p>
+            </div>
+            <div class="bg-[#08080a] p-5 rounded-2xl border border-white/10 space-y-2">
+              <span class="text-amber-400 text-[10px] uppercase font-bold block">Surround &amp; Rear</span>
+              <strong class="text-white block text-sm">SL/SR &amp; RL/RR</strong>
+              <p class="font-sans text-[11px] text-zinc-400 leading-relaxed">Creates 360-degree environmental immersion and rear spatial cues.</p>
+            </div>
+          </div>
+        </article>
+
+        <!-- 10 Structured FAQs Component -->
+        <FAQSection faqs={faqs} title="5.1 & 7.1 Surround Sound FAQs" />
+      </div>
+
+      <!-- Right Modular Control & Telemetry Sidebar (lg:col-span-4) -->
+      <div class="lg:col-span-4 space-y-6 sticky top-24 self-start min-w-0">
+        <StatusCard
+          status="pass"
+          label="5.1 SURROUND ACTIVE"
+          subtitle="W3C Channel Splitter Stream"
+          score="6"
+          maxScore="Ch"
+          details={[
+            { label: 'Channel Mode', value: '5.1 LPCM Multi' },
+            { label: 'Subwoofer LFE', value: 'Active (Dedicated)' }
+          ]}
+        />
+
+        <MetricCard
+          title="Surround Metrics"
+          subtitle="Discrete Channel Telemetry"
+          badgeText="5.1/7.1 LPCM"
+          metrics={[
+            { id: 'activeChannel', label: 'Active Channel Output', value: 'Center', status: 'pass' },
+            { id: 'channelCount', label: 'Total Output Channels', value: '6', unit: 'ch', status: 'pass' },
+            { id: 'subwooferLfe', label: 'LFE Subwoofer Signal', value: '-18.0', unit: 'dBFS', status: 'pass' }
+          ]}
+        />
+
+        <ConfigurationCard
+          title="Surround Routing"
+          subtitle="Layout & Signal Selector"
+          controls={[
+            {
+              id: 'surroundLayout',
+              label: 'Surround Speaker Layout',
+              type: 'presets',
+              value: '5.1',
+              options: [
+                { value: '2.0', label: '2.0 Stereo' },
+                { value: '5.1', label: '5.1 Surround (6 Ch)' },
+                { value: '7.1', label: '7.1 Surround (8 Ch)' }
+              ]
+            },
+            {
+              id: 'surroundSignal',
+              label: 'Channel Test Signal',
+              type: 'select',
+              value: 'noise',
+              options: [
+                { value: 'noise', label: 'Pink Noise Sweep' },
+                { value: 'sine', label: '1kHz Sine Tone' },
+                { value: 'voice', label: 'Voice ID ("Center", "Left")' }
+              ]
+            }
+          ]}
+        />
+
+        <ShortcutCard
+          shortcuts={[
+            { keys: ['1-8'], label: 'Direct Channel Select (FL, FC, FR...)' },
+            { keys: ['Space'], label: 'Cycle All Surround Channels' }
+          ]}
+        />
+      </div>
+
     </div>
-
-    <!-- 3-Step Workflow Protocol -->
-    <StepWorkflowSection />
-
-    <!-- Panel Technology Breakdown -->
-    <PanelTypeBreakdownSection />
-
-    <!-- Article Section -->
-    <article class="bg-[#121215] border border-white/10 rounded-3xl p-6 sm:p-8 space-y-6 shadow-2xl font-sans text-sm text-zinc-300 leading-relaxed">
-      <div class="border-b border-white/10 pb-4 font-mono">
-        <span class="text-xs font-bold text-emerald-400 uppercase tracking-widest block mb-1">MULTICHANNEL ACOUSTICS</span>
-        <h2 class="text-2xl font-bold text-white">Multichannel Speaker Routing, LFE Channel &amp; HRTF Spatial 3D</h2>
-      </div>
-
-      <p>
-        Multichannel surround sound setups require independent verification of discrete audio channels to ensure that speakers are physically positioned and wired correctly. Using Web Audio API channel splitter nodes, our diagnostic tool isolates every channel in 5.1 and 7.1 configurations.
-      </p>
-
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 font-mono text-xs my-4">
-        <div class="bg-[#08080a] p-5 rounded-2xl border border-white/10 space-y-2">
-          <span class="text-cyan-400 text-[10px] uppercase font-bold block">Front &amp; Center</span>
-          <strong class="text-white block text-sm">FL, FC, FR</strong>
-          <p class="font-sans text-[11px] text-zinc-400 leading-relaxed">Anchors dialogue and front soundstage imaging directly on-screen.</p>
-        </div>
-        <div class="bg-[#08080a] p-5 rounded-2xl border border-white/10 space-y-2">
-          <span class="text-emerald-400 text-[10px] uppercase font-bold block">LFE Subwoofer</span>
-          <strong class="text-white block text-sm">Low-Frequency Effects</strong>
-          <p class="font-sans text-[11px] text-zinc-400 leading-relaxed">Delivers dedicated sub-120Hz bass impact to active subwoofers.</p>
-        </div>
-        <div class="bg-[#08080a] p-5 rounded-2xl border border-white/10 space-y-2">
-          <span class="text-amber-400 text-[10px] uppercase font-bold block">Surround &amp; Rear</span>
-          <strong class="text-white block text-sm">SL/SR &amp; RL/RR</strong>
-          <p class="font-sans text-[11px] text-zinc-400 leading-relaxed">Creates 360-degree environmental immersion and rear spatial cues.</p>
-        </div>
-      </div>
-    </article>
-
-    <!-- 10 Structured FAQs Component -->
-    <FAQSection faqs={faqs} title="5.1 & 7.1 Surround Sound FAQs" />
-
   </div>
 </Layout>

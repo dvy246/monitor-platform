@@ -2,17 +2,125 @@
 import Layout from '../../layouts/Layout.astro';
 import TouchMatrixDefusal from '../../components/arcade/TouchMatrixDefusal.astro';
 import ErgonomicsNotice from '../../components/disclaimers/ErgonomicsNotice.astro';
+import StepWorkflowSection from '../../components/ui/StepWorkflowSection.astro';
+import PanelTypeBreakdownSection from '../../components/ui/PanelTypeBreakdownSection.astro';
+import FAQSection from '../../components/ui/FAQSection.astro';
+
+// Right Sidebar Components
+import StatusCard from '../../components/ui/sidebar/StatusCard.astro';
+import TelemetryCard from '../../components/ui/sidebar/TelemetryCard.astro';
+import MetricCard from '../../components/ui/sidebar/MetricCard.astro';
+import ShortcutCard from '../../components/ui/sidebar/ShortcutCard.astro';
+
+const faqs = [
+  {
+    question: "What is Touch Matrix Defusal?",
+    answer: "Touch Matrix Defusal is an interactive diagnostic game that tests capacitive digitizer multi-touch contact tracking, spatial accuracy, and touch release latency under fast multi-finger input."
+  },
+  {
+    question: "How does multi-touch digitizer multiplexing work?",
+    answer: "Touchscreen digitizers scan an ITO conductive grid to detect mutual capacitance shifts across multi-finger touch points, transmitting spatial coordinates via W3C PointerEvents."
+  },
+  {
+    question: "Why does touch contact spatial error occur?",
+    answer: "Spatial error occurs when finger contact area non-linearity or charger EMI line noise distorts the digitizer's calculated centroid position."
+  },
+  {
+    question: "How many simultaneous touch points does Touch Matrix Defusal test?",
+    answer: "The game tests up to 10 simultaneous touch contacts with active tracking IDs, pressure vectors, and touch boundary geometry."
+  },
+  {
+    question: "What causes touch release latency on mobile screens?",
+    answer: "Display controller firmware debouncing, driver event queuing, and browser main-thread frame scheduling can delay pointerup event dispatch."
+  },
+  {
+    question: "How does screen refresh rate affect touch defusal scores?",
+    answer: "Higher refresh rate displays (120Hz / 144Hz) update touch target visuals twice as fast as 60Hz screens, reducing visual reaction feedback delay."
+  },
+  {
+    question: "Does charger EMI noise interfere with touch matrix defusal?",
+    answer: "Unshielded third-party AC power adapters can inject high-frequency electrical noise into the capacitive glass, producing ghost touches or line jitter."
+  },
+  {
+    question: "Is Touch Matrix Defusal optimized for tablets and mobile devices?",
+    answer: "Yes, the test is built using W3C PointerEvents and HTML5 Canvas for sub-pixel accuracy across smartphones, tablets, and interactive touch displays."
+  },
+  {
+    question: "How do palm rejection algorithms impact multi-touch games?",
+    answer: "Palm rejection filters large contact radii (e.g. resting palms), ensuring intentional finger taps register without false rejection."
+  },
+  {
+    question: "How can I export my Touch Matrix Defusal diagnostic score?",
+    answer: "Click 'Export Passport' to save your multi-touch precision score, spatial error RMS, and digitizer health index in a JSON hardware passport."
+  }
+];
+
+const seoTitle = "Touch Matrix Defusal — Multi-Touch Digitizer Speed & Precision Benchmark";
+const seoDescription = "Gamified multi-touch digitizer speed and spatial precision test. Evaluate capacitive touch response times, 10-point contact stability, and spatial error.";
 ---
 
 <Layout 
-  title="Touch Matrix Defusal Game" 
-  description="Touch and hold quadrant energy targets to test multi-touch stability parameters on high-performance digitizers."
+  title={seoTitle} 
+  description={seoDescription}
+  faqs={faqs}
 >
-  <div class="py-4">
-    <TouchMatrixDefusal />
-    
-    <div class="max-w-4xl mx-auto px-4">
+  <div class="py-8 px-4 max-w-7xl mx-auto space-y-12 font-sans">
+    <!-- 2-Column Responsive Layout -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+      <!-- Left Primary Arcade Canvas -->
+      <div class="lg:col-span-8 space-y-8">
+        <TouchMatrixDefusal />
+      </div>
+
+      <!-- Right Modular Control & Telemetry Sidebar -->
+      <div class="lg:col-span-4 sticky top-24 space-y-6">
+        <StatusCard
+          status="pass"
+          label="Digitizer Multi-Touch Score"
+          subtitle="Spatial Contact Precision"
+          score="100%"
+          maxScore="100%"
+          details={[
+            { label: "Active Contacts", value: "10 Points" },
+            { label: "Spatial Latency", value: "<5 ms" }
+          ]}
+        />
+
+        <TelemetryCard
+          title="Pointer Event Telemetry"
+          subtitle="W3C Multi-Touch Event Stream"
+          type="event-log"
+          badgeText="Touch Bus"
+        />
+
+        <MetricCard
+          title="Defusal Performance"
+          subtitle="Speed & Precision Readout"
+          badgeText="Precision"
+          layout="list"
+          metrics={[
+            { id: "defusal-speed", label: "Defusal Response Time", value: "240", unit: "ms", status: "pass" },
+            { id: "spatial-err", label: "Spatial RMS Error", value: "0.24", unit: "px", status: "pass" }
+          ]}
+        />
+
+        <ShortcutCard
+          shortcuts={[
+            { keys: ["F"], label: "Toggle Fullscreen" },
+            { keys: ["R"], label: "Reset Target Matrix" }
+          ]}
+        />
+      </div>
+    </div>
+
+    <!-- Standard 4-Part Sections -->
+    <StepWorkflowSection />
+    <PanelTypeBreakdownSection />
+
+    <div class="max-w-4xl mx-auto">
       <ErgonomicsNotice />
     </div>
+
+    <FAQSection faqs={faqs} title="Touch Defusal FAQs" />
   </div>
 </Layout>

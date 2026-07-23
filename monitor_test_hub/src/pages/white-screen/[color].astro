@@ -3,6 +3,11 @@ import Layout from '../../layouts/Layout.astro';
 import Breadcrumbs from '../../components/ui/Breadcrumbs.astro';
 import WhiteScreenCanvas from '../../components/diagnostics/WhiteScreenCanvas.astro';
 
+import PaletteCard from '../../components/ui/sidebar/PaletteCard.astro';
+import ConfigurationCard from '../../components/ui/sidebar/ConfigurationCard.astro';
+import ShortcutCard from '../../components/ui/sidebar/ShortcutCard.astro';
+import InfoCard from '../../components/ui/sidebar/InfoCard.astro';
+
 export async function getStaticPaths() {
   return [
     { params: { color: 'black-screen' }, props: { name: 'Black Screen', hex: '#000000', kelvin: 6500, desc: 'Pure black screen background for OLED backlight bleed test and dark room lighting.' } },
@@ -27,23 +32,75 @@ const pageDescription = `${desc} Free fullscreen background tool with Screen Wak
 ---
 
 <Layout title={pageTitle} description={pageDescription}>
-  <div class="max-w-7xl mx-auto px-4 py-8 space-y-8">
+  <div class="max-w-7xl mx-auto px-4 py-8 min-w-0 w-full overflow-hidden font-sans">
     <Breadcrumbs items={breadcrumbItems} />
 
-    <header class="space-y-3 border-b border-border-hairline pb-6 font-mono">
-      <div class="flex items-center gap-2 text-status-pass text-xs font-bold uppercase tracking-wider">
-        <span class="w-2 h-2 rounded-full bg-status-pass led-glow-pass"></span>
-        FULLSCREEN COLOR VARIATION UTILITY
-      </div>
-      <h1 class="text-3xl sm:text-4xl font-extrabold text-text-primary tracking-tight">
-        {name} Background Tool
-      </h1>
-      <p class="text-sm text-text-secondary max-w-3xl font-sans">
-        {desc}
-      </p>
-    </header>
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 mt-6">
+      
+      <!-- Left Canvas (lg:col-span-8) -->
+      <div class="lg:col-span-8 space-y-8 min-w-0">
+        <header class="space-y-3 border-b border-border-hairline pb-6 font-mono">
+          <div class="flex items-center gap-2 text-status-pass text-xs font-bold uppercase tracking-wider">
+            <span class="w-2 h-2 rounded-full bg-status-pass led-glow-pass"></span>
+            FULLSCREEN COLOR VARIATION UTILITY
+          </div>
+          <h1 class="text-3xl sm:text-4xl font-extrabold text-text-primary tracking-tight">
+            {name} Background Tool
+          </h1>
+          <p class="text-sm text-text-secondary max-w-3xl font-sans leading-relaxed">
+            {desc}
+          </p>
+        </header>
 
-    <!-- Main Interactive Lighting Canvas Component -->
-    <WhiteScreenCanvas initialColor={hex} initialKelvin={kelvin} activeColorName={name} />
+        <!-- Main Interactive Lighting Canvas Component -->
+        <WhiteScreenCanvas initialColor={hex} initialKelvin={kelvin} activeColorName={name} />
+      </div>
+
+      <!-- Right Modular Sidebar (lg:col-span-4) -->
+      <div class="lg:col-span-4 space-y-6 sticky top-24 self-start min-w-0">
+        <PaletteCard
+          title="Color Swatch Selection"
+          subtitle="Preset Canvas Colors"
+          activeHex={hex}
+          swatches={[
+            { id: 'white', hex: '#FFFFFF', label: 'WHITE' },
+            { id: 'black', hex: '#000000', label: 'BLACK' },
+            { id: 'red', hex: '#FF0000', label: 'RED' },
+            { id: 'green', hex: '#00FF00', label: 'GREEN' },
+            { id: 'blue', hex: '#0000FF', label: 'BLUE' },
+            { id: 'yellow', hex: '#FFFF00', label: 'YELLOW' }
+          ]}
+        />
+
+        <ConfigurationCard
+          title="Surface Tuning"
+          subtitle="Lighting & Overlay Setup"
+          controls={[
+            { id: 'kelvinSlider', label: 'Color Temperature', type: 'slider', min: 2700, max: 6500, step: 100, value: kelvin, unit: 'K' },
+            { id: 'smudgeGridToggle', label: 'Smudge Grid Overlay', type: 'toggle', value: false },
+            { id: 'wakeLockToggle', label: 'Screen Wake Lock API', type: 'toggle', value: true }
+          ]}
+        />
+
+        <ShortcutCard
+          shortcuts={[
+            { keys: ['1', '2', '3', '4', '5'], label: 'Switch Colors' },
+            { keys: ['F'], label: 'Toggle Fullscreen' },
+            { keys: ['G'], label: 'Toggle Smudge Grid' },
+            { keys: ['Esc'], label: 'Exit Fullscreen' }
+          ]}
+        />
+
+        <InfoCard
+          title="Utility Context"
+          subtitle="Screen & Studio Lighting"
+          badgeText="Lighting"
+          educationalNotes={[
+            "Pure color screens reveal dead/stuck sub-pixels and backlight uniformity variances across LED and OLED panels."
+          ]}
+        />
+      </div>
+
+    </div>
   </div>
 </Layout>

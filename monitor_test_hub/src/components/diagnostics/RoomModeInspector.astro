@@ -81,6 +81,8 @@
     const schroederDisp = document.getElementById('schroeder-freq');
     const container = document.getElementById('modes-list-container');
 
+    if (!lenSlider || !widthSlider || !heightSlider) return;
+
     function update() {
       const L_ft = parseFloat(lenSlider.value);
       const W_ft = parseFloat(widthSlider.value);

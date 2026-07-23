@@ -93,15 +93,15 @@ export class ApplianceEnergyEngine {
   ];
 
   public static readonly APPLIANCES: AppliancePreset[] = [
-    { id: 'space-heater', name: 'Portable Space Heater', category: 'Heating & Cooling', typicalWatts: 1500, defaultDailyHours: 8, icon: '🔥' },
-    { id: 'central-ac', name: 'Central Air Conditioner (3 Ton)', category: 'Heating & Cooling', typicalWatts: 3500, defaultDailyHours: 9, icon: '❄️' },
-    { id: 'window-ac', name: 'Window AC Unit (8,000 BTU)', category: 'Heating & Cooling', typicalWatts: 750, defaultDailyHours: 8, icon: '🧊' },
-    { id: 'gaming-pc', name: 'High-End Gaming PC & Monitor', category: 'Entertainment & Tech', typicalWatts: 550, defaultDailyHours: 5, icon: '🖥️' },
-    { id: 'refrigerator', name: 'Standard Refrigerator', category: 'Kitchen & Cooking', typicalWatts: 150, defaultDailyHours: 24, icon: '🥦' },
-    { id: 'clothes-dryer', name: 'Electric Clothes Dryer', category: 'Laundry & Cleaning', typicalWatts: 3000, defaultDailyHours: 1, icon: '👕' },
-    { id: 'ev-charger', name: 'Level 2 EV Home Charger', category: 'EV & Heavy Hardware', typicalWatts: 7200, defaultDailyHours: 3, icon: '⚡' },
-    { id: 'water-heater', name: 'Electric Water Heater (50 Gal)', category: 'Heating & Cooling', typicalWatts: 4500, defaultDailyHours: 3, icon: '🚿' },
-    { id: 'oled-tv', name: '65" OLED 4K TV', category: 'Entertainment & Tech', typicalWatts: 140, defaultDailyHours: 6, icon: '📺' }
+    { id: 'space-heater', name: 'Portable Space Heater', category: 'Heating & Cooling', typicalWatts: 1500, defaultDailyHours: 8, icon: 'heater' },
+    { id: 'central-ac', name: 'Central Air Conditioner (3 Ton)', category: 'Heating & Cooling', typicalWatts: 3500, defaultDailyHours: 9, icon: 'ac' },
+    { id: 'window-ac', name: 'Window AC Unit (8,000 BTU)', category: 'Heating & Cooling', typicalWatts: 750, defaultDailyHours: 8, icon: 'ac' },
+    { id: 'gaming-pc', name: 'High-End Gaming PC & Monitor', category: 'Entertainment & Tech', typicalWatts: 550, defaultDailyHours: 5, icon: 'pc' },
+    { id: 'refrigerator', name: 'Standard Refrigerator', category: 'Kitchen & Cooking', typicalWatts: 150, defaultDailyHours: 24, icon: 'fridge' },
+    { id: 'clothes-dryer', name: 'Electric Clothes Dryer', category: 'Laundry & Cleaning', typicalWatts: 3000, defaultDailyHours: 1, icon: 'dryer' },
+    { id: 'ev-charger', name: 'Level 2 EV Home Charger', category: 'EV & Heavy Hardware', typicalWatts: 7200, defaultDailyHours: 3, icon: 'ev' },
+    { id: 'water-heater', name: 'Electric Water Heater (50 Gal)', category: 'Heating & Cooling', typicalWatts: 4500, defaultDailyHours: 3, icon: 'water' },
+    { id: 'oled-tv', name: '65" OLED 4K TV', category: 'Entertainment & Tech', typicalWatts: 140, defaultDailyHours: 6, icon: 'tv' }
   ];
 
   public static getStateByCode(code: string): StateEnergyRate {

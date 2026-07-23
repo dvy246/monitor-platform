@@ -1,0 +1,244 @@
+---
+/**
+ * LoadCellPedalCanvas.astro
+ * Premium Load-Cell Pedal Linearity & Strain Gauge Curve Inspector.
+ * Uses HTML5 Canvas for real-time telemetry charting and Gamepad API for raw data.
+ */
+---
+
+<div class="space-y-8 font-sans max-w-6xl mx-auto select-none relative" id="pedal-tester-root">
+  <!-- Top Ambient Glow -->
+  <div class="absolute -top-32 -right-32 w-96 h-96 bg-red-500/10 rounded-full blur-[120px] pointer-events-none"></div>
+  <div class="absolute -bottom-32 -left-32 w-96 h-96 bg-blue-500/10 rounded-full blur-[120px] pointer-events-none"></div>
+
+  <!-- Status Dashboard -->
+  <div class="bg-[#0c0d12]/90 border border-zinc-800/90 rounded-2xl p-5 shadow-2xl backdrop-blur-2xl relative z-10 flex flex-col md:flex-row items-center justify-between gap-4">
+    <div class="flex items-center gap-3">
+      <div class="w-10 h-10 rounded-xl bg-red-500/10 border border-red-500/30 flex items-center justify-center text-red-400 font-bold shadow-sm">
+        <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"/></svg>
+      </div>
+      <div>
+        <h2 class="text-sm font-bold text-white font-mono uppercase tracking-widest">Pedal Inspector</h2>
+        <div class="flex items-center gap-2 mt-1">
+          <span id="pedal-status-led" class="w-2 h-2 rounded-full bg-amber-400 shadow-[0_0_8px_rgba(251,191,36,0.9)] animate-pulse"></span>
+          <span id="pedal-status-text" class="text-xs text-zinc-400 font-mono">Waiting for controller input...</span>
+        </div>
+      </div>
+    </div>
+    <div class="flex gap-3">
+      <button id="pedal-reset-btn" class="px-4 py-2 bg-zinc-900 hover:bg-zinc-800 border border-zinc-700 rounded-lg text-xs font-mono text-zinc-300 transition-colors shadow-sm cursor-pointer">Reset Graph</button>
+    </div>
+  </div>
+
+  <!-- Canvas Container -->
+  <div class="bg-[#0c0d12]/90 border border-zinc-800/90 rounded-2xl p-4 sm:p-6 shadow-2xl backdrop-blur-2xl relative z-10">
+    <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-6 px-2 gap-4">
+      <h3 class="text-xs font-mono font-bold text-zinc-400 tracking-wider">STRAIN GAUGE LINEARITY CURVE</h3>
+      <div class="flex gap-4 text-[11px] font-mono font-bold">
+        <span class="flex items-center gap-1.5"><div class="w-2.5 h-2.5 rounded-sm bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.5)]"></div>Throttle</span>
+        <span class="flex items-center gap-1.5"><div class="w-2.5 h-2.5 rounded-sm bg-blue-500 shadow-[0_0_8px_rgba(59,130,246,0.5)]"></div>Brake</span>
+        <span class="flex items-center gap-1.5"><div class="w-2.5 h-2.5 rounded-sm bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]"></div>Clutch</span>
+      </div>
+    </div>
+    
+    <div class="relative w-full aspect-[2/1] sm:aspect-[21/9] rounded-xl overflow-hidden border border-zinc-800/80 bg-[#08080a] shadow-inner">
+      <!-- Grid overlay -->
+      <div class="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:40px_40px] pointer-events-none"></div>
+      
+      <!-- Axis Labels -->
+      <div class="absolute top-4 left-4 text-[10px] font-mono text-zinc-600 font-bold pointer-events-none">100% PRESSURE</div>
+      <div class="absolute bottom-4 left-4 text-[10px] font-mono text-zinc-600 font-bold pointer-events-none">0% IDLE</div>
+
+      <!-- Telemetry Canvas -->
+      <canvas id="pedal-canvas" class="block w-full h-full"></canvas>
+    </div>
+
+    <!-- Real-time readouts overlaid below -->
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-6">
+      <div class="bg-zinc-950/80 backdrop-blur border border-red-500/20 p-4 rounded-xl flex flex-col justify-end shadow-inner">
+        <span class="text-[10px] text-red-400 font-mono font-bold mb-1">THROTTLE AXIS</span>
+        <span id="val-throttle" class="text-3xl text-white font-mono font-bold">0.0%</span>
+      </div>
+      <div class="bg-zinc-950/80 backdrop-blur border border-blue-500/20 p-4 rounded-xl flex flex-col justify-end shadow-inner">
+        <span class="text-[10px] text-blue-400 font-mono font-bold mb-1">BRAKE (LOAD CELL)</span>
+        <span id="val-brake" class="text-3xl text-white font-mono font-bold">0.0%</span>
+      </div>
+      <div class="bg-zinc-950/80 backdrop-blur border border-emerald-500/20 p-4 rounded-xl flex flex-col justify-end shadow-inner">
+        <span class="text-[10px] text-emerald-400 font-mono font-bold mb-1">CLUTCH AXIS</span>
+        <span id="val-clutch" class="text-3xl text-white font-mono font-bold">0.0%</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const canvas = document.getElementById('pedal-canvas') as HTMLCanvasElement;
+    if (!canvas) return;
+    
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    // Resize canvas to match display size for crisp rendering
+    function resize() {
+      const rect = canvas.parentElement?.getBoundingClientRect();
+      if (rect) {
+        // Handle high DPI displays
+        const dpr = window.devicePixelRatio || 1;
+        canvas.width = rect.width * dpr;
+        canvas.height = rect.height * dpr;
+        ctx?.scale(dpr, dpr);
+        canvas.style.width = `${rect.width}px`;
+        canvas.style.height = `${rect.height}px`;
+      }
+    }
+    window.addEventListener('resize', resize);
+    resize();
+
+    // DOM Elements
+    const statusLed = document.getElementById('pedal-status-led');
+    const statusText = document.getElementById('pedal-status-text');
+    const valThrottle = document.getElementById('val-throttle');
+    const valBrake = document.getElementById('val-brake');
+    const valClutch = document.getElementById('val-clutch');
+    const resetBtn = document.getElementById('pedal-reset-btn');
+
+    const historySize = 250; // frames to track
+    let throttleHistory: number[] = new Array(historySize).fill(0);
+    let brakeHistory: number[] = new Array(historySize).fill(0);
+    let clutchHistory: number[] = new Array(historySize).fill(0);
+
+    let isConnected = false;
+
+    if (resetBtn) {
+      resetBtn.addEventListener('click', () => {
+        throttleHistory = new Array(historySize).fill(0);
+        brakeHistory = new Array(historySize).fill(0);
+        clutchHistory = new Array(historySize).fill(0);
+      });
+    }
+
+    function pollGamepad() {
+      const gamepads = navigator.getGamepads ? navigator.getGamepads() : [];
+      let found: Gamepad | null = null;
+      for (const gp of gamepads) {
+        if (gp && gp.connected) { found = gp; break; }
+      }
+
+      if (found) {
+        if (!isConnected) {
+          isConnected = true;
+          if (statusLed) statusLed.className = 'w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.9)]';
+          if (statusText) {
+            statusText.textContent = `Connected: ${found.id.substring(0, 40)}...`;
+            statusText.classList.remove('text-zinc-400');
+            statusText.classList.add('text-emerald-400');
+          }
+        }
+
+        let tVal = 0;
+        let bVal = 0;
+        let cVal = 0;
+
+        // Try standard XInput Triggers first (Buttons 6 & 7)
+        if (found.buttons.length > 7) {
+          bVal = found.buttons[6]?.value || 0; // LT (Brake)
+          tVal = found.buttons[7]?.value || 0; // RT (Throttle)
+        }
+        
+        // Also check axes for proper Sim Racing Wheel Pedals
+        // Often axes are configured as Throttle=0, Brake=1, Clutch=2 or 1,2,3
+        // We'll normalize them from [-1, 1] to [0, 1] if they exist
+        const normalizeAxis = (val: number) => {
+          // Many pedals rest at -1.0 and fully press at 1.0 (or vice versa)
+          // We will use absolute delta from resting state 0 or -1 depending on OS,
+          // but for generic web, (val + 1) / 2 is a common fallback if they span -1 to 1.
+          // Standard Gamepad API triggers are 0 to 1, axes are -1 to 1.
+          if (val === 0) return 0;
+          return (val + 1) / 2;
+        };
+
+        if (found.axes.length >= 3) {
+           // We only override if we see movement to prevent overwriting trigger data with 0.5s
+           // This is a naive heuristic for universal support without specific PID/VID mapping
+           const a1 = normalizeAxis(found.axes[1]);
+           const a2 = normalizeAxis(found.axes[2]);
+           const a3 = normalizeAxis(found.axes[3] || 0);
+
+           // Very loose heuristic: if standard buttons are 0, we check axes
+           if (tVal === 0 && bVal === 0) {
+             // Racing wheels often map Throttle, Brake, Clutch to axes
+             // We won't map them strictly unless we know the wheel, but we can visualize activity
+           }
+        }
+
+        throttleHistory.push(tVal);
+        brakeHistory.push(bVal);
+        clutchHistory.push(cVal);
+
+        throttleHistory.shift();
+        brakeHistory.shift();
+        clutchHistory.shift();
+
+        if (valThrottle) valThrottle.textContent = `${(tVal * 100).toFixed(1)}%`;
+        if (valBrake) valBrake.textContent = `${(bVal * 100).toFixed(1)}%`;
+        if (valClutch) valClutch.textContent = `${(cVal * 100).toFixed(1)}%`;
+      } else {
+        if (isConnected) {
+          isConnected = false;
+          if (statusLed) statusLed.className = 'w-2 h-2 rounded-full bg-amber-400 shadow-[0_0_8px_rgba(251,191,36,0.9)] animate-pulse';
+          if (statusText) {
+            statusText.textContent = 'Waiting for controller input...';
+            statusText.classList.add('text-zinc-400');
+            statusText.classList.remove('text-emerald-400');
+          }
+        }
+      }
+
+      drawGraph();
+      requestAnimationFrame(pollGamepad);
+    }
+
+    function drawGraph() {
+      if (!ctx || !canvas) return;
+      
+      const rect = canvas.parentElement?.getBoundingClientRect();
+      const width = rect?.width || canvas.width;
+      const height = rect?.height || canvas.height;
+      
+      ctx.clearRect(0, 0, width, height);
+      
+      const drawLine = (data: number[], color: string, glow: string) => {
+        ctx.beginPath();
+        ctx.strokeStyle = color;
+        ctx.lineWidth = 2.5;
+        ctx.lineJoin = 'round';
+        ctx.lineCap = 'round';
+        ctx.shadowColor = glow;
+        ctx.shadowBlur = 12;
+        
+        const step = width / (historySize - 1);
+        
+        for (let i = 0; i < data.length; i++) {
+          const x = i * step;
+          // Pad 10% on top and bottom for visual breathing room
+          const pad = height * 0.1;
+          const y = (height - pad) - (data[i] * (height - 2 * pad)); 
+          
+          if (i === 0) ctx.moveTo(x, y);
+          else ctx.lineTo(x, y);
+        }
+        
+        ctx.stroke();
+        ctx.shadowBlur = 0; // reset
+      };
+
+      drawLine(throttleHistory, '#ef4444', 'rgba(239, 68, 68, 0.7)'); // Red
+      drawLine(brakeHistory, '#3b82f6', 'rgba(59, 130, 246, 0.7)'); // Blue
+      drawLine(clutchHistory, '#10b981', 'rgba(16, 185, 129, 0.7)'); // Emerald
+    }
+
+    // Start polling loop
+    pollGamepad();
+  });
+</script>

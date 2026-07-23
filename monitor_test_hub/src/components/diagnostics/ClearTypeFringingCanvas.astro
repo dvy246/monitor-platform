@@ -1,0 +1,233 @@
+---
+// ClearTypeFringingCanvas.astro — Subpixel Text Antialiasing Fringing Simulator
+---
+<div class="rounded-xl border border-border-hairline bg-bg-surface p-6 space-y-6 font-mono text-xs shadow-specular-top">
+  
+  <div class="space-y-4">
+    <div class="flex items-center justify-between border-b border-border-hairline pb-3">
+      <div class="flex items-center gap-2">
+        <span class="w-2 h-2 rounded-full bg-status-pass led-glow-pass"></span>
+        <span class="font-bold text-text-primary uppercase tracking-wider text-xs">ClearType Fringing Inspector</span>
+      </div>
+      <span class="text-[10px] text-text-muted">PRESS HOTKEYS [1-4]</span>
+    </div>
+
+    <!-- Mode Switcher -->
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-2" role="tablist" aria-label="ClearType antialiasing mode selection">
+      <button id="btn-ct-rgb" role="tab" aria-selected="true" class="cleartype-btn flex items-center justify-between px-3 py-2 rounded-md bg-bg-elevated text-text-primary border border-status-pass text-xs font-semibold cursor-pointer transition-colors" data-mode="rgb">
+        <span>Stripe RGB</span>
+        <kbd class="px-1.5 py-0.5 text-[9px] bg-status-pass/10 border border-status-pass/30 text-status-pass rounded font-mono">1</kbd>
+      </button>
+      <button id="btn-ct-bgr" role="tab" aria-selected="false" class="cleartype-btn flex items-center justify-between px-3 py-2 rounded-md bg-bg-elevated text-text-secondary border border-border-hairline hover:text-text-primary text-xs cursor-pointer transition-colors" data-mode="bgr">
+        <span>Reverse BGR</span>
+        <kbd class="px-1.5 py-0.5 text-[9px] bg-bg-canvas border border-border-subtle text-text-muted rounded font-mono">2</kbd>
+      </button>
+      <button id="btn-ct-qdoled" role="tab" aria-selected="false" class="cleartype-btn flex items-center justify-between px-3 py-2 rounded-md bg-bg-elevated text-text-secondary border border-border-hairline hover:text-text-primary text-xs cursor-pointer transition-colors" data-mode="qdoled">
+        <span>QD-OLED</span>
+        <kbd class="px-1.5 py-0.5 text-[9px] bg-bg-canvas border border-border-subtle text-text-muted rounded font-mono">3</kbd>
+      </button>
+      <button id="btn-ct-woled" role="tab" aria-selected="false" class="cleartype-btn flex items-center justify-between px-3 py-2 rounded-md bg-bg-elevated text-text-secondary border border-border-hairline hover:text-text-primary text-xs cursor-pointer transition-colors" data-mode="woled">
+        <span>WOLED</span>
+        <kbd class="px-1.5 py-0.5 text-[9px] bg-bg-canvas border border-border-subtle text-text-muted rounded font-mono">4</kbd>
+      </button>
+    </div>
+  </div>
+
+  <!-- Dynamic Technical Description -->
+  <div id="cleartype-desc" role="region" aria-live="polite" aria-atomic="true" class="p-3.5 rounded-md bg-bg-canvas border border-border-hairline text-text-secondary text-[11px] font-sans leading-relaxed">
+    <span class="inline-block font-mono text-[10px] font-bold text-status-pass uppercase mr-2">[ MODE: STRIPE_RGB ]</span>
+    Native Windows ClearType rendering. The text uses red, green, and blue sub-pixel modulation optimized for standard left-to-right RGB stripe displays, producing razor-sharp text without color fringing.
+  </div>
+
+  <!-- Canvas Simulation -->
+  <div class="relative border border-border-hairline rounded-md bg-bg-canvas p-4 flex items-center justify-center min-h-[300px] overflow-hidden">
+    <canvas id="cleartype-canvas" role="img" aria-label="Interactive ClearType text fringing simulator" class="w-full max-w-2xl h-auto rounded-sm border border-border-hairline"></canvas>
+  </div>
+
+</div>
+
+<script>
+  function initClearTypeCanvas() {
+    const canvas = document.getElementById('cleartype-canvas') as HTMLCanvasElement;
+    const desc = document.getElementById('cleartype-desc');
+    if (!canvas || !desc) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    const modes: Record<string, { mode: string; text: string }> = {
+      rgb: { mode: 'STRIPE_RGB', text: 'Native Windows ClearType rendering. Optimized for standard left-to-right RGB stripe displays, producing razor-sharp text without color fringing.' },
+      bgr: { mode: 'REVERSE_BGR', text: 'Reverse BGR mismatch. When RGB ClearType is rendered on a BGR display without OS adjustment, severe chromatic aberration (cyan/magenta halos) appears on vertical strokes.' },
+      qdoled: { mode: 'QD_OLED', text: 'Triangular QD-OLED fringing. ClearType assumes horizontal stripes. On QD-OLED, the top-green/bottom-red-blue pixel arrangement creates a visible green top halo and magenta bottom shadow on text.' },
+      woled: { mode: 'WOLED_RWBG', text: 'WOLED RWBG fringing. The dedicated white subpixel creates uneven subpixel luminance spacing, causing slight text softening and minor color fringing on high-contrast text.' }
+    };
+
+    let currentMode = 'rgb';
+
+    function drawSimulation(mode: string = currentMode) {
+      currentMode = mode;
+      const parent = canvas.parentElement;
+      if (!parent) return;
+      
+      const dpr = window.devicePixelRatio || 1;
+      const displayW = parent.clientWidth - 32;
+      const displayH = 300;
+
+      canvas.width = Math.floor(displayW * dpr);
+      canvas.height = Math.floor(displayH * dpr);
+      canvas.style.width = displayW + 'px';
+      canvas.style.height = displayH + 'px';
+      
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+      const isLight = document.documentElement.classList.contains('light');
+      const bg = isLight ? '#ffffff' : '#000000';
+      const fg = isLight ? '#000000' : '#ffffff';
+      
+      ctx.fillStyle = bg;
+      ctx.fillRect(0, 0, displayW, displayH);
+
+      const text = "ClearType Antialiasing Inspector";
+      const subText = "The quick brown fox jumps over the lazy dog";
+      
+      // Configuration for chromatic aberration simulation
+      ctx.font = "bold 36px 'Inter', system-ui, sans-serif";
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      
+      const cx = displayW / 2;
+      const cy = displayH / 2 - 20;
+
+      // Base pass (Grayscale Antialiasing)
+      ctx.fillStyle = fg;
+      ctx.globalCompositeOperation = isLight ? 'multiply' : 'screen';
+
+      if (mode === 'rgb') {
+        // Clean rendering
+        ctx.fillText(text, cx, cy);
+        ctx.font = "normal 18px 'Inter', system-ui, sans-serif";
+        ctx.fillText(subText, cx, cy + 50);
+      } else if (mode === 'bgr') {
+        // BGR fringing (cyan left, magenta right)
+        ctx.fillStyle = isLight ? 'rgba(0,255,255,0.7)' : 'rgba(0,255,255,0.7)';
+        ctx.fillText(text, cx - 1.5, cy);
+        ctx.fillStyle = isLight ? 'rgba(255,0,255,0.7)' : 'rgba(255,0,255,0.7)';
+        ctx.fillText(text, cx + 1.5, cy);
+        ctx.fillStyle = fg;
+        ctx.globalAlpha = 0.8;
+        ctx.fillText(text, cx, cy);
+        ctx.globalAlpha = 1.0;
+
+        ctx.font = "normal 18px 'Inter', system-ui, sans-serif";
+        ctx.fillStyle = isLight ? 'rgba(0,255,255,0.7)' : 'rgba(0,255,255,0.7)';
+        ctx.fillText(subText, cx - 1, cy + 50);
+        ctx.fillStyle = isLight ? 'rgba(255,0,255,0.7)' : 'rgba(255,0,255,0.7)';
+        ctx.fillText(subText, cx + 1, cy + 50);
+        ctx.fillStyle = fg;
+        ctx.fillText(subText, cx, cy + 50);
+      } else if (mode === 'qdoled') {
+        // QD-OLED fringing (green top, magenta bottom)
+        ctx.fillStyle = 'rgba(0,255,0,0.6)';
+        ctx.fillText(text, cx, cy - 1.5);
+        ctx.fillStyle = 'rgba(255,0,255,0.6)';
+        ctx.fillText(text, cx, cy + 1.5);
+        ctx.fillStyle = fg;
+        ctx.globalAlpha = 0.85;
+        ctx.fillText(text, cx, cy);
+        ctx.globalAlpha = 1.0;
+
+        ctx.font = "normal 18px 'Inter', system-ui, sans-serif";
+        ctx.fillStyle = 'rgba(0,255,0,0.6)';
+        ctx.fillText(subText, cx, cy + 50 - 1);
+        ctx.fillStyle = 'rgba(255,0,255,0.6)';
+        ctx.fillText(subText, cx, cy + 50 + 1);
+        ctx.fillStyle = fg;
+        ctx.fillText(subText, cx, cy + 50);
+      } else if (mode === 'woled') {
+        // WOLED fringing (slight yellow/blue shifting and blur)
+        ctx.fillStyle = 'rgba(255,255,0,0.4)';
+        ctx.fillText(text, cx - 1, cy);
+        ctx.fillStyle = 'rgba(0,100,255,0.4)';
+        ctx.fillText(text, cx + 1, cy);
+        ctx.fillStyle = fg;
+        ctx.globalAlpha = 0.9;
+        ctx.filter = 'blur(0.5px)';
+        ctx.fillText(text, cx, cy);
+        ctx.filter = 'none';
+        ctx.globalAlpha = 1.0;
+
+        ctx.font = "normal 18px 'Inter', system-ui, sans-serif";
+        ctx.fillStyle = 'rgba(255,255,0,0.4)';
+        ctx.fillText(subText, cx - 0.5, cy + 50);
+        ctx.fillStyle = 'rgba(0,100,255,0.4)';
+        ctx.fillText(subText, cx + 0.5, cy + 50);
+        ctx.fillStyle = fg;
+        ctx.fillText(subText, cx, cy + 50);
+      }
+
+      ctx.globalCompositeOperation = 'source-over';
+    }
+
+    function setMode(mode: string) {
+      document.querySelectorAll('.cleartype-btn').forEach((btn) => {
+        const b = btn as HTMLButtonElement;
+        const isActive = b.getAttribute('data-mode') === mode;
+        b.setAttribute('aria-selected', String(isActive));
+        const kbd = b.querySelector('kbd');
+        if (isActive) {
+          b.className = 'cleartype-btn flex items-center justify-between px-3 py-2 rounded-md bg-bg-elevated text-text-primary border border-status-pass text-xs font-semibold cursor-pointer transition-colors';
+          if (kbd) kbd.className = 'px-1.5 py-0.5 text-[9px] bg-status-pass/10 border border-status-pass/30 text-status-pass rounded font-mono';
+        } else {
+          b.className = 'cleartype-btn flex items-center justify-between px-3 py-2 rounded-md bg-bg-elevated text-text-secondary border border-border-hairline hover:text-text-primary text-xs cursor-pointer transition-colors';
+          if (kbd) kbd.className = 'px-1.5 py-0.5 text-[9px] bg-bg-canvas border border-border-subtle text-text-muted rounded font-mono';
+        }
+      });
+
+      if (desc && modes[mode]) {
+        desc.innerHTML = `<span class="inline-block font-mono text-[10px] font-bold text-status-pass uppercase mr-2">[ MODE: ${modes[mode].mode} ]</span>${modes[mode].text}`;
+      }
+      drawSimulation(mode);
+    }
+
+    document.querySelectorAll('.cleartype-btn').forEach((btn) => {
+      btn.addEventListener('click', (e) => {
+        const target = e.currentTarget as HTMLButtonElement;
+        const mode = target.getAttribute('data-mode');
+        if (mode) setMode(mode);
+      });
+    });
+
+    document.addEventListener('keydown', (e: KeyboardEvent) => {
+      if (['INPUT', 'TEXTAREA', 'SELECT'].includes((e.target as HTMLElement)?.tagName)) return;
+      if (e.key === '1') setMode('rgb');
+      if (e.key === '2') setMode('bgr');
+      if (e.key === '3') setMode('qdoled');
+      if (e.key === '4') setMode('woled');
+    });
+
+    let resizeObserver: ResizeObserver | null = null;
+    if (typeof ResizeObserver !== 'undefined' && canvas.parentElement) {
+      resizeObserver = new ResizeObserver(() => drawSimulation());
+      resizeObserver.observe(canvas.parentElement);
+    }
+    window.addEventListener('resize', () => drawSimulation());
+
+    document.addEventListener('astro:before-swap', () => {
+      if (resizeObserver) {
+        resizeObserver.disconnect();
+        resizeObserver = null;
+      }
+    }, { once: true });
+
+    window.addEventListener('themechange', () => {
+      drawSimulation();
+    });
+
+    drawSimulation('rgb');
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initClearTypeCanvas, { once: true });
+  } else {
+    initClearTypeCanvas();
+  }
+</script>

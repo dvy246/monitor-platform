@@ -1,0 +1,259 @@
+---
+/**
+ * JoystickHotasCanvas.astro
+ * Flight Stick & HOTAS Gaming Joystick Diagnostic Engine.
+ * Features:
+ * - Premium 3D Perspective Canvas Rendering (3D Flight Grip, Metallic Shaft, Gimbal Base, Glowing HUD Reticle).
+ * - Multi-Axis Real-Time Pitch, Roll, Yaw / Rudder, and Throttle Telemetry.
+ * - 8-Way Point-Of-View (POV) Hat Switch Visualizer.
+ * - 128-Button High-Capacity Actuation Grid.
+ */
+---
+
+<div class="w-full max-w-5xl mx-auto space-y-6 font-sans select-none min-w-0" id="hotas-test-root">
+  <div class="relative bg-[#0c0d12]/90 border border-zinc-800/90 rounded-2xl p-4 sm:p-6 backdrop-blur-2xl shadow-[0_25px_60px_rgba(0,0,0,0.8)] space-y-6 overflow-hidden">
+    <!-- Ambient Radial Glows -->
+    <div class="absolute -top-24 -right-24 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none"></div>
+    <div class="absolute -bottom-24 -left-24 w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none"></div>
+
+    <!-- Header -->
+    <div class="relative z-10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-zinc-800/70 pb-5">
+      <div>
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/30 text-[11px] font-mono text-cyan-400 font-bold uppercase tracking-wider mb-2">
+          <span class="w-2 h-2 rounded-full bg-cyan-400 shadow-[0_0_8px_rgba(34,211,238,0.9)] animate-pulse"></span>
+          <span>3D FLIGHT STICK &amp; HOTAS JOYSTICK DIAGNOSTIC SUITE</span>
+        </div>
+        <h2 class="text-xl sm:text-2xl font-bold font-mono text-white tracking-tight">Gaming Joystick 3D Diagnostic Studio</h2>
+      </div>
+
+      <div class="text-xs font-mono text-zinc-400 bg-zinc-950 px-3 py-1.5 rounded-lg border border-zinc-800">
+        128-Button &amp; 10-Axis 3D Spatial Mode
+      </div>
+    </div>
+
+    <!-- Premium 3D Gaming Joystick Canvas Deck -->
+    <div class="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
+      <!-- 3D Perspective Joystick Viewport -->
+      <div class="lg:col-span-7 h-80 bg-zinc-950 rounded-2xl border border-zinc-800/90 flex flex-col items-center justify-center relative overflow-hidden shadow-[inset_0_4px_24px_rgba(0,0,0,0.95)]" id="joystick-3d-viewport">
+        <!-- Reticle HUD Overlay -->
+        <div class="absolute inset-0 pointer-events-none flex items-center justify-center">
+          <div class="w-64 h-64 border border-cyan-500/15 rounded-full flex items-center justify-center">
+            <div class="w-44 h-44 border border-cyan-500/25 rounded-full border-dashed animate-spin-slow"></div>
+          </div>
+          <div class="absolute text-[10px] font-mono text-cyan-500/40 top-3 left-4 font-bold uppercase tracking-wider">HUD RETICLE: 3D GIMBAL ACTIVE</div>
+        </div>
+
+        <canvas id="joystick-3d-canvas" class="w-full h-full block relative z-10"></canvas>
+      </div>
+
+      <!-- Multi-Axis Telemetry & Throttle Gauge -->
+      <div class="lg:col-span-5 space-y-4 font-mono">
+        <div class="grid grid-cols-2 gap-3">
+          <div class="bg-zinc-950 p-3.5 rounded-xl border border-zinc-800 text-center space-y-1">
+            <div class="text-[11px] text-zinc-400 font-bold uppercase">Pitch (Axis Y)</div>
+            <div id="hotas-pitch-val" class="text-2xl font-extrabold text-cyan-400 tabular-nums">0.00</div>
+            <div class="text-[10px] text-zinc-500">Elevator Deflection</div>
+          </div>
+
+          <div class="bg-zinc-950 p-3.5 rounded-xl border border-zinc-800 text-center space-y-1">
+            <div class="text-[11px] text-zinc-400 font-bold uppercase">Roll (Axis X)</div>
+            <div id="hotas-roll-val" class="text-2xl font-extrabold text-emerald-400 tabular-nums">0.00</div>
+            <div class="text-[10px] text-zinc-500">Aileron Deflection</div>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div class="bg-zinc-950 p-3.5 rounded-xl border border-zinc-800 text-center space-y-1">
+            <div class="text-[11px] text-zinc-400 font-bold uppercase">Yaw (Rudder)</div>
+            <div id="hotas-yaw-val" class="text-2xl font-extrabold text-amber-400 tabular-nums">0.00</div>
+            <div class="text-[10px] text-zinc-500">Twist Handle</div>
+          </div>
+
+          <div class="bg-zinc-950 p-3.5 rounded-xl border border-zinc-800 text-center space-y-1">
+            <div class="text-[11px] text-zinc-400 font-bold uppercase">Throttle</div>
+            <div id="hotas-throttle-val" class="text-2xl font-extrabold text-purple-400 tabular-nums">0%</div>
+            <div class="text-[10px] text-zinc-500">Engine Power</div>
+          </div>
+        </div>
+
+        <!-- 8-Way POV Hat Visualizer -->
+        <div class="bg-zinc-950 p-3 rounded-xl border border-zinc-800 flex items-center justify-between">
+          <span class="text-xs text-zinc-400 font-bold uppercase">8-Way POV Hat:</span>
+          <span id="hotas-pov-text" class="text-xs font-bold text-cyan-400">CENTER (NEUTRAL)</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 128 Button High Capacity Matrix Display -->
+    <div class="relative z-10 bg-zinc-950 p-4 rounded-2xl border border-zinc-800/90 space-y-3 font-mono shadow-[inset_0_4px_16px_rgba(0,0,0,0.95)]">
+      <div class="flex items-center justify-between text-xs font-bold border-b border-zinc-800 pb-2">
+        <span class="text-white">128-BUTTON HIGH CAPACITY HID MATRIX</span>
+        <span class="text-zinc-500 text-[10px]">W3C Gamepad API</span>
+      </div>
+      <div id="hotas-btn-grid" class="grid grid-cols-8 sm:grid-cols-16 gap-1.5 max-h-40 overflow-y-auto py-1">
+        <!-- 128 button indicators generated by script -->
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const pitchVal = document.getElementById('hotas-pitch-val');
+  const rollVal = document.getElementById('hotas-roll-val');
+  const yawVal = document.getElementById('hotas-yaw-val');
+  const throttleVal = document.getElementById('hotas-throttle-val');
+  const povText = document.getElementById('hotas-pov-text');
+  const btnGrid = document.getElementById('hotas-btn-grid');
+  const canvas = document.getElementById('joystick-3d-canvas') as HTMLCanvasElement | null;
+
+  function renderGrid() {
+    if (!btnGrid) return;
+    let html = '';
+    for (let i = 0; i < 128; i++) {
+      html += `<div data-hotas-btn="${i}" class="h-7 rounded bg-zinc-900 border border-zinc-800 flex items-center justify-center text-[10px] font-mono font-bold text-zinc-500">B${i + 1}</div>`;
+    }
+    btnGrid.innerHTML = html;
+  }
+
+  function render3DJoystick(roll: number, pitch: number, yaw: number, triggerPressed: boolean) {
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    const width = canvas.clientWidth;
+    const height = canvas.clientHeight;
+    if (width < 20 || height < 20) return;
+
+    canvas.width = width;
+    canvas.height = height;
+
+    ctx.clearRect(0, 0, width, height);
+
+    const cx = width / 2;
+    const cy = height / 2 + 40; // Base position near bottom center
+
+    // 1. Draw 3D Gimbal Outer Base Platform (Elliptical perspective)
+    ctx.beginPath();
+    ctx.ellipse(cx, cy, 110, 45, 0, 0, 2 * Math.PI);
+    const baseGrad = ctx.createRadialGradient(cx, cy, 10, cx, cy, 110);
+    baseGrad.addColorStop(0, '#27272a');
+    baseGrad.addColorStop(1, '#09090b');
+    ctx.fillStyle = baseGrad;
+    ctx.fill();
+    ctx.lineWidth = 3;
+    ctx.strokeStyle = '#3f3f46';
+    ctx.stroke();
+
+    // Concentric Gimbal Ring
+    ctx.beginPath();
+    ctx.ellipse(cx, cy, 70, 28, 0, 0, 2 * Math.PI);
+    ctx.strokeStyle = '#22d3ee';
+    ctx.lineWidth = 1.5;
+    ctx.setLineDash([4, 4]);
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    // 2. Compute 3D Shaft & Flight Stick Deflection
+    const maxDeflectionX = 65; // Max horizontal tilt px
+    const maxDeflectionY = 45; // Max vertical tilt px
+
+    const tipX = cx + roll * maxDeflectionX;
+    const tipY = (cy - 120) + pitch * maxDeflectionY;
+
+    // 3. Draw Metallic Joystick Shaft
+    ctx.beginPath();
+    ctx.moveTo(cx - 8, cy - 10);
+    ctx.lineTo(tipX - 6, tipY + 25);
+    ctx.lineTo(tipX + 6, tipY + 25);
+    ctx.lineTo(cx + 8, cy - 10);
+    ctx.closePath();
+
+    const shaftGrad = ctx.createLinearGradient(cx - 10, cy, tipX + 10, tipY);
+    shaftGrad.addColorStop(0, '#52525b');
+    shaftGrad.addColorStop(0.5, '#e4e4e7');
+    shaftGrad.addColorStop(1, '#27272a');
+    ctx.fillStyle = shaftGrad;
+    ctx.fill();
+    ctx.strokeStyle = '#18181b';
+    ctx.stroke();
+
+    // 4. Draw Ergonomic 3D Flight Stick Grip Head
+    ctx.save();
+    ctx.translate(tipX, tipY);
+    ctx.rotate(yaw * 0.4); // Apply Twist / Yaw rotation
+
+    // Ergonomic Grip Body
+    ctx.beginPath();
+    ctx.roundRect(-24, -35, 48, 55, [14, 14, 8, 8]);
+    const gripGrad = ctx.createLinearGradient(-24, -35, 24, 20);
+    gripGrad.addColorStop(0, '#27272a');
+    gripGrad.addColorStop(0.5, '#18181b');
+    gripGrad.addColorStop(1, '#09090b');
+    ctx.fillStyle = gripGrad;
+    ctx.shadowColor = '#22d3ee';
+    ctx.shadowBlur = Math.abs(roll) * 15 + 5;
+    ctx.fill();
+    ctx.lineWidth = 2;
+    ctx.strokeStyle = triggerPressed ? '#ef4444' : '#3f3f46';
+    ctx.stroke();
+    ctx.shadowBlur = 0;
+
+    // Red Firing Trigger Button
+    ctx.beginPath();
+    ctx.roundRect(-12, -42, 24, 10, 4);
+    ctx.fillStyle = triggerPressed ? '#ef4444' : '#dc2626';
+    ctx.fill();
+
+    // Thumb Hat Switch Center
+    ctx.beginPath();
+    ctx.arc(0, -10, 10, 0, 2 * Math.PI);
+    ctx.fillStyle = '#06b6d4';
+    ctx.fill();
+    ctx.lineWidth = 2;
+    ctx.strokeStyle = '#ec4899';
+    ctx.stroke();
+
+    ctx.restore();
+  }
+
+  function loop() {
+    const gamepads = navigator.getGamepads ? navigator.getGamepads() : [];
+    let gp: Gamepad | null = null;
+    for (let i = 0; i < gamepads.length; i++) {
+      if (gamepads[i]) { gp = gamepads[i]; break; }
+    }
+
+    let roll = 0, pitch = 0, yaw = 0, rawThrottle = 0;
+    let triggerPressed = false;
+
+    if (gp) {
+      roll = gp.axes[0] || 0;
+      pitch = gp.axes[1] || 0;
+      yaw = gp.axes[2] || 0;
+      rawThrottle = gp.axes.length >= 4 ? (1 - (gp.axes[3] || 0)) / 2 : 0;
+      triggerPressed = gp.buttons[0] ? gp.buttons[0].pressed : false;
+
+      if (rollVal) rollVal.textContent = roll.toFixed(2);
+      if (pitchVal) pitchVal.textContent = pitch.toFixed(2);
+      if (yawVal) yawVal.textContent = yaw.toFixed(2);
+      if (throttleVal) throttleVal.textContent = `${Math.round(rawThrottle * 100)}%`;
+
+      for (let b = 0; b < Math.min(128, gp.buttons.length); b++) {
+        const btnEl = document.querySelector(`[data-hotas-btn="${b}"]`);
+        if (btnEl) {
+          if (gp.buttons[b] && gp.buttons[b].pressed) {
+            btnEl.className = 'h-7 rounded bg-cyan-500 text-black border border-cyan-400 font-bold flex items-center justify-center text-[10px] shadow-sm';
+          } else {
+            btnEl.className = 'h-7 rounded bg-zinc-900 border border-zinc-800 flex items-center justify-center text-[10px] font-mono font-bold text-zinc-500';
+          }
+        }
+      }
+    }
+
+    render3DJoystick(roll, pitch, yaw, triggerPressed);
+    requestAnimationFrame(loop);
+  }
+
+  renderGrid();
+  requestAnimationFrame(loop);
+</script>

@@ -1,0 +1,87 @@
+---
+import FAQSection from '../../components/ui/FAQSection.astro';
+import Layout from '../../layouts/Layout.astro';
+import AngleSnappingCanvas from '../../components/diagnostics/AngleSnappingCanvas.astro';
+import { useTranslations } from '../../utils/i18n';
+
+import StatusCard from '../../components/ui/sidebar/StatusCard.astro';
+import MetricCard from '../../components/ui/sidebar/MetricCard.astro';
+import TelemetryCard from '../../components/ui/sidebar/TelemetryCard.astro';
+
+const { lang } = useTranslations(Astro.url.pathname);
+const canonicalUrl = lang === 'en'
+  ? "https://displaytestonline.com/mouse-test/angle-snapping-test"
+  : `https://displaytestonline.com/${lang}/mouse-test/angle-snapping-test`;
+
+const faqs = [
+  { question: "What is mouse angle snapping?", answer: "Angle snapping (or prediction) is a sensor feature that attempts to smooth out human jitter by snapping slight diagonal movements into perfectly straight horizontal or vertical lines." },
+  { question: "Why is angle snapping bad for gaming?", answer: "In FPS games, angle snapping destroys pixel-perfect micro-adjustments and prevents accurate tracking of targets moving at slight angles, overriding your natural aim." },
+  { question: "How do I test for angle snapping?", answer: "Draw smooth, shallow curves or circles in the canvas area. If your curves suddenly snap into perfectly straight, rigid lines, your mouse has angle snapping enabled." },
+  { question: "How do I turn it off?", answer: "Angle snapping can usually be disabled in your mouse manufacturer's software (e.g., Logitech G HUB, Razer Synapse, or Zowie hardware switches)." },
+  { question: "Is sensor ripple different from angle snapping?", answer: "Yes, sensor ripple is high-DPI jitter where the sensor over-amplifies surface noise, while angle snapping is artificial smoothing. This tool tests for both." },
+  { question: "Should I use angle snapping for productivity?", answer: "It can be useful for graphic designers or CAD engineers who need to draw straight lines with a mouse, but it should be disabled for gaming." },
+  { question: "What is a 'flawless' mouse sensor?", answer: "A flawless sensor (like the PMW3360 or Focus Pro) has zero hardware acceleration, zero angle snapping, and zero smoothing, delivering 1:1 raw tracking." },
+  { question: "Does Windows 'Enhance Pointer Precision' cause this?", answer: "No, 'Enhance Pointer Precision' causes mouse acceleration, which scales sensitivity based on speed. Angle snapping alters the trajectory, not just the speed." },
+  { question: "Will a higher DPI cause more snapping?", answer: "Typically no, but extremely high DPIs can introduce smoothing algorithms on older sensors that might feel similar to snapping." },
+  { question: "Can my mousepad cause this issue?", answer: "No, angle snapping is purely a firmware or software algorithm built into the mouse sensor or driver, independent of the mousepad surface." }
+];
+
+const seoTitle = "Mouse Sensor Ripple & Angle Snapping Test Online";
+const seoDescription = "Test your gaming mouse for angle snapping, sensor ripple, and artificial smoothing. Free drawing canvas to verify raw 1:1 sensor input and tracking precision.";
+---
+
+<Layout title={seoTitle} description={seoDescription} faqs={faqs} canonicalUrl={canonicalUrl}>
+  <div class="max-w-7xl mx-auto px-4 py-6 sm:py-8 min-w-0 w-full overflow-hidden font-sans">
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 mt-6">
+      
+      <div class="lg:col-span-8 space-y-8 min-w-0">
+        <section class="max-w-4xl mx-auto text-center space-y-4">
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-sky-500/10 border border-sky-500/30 text-xs font-mono text-sky-400 font-bold">
+            <span>SENSOR TRACKING DIAGNOSTIC</span>
+          </div>
+          <h1 class="text-3xl sm:text-4xl font-extrabold font-mono tracking-tight text-white">
+            Mouse Angle Snapping & Ripple Inspector
+          </h1>
+          <p class="text-sm sm:text-base text-zinc-400 leading-relaxed max-w-2xl mx-auto">
+            Analyze your mouse sensor for artificial prediction algorithms. Ensure your gaming mouse has 1:1 raw tracking without hardware smoothing or angle snapping.
+          </p>
+        </section>
+
+        <AngleSnappingCanvas />
+
+        <article class="max-w-5xl mx-auto space-y-6 bg-[#121215] border border-white/10 rounded-3xl p-6 sm:p-8 backdrop-blur-xl text-sm text-zinc-300 leading-relaxed shadow-2xl">
+          <div class="border-b border-white/10 pb-4">
+            <h2 class="text-xl font-bold font-mono text-white">Raw Tracking & Trajectory Analysis</h2>
+            <p class="mt-2 text-zinc-400">
+              Modern optical sensors like the PixArt 3395 strive for 'flawless' raw input. This canvas plots raw mouse coordinate deltas. Any algorithmic intervention—whether line straightening (angle snapping) or high-DPI jitter reduction (smoothing)—will visually distort the drawn paths.
+            </p>
+          </div>
+        </article>
+
+        <FAQSection faqs={faqs} />
+      </div>
+
+      <div class="lg:col-span-4 space-y-6 sticky top-24 self-start min-w-0">
+        <StatusCard
+          status="pass"
+          label="RAW INPUT ACTIVE"
+          subtitle="Tracking Status"
+          score="100"
+          maxScore="100"
+          details={[
+            { label: 'Drawing', value: 'Enabled' }
+          ]}
+        />
+        <MetricCard
+          title="Tracking Telemetry"
+          subtitle="Path Interpolation"
+          badgeText="Live"
+          metrics={[
+            { id: 'snapping', label: 'Snapping Events', value: '0', unit: '', status: 'pass' }
+          ]}
+        />
+      </div>
+
+    </div>
+  </div>
+</Layout>

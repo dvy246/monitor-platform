@@ -6,6 +6,10 @@ import HdrClippingTester from '../../components/diagnostics/HdrClippingTester.as
 import HardwareLimitationNotice from '../../components/disclaimers/HardwareLimitationNotice.astro';
 import EpilepsyWarning from '../../components/disclaimers/EpilepsyWarning.astro';
 
+import ConfigurationCard from '../../components/ui/sidebar/ConfigurationCard.astro';
+import MetricCard from '../../components/ui/sidebar/MetricCard.astro';
+import ShortcutCard from '../../components/ui/sidebar/ShortcutCard.astro';
+import InfoCard from '../../components/ui/sidebar/InfoCard.astro';
 
 const breadcrumbItems = [
   { label: 'Display Suite', href: '/display-tests' },
@@ -25,60 +29,134 @@ const displayTests = [
   title="HDR Peak Brightness & Tone Mapping Test | Monitor Test Hub"
   description="Test HDR tone mapping, 10-bit gradients, and ABL peak brightness (1%-100% window sizes) for OLED & Mini-LED screens. Free browser test for VESA DisplayHDR."
 >
-  <div class="max-w-7xl mx-auto px-4 py-8 space-y-8">
+  <div class="max-w-7xl mx-auto px-4 py-8 space-y-8 min-w-0 w-full overflow-hidden font-sans">
     <Breadcrumbs items={breadcrumbItems} />
 
-    <header class="space-y-3 border-b border-border-hairline pb-6">
-      <div class="flex items-center gap-2 text-status-pass text-xs font-mono font-bold uppercase tracking-wider">
-        <span class="w-2 h-2 rounded-full bg-status-pass led-glow-pass"></span>
-        VESA DISPLAYHDR 1400 / 1000 METRIC
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+      
+      <!-- Left Canvas (lg:col-span-8) -->
+      <div class="lg:col-span-8 space-y-8 min-w-0">
+        <header class="space-y-3 border-b border-border-hairline pb-6">
+          <div class="flex items-center gap-2 text-status-pass text-xs font-mono font-bold uppercase tracking-wider">
+            <span class="w-2 h-2 rounded-full bg-status-pass led-glow-pass"></span>
+            VESA DISPLAYHDR 1400 / 1000 METRIC
+          </div>
+          <h1 class="text-3xl sm:text-4xl font-extrabold text-text-primary tracking-tight font-mono">
+            HDR Peak Brightness &amp; Tone Mapping Test
+          </h1>
+          <p class="text-sm text-text-secondary max-w-3xl leading-relaxed">
+            Evaluate your display's HDR tone mapping, Auto Brightness Limiter (ABL), and peak luminance clipping behavior with precision 10-bit step gradient patterns for VESA DisplayHDR 600–1400 and HDR10/Dolby Vision compliance.
+          </p>
+        </header>
+
+        <!-- HDR Test Engine Component -->
+        <HdrClippingTester initialPeakNits={1000} initialToneMapping="hgig" initialWindowSize="gradient" />
+
+        <!-- Scientific Methodology & VESA DisplayHDR Article -->
+        <article class="bg-bg-surface border border-border-hairline rounded-2xl p-6 sm:p-8 space-y-6 shadow-specular-top font-sans text-sm text-text-secondary leading-relaxed">
+          <div class="border-b border-border-hairline pb-4">
+            <span class="font-mono text-[10px] font-bold text-status-pass uppercase tracking-widest block mb-1">SMPTE ST.2084 PQ EOTF &amp; VESA DISPLAYHDR SPECIFICATION</span>
+            <h2 class="text-xl font-bold text-text-primary">HDR Tone Mapping, Perceptual Quantizer &amp; ABL Window Size Physics</h2>
+          </div>
+
+          <p>
+            Unlike SDR (Standard Dynamic Range) gamma curve 2.2 relative luminance, <strong>HDR10</strong> utilizes the <strong>SMPTE ST.2084 Perceptual Quantizer (PQ) Electro-Optical Transfer Function (EOTF)</strong>. The PQ curve defines absolute target luminance values from 0.0001 nits up to 10,000 nits. When a display's physical peak brightness capability is lower than the encoded signal (e.g. 1000 nits display receiving 4000 nits master), the display engine applies <strong>tone mapping</strong> to clip or roll off highlight details.
+          </p>
+
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4 font-mono text-xs my-4">
+            <div class="bg-bg-canvas p-4 rounded-xl border border-border-hairline space-y-1">
+              <span class="text-text-muted text-[10px] uppercase block">1% to 10% Window Size</span>
+              <strong class="text-text-primary block text-sm">Peak Highlights (Specular)</strong>
+              <p class="font-sans text-[11px] text-text-secondary">Measures maximum burst brightness for small highlights (e.g. sun reflections, explosions) without ABL limiting.</p>
+            </div>
+            <div class="bg-bg-canvas p-4 rounded-xl border border-border-hairline space-y-1">
+              <span class="text-text-muted text-[10px] uppercase block">100% Full-Screen Window</span>
+              <strong class="text-text-primary block text-sm">Sustained Luminance (ABL)</strong>
+              <p class="font-sans text-[11px] text-text-secondary">Auto Brightness Limiter restricts power supply overload, reducing full-screen white brightness (e.g., 250 nits on OLED).</p>
+            </div>
+            <div class="bg-bg-canvas p-4 rounded-xl border border-border-hairline space-y-1">
+              <span class="text-text-muted text-[10px] uppercase block">HGiG Tone Mapping</span>
+              <strong class="text-text-primary block text-sm">Gaming Hard Clipping</strong>
+              <p class="font-sans text-[11px] text-text-secondary">Passes raw PQ EOTF signals without secondary TV tone mapping curves, allowing game console calibration menus to control clipping.</p>
+            </div>
+          </div>
+
+          <div class="space-y-4 max-w-4xl mx-auto">
+            <EpilepsyWarning />
+            <HardwareLimitationNotice />
+          </div>
+        </article>
+
+        <TestSwitcherBar tests={displayTests} currentId="hdr-test" />
       </div>
-      <h1 class="text-3xl sm:text-4xl font-extrabold text-text-primary tracking-tight font-mono">
-        HDR Peak Brightness &amp; Tone Mapping Test
-      </h1>
-      <p class="text-sm text-text-secondary max-w-3xl">
-        Evaluate your display's HDR tone mapping, Auto Brightness Limiter (ABL), and peak luminance clipping behavior with precision 10-bit step gradient patterns for VESA DisplayHDR 600–1400 and HDR10/Dolby Vision compliance.
-      </p>
-    </header>
 
-    <!-- HDR Test Engine Component -->
-    <HdrClippingTester initialPeakNits={1000} initialToneMapping="hgig" initialWindowSize="gradient" />
+      <!-- Right Modular Sidebar (lg:col-span-4) -->
+      <div class="lg:col-span-4 space-y-6 sticky top-24 self-start min-w-0">
+        <ConfigurationCard
+          title="HDR Target Parameters"
+          subtitle="Nits & Window Setup"
+          controls={[
+            {
+              id: 'hdrTier',
+              label: 'Target Peak Luminance',
+              type: 'select',
+              value: '1000',
+              options: [
+                { value: '400', label: 'DisplayHDR 400 Nits' },
+                { value: '600', label: 'DisplayHDR 600 Nits' },
+                { value: '1000', label: 'DisplayHDR 1000 Nits' },
+                { value: '1400', label: 'DisplayHDR 1400 Nits' }
+              ]
+            },
+            {
+              id: 'windowSize',
+              label: 'Test Window Size',
+              type: 'presets',
+              value: '10%',
+              options: [
+                { value: '2%', label: '2% Window' },
+                { value: '10%', label: '10% Window' },
+                { value: '25%', label: '25% Window' },
+                { value: '100%', label: '100% Full' }
+              ]
+            }
+          ]}
+        />
 
-    <!-- Scientific Methodology & VESA DisplayHDR Article -->
-    <article class="bg-bg-surface border border-border-hairline rounded-2xl p-6 sm:p-8 space-y-6 shadow-specular-top font-sans text-sm text-text-secondary leading-relaxed">
-      <div class="border-b border-border-hairline pb-4">
-        <span class="font-mono text-[10px] font-bold text-status-pass uppercase tracking-widest block mb-1">SMPTE ST.2084 PQ EOTF &amp; VESA DISPLAYHDR SPECIFICATION</span>
-        <h2 class="text-xl font-bold text-text-primary">HDR Tone Mapping, Perceptual Quantizer &amp; ABL Window Size Physics</h2>
+        <MetricCard
+          title="PQ EOTF Readout"
+          subtitle="Luminance Tracking"
+          badgeText="ST 2084"
+          layout="list"
+          metrics={[
+            { id: 'eotfDev', label: 'PQ Curve Tracking Error', value: '0.14', unit: 'ΔE', status: 'pass' },
+            { id: 'ablDrop', label: 'ABL Brightness Drop', value: '48', unit: '%', status: 'warn' }
+          ]}
+        />
+
+        <ShortcutCard
+          shortcuts={[
+            { keys: ['1', '2', '3', '4'], label: 'Switch Window Sizes' },
+            { keys: ['H'], label: 'Toggle HGiG Hard Clip' },
+            { keys: ['F'], label: 'Toggle Fullscreen Mode' }
+          ]}
+        />
+
+        <InfoCard
+          title="VESA DisplayHDR Tiers"
+          subtitle="ST 2084 PQ EOTF Standard"
+          badgeText="VESA HDR"
+          citations={[
+            { standard: "SMPTE ST.2084", clause: "EOTF Curve", description: "Perceptual Quantizer transfer function for absolute 0-10,000 nit dynamic range." },
+            { standard: "VESA DisplayHDR", clause: "v1.1 Specs", description: "Specifies 10% window peak nits and 100% full screen sustained luminance." }
+          ]}
+          osdTips={[
+            "Enable OS HDR mode in Windows Display Settings before launching test.",
+            "Set monitor HGIG or Off tone mapping mode for uncompressed game console clipping."
+          ]}
+        />
       </div>
 
-      <p>
-        Unlike SDR (Standard Dynamic Range) gamma curve 2.2 relative luminance, <strong>HDR10</strong> utilizes the <strong>SMPTE ST.2084 Perceptual Quantizer (PQ) Electro-Optical Transfer Function (EOTF)</strong>. The PQ curve defines absolute target luminance values from 0.0001 nits up to 10,000 nits. When a display's physical peak brightness capability is lower than the encoded signal (e.g. 1000 nits display receiving 4000 nits master), the display engine applies <strong>tone mapping</strong> to clip or roll off highlight details.
-      </p>
-
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 font-mono text-xs my-4">
-        <div class="bg-bg-canvas p-4 rounded-xl border border-border-hairline space-y-1">
-          <span class="text-text-muted text-[10px] uppercase block">1% to 10% Window Size</span>
-          <strong class="text-text-primary block text-sm">Peak Highlights (Specular)</strong>
-          <p class="font-sans text-[11px] text-text-secondary">Measures maximum burst brightness for small highlights (e.g. sun reflections, explosions) without ABL limiting.</p>
-        </div>
-        <div class="bg-bg-canvas p-4 rounded-xl border border-border-hairline space-y-1">
-          <span class="text-text-muted text-[10px] uppercase block">100% Full-Screen Window</span>
-          <strong class="text-text-primary block text-sm">Sustained Luminance (ABL)</strong>
-          <p class="font-sans text-[11px] text-text-secondary">Auto Brightness Limiter restricts power supply overload, reducing full-screen white brightness (e.g., 250 nits on OLED).</p>
-        </div>
-        <div class="bg-bg-canvas p-4 rounded-xl border border-border-hairline space-y-1">
-          <span class="text-text-muted text-[10px] uppercase block">HGiG Tone Mapping</span>
-          <strong class="text-text-primary block text-sm">Gaming Hard Clipping</strong>
-          <p class="font-sans text-[11px] text-text-secondary">Passes raw PQ EOTF signals without secondary TV tone mapping curves, allowing game console calibration menus to control clipping.</p>
-        </div>
-      </div>
-
-      <div class="space-y-4 max-w-4xl mx-auto">
-        <EpilepsyWarning />
-        <HardwareLimitationNotice />
-      </div>
-    </article>
-
-    <TestSwitcherBar tests={displayTests} currentId="hdr-test" />
+    </div>
   </div>
 </Layout>

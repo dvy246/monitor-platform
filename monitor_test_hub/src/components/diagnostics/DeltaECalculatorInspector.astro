@@ -62,7 +62,7 @@ import { MACBETH_COLORCHECKER_24 } from '../../engine/DeltaE2000Engine';
               type="button"
               data-patch-hex={patch.hex}
               title={`${patch.id}. ${patch.name} (${patch.hex})`}
-              class="btn-macbeth-patch w-full h-8 rounded border border-white/20 transition-transform hover:scale-105 cursor-pointer relative"
+              class="btn-macbeth-patch w-full h-11 rounded border border-white/20 transition-colors hover:border-status-pass focus:outline-none focus:ring-2 focus:ring-emerald-500/50 min-h-[44px] min-w-[44px] cursor-pointer relative"
               style={`background-color: ${patch.hex};`}
             >
               <span class="sr-only">{patch.name}</span>
@@ -194,6 +194,8 @@ import { MACBETH_COLORCHECKER_24 } from '../../engine/DeltaE2000Engine';
     const valDeltaH = document.getElementById('val-delta-h');
     const descDeltaH = document.getElementById('desc-delta-h');
     const deRatingDesc = document.getElementById('de-rating-desc');
+
+    if (!targetHexInput || !measuredHexInput) return;
 
     function update() {
       const targetHex = targetHexInput.value.startsWith('#') ? targetHexInput.value : `#${targetHexInput.value}`;

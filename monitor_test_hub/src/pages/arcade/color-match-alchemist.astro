@@ -6,6 +6,12 @@ import StepWorkflowSection from '../../components/ui/StepWorkflowSection.astro';
 import PanelTypeBreakdownSection from '../../components/ui/PanelTypeBreakdownSection.astro';
 import FAQSection from '../../components/ui/FAQSection.astro';
 
+// Right Sidebar Components
+import StatusCard from '../../components/ui/sidebar/StatusCard.astro';
+import MetricCard from '../../components/ui/sidebar/MetricCard.astro';
+import ConfigurationCard from '../../components/ui/sidebar/ConfigurationCard.astro';
+import ShortcutCard from '../../components/ui/sidebar/ShortcutCard.astro';
+
 const faqs = [
   {
     question: "What is CIEDE2000 (ΔE00) color difference?",
@@ -59,8 +65,66 @@ const seoDescription = "Test your monitor color accuracy and human eye color dis
   faqs={faqs}
 >
   <div class="py-8 px-4 max-w-7xl mx-auto space-y-12 font-sans">
-    <ColorMatchAlchemist />
-    
+    <!-- 2-Column Responsive Layout -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+      <!-- Left Primary Arcade Canvas -->
+      <div class="lg:col-span-8 space-y-8">
+        <ColorMatchAlchemist />
+      </div>
+
+      <!-- Right Modular Control & Telemetry Sidebar -->
+      <div class="lg:col-span-4 sticky top-24 space-y-6">
+        <StatusCard
+          status="pass"
+          label="Color Vision Rating"
+          subtitle="CIEDE2000 ΔE00 Test"
+          score="Stage 1"
+          maxScore="20"
+          details={[
+            { label: "Current ΔE00", value: "10.00" },
+            { label: "Gamut Depth", value: "10-Bit Color" }
+          ]}
+        />
+
+        <MetricCard
+          title="Perceptual Accuracy"
+          subtitle="Score & Discrimination"
+          badgeText="CIEDE2000"
+          layout="grid"
+          metrics={[
+            { id: "cma-score-card", label: "High Score", value: "0", unit: "pts", status: "pass" },
+            { id: "cma-acc", label: "Accuracy Rating", value: "100", unit: "%", status: "pass" }
+          ]}
+        />
+
+        <ConfigurationCard
+          title="Illumination Setup"
+          subtitle="Standard White Point Target"
+          badgeText="Illuminant"
+          controls={[
+            {
+              id: "white-point",
+              label: "Target White Point",
+              type: "presets",
+              value: "d65",
+              options: [
+                { value: "d65", label: "D65 Daylight" },
+                { value: "d50", label: "D50 Print" }
+              ]
+            }
+          ]}
+        />
+
+        <ShortcutCard
+          shortcuts={[
+            { keys: ["1-4"], label: "Select Candidate Tile A-D" },
+            { keys: ["R"], label: "Reset Stage / Restart" }
+          ]}
+        />
+      </div>
+    </div>
+
+    <!-- Standard 4-Part Sections -->
     <StepWorkflowSection />
     <PanelTypeBreakdownSection />
 

@@ -1,0 +1,143 @@
+---
+/**
+ * KeyDropCanvas.astro
+ * High-performance Key Drop & Signal Interruption Diagnostic Engine.
+ * Designed for FPS gamers (Valorant, CS2, Fortnite, Apex Legends).
+ * Features:
+ * - Real-time key hold continuous signal monitor.
+ * - Signal drop counter, latency spike logger, and contact release interruption graph.
+ */
+---
+
+<div class="w-full max-w-5xl mx-auto space-y-6 font-sans select-none min-w-0" id="key-drop-root">
+  <div class="relative bg-[#0c0d12]/90 border border-zinc-800/90 rounded-2xl p-4 sm:p-6 backdrop-blur-2xl shadow-[0_25px_60px_rgba(0,0,0,0.8)] space-y-6 overflow-hidden">
+    <!-- Ambient Radial Glows -->
+    <div class="absolute -top-24 -right-24 w-96 h-96 bg-rose-500/10 rounded-full blur-3xl pointer-events-none"></div>
+    <div class="absolute -bottom-24 -left-24 w-96 h-96 bg-amber-500/10 rounded-full blur-3xl pointer-events-none"></div>
+
+    <div class="relative z-10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-zinc-800/70 pb-5">
+      <div>
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-rose-500/10 border border-rose-500/30 text-[11px] font-mono text-rose-400 font-bold uppercase tracking-wider mb-2">
+          <span class="w-2 h-2 rounded-full bg-rose-400 shadow-[0_0_8px_rgba(244,63,94,0.9)] animate-pulse"></span>
+          <span>FPS GAMING KEY SIGNAL DROP ANALYZER</span>
+        </div>
+        <h2 class="text-xl sm:text-2xl font-bold font-mono text-white tracking-tight">Key Drop &amp; Signal Interruption Test</h2>
+      </div>
+
+      <button id="drop-reset-btn" class="px-4 py-2 rounded-xl bg-zinc-900 border border-zinc-800 text-xs font-mono text-zinc-400 hover:text-white cursor-pointer transition-all">
+        Reset Log
+      </button>
+    </div>
+
+    <!-- Telemetry Cards -->
+    <div class="relative z-10 grid grid-cols-2 sm:grid-cols-4 gap-4 font-mono">
+      <div class="bg-zinc-950 p-4 rounded-xl border border-zinc-800 text-center space-y-1">
+        <div class="text-xs text-zinc-400 font-bold uppercase">Signal Drops</div>
+        <div id="drop-count-val" class="text-4xl font-extrabold text-rose-400 tabular-nums">0</div>
+        <div class="text-[10px] text-zinc-400">Interruption Events</div>
+      </div>
+
+      <div class="bg-zinc-950 p-4 rounded-xl border border-zinc-800 text-center space-y-1">
+        <div class="text-xs text-zinc-400 font-bold uppercase">Active Held Keys</div>
+        <div id="held-keys-val" class="text-4xl font-extrabold text-emerald-400 tabular-nums">0</div>
+        <div class="text-[10px] text-zinc-400">Current Key Contacts</div>
+      </div>
+
+      <div class="bg-zinc-950 p-4 rounded-xl border border-zinc-800 text-center space-y-1">
+        <div class="text-xs text-zinc-400 font-bold uppercase">Hold Duration</div>
+        <div id="hold-duration-val" class="text-4xl font-extrabold text-cyan-400 tabular-nums">0.0s</div>
+        <div class="text-[10px] text-zinc-400">Continuous Hold</div>
+      </div>
+
+      <div class="bg-zinc-950 p-4 rounded-xl border border-zinc-800 text-center space-y-1">
+        <div class="text-xs text-zinc-400 font-bold uppercase">Stability Status</div>
+        <div id="drop-status-val" class="text-xl font-extrabold text-emerald-400 py-2">STABLE</div>
+        <div class="text-[10px] text-zinc-400">Signal Integrity</div>
+      </div>
+    </div>
+
+    <!-- Active Key Hold Display Zone -->
+    <div class="relative z-10 bg-zinc-950 rounded-2xl border border-zinc-800/90 p-6 flex flex-col items-center justify-center text-center min-h-[160px]">
+      <div id="held-keys-display" class="flex flex-wrap gap-2 justify-center font-mono text-sm">
+        <span class="text-zinc-500">Hold WASD, Shift, or Space to test signal stability...</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const activeHeld = new Map<string, number>();
+  let dropCount = 0;
+  let timerId: number | null = null;
+  let holdStart = 0;
+
+  const dropVal = document.getElementById('drop-count-val');
+  const heldVal = document.getElementById('held-keys-val');
+  const durationVal = document.getElementById('hold-duration-val');
+  const statusVal = document.getElementById('drop-status-val');
+  const display = document.getElementById('held-keys-display');
+  const resetBtn = document.getElementById('drop-reset-btn');
+
+  function updateDisplay() {
+    if (heldVal) heldVal.textContent = activeHeld.size.toString();
+    if (dropVal) dropVal.textContent = dropCount.toString();
+
+    if (display) {
+      if (activeHeld.size === 0) {
+        display.innerHTML = '<span class="text-zinc-500">Hold WASD, Shift, or Space to test signal stability...</span>';
+      } else {
+        display.innerHTML = Array.from(activeHeld.keys()).map(code => `
+          <span class="px-3 py-1.5 rounded-lg bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 font-bold animate-pulse">${code}</span>
+        `).join('');
+      }
+    }
+  }
+
+  window.addEventListener('keydown', (e) => {
+    if (!activeHeld.has(e.code)) {
+      activeHeld.set(e.code, performance.now());
+      if (activeHeld.size === 1) {
+        holdStart = performance.now();
+        if (timerId) clearInterval(timerId);
+        timerId = window.setInterval(() => {
+          const sec = (performance.now() - holdStart) / 1000;
+          if (durationVal) durationVal.textContent = `${sec.toFixed(1)}s`;
+        }, 100);
+      }
+      updateDisplay();
+    }
+  });
+
+  window.addEventListener('keyup', (e) => {
+    if (activeHeld.has(e.code)) {
+      const duration = performance.now() - activeHeld.get(e.code)!;
+      // If key was released unexpectedly under 30ms during continuous hold, flag drop
+      if (duration < 30) {
+        dropCount++;
+        if (statusVal) {
+          statusVal.textContent = 'DROP DETECTED!';
+          statusVal.className = 'text-xl font-extrabold text-rose-400 py-2 animate-bounce';
+        }
+      }
+      activeHeld.delete(e.code);
+      if (activeHeld.size === 0 && timerId) {
+        clearInterval(timerId);
+        timerId = null;
+      }
+      updateDisplay();
+    }
+  });
+
+  resetBtn?.addEventListener('click', () => {
+    activeHeld.clear();
+    dropCount = 0;
+    if (timerId) clearInterval(timerId);
+    timerId = null;
+    if (durationVal) durationVal.textContent = '0.0s';
+    if (statusVal) {
+      statusVal.textContent = 'STABLE';
+      statusVal.className = 'text-xl font-extrabold text-emerald-400 py-2';
+    }
+    updateDisplay();
+  });
+</script>

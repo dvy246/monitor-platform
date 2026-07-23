@@ -4,93 +4,102 @@
  * Flagship Universal Mouse Diagnostic Suite component.
  * Features 5-button interactive SVG mouse visualizer, scroll wheel velocity tracker,
  * 8000Hz polling rate telemetry & histogram, switch double-click chatter analyzer,
- * cursor trajectory smoothness splines, and SHA-256 Mouse Hardware Passport export.
+ * decoupled rAF cursor trajectory smoothness splines, and SHA-256 Mouse Hardware Passport export.
  */
 ---
 
-<div class="space-y-8 font-sans max-w-6xl mx-auto" id="mouse-tester-root">
+<div class="space-y-8 font-sans max-w-6xl mx-auto select-none" id="mouse-tester-root">
   <!-- Master Deck Header & Action Bar -->
-  <div class="bg-bg-surface border border-border-hairline rounded-2xl p-4 sm:p-6 shadow-2xl space-y-6">
-    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-border-hairline pb-4">
+  <div class="bg-[#0c0d12]/90 border border-zinc-800/90 rounded-2xl p-4 sm:p-6 backdrop-blur-2xl shadow-[0_25px_60px_rgba(0,0,0,0.8)] space-y-6 overflow-hidden relative">
+    <!-- Ambient Radial Glows -->
+    <div class="absolute -top-24 -right-24 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none"></div>
+    <div class="absolute -bottom-24 -left-24 w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none"></div>
+
+    <div class="relative z-10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-zinc-800/70 pb-5">
       <div>
-        <div class="inline-flex items-center gap-2 px-2.5 py-0.5 rounded-full bg-status-pass/10 border border-status-pass/30 text-[11px] font-mono text-status-pass font-bold uppercase tracking-wider mb-1">
-          <svg class="w-3.5 h-3.5 text-status-pass" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5"/></svg>
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-[11px] font-mono text-emerald-400 font-bold uppercase tracking-wider mb-2">
+          <span class="w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.9)] animate-pulse"></span>
           <span>FLAGSHIP HARDWARE POINTER DIAGNOSTICS</span>
         </div>
-        <h2 class="text-xl sm:text-2xl font-bold font-mono text-text-primary">Universal Mouse Diagnostic Suite</h2>
-        <p class="text-xs text-text-muted mt-0.5">Click any mouse button, scroll the wheel, or move inside the canvas to test hardware switches and polling stability.</p>
+        <h2 class="text-xl sm:text-2xl font-bold font-mono text-white tracking-tight flex items-center gap-2">
+          Universal Mouse Diagnostic Suite
+        </h2>
+        <p class="text-xs text-zinc-400 mt-1 max-w-2xl leading-relaxed">
+          Click any mouse button, scroll the wheel, or move inside the canvas to test 5-button hardware switches, 8000Hz polling rate stability &amp; double-click chatter.
+        </p>
       </div>
 
       <div class="flex flex-wrap items-center gap-2 w-full sm:w-auto self-start sm:self-auto pt-2 sm:pt-0">
-        <button id="mouse-sound-toggle" class="flex-1 min-w-[120px] sm:min-w-0 sm:flex-initial px-3 py-1.5 rounded-lg bg-bg-elevated hover:bg-bg-subtle border border-border-hairline text-xs font-mono text-text-secondary hover:text-text-primary transition-colors flex items-center justify-center gap-1.5">
+        <button id="mouse-sound-toggle" class="flex-1 min-w-[120px] sm:min-w-0 sm:flex-initial px-3.5 py-2 rounded-xl bg-zinc-950 border border-zinc-800 hover:bg-zinc-800 text-xs font-mono text-zinc-300 hover:text-white cursor-pointer transition-all flex items-center justify-center gap-1.5 shadow-sm">
           <svg id="mouse-sound-icon" class="w-4 h-4 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"/></svg>
           <span id="mouse-sound-label">Audio: ON</span>
         </button>
-        <button id="mouse-reset-btn" class="flex-1 min-w-[130px] sm:min-w-0 sm:flex-initial px-3 py-1.5 rounded-lg bg-bg-elevated hover:bg-rose-500/20 border border-border-hairline hover:border-rose-500/40 text-xs font-mono text-text-secondary hover:text-rose-400 transition-colors flex items-center justify-center gap-1.5">
+        <button id="mouse-reset-btn" class="flex-1 min-w-[130px] sm:min-w-0 sm:flex-initial px-3.5 py-2 rounded-xl bg-zinc-950 hover:bg-rose-500/20 border border-zinc-800 hover:border-rose-500/40 text-xs font-mono text-zinc-300 hover:text-rose-400 cursor-pointer transition-all flex items-center justify-center gap-1.5 shadow-sm">
           <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
           <span>Reset Telemetry</span>
         </button>
-        <button id="mouse-export-btn" class="w-full sm:w-auto px-4 py-1.5 rounded-lg bg-status-pass/20 hover:bg-status-pass/30 border border-status-pass/40 text-xs font-mono text-status-pass font-bold transition-colors flex items-center justify-center gap-1.5">
-          <span>📜 Export Passport</span>
+        <button id="mouse-export-btn" class="w-full sm:w-auto px-4 py-2 rounded-xl bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/40 text-xs font-mono text-emerald-400 font-bold cursor-pointer transition-all flex items-center justify-center gap-1.5 shadow-sm">
+          <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+          <span>Export Passport</span>
         </button>
       </div>
     </div>
 
     <!-- Main Grid Layout: Interactive Vector Mouse + Telemetry Instrument Cards -->
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <div class="relative z-10 grid grid-cols-1 lg:grid-cols-3 gap-6">
       
       <!-- Column 1: Interactive 5-Button Mouse Vector Graphic -->
-      <div class="bg-bg-canvas/90 border border-border-hairline rounded-2xl p-6 flex flex-col items-center justify-between space-y-6 shadow-inner relative overflow-hidden group">
+      <div class="bg-zinc-950/90 border border-zinc-800/90 rounded-2xl p-6 flex flex-col items-center justify-between space-y-6 shadow-inner relative overflow-hidden group">
         <div class="text-center space-y-1">
-          <div class="text-[10px] font-mono text-text-muted uppercase tracking-wider">Mouse Hardware Matrix</div>
-          <div class="text-xs font-mono font-bold text-text-primary">5-Button &amp; Encoder Visualizer</div>
+          <div class="text-[10px] font-mono text-zinc-400 uppercase tracking-wider font-bold">Mouse Hardware Matrix</div>
+          <div class="text-xs font-mono font-bold text-white">5-Button &amp; Encoder Visualizer</div>
         </div>
 
         <!-- 5-Button SVG Mouse Illustration -->
         <div class="relative w-48 h-72 py-2 flex items-center justify-center select-none">
-          <svg class="w-full h-full text-border-hairline" viewBox="0 0 160 260" fill="none">
+          <svg class="w-full h-full text-zinc-700" viewBox="0 0 160 260" fill="none">
             <!-- Mouse Outer Body Shell -->
-            <path d="M 80 10 C 125 10 145 40 145 110 L 145 170 C 145 220 120 250 80 250 C 40 250 15 220 15 170 L 15 110 C 15 40 35 10 80 10 Z" fill="#121215" stroke="currentColor" stroke-width="3"/>
+            <path d="M 80 10 C 125 10 145 40 145 110 L 145 170 C 145 220 120 250 80 250 C 40 250 15 220 15 170 L 15 110 C 15 40 35 10 80 10 Z" fill="#090a0f" stroke="currentColor" stroke-width="3.5"/>
             
             <!-- Left Primary Button (LMB) -->
-            <path id="svg-btn-lmb" d="M 75 12 L 35 15 C 22 40 17 65 17 110 L 75 110 Z" fill="rgba(255,255,255,0.03)" stroke="currentColor" stroke-width="2" class="transition-colors duration-75 cursor-pointer"/>
+            <path id="svg-btn-lmb" d="M 75 12 L 35 15 C 22 40 17 65 17 110 L 75 110 Z" fill="rgba(255,255,255,0.03)" stroke="currentColor" stroke-width="2" class="transition-all duration-75 cursor-pointer"/>
             
             <!-- Right Primary Button (RMB) -->
-            <path id="svg-btn-rmb" d="M 85 12 L 125 15 C 138 40 143 65 143 110 L 85 110 Z" fill="rgba(255,255,255,0.03)" stroke="currentColor" stroke-width="2" class="transition-colors duration-75 cursor-pointer"/>
+            <path id="svg-btn-rmb" d="M 85 12 L 125 15 C 138 40 143 65 143 110 L 85 110 Z" fill="rgba(255,255,255,0.03)" stroke="currentColor" stroke-width="2" class="transition-all duration-75 cursor-pointer"/>
             
             <!-- Center Scroll Wheel Housing (MMB) -->
-            <rect id="svg-btn-mmb" x="72" y="35" width="16" height="45" rx="8" fill="rgba(255,255,255,0.05)" stroke="currentColor" stroke-width="2" class="transition-colors duration-75 cursor-pointer"/>
-            <line id="svg-wheel-tick" x1="80" y1="42" x2="80" y2="73" stroke="#059669" stroke-width="3" stroke-linecap="round" class="transition-all duration-75"/>
+            <rect id="svg-btn-mmb" x="72" y="35" width="16" height="45" rx="8" fill="rgba(255,255,255,0.05)" stroke="currentColor" stroke-width="2" class="transition-all duration-75 cursor-pointer"/>
+            <line id="svg-wheel-tick" x1="80" y1="42" x2="80" y2="73" stroke="#34d399" stroke-width="3.5" stroke-linecap="round" class="transition-all duration-75"/>
 
             <!-- Side Button Back (MB4) -->
-            <path id="svg-btn-mb4" d="M 12 120 C 10 120 10 145 12 145 L 16 145 L 16 120 Z" fill="rgba(255,255,255,0.05)" stroke="currentColor" stroke-width="2" class="transition-colors duration-75 cursor-pointer"/>
+            <path id="svg-btn-mb4" d="M 12 120 C 10 120 10 145 12 145 L 16 145 L 16 120 Z" fill="rgba(255,255,255,0.05)" stroke="currentColor" stroke-width="2" class="transition-all duration-75 cursor-pointer"/>
             
             <!-- Side Button Forward (MB5) -->
-            <path id="svg-btn-mb5" d="M 12 90 C 10 90 10 115 12 115 L 16 115 L 16 90 Z" fill="rgba(255,255,255,0.05)" stroke="currentColor" stroke-width="2" class="transition-colors duration-75 cursor-pointer"/>
+            <path id="svg-btn-mb5" d="M 12 90 C 10 90 10 115 12 115 L 16 115 L 16 90 Z" fill="rgba(255,255,255,0.05)" stroke="currentColor" stroke-width="2" class="transition-all duration-75 cursor-pointer"/>
           </svg>
         </div>
 
         <!-- Button Actuation Counter Readouts -->
         <div class="grid grid-cols-5 gap-1.5 w-full text-center font-mono text-[10px]">
-          <div class="bg-bg-elevated p-2 rounded-lg border border-border-hairline">
-            <div class="text-text-muted">LMB</div>
-            <div class="font-bold text-status-pass text-xs tabular-nums" id="cnt-lmb">0</div>
+          <div class="bg-zinc-900 p-2 rounded-xl border border-zinc-800">
+            <div class="text-zinc-400 font-bold">LMB</div>
+            <div class="font-extrabold text-emerald-400 text-xs tabular-nums" id="cnt-lmb">0</div>
           </div>
-          <div class="bg-bg-elevated p-2 rounded-lg border border-border-hairline">
-            <div class="text-text-muted">MMB</div>
-            <div class="font-bold text-cyan-400 text-xs tabular-nums" id="cnt-mmb">0</div>
+          <div class="bg-zinc-900 p-2 rounded-xl border border-zinc-800">
+            <div class="text-zinc-400 font-bold">MMB</div>
+            <div class="font-extrabold text-cyan-400 text-xs tabular-nums" id="cnt-mmb">0</div>
           </div>
-          <div class="bg-bg-elevated p-2 rounded-lg border border-border-hairline">
-            <div class="text-text-muted">RMB</div>
-            <div class="font-bold text-purple-400 text-xs tabular-nums" id="cnt-rmb">0</div>
+          <div class="bg-zinc-900 p-2 rounded-xl border border-zinc-800">
+            <div class="text-zinc-400 font-bold">RMB</div>
+            <div class="font-extrabold text-purple-400 text-xs tabular-nums" id="cnt-rmb">0</div>
           </div>
-          <div class="bg-bg-elevated p-2 rounded-lg border border-border-hairline">
-            <div class="text-text-muted">MB4</div>
-            <div class="font-bold text-amber-400 text-xs tabular-nums" id="cnt-mb4">0</div>
+          <div class="bg-zinc-900 p-2 rounded-xl border border-zinc-800">
+            <div class="text-zinc-400 font-bold">MB4</div>
+            <div class="font-extrabold text-amber-400 text-xs tabular-nums" id="cnt-mb4">0</div>
           </div>
-          <div class="bg-bg-elevated p-2 rounded-lg border border-border-hairline">
-            <div class="text-text-muted">MB5</div>
-            <div class="font-bold text-emerald-400 text-xs tabular-nums" id="cnt-mb5">0</div>
+          <div class="bg-zinc-900 p-2 rounded-xl border border-zinc-800">
+            <div class="text-zinc-400 font-bold">MB5</div>
+            <div class="font-extrabold text-emerald-400 text-xs tabular-nums" id="cnt-mb5">0</div>
           </div>
         </div>
       </div>
@@ -101,85 +110,85 @@
         <!-- Top Cards: Polling Rate + Double Click Chatter -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <!-- Card A: 8000Hz Polling Rate Telemetry -->
-          <div class="bg-bg-canvas/90 p-5 rounded-2xl border border-border-hairline space-y-3">
-            <div class="flex items-center justify-between border-b border-border-hairline pb-2">
-              <span class="text-xs font-mono font-bold text-text-primary uppercase tracking-wider">USB Polling Rate (Hz)</span>
-              <span id="poll-status-badge" class="px-2 py-0.5 rounded-sm text-[9px] font-mono font-bold bg-status-pass/10 text-status-pass border border-status-pass/20">STABLE</span>
+          <div class="bg-zinc-950/90 p-5 rounded-2xl border border-zinc-800/90 space-y-3 shadow-inner">
+            <div class="flex items-center justify-between border-b border-zinc-800/70 pb-2.5">
+              <span class="text-xs font-mono font-bold text-white uppercase tracking-wider">USB Polling Rate (Hz)</span>
+              <span id="poll-status-badge" class="px-2 py-0.5 rounded text-[9px] font-mono font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">STABLE</span>
             </div>
             <div class="flex items-baseline justify-between">
               <div>
-                <div class="text-3xl font-extrabold font-mono text-status-pass tabular-nums" id="poll-hz-val">0 Hz</div>
-                <div class="text-[10px] font-mono text-text-muted" id="poll-avg-val">Avg Delta: -- ms</div>
+                <div class="text-3xl font-extrabold font-mono text-emerald-400 tabular-nums" id="poll-hz-val">0 Hz</div>
+                <div class="text-[10px] font-mono text-zinc-400 mt-0.5" id="poll-avg-val">Avg Delta: -- ms</div>
               </div>
               <div class="text-right">
                 <div class="text-xs font-mono font-bold text-cyan-400 tabular-nums" id="poll-peak-val">Peak: 0 Hz</div>
-                <div class="text-[10px] font-mono text-text-muted" id="poll-jitter-val">Jitter: -- ms</div>
+                <div class="text-[10px] font-mono text-zinc-400 mt-0.5" id="poll-jitter-val">Jitter: -- ms</div>
               </div>
             </div>
             <!-- Dynamic Polling Rate Bar -->
-            <div class="h-2 w-full bg-bg-elevated rounded-full overflow-hidden">
-              <div id="poll-bar-fill" class="h-full bg-gradient-to-r from-status-pass to-cyan-400 w-0 transition-all duration-150"></div>
+            <div class="h-2 w-full bg-zinc-900 rounded-full overflow-hidden border border-zinc-800">
+              <div id="poll-bar-fill" class="h-full bg-gradient-to-r from-emerald-500 to-cyan-400 w-0 transition-all duration-150"></div>
             </div>
           </div>
 
           <!-- Card B: Double-Click Switch Chatter Detection -->
-          <div class="bg-bg-canvas/90 p-5 rounded-2xl border border-border-hairline space-y-3">
-            <div class="flex items-center justify-between border-b border-border-hairline pb-2">
-              <span class="text-xs font-mono font-bold text-text-primary uppercase tracking-wider">Switch Double-Click Test</span>
-              <span id="chatter-status-badge" class="px-2 py-0.5 rounded-sm text-[9px] font-mono font-bold bg-status-pass/10 text-status-pass border border-status-pass/20">HEALTHY</span>
+          <div class="bg-zinc-950/90 p-5 rounded-2xl border border-zinc-800/90 space-y-3 shadow-inner">
+            <div class="flex items-center justify-between border-b border-zinc-800/70 pb-2.5">
+              <span class="text-xs font-mono font-bold text-white uppercase tracking-wider">Switch Double-Click Test</span>
+              <span id="chatter-status-badge" class="px-2 py-0.5 rounded text-[9px] font-mono font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">HEALTHY</span>
             </div>
             <div class="flex items-baseline justify-between">
               <div>
                 <div class="text-3xl font-extrabold font-mono text-purple-400 tabular-nums" id="chatter-count-val">0</div>
-                <div class="text-[10px] font-mono text-text-muted">Chatter Faults (&le;35ms)</div>
+                <div class="text-[10px] font-mono text-zinc-400 mt-0.5">Chatter Faults (&le;35ms)</div>
               </div>
               <div class="text-right">
-                <div class="text-xs font-mono font-bold text-text-secondary tabular-nums" id="chatter-last-delta">Last &Delta;t: -- ms</div>
-                <div class="text-[10px] font-mono text-text-muted" id="chatter-cps-val">Speed: 0.0 CPS</div>
+                <div class="text-xs font-mono font-bold text-zinc-300 tabular-nums" id="chatter-last-delta">Last &Delta;t: -- ms</div>
+                <div class="text-[10px] font-mono text-zinc-400 mt-0.5" id="chatter-cps-val">Speed: 0.0 CPS</div>
               </div>
             </div>
-            <p class="text-[10px] font-mono text-text-muted" id="chatter-log-summary">No double-click chatter faults detected on mechanical switches.</p>
+            <p class="text-[10px] font-mono text-zinc-400" id="chatter-log-summary">No double-click chatter faults detected on mechanical switches.</p>
           </div>
         </div>
 
         <!-- Card C: Real-Time DPI & Sensitivity Solver -->
-        <div class="bg-bg-canvas/90 p-5 rounded-2xl border border-border-hairline space-y-3">
-          <div class="flex items-center justify-between border-b border-border-hairline pb-2">
-            <span class="text-xs font-mono font-bold text-text-primary uppercase tracking-wider">Hardware DPI &amp; eDPI Sensitivity Solver</span>
-            <span class="text-[9px] font-mono text-amber-400 font-bold bg-amber-500/10 px-2 py-0.5 rounded border border-amber-500/20">POINTER LOCK API</span>
+        <div class="bg-zinc-950/90 p-5 rounded-2xl border border-zinc-800/90 space-y-3 shadow-inner">
+          <div class="flex items-center justify-between border-b border-zinc-800/70 pb-2.5">
+            <span class="text-xs font-mono font-bold text-white uppercase tracking-wider">Hardware DPI &amp; eDPI Sensitivity Solver</span>
+            <span class="text-[9px] font-mono text-amber-400 font-bold bg-amber-500/10 px-2.5 py-0.5 rounded border border-amber-500/30">POINTER LOCK API</span>
           </div>
 
           <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-            <div class="bg-bg-surface p-3 rounded-xl border border-border-hairline text-center space-y-1">
-              <div class="text-[10px] font-mono text-text-muted">Calculated DPI</div>
+            <div class="bg-zinc-900 p-3 rounded-xl border border-zinc-800 text-center space-y-1">
+              <div class="text-[10px] font-mono text-zinc-400 font-bold">Calculated DPI</div>
               <div class="text-2xl font-extrabold font-mono text-amber-400 tabular-nums" id="dpi-calc-val">-- DPI</div>
-              <div class="text-[9px] font-mono text-text-muted" id="dpi-closest-step">Target: 800 DPI</div>
+              <div class="text-[9px] font-mono text-zinc-400" id="dpi-closest-step">Target: 800 DPI</div>
             </div>
-            <div class="bg-bg-surface p-3 rounded-xl border border-border-hairline text-center space-y-1">
-              <div class="text-[10px] font-mono text-text-muted">Esports eDPI</div>
+            <div class="bg-zinc-900 p-3 rounded-xl border border-zinc-800 text-center space-y-1">
+              <div class="text-[10px] font-mono text-zinc-400 font-bold">Esports eDPI</div>
               <div class="text-2xl font-extrabold font-mono text-cyan-400 tabular-nums" id="dpi-edpi-val">-- eDPI</div>
-              <div class="text-[9px] font-mono text-text-muted">Sens Multiplier: 1.0</div>
+              <div class="text-[9px] font-mono text-zinc-400">Sens Multiplier: 1.0</div>
             </div>
-            <div class="bg-bg-surface p-3 rounded-xl border border-border-hairline text-center space-y-1">
-              <div class="text-[10px] font-mono text-text-muted">Physical Displacement</div>
-              <div class="text-2xl font-extrabold font-mono text-status-pass tabular-nums" id="dpi-dist-val">1.0 in</div>
-              <div class="text-[9px] font-mono text-text-muted">25.4 mm Benchmark</div>
+            <div class="bg-zinc-900 p-3 rounded-xl border border-zinc-800 text-center space-y-1">
+              <div class="text-[10px] font-mono text-zinc-400 font-bold">Physical Displacement</div>
+              <div class="text-2xl font-extrabold font-mono text-emerald-400 tabular-nums" id="dpi-dist-val">1.0 in</div>
+              <div class="text-[9px] font-mono text-zinc-400">25.4 mm Benchmark</div>
             </div>
           </div>
         </div>
 
         <!-- Interactive Trajectory Smoothness Spline & Jitter Canvas -->
-        <div class="bg-bg-canvas/90 p-5 rounded-2xl border border-border-hairline space-y-3">
-          <div class="flex items-center justify-between border-b border-border-hairline pb-2">
-            <span class="text-xs font-mono font-bold text-text-primary uppercase tracking-wider">Cursor Trajectory &amp; Sensor Smoothness</span>
-            <span class="text-[10px] font-mono text-text-muted">Move mouse inside box to inspect trajectory splines</span>
+        <div class="bg-zinc-950/90 p-5 rounded-2xl border border-zinc-800/90 space-y-3 shadow-inner">
+          <div class="flex items-center justify-between border-b border-zinc-800/70 pb-2.5">
+            <span class="text-xs font-mono font-bold text-white uppercase tracking-wider">Cursor Trajectory &amp; Sensor Smoothness</span>
+            <span class="text-[10px] font-mono text-zinc-400">Move mouse inside box to inspect trajectory splines</span>
           </div>
 
           <!-- Canvas Draw Surface -->
-          <div class="relative h-44 sm:h-52 w-full bg-bg-surface rounded-xl border border-border-hairline overflow-hidden cursor-crosshair group" id="mouse-canvas-container">
+          <div class="relative h-44 sm:h-52 w-full bg-zinc-900 rounded-xl border border-zinc-800 overflow-hidden cursor-crosshair group" id="mouse-canvas-container">
             <canvas id="mouse-trajectory-canvas" class="w-full h-full block"></canvas>
-            <div class="absolute bottom-2 right-2 px-2 py-1 bg-bg-canvas/80 border border-border-hairline rounded text-[9px] font-mono text-text-muted pointer-events-none">
-              Vector Points: <span id="vector-points-cnt" class="text-text-primary font-bold">0</span>
+            <div class="absolute bottom-2 right-2 px-2.5 py-1 bg-zinc-950/90 border border-zinc-800 rounded-md text-[9px] font-mono text-zinc-400 pointer-events-none">
+              Vector Points: <span id="vector-points-cnt" class="text-emerald-400 font-bold">0</span>
             </div>
           </div>
         </div>
@@ -208,7 +217,6 @@
     const dpiCalcVal = document.getElementById('dpi-calc-val');
     const dpiClosestStep = document.getElementById('dpi-closest-step');
     const dpiEdpiVal = document.getElementById('dpi-edpi-val');
-    const dpiDistVal = document.getElementById('dpi-dist-val');
 
     const svgLmb = document.getElementById('svg-btn-lmb');
     const svgMmb = document.getElementById('svg-btn-mmb');
@@ -226,7 +234,6 @@
 
     const chatterCountVal = document.getElementById('chatter-count-val');
     const chatterLastDelta = document.getElementById('chatter-last-delta');
-    const chatterCpsVal = document.getElementById('chatter-cps-val');
     const chatterStatusBadge = document.getElementById('chatter-status-badge');
     const chatterLogSummary = document.getElementById('chatter-log-summary');
 
@@ -251,6 +258,7 @@
     let points: { x: number; y: number }[] = [];
     let soundEnabled = true;
     let audioCtx: AudioContext | null = null;
+    let isDrawingLoopRunning = false;
 
     // Canvas Resize & Context setup
     let ctx: CanvasRenderingContext2D | null = null;
@@ -276,13 +284,6 @@
         canvasResizeObserver = new ResizeObserver(() => resizeCanvas());
         canvasResizeObserver.observe(canvasContainer);
       }
-      document.addEventListener('astro:before-swap', () => {
-        if (canvasResizeObserver) {
-          canvasResizeObserver.disconnect();
-          canvasResizeObserver = null;
-        }
-        window.removeEventListener('resize', resizeCanvas);
-      }, { once: true });
     }
 
     // Audio Click Synthesizer
@@ -290,7 +291,7 @@
       if (!soundEnabled) return;
       try {
         if (!audioCtx) {
-          audioCtx = new (window.AudioContext || (window as any).webkitAudioContext)();
+          audioCtx = new (window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext)();
         }
         if (audioCtx.state === 'suspended') audioCtx.resume();
         const osc = audioCtx.createOscillator();
@@ -304,7 +305,9 @@
         gain.connect(audioCtx.destination);
         osc.start();
         osc.stop(audioCtx.currentTime + 0.03);
-      } catch (e) {}
+      } catch {
+        // Ignore audio synthesis error
+      }
     }
 
     if (soundBtn && soundLabel) {
@@ -329,12 +332,16 @@
       else if (buttonIdx === 3) { counts.mb4++; targetEl = cntMb4; targetSvg = svgMb4; }
       else if (buttonIdx === 4) { counts.mb5++; targetEl = cntMb5; targetSvg = svgMb5; }
 
-      if (targetEl) targetEl.textContent = (counts as any)[Object.keys(counts)[buttonIdx]].toString();
+      if (targetEl) targetEl.textContent = (counts as Record<string, number>)[Object.keys(counts)[buttonIdx]].toString();
       
       if (targetSvg) {
-        targetSvg.style.fill = 'rgba(5, 150, 105, 0.4)';
+        targetSvg.style.fill = 'rgba(52, 211, 153, 0.4)';
+        targetSvg.style.stroke = '#34d399';
         setTimeout(() => {
-          if (targetSvg) targetSvg.style.fill = 'rgba(255, 255, 255, 0.03)';
+          if (targetSvg) {
+            targetSvg.style.fill = 'rgba(255, 255, 255, 0.03)';
+            targetSvg.style.stroke = 'currentColor';
+          }
         }, 100);
       }
 
@@ -347,20 +354,18 @@
 
       if (chatterCount > 0 && chatterStatusBadge && chatterLogSummary) {
         chatterStatusBadge.textContent = 'CHATTER FAULT';
-        chatterStatusBadge.className = 'px-2 py-0.5 rounded-sm text-[9px] font-mono font-bold bg-rose-500/10 text-rose-400 border border-rose-500/20';
+        chatterStatusBadge.className = 'px-2 py-0.5 rounded text-[9px] font-mono font-bold bg-rose-500/10 text-rose-400 border border-rose-500/30';
         chatterLogSummary.textContent = `WARNING: Microsecond bounce chatter detected (${chatterReport.fastestClickMs.toFixed(1)}ms). Switch contacts may be oxidized.`;
       }
     }
 
     // Global Pointer Events
     window.addEventListener('mousedown', (e) => {
-      // Prevent browser default back/forward navigation during test
       if (e.button === 3 || e.button === 4) e.preventDefault();
       processButtonClick(e.button);
     });
 
     window.addEventListener('contextmenu', (e) => {
-      // Allow context menu only outside the press zone
       if ((e.target as HTMLElement).closest('#mouse-tester-root')) {
         e.preventDefault();
       }
@@ -378,7 +383,40 @@
       }
     }, { passive: false });
 
-    // Pointer Movement & Trajectory Canvas
+    // Decoupled Decoupled High-Performance Trajectory Rendering Loop
+    function renderTrajectoryLoop() {
+      if (!ctx || !canvas || !canvasContainer) {
+        isDrawingLoopRunning = false;
+        return;
+      }
+
+      const rect = canvasContainer.getBoundingClientRect();
+      ctx.clearRect(0, 0, rect.width, rect.height);
+
+      if (points.length >= 2) {
+        ctx.beginPath();
+        ctx.strokeStyle = 'rgba(52, 211, 153, 0.7)';
+        ctx.lineWidth = 2.5;
+        ctx.moveTo(points[0].x, points[0].y);
+        for (let i = 1; i < points.length; i++) {
+          ctx.lineTo(points[i].x, points[i].y);
+        }
+        ctx.stroke();
+
+        const lastPoint = points[points.length - 1];
+        ctx.beginPath();
+        ctx.arc(lastPoint.x, lastPoint.y, 4.5, 0, Math.PI * 2);
+        ctx.fillStyle = '#34d399';
+        ctx.shadowColor = 'rgba(52, 211, 153, 0.9)';
+        ctx.shadowBlur = 8;
+        ctx.fill();
+        ctx.shadowBlur = 0;
+      }
+
+      requestAnimationFrame(renderTrajectoryLoop);
+    }
+
+    // Pointer Movement (Buffer only, 0ms lag)
     window.addEventListener('pointermove', (e) => {
       const now = performance.now();
       moveTimestamps.push(now);
@@ -397,10 +435,10 @@
         if (pollStatusBadge) {
           if (pollReport.isStable) {
             pollStatusBadge.textContent = 'STABLE';
-            pollStatusBadge.className = 'px-2 py-0.5 rounded-sm text-[9px] font-mono font-bold bg-status-pass/10 text-status-pass border border-status-pass/20';
+            pollStatusBadge.className = 'px-2 py-0.5 rounded text-[9px] font-mono font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/30';
           } else {
             pollStatusBadge.textContent = 'JITTER ALERT';
-            pollStatusBadge.className = 'px-2 py-0.5 rounded-sm text-[9px] font-mono font-bold bg-amber-500/10 text-amber-400 border border-amber-500/20';
+            pollStatusBadge.className = 'px-2 py-0.5 rounded text-[9px] font-mono font-bold bg-amber-500/10 text-amber-400 border border-amber-500/30';
           }
         }
       }
@@ -417,43 +455,23 @@
       }
 
       // Draw Splines inside canvas container if target is inside canvas
-      if (canvas && ctx && canvasContainer) {
-        const rect = canvas.getBoundingClientRect();
+      if (canvasContainer) {
+        const rect = canvasContainer.getBoundingClientRect();
         const x = e.clientX - rect.left;
         const y = e.clientY - rect.top;
 
         if (x >= 0 && x <= rect.width && y >= 0 && y <= rect.height) {
           points.push({ x, y });
-          if (points.length > 80) points.shift();
+          if (points.length > 100) points.shift();
           if (vectorPointsCnt) vectorPointsCnt.textContent = points.length.toString();
-          drawTrajectory();
+          
+          if (!isDrawingLoopRunning) {
+            isDrawingLoopRunning = true;
+            requestAnimationFrame(renderTrajectoryLoop);
+          }
         }
       }
     });
-
-    function drawTrajectory() {
-      if (!ctx || !canvas) return;
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-      if (points.length < 2) return;
-
-      // Draw raw movement vectors
-      ctx.beginPath();
-      ctx.strokeStyle = 'rgba(5, 150, 105, 0.6)';
-      ctx.lineWidth = 2;
-      ctx.moveTo(points[0].x, points[0].y);
-      for (let i = 1; i < points.length; i++) {
-        ctx.lineTo(points[i].x, points[i].y);
-      }
-      ctx.stroke();
-
-      // Highlight active cursor tip
-      const lastPoint = points[points.length - 1];
-      ctx.beginPath();
-      ctx.arc(lastPoint.x, lastPoint.y, 4, 0, Math.PI * 2);
-      ctx.fillStyle = '#059669';
-      ctx.fill();
-    }
 
     // Reset Telemetry
     function resetTelemetry() {
@@ -484,12 +502,15 @@
       if (chatterLastDelta) chatterLastDelta.textContent = 'Last Δt: -- ms';
       if (chatterStatusBadge) {
         chatterStatusBadge.textContent = 'HEALTHY';
-        chatterStatusBadge.className = 'px-2 py-0.5 rounded-sm text-[9px] font-mono font-bold bg-status-pass/10 text-status-pass border border-status-pass/20';
+        chatterStatusBadge.className = 'px-2 py-0.5 rounded text-[9px] font-mono font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/30';
       }
       if (chatterLogSummary) chatterLogSummary.textContent = 'No double-click chatter faults detected on mechanical switches.';
       if (vectorPointsCnt) vectorPointsCnt.textContent = '0';
 
-      if (ctx && canvas) ctx.clearRect(0, 0, canvas.width, canvas.height);
+      if (ctx && canvasContainer) {
+        const rect = canvasContainer.getBoundingClientRect();
+        ctx.clearRect(0, 0, rect.width, rect.height);
+      }
     }
 
     if (resetBtn) resetBtn.addEventListener('click', resetTelemetry);

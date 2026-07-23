@@ -3,8 +3,16 @@ import Layout from '../../layouts/Layout.astro';
 import TvViewingDistanceInspector from '../../components/diagnostics/TvViewingDistanceInspector.astro';
 import SEOHead from '../../components/seo/SEOHead.astro';
 import SchemaGraph from '../../components/seo/SchemaGraph.astro';
-
 import { useTranslations, localizeLink } from '../../utils/i18n';
+import StepWorkflowSection from '../../components/ui/StepWorkflowSection.astro';
+import PanelTypeBreakdownSection from '../../components/ui/PanelTypeBreakdownSection.astro';
+import FAQSection from '../../components/ui/FAQSection.astro';
+
+// Right Sidebar Components
+import StatusCard from '../../components/ui/sidebar/StatusCard.astro';
+import ConfigurationCard from '../../components/ui/sidebar/ConfigurationCard.astro';
+import MetricCard from '../../components/ui/sidebar/MetricCard.astro';
+import InfoCard from '../../components/ui/sidebar/InfoCard.astro';
 
 const { lang } = useTranslations(Astro.url.pathname);
 const sizes = [50, 55, 65, 75, 85, 98, 120];
@@ -12,14 +20,56 @@ const sizes = [50, 55, 65, 75, 85, 98, 120];
 const seoTitle = "TV Viewing Distance & Screen Size Calculator (2026) — THX & SMPTE";
 const seoDescription = "Calculate optimal viewing distance, screen height/width, and 4K visual acuity thresholds for TVs and projectors according to THX and SMPTE standards.";
 const canonicalUrl = lang === 'en'
-  ? "https://monitortester.com/display-tests/tv-viewing-distance"
-  : `https://monitortester.com/${lang}/display-tests/tv-viewing-distance`;
+  ? "https://displaytestonline.com/display-tests/tv-viewing-distance"
+  : `https://displaytestonline.com/${lang}/display-tests/tv-viewing-distance`;
+
+const faqs = [
+  {
+    question: "What is the THX recommended viewing distance for TVs?",
+    answer: "THX recommends a 36-degree field of view (FOV) for cinematic immersion. Multiply your TV diagonal size by 1.2 to calculate optimal THX seating distance in inches (e.g. 65-inch TV = ~6.5 feet)."
+  },
+  {
+    question: "What is the SMPTE viewing angle standard?",
+    answer: "The Society of Motion Picture and Television Engineers (SMPTE) standard recommends a 30-degree field of view for general TV viewing (Screen Diagonal × 1.6), yielding ~8.7 feet for a 65-inch TV."
+  },
+  {
+    question: "How far should I sit from a 65-inch 4K TV?",
+    answer: "For a 65-inch 4K TV, sitting between 4.3 feet (4K visual acuity limit) and 8.7 feet (SMPTE 30° FOV) ensures full 4K resolution clarity without pixel structure grid lines."
+  },
+  {
+    question: "What is 1-arcminute visual acuity resolution limit?",
+    answer: "1 arcminute (1/60th of a degree) represents maximum 20/20 human eye angular resolution. Beyond the 4K acuity distance, individual 4K pixels blend together and become indistinguishable from 1080p."
+  },
+  {
+    question: "How high should a TV be mounted on the wall?",
+    answer: "The vertical center of your TV screen should align directly with your seated eye level (typically 40 to 44 inches from the floor) to prevent neck strain."
+  },
+  {
+    question: "Does seating distance change for 8K resolution TVs?",
+    answer: "Yes. Due to 8K rendering 33 million pixels (4x 4K), sitting closer at a 50-degree to 60-degree FOV allows full resolve of 8K detail."
+  },
+  {
+    question: "What viewing distance is recommended for home theater projectors?",
+    answer: "For immersive 100-inch to 120-inch projector screens, a 40-degree FOV seating distance (Screen Diagonal × 1.0) provides an authentic commercial cinema experience."
+  },
+  {
+    question: "Does screen aspect ratio (16:9 vs 21:9 Ultrawide) affect viewing distance?",
+    answer: "Ultrawide 21:9 displays widen your horizontal field of view without increasing vertical height, allowing closer seating for immersive flight and racing simulators."
+  },
+  {
+    question: "What happens if I sit too close or too far from my TV?",
+    answer: "Sitting too close can cause eye fatigue and expose pixel grid lines; sitting too far diminishes perceived resolution benefits and reduces cinematic immersion."
+  },
+  {
+    question: "How do I export my TV viewing distance calculations?",
+    answer: "Click 'Export Passport' to save your screen size, THX/SMPTE distance specs, and 4K visual acuity thresholds in a JSON report."
+  }
+];
 ---
 
-<Layout title={seoTitle} description={seoDescription} canonicalUrl={canonicalUrl}>
-
-  <div class="min-h-screen bg-[#08080a] text-slate-100 py-12 px-4 font-sans">
-    <div class="max-w-5xl mx-auto space-y-12">
+<Layout title={seoTitle} description={seoDescription} faqs={faqs} canonicalUrl={canonicalUrl}>
+  <div class="min-h-screen bg-[#08080a] text-slate-100 font-sans">
+    <div class="max-w-7xl mx-auto px-4 py-6 sm:py-8 space-y-8">
       <section class="text-center space-y-4">
         <h1 class="text-4xl sm:text-5xl font-black text-white tracking-tight">
           TV Viewing Distance & <span class="text-cyan-400">Screen Size</span> Calculator
@@ -29,37 +79,113 @@ const canonicalUrl = lang === 'en'
         </p>
       </section>
 
-      <TvViewingDistanceInspector />
+      <!-- 2-Column Responsive Layout -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        <!-- Left Diagnostic Canvas & Directory -->
+        <div class="lg:col-span-8 space-y-8">
+          <TvViewingDistanceInspector />
 
-      <!-- TV Screen Size Viewing Distance Directory -->
-      <section class="space-y-6 bg-[#121215] p-6 sm:p-8 rounded-2xl border border-white/10">
-        <div class="border-b border-white/10 pb-4">
-          <h2 class="text-2xl font-bold text-white font-sans">TV & Projector Screen Size Directory</h2>
-          <p class="text-slate-400 text-sm mt-1">Explore optimal THX (36° field of view) and SMPTE viewing distance calculations across popular display sizes.</p>
+          <!-- TV Screen Size Viewing Distance Directory -->
+          <section class="space-y-6 bg-[#121215] p-6 sm:p-8 rounded-3xl border border-white/10">
+            <div class="border-b border-white/10 pb-4">
+              <h2 class="text-2xl font-bold text-white font-sans">TV & Projector Screen Size Directory</h2>
+              <p class="text-slate-400 text-sm mt-1">Explore optimal THX (36° field of view) and SMPTE viewing distance calculations across popular display sizes.</p>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 font-mono text-xs">
+              {sizes.map(size => {
+                const slug = `${size}-inch-tv`;
+                const href = localizeLink(`/display-tests/tv-viewing-distance/${slug}`, lang);
+                return (
+                  <a
+                    href={href}
+                    class="p-3.5 rounded-xl bg-[#18181b] border border-white/5 hover:border-cyan-400/50 hover:bg-cyan-400/10 text-slate-300 hover:text-white transition-colors duration-200 cursor-pointer flex items-center justify-between group"
+                  >
+                    <div class="space-y-1 truncate pr-2 font-sans">
+                      <div class="font-bold text-cyan-400 text-xs">{size} Inch TV & Projector</div>
+                      <div class="text-[11px] text-slate-400 group-hover:text-slate-200 font-mono">
+                        THX &amp; SMPTE Distance Specs
+                      </div>
+                    </div>
+                    <span class="text-cyan-400 text-xs shrink-0">&rarr;</span>
+                  </a>
+                );
+              })}
+            </div>
+          </section>
         </div>
 
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 font-mono text-xs">
-          {sizes.map(size => {
-            const slug = `${size}-inch-tv`;
-            const href = localizeLink(`/display-tests/tv-viewing-distance/${slug}`, lang);
-            return (
-              <a
-                href={href}
-                class="p-3.5 rounded-xl bg-[#18181b] border border-white/5 hover:border-cyan-400/50 hover:bg-cyan-400/10 text-slate-300 hover:text-white transition-all flex items-center justify-between group"
-              >
-                <div class="space-y-1 truncate pr-2 font-sans">
-                  <div class="font-bold text-cyan-400 text-xs">{size} Inch TV & Projector</div>
-                  <div class="text-[11px] text-slate-400 group-hover:text-slate-200 font-mono">
-                    THX &amp; SMPTE Distance Specs
-                  </div>
-                </div>
-                <span class="text-cyan-400 group-hover:translate-x-0.5 transition-transform text-xs shrink-0">&rarr;</span>
-              </a>
-            );
-          })}
+        <!-- Right Modular Control & Telemetry Sidebar -->
+        <div class="lg:col-span-4 sticky top-24 space-y-6">
+          <StatusCard
+            status="pass"
+            label="Immersion Optics Rating"
+            subtitle="THX & SMPTE Field of View"
+            score="40°"
+            maxScore="FOV"
+            details={[
+              { label: "THX Standard", value: "36° Cinematic FOV" },
+              { label: "SMPTE Standard", value: "30° Standard FOV" }
+            ]}
+          />
+
+          <ConfigurationCard
+            title="Display Optics Setup"
+            subtitle="Screen Size & Resolution"
+            badgeText="Optics"
+            controls={[
+              {
+                id: "screen-diag",
+                label: "Screen Diagonal",
+                type: "slider",
+                min: 32,
+                max: 120,
+                step: 5,
+                value: 65,
+                unit: "in"
+              },
+              {
+                id: "display-res",
+                label: "Target Resolution",
+                type: "presets",
+                value: "4K",
+                options: [
+                  { value: "1080p", label: "1080p FHD" },
+                  { value: "4K", label: "4K UHD" },
+                  { value: "8K", label: "8K UHD" }
+                ]
+              }
+            ]}
+          />
+
+          <MetricCard
+            title="Viewing Distance Optics"
+            subtitle="Calculated Physical Distances"
+            badgeText="Distances"
+            layout="list"
+            metrics={[
+              { id: "thx-dist", label: "THX Recommended Distance", value: "6.5", unit: "ft", status: "pass" },
+              { id: "smpte-dist", label: "SMPTE Recommended Distance", value: "8.9", unit: "ft", status: "pass" },
+              { id: "acuity-dist", label: "4K Acuity Threshold", value: "4.3", unit: "ft", status: "pass" }
+            ]}
+          />
+
+          <InfoCard
+            title="Optics & Visual Acuity"
+            subtitle="1-Arcminute Resolution Limit"
+            badgeText="Acuity Specs"
+            accentColor="cyan"
+            educationalNotes={[
+              "Human visual acuity limit is 1/60th of a degree (1 arcminute). Sitting closer than the 4K acuity threshold unlocks full resolve of individual pixels."
+            ]}
+          />
         </div>
-      </section>
+      </div>
+
+      <!-- Standard 4-Part Sections -->
+      <StepWorkflowSection />
+      <PanelTypeBreakdownSection />
+      <FAQSection faqs={faqs} title="TV Viewing Distance FAQs" />
     </div>
   </div>
 </Layout>
-

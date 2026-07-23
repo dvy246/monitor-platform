@@ -7,6 +7,12 @@ import EpilepsyWarning from '../../components/disclaimers/EpilepsyWarning.astro'
 import TestSwitcherBar from '../../components/ui/TestSwitcherBar.astro';
 import EmbedWidgetModal from '../../components/ui/EmbedWidgetModal.astro';
 
+import TelemetryCard from '../../components/ui/sidebar/TelemetryCard.astro';
+import StatusCard from '../../components/ui/sidebar/StatusCard.astro';
+import ConfigurationCard from '../../components/ui/sidebar/ConfigurationCard.astro';
+import ShortcutCard from '../../components/ui/sidebar/ShortcutCard.astro';
+import InfoCard from '../../components/ui/sidebar/InfoCard.astro';
+
 const breadcrumbItems = [
   { label: 'Display Suite', href: '/display-tests' },
   { label: 'VRR Sync Engine' }
@@ -43,69 +49,136 @@ const vrrFaqs = [
   description="Real-time Variable Refresh Rate (VRR) stutter generator, VESA Adaptive-Sync frame pacing analyzer, LFC threshold transition checker, and screen tearing simulator."
   faqs={vrrFaqs}
 >
-  <div class="max-w-7xl mx-auto px-4 py-8 space-y-8">
+  <div class="max-w-7xl mx-auto px-4 py-8 space-y-8 min-w-0 w-full overflow-hidden font-sans">
     <Breadcrumbs items={breadcrumbItems} />
 
-    <header class="space-y-3 border-b border-border-hairline pb-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
-      <div class="space-y-2">
-        <div class="flex items-center gap-2 text-status-pass text-xs font-mono font-bold uppercase tracking-wider">
-          <span class="w-2 h-2 rounded-full bg-status-pass led-glow-pass"></span>
-          VESA ADAPTIVE-SYNC &amp; HIGH-REFRESH PACING
-        </div>
-        <h1 class="text-3xl sm:text-4xl font-extrabold text-text-primary tracking-tight">VRR, G-Sync &amp; FreeSync Stutter Test</h1>
-        <p class="text-sm text-text-secondary max-w-3xl">
-          Modulate synthetic frame rates across your display's VRR window (48Hz to 540Hz+), evaluate LFC (Low Framerate Compensation) doubling behavior, measure micro-stutter, and inspect visual tear lines.
-        </p>
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+      
+      <!-- Left Canvas (lg:col-span-8) -->
+      <div class="lg:col-span-8 space-y-8 min-w-0">
+        <header class="space-y-3 border-b border-border-hairline pb-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div class="space-y-2">
+            <div class="flex items-center gap-2 text-status-pass text-xs font-mono font-bold uppercase tracking-wider">
+              <span class="w-2 h-2 rounded-full bg-status-pass led-glow-pass"></span>
+              VESA ADAPTIVE-SYNC &amp; HIGH-REFRESH PACING
+            </div>
+            <h1 class="text-3xl sm:text-4xl font-extrabold text-text-primary tracking-tight">VRR, G-Sync &amp; FreeSync Stutter Test</h1>
+            <p class="text-sm text-text-secondary max-w-3xl leading-relaxed">
+              Modulate synthetic frame rates across your display's VRR window (48Hz to 540Hz+), evaluate LFC (Low Framerate Compensation) doubling behavior, measure micro-stutter, and inspect visual tear lines.
+            </p>
+          </div>
+
+          <button 
+            id="btn-open-embed-modal" 
+            class="min-h-[44px] px-4 py-2.5 rounded-xl bg-bg-surface border border-border-hairline hover:border-status-pass text-text-primary font-mono text-xs font-bold transition-colors duration-200 shadow-specular-top cursor-pointer shrink-0 flex items-center gap-2"
+          >
+            <svg class="w-4 h-4 text-status-pass" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/></svg>
+            <span>EMBED THIS WIDGET</span>
+          </button>
+        </header>
+
+        <EpilepsyWarning />
+        <VrrStutterEngine />
+
+        <!-- Scientific Methodology & VRR Physics Article -->
+        <article class="bg-bg-surface border border-border-hairline rounded-2xl p-6 sm:p-8 space-y-6 shadow-specular-top font-sans text-sm text-text-secondary leading-relaxed">
+          <div class="border-b border-border-hairline pb-4">
+            <span class="font-mono text-[10px] font-bold text-status-pass uppercase tracking-widest block mb-1">VESA ADAPTIVE-SYNC METHODOLOGY</span>
+            <h2 class="text-xl font-bold text-text-primary">Variable Refresh Rate (VRR) Mechanics &amp; LFC Threshold Physics</h2>
+          </div>
+
+          <p>
+            <strong>Variable Refresh Rate (VRR)</strong> technologies—including NVIDIA G-Sync, AMD FreeSync, and VESA Adaptive-Sync—dynamically match the monitor's physical refresh rate to the GPU's instantaneous frame rendering pace. When GPU rendering latency fluctuates, fixed-refresh displays trigger either visual <strong>tearing</strong> (with VSync OFF) or periodic <strong>stutter</strong> (with VSync ON).
+          </p>
+
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4 font-mono text-xs my-4">
+            <div class="bg-bg-canvas p-4 rounded-xl border border-border-hairline space-y-1">
+              <span class="text-text-muted text-[10px] uppercase block">VRR Window Range</span>
+              <strong class="text-text-primary block text-sm">48 Hz to Max Refresh</strong>
+              <p class="font-sans text-[11px] text-text-secondary">The hardware range within which VSync timing adjusts dynamically to match GPU output.</p>
+            </div>
+            <div class="bg-bg-canvas p-4 rounded-xl border border-border-hairline space-y-1">
+              <span class="text-text-muted text-[10px] uppercase block">LFC Threshold</span>
+              <strong class="text-text-primary block text-sm">Frame Doubling Below 48Hz</strong>
+              <p class="font-sans text-[11px] text-text-secondary">When FPS drops below the minimum VRR bound (e.g. 36 FPS), LFC repeats frames (72 Hz) to prevent stutter.</p>
+            </div>
+            <div class="bg-bg-canvas p-4 rounded-xl border border-border-hairline space-y-1">
+              <span class="text-text-muted text-[10px] uppercase block">VRR Gamma Flicker</span>
+              <strong class="text-text-primary block text-sm">OLED Voltage Sensitivity</strong>
+              <p class="font-sans text-[11px] text-text-secondary">Rapid VSync frame time oscillations can alter sub-pixel pixel charging times, causing subtle brightness shifts on OLED panels.</p>
+            </div>
+          </div>
+
+          <HardwareLimitationNotice />
+        </article>
+
+        <TestSwitcherBar tests={displayTests} currentId="vrr" />
+        <EmbedWidgetModal widgetTitle="VRR Stutter & Tear Test" embedUrl="https://displaytestonline.com/embed/vrr-stutter" />
       </div>
 
-      <button 
-        id="btn-open-embed-modal" 
-        class="px-4 py-2.5 rounded-xl bg-bg-surface border border-border-hairline hover:border-status-pass text-text-primary font-mono text-xs font-bold transition-all shadow-specular-top cursor-pointer shrink-0 flex items-center gap-2"
-      >
-        <svg class="w-4 h-4 text-status-pass" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/></svg>
-        <span>EMBED THIS WIDGET</span>
-      </button>
-    </header>
+      <!-- Right Modular Sidebar (lg:col-span-4) -->
+      <div class="lg:col-span-4 space-y-6 sticky top-24 self-start min-w-0">
+        <TelemetryCard
+          title="VRR Frame Pacing"
+          subtitle="rAF Microsecond Jitter"
+          currentHz={240.0}
+          jitterSigmaMs={0.08}
+          badgeText="540Hz Sweep"
+        />
 
-    <EpilepsyWarning />
-    <VrrStutterEngine />
+        <StatusCard
+          status="pass"
+          label="LFC Active"
+          subtitle="Low Framerate Compensation"
+          score="ACTIVE"
+          details={[
+            { label: 'Target Range', value: '48 Hz - 240 Hz' },
+            { label: 'LFC Mode', value: '2x Multiplier' }
+          ]}
+        />
 
-    <!-- Scientific Methodology & VRR Physics Article -->
-    <article class="bg-bg-surface border border-border-hairline rounded-2xl p-6 sm:p-8 space-y-6 shadow-specular-top font-sans text-sm text-text-secondary leading-relaxed">
-      <div class="border-b border-border-hairline pb-4">
-        <span class="font-mono text-[10px] font-bold text-status-pass uppercase tracking-widest block mb-1">VESA ADAPTIVE-SYNC METHODOLOGY</span>
-        <h2 class="text-xl font-bold text-text-primary">Variable Refresh Rate (VRR) Mechanics &amp; LFC Threshold Physics</h2>
+        <ConfigurationCard
+          title="VRR Sweep Range"
+          subtitle="Oscillation Tuning"
+          controls={[
+            {
+              id: 'vrrRange',
+              label: 'Sweep Frequency Bounds',
+              type: 'presets',
+              value: '48-240',
+              options: [
+                { value: '48-144', label: '48 - 144 Hz' },
+                { value: '48-240', label: '48 - 240 Hz' },
+                { value: '48-360', label: '48 - 360 Hz' },
+                { value: '48-540', label: '48 - 540 Hz' }
+              ]
+            },
+            { id: 'stutterInject', label: 'Inject Synthetic Stutter Spike', type: 'toggle', value: false }
+          ]}
+        />
+
+        <ShortcutCard
+          shortcuts={[
+            { keys: ['F'], label: 'Toggle Fullscreen Mode' },
+            { keys: ['S'], label: 'Inject Synthetic Stutter' },
+            { keys: ['Space'], label: 'Pause / Resume Oscillation' }
+          ]}
+        />
+
+        <InfoCard
+          title="VESA Adaptive-Sync"
+          subtitle="G-Sync & FreeSync Specs"
+          badgeText="VESA Standards"
+          citations={[
+            { standard: "VESA Adaptive-Sync", clause: "Section 3.2", description: "Mandates 48-144Hz dynamic timing sync with microsecond frame dispatch." }
+          ]}
+          osdTips={[
+            "Set FPS cap 3-4 FPS below native refresh rate (e.g. 237 FPS on 240Hz) to prevent VSync input latency penalties."
+          ]}
+        />
       </div>
 
-      <p>
-        <strong>Variable Refresh Rate (VRR)</strong> technologies—including NVIDIA G-Sync, AMD FreeSync, and VESA Adaptive-Sync—dynamically match the monitor's physical refresh rate to the GPU's instantaneous frame rendering pace. When GPU rendering latency fluctuates, fixed-refresh displays trigger either visual <strong>tearing</strong> (with VSync OFF) or periodic <strong>stutter</strong> (with VSync ON).
-      </p>
-
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 font-mono text-xs my-4">
-        <div class="bg-bg-canvas p-4 rounded-xl border border-border-hairline space-y-1">
-          <span class="text-text-muted text-[10px] uppercase block">VRR Window Range</span>
-          <strong class="text-text-primary block text-sm">48 Hz to Max Refresh</strong>
-          <p class="font-sans text-[11px] text-text-secondary">The hardware range within which VSync timing adjusts dynamically to match GPU output.</p>
-        </div>
-        <div class="bg-bg-canvas p-4 rounded-xl border border-border-hairline space-y-1">
-          <span class="text-text-muted text-[10px] uppercase block">LFC Threshold</span>
-          <strong class="text-text-primary block text-sm">Frame Doubling Below 48Hz</strong>
-          <p class="font-sans text-[11px] text-text-secondary">When FPS drops below the minimum VRR bound (e.g. 36 FPS), LFC repeats frames (72 Hz) to prevent stutter.</p>
-        </div>
-        <div class="bg-bg-canvas p-4 rounded-xl border border-border-hairline space-y-1">
-          <span class="text-text-muted text-[10px] uppercase block">VRR Gamma Flicker</span>
-          <strong class="text-text-primary block text-sm">OLED Voltage Sensitivity</strong>
-          <p class="font-sans text-[11px] text-text-secondary">Rapid VSync frame time oscillations can alter sub-pixel pixel charging times, causing subtle brightness shifts on OLED panels.</p>
-        </div>
-      </div>
-
-      <HardwareLimitationNotice />
-    </article>
-
-    <TestSwitcherBar tests={displayTests} currentId="vrr" />
-
-    <!-- Embed Widget Modal -->
-    <EmbedWidgetModal widgetTitle="VRR Stutter & Tear Test" embedUrl="https://displaytestonline.com/embed/vrr-stutter" />
+    </div>
   </div>
 
   <script>

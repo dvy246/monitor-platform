@@ -1,0 +1,88 @@
+---
+import FAQSection from '../../components/ui/FAQSection.astro';
+import Layout from '../../layouts/Layout.astro';
+import PollingStabilityCanvas from '../../components/diagnostics/PollingStabilityCanvas.astro';
+import { useTranslations } from '../../utils/i18n';
+
+import StatusCard from '../../components/ui/sidebar/StatusCard.astro';
+import MetricCard from '../../components/ui/sidebar/MetricCard.astro';
+import TelemetryCard from '../../components/ui/sidebar/TelemetryCard.astro';
+
+const { lang } = useTranslations(Astro.url.pathname);
+const canonicalUrl = lang === 'en'
+  ? "https://displaytestonline.com/mouse-test/polling-stability-test"
+  : `https://displaytestonline.com/${lang}/mouse-test/polling-stability-test`;
+
+const faqs = [
+  { question: "What is USB polling rate?", answer: "Polling rate (measured in Hz) is the frequency at which your mouse reports its position to the computer. A 1000Hz polling rate means the mouse updates its position 1000 times every second (every 1ms)." },
+  { question: "Why test for polling stability?", answer: "High polling rates like 4000Hz or 8000Hz can cause severe CPU bottlenecks or frame pacing jitter if the USB bus cannot maintain a stable microsecond interval, leading to stutter in games." },
+  { question: "How do I reach 8000Hz?", answer: "Move your mouse in fast, continuous circles within the canvas. You must maintain continuous motion to max out the polling frequency; if you stop, the rate drops." },
+  { question: "What is a good polling rate for gaming?", answer: "1000Hz is the competitive standard. 4000Hz and 8000Hz offer slight latency reductions but require high-end CPUs (like Ryzen 7800X3D) to process the USB interrupts without stuttering." },
+  { question: "Why does my 1000Hz mouse only show 125Hz?", answer: "Ensure you are moving the mouse quickly enough. If it's still stuck, check your mouse software (e.g., G HUB, Synapse) or ensure you aren't using a cheap unpowered USB hub." },
+  { question: "What is frame pacing jitter?", answer: "Jitter occurs when the time between USB reports fluctuates (e.g., jumping between 0.5ms and 2.0ms instead of a flat 1.0ms). High jitter destroys tracking smoothness." },
+  { question: "Is this test limited by my monitor's refresh rate?", answer: "No, this tool measures raw `mousemove` event dispatch deltas via `performance.now()`, decoupled from `requestAnimationFrame`, to capture true hardware interrupts." },
+  { question: "Does my web browser support 8000Hz?", answer: "Yes, modern Chromium browsers natively support high-resolution microsecond event dispatching, though heavy background tabs can induce latency spikes." },
+  { question: "Why does my rate drop when I play a game?", answer: "Games with 100% CPU utilization can choke the Windows USB HID driver thread, causing dropped packets. This is why 8000Hz can sometimes decrease FPS." },
+  { question: "Can I test my keyboard's polling rate here?", answer: "No, this tool measures cursor movement deltas. Use our dedicated Keyboard Polling Tester for key switch timing." }
+];
+
+const seoTitle = "Mouse 8000Hz Polling Rate & Stability Tester Online";
+const seoDescription = "Test your gaming mouse USB polling rate up to 8000Hz. Analyze frame pacing jitter and microsecond report stability in this free online tool.";
+---
+
+<Layout title={seoTitle} description={seoDescription} faqs={faqs} canonicalUrl={canonicalUrl}>
+  <div class="max-w-7xl mx-auto px-4 py-6 sm:py-8 min-w-0 w-full overflow-hidden font-sans">
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 mt-6">
+      
+      <div class="lg:col-span-8 space-y-8 min-w-0">
+        <section class="max-w-4xl mx-auto text-center space-y-4">
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/30 text-xs font-mono text-indigo-400 font-bold">
+            <span>HIGH FREQUENCY HID DIAGNOSTIC</span>
+          </div>
+          <h1 class="text-3xl sm:text-4xl font-extrabold font-mono tracking-tight text-white">
+            USB Polling Stability Analyzer
+          </h1>
+          <p class="text-sm sm:text-base text-zinc-400 leading-relaxed max-w-2xl mx-auto">
+            Benchmark your gaming mouse up to 8000Hz. Detect frame pacing jitter and verify microsecond USB report consistency.
+          </p>
+        </section>
+
+        <PollingStabilityCanvas />
+
+        <article class="max-w-5xl mx-auto space-y-6 bg-[#121215] border border-white/10 rounded-3xl p-6 sm:p-8 backdrop-blur-xl text-sm text-zinc-300 leading-relaxed shadow-2xl">
+          <div class="border-b border-white/10 pb-4">
+            <h2 class="text-xl font-bold font-mono text-white">Event Dispatch Latency & Jitter</h2>
+            <p class="mt-2 text-zinc-400">
+              A stable 1000Hz mouse should deliver one packet exactly every 1.00ms. If your mouse delivers two packets in 0.5ms and then waits 1.5ms for the next, it creates micro-stutter. This tool graphs those exact time-delta variances.
+            </p>
+          </div>
+        </article>
+
+        <FAQSection faqs={faqs} />
+      </div>
+
+      <div class="lg:col-span-4 space-y-6 sticky top-24 self-start min-w-0">
+        <StatusCard
+          status="pass"
+          label="SENSOR TRACKING"
+          subtitle="Connection State"
+          score="1000"
+          maxScore="8000"
+          details={[
+            { label: 'Target', value: '1000Hz' }
+          ]}
+        />
+        <MetricCard
+          title="Microsecond Jitter"
+          subtitle="Delta Variance"
+          badgeText="Real-time"
+          metrics={[
+            { id: 'avgDelta', label: 'Average Delay', value: '1.0', unit: 'ms', status: 'pass' },
+            { id: 'jitter', label: 'Variance Jitter', value: '0.1', unit: 'ms', status: 'neutral' }
+          ]}
+        />
+      </div>
+
+    </div>
+  </div>
+</Layout>

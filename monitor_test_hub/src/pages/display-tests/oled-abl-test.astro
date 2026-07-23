@@ -1,0 +1,88 @@
+---
+import FAQSection from '../../components/ui/FAQSection.astro';
+import Layout from '../../layouts/Layout.astro';
+import OledAblCanvas from '../../components/diagnostics/OledAblCanvas.astro';
+import { useTranslations } from '../../utils/i18n';
+
+import StatusCard from '../../components/ui/sidebar/StatusCard.astro';
+import MetricCard from '../../components/ui/sidebar/MetricCard.astro';
+
+const { lang } = useTranslations(Astro.url.pathname);
+const canonicalUrl = lang === 'en'
+  ? "https://displaytestonline.com/display-tests/oled-abl-test"
+  : `https://displaytestonline.com/${lang}/display-tests/oled-abl-test`;
+
+const faqs = [
+  { question: "What is ABL (Auto Brightness Limiter)?", answer: "ABL is a protective mechanism in OLED monitors that automatically dims the screen when a large portion of it becomes bright white. This prevents power overload and reduces burn-in risk." },
+  { question: "How do I test my monitor's ABL?", answer: "Click the window size buttons (1%, 10%, 50%, 100%). Watch how the bright white square affects the overall screen brightness. On aggressive ABL monitors, 100% window size will look distinctly dimmer than 10%." },
+  { question: "Why does my OLED dim when I open a web browser?", answer: "Web browsers typically have large white backgrounds (100% window size), which triggers the OLED's ABL algorithm to significantly lower the peak luminance." },
+  { question: "Is ABL a defect?", answer: "No, ABL is a necessary physics limitation of current OLED technology (WOLED and QD-OLED) to manage thermal output and pixel degradation." },
+  { question: "What is peak brightness vs sustained brightness?", answer: "An OLED might hit 1000 nits of peak brightness on a tiny 2% window (like a small explosion in a movie), but only sustain 250 nits on a 100% full-screen white window." },
+  { question: "Can I disable ABL?", answer: "You cannot disable it entirely, but some monitors offer a 'Uniform Brightness' setting that locks the peak brightness to the 100% window level, completely eliminating the dimming fluctuation at the cost of HDR pop." },
+  { question: "Does ABL affect gaming?", answer: "Mostly in snowy environments or bright skyboxes. For dark games with small bright highlights (like neon signs), ABL will not engage, allowing for stunning HDR contrast." },
+  { question: "Is ABL worse on WOLED or QD-OLED?", answer: "Both suffer from it, but modern QD-OLED panels (Gen 2/3) typically have slightly higher color luminance and less aggressive ABL curving compared to older WOLEDs." },
+  { question: "How is ABL measured in nits?", answer: "Reviewers use a colorimeter on specific window sizes (2%, 10%, 25%, 50%, 100%) to chart the monitor's EOTF curve and peak brightness rolloff." },
+  { question: "Does mini-LED have ABL?", answer: "Mini-LED LCDs generally do not have ABL and can sustain massive full-screen brightness (1000+ nits), making them better for bright rooms, but they suffer from blooming." }
+];
+
+const seoTitle = "OLED ABL Window Size & Luminance Benchmark Test";
+const seoDescription = "Test your OLED monitor's Auto Brightness Limiter (ABL) aggressiveness. Visually benchmark 1%, 10%, 50%, and 100% window sizes to evaluate peak luminance dimming.";
+---
+
+<Layout title={seoTitle} description={seoDescription} faqs={faqs} canonicalUrl={canonicalUrl}>
+  <div class="max-w-7xl mx-auto px-4 py-6 sm:py-8 min-w-0 w-full overflow-hidden font-sans">
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 mt-6">
+      
+      <div class="lg:col-span-8 space-y-8 min-w-0">
+        <section class="max-w-4xl mx-auto text-center space-y-4">
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-orange-500/10 border border-orange-500/30 text-xs font-mono text-orange-400 font-bold">
+            <span>OLED LUMINANCE DIAGNOSTIC</span>
+          </div>
+          <h1 class="text-3xl sm:text-4xl font-extrabold font-mono tracking-tight text-white">
+            OLED ABL & Luminance Tester
+          </h1>
+          <p class="text-sm sm:text-base text-zinc-400 leading-relaxed max-w-2xl mx-auto">
+            Visually benchmark how aggressively your OLED monitor dims full-screen bright content to manage thermal and power limits.
+          </p>
+        </section>
+
+        <OledAblCanvas />
+
+        <article class="max-w-5xl mx-auto space-y-6 bg-[#121215] border border-white/10 rounded-3xl p-6 sm:p-8 backdrop-blur-xl text-sm text-zinc-300 leading-relaxed shadow-2xl">
+          <div class="border-b border-white/10 pb-4">
+            <h2 class="text-xl font-bold font-mono text-white">Understanding Auto Brightness Limiting</h2>
+            <p class="mt-2 text-zinc-400">
+              OLED panels control light per-pixel. Displaying a tiny 1% white box takes minimal power, allowing it to hit 1000+ nits. Displaying a 100% white screen requires massive power and generates heat that could destroy the panel. ABL aggressively dims the overall brightness as the Average Picture Level (APL) increases to protect the hardware.
+            </p>
+          </div>
+        </article>
+
+        <FAQSection faqs={faqs} />
+      </div>
+
+      <div class="lg:col-span-4 space-y-6 sticky top-24 self-start min-w-0">
+        <StatusCard
+          status="pass"
+          label="HDR PATTERN READY"
+          subtitle="Test Status"
+          score="4"
+          maxScore="4"
+          details={[
+            { label: 'Windows', value: '1%, 10%, 50%, 100%' }
+          ]}
+        />
+        <MetricCard
+          title="Typical Nits Curve"
+          subtitle="(Reference Only)"
+          badgeText="OLED Curve"
+          metrics={[
+            { id: 'nit1', label: '2% Window', value: '1000', unit: 'nits', status: 'pass' },
+            { id: 'nit10', label: '10% Window', value: '400', unit: 'nits', status: 'pass' },
+            { id: 'nit100', label: '100% Window', value: '250', unit: 'nits', status: 'neutral' }
+          ]}
+        />
+      </div>
+
+    </div>
+  </div>
+</Layout>

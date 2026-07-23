@@ -11,11 +11,11 @@ const devices: DeviceSpec[] = DeviceDatabase.getAllDevices();
 
 // Group devices by category for structured browsing
 const categories = [
-  { id: 'monitor', label: 'High-Refresh & OLED Monitors', icon: '🖥️' },
-  { id: 'laptop', label: 'Laptops & Mobile Workstations', icon: '💻' },
-  { id: 'handheld', label: 'Gaming Handhelds & Consoles', icon: '🎮' },
-  { id: 'smartphone', label: 'Smartphones & Tablets', icon: '📱' },
-  { id: 'tv', label: 'OLED & Quantum Dot TVs', icon: '📺' }
+  { id: 'monitor', label: 'High-Refresh & OLED Monitors', icon: 'MONITOR' },
+  { id: 'laptop', label: 'Laptops & Mobile Workstations', icon: 'LAPTOP' },
+  { id: 'handheld', label: 'Gaming Handhelds & Consoles', icon: 'HANDHELD' },
+  { id: 'smartphone', label: 'Smartphones & Tablets', icon: 'SMARTPHONE' },
+  { id: 'tv', label: 'OLED & Quantum Dot TVs', icon: 'TV' }
 ];
 
 const breadcrumbItems = [
@@ -26,8 +26,8 @@ const breadcrumbItems = [
 const pageTitle = "Device Dead Pixel Test Directory (2026) — ISO 9241-307 RMA Inspector";
 const pageDescription = "Browse device-tailored dead pixel, stuck pixel, and screen defect inspectors for 100+ laptops, handhelds, smartphones, and OLED/IPS monitors with ISO 9241-307 RMA audit standards.";
 const canonicalUrl = lang === 'en' 
-  ? "https://monitortester.com/display-tests/dead-pixel-test"
-  : `https://monitortester.com/${lang}/display-tests/dead-pixel-test`;
+  ? "https://displaytestonline.com/display-tests/dead-pixel-test"
+  : `https://displaytestonline.com/${lang}/display-tests/dead-pixel-test`;
 
 const schemaGraph = {
   "@context": "https://schema.org",
@@ -45,8 +45,8 @@ const schemaGraph = {
           "position": index + 1,
           "name": `${d.name} Dead Pixel Test`,
           "url": lang === 'en' 
-            ? `https://monitortester.com/display-tests/dead-pixel-test/${d.slug}` 
-            : `https://monitortester.com/${lang}/display-tests/dead-pixel-test/${d.slug}`
+            ? `https://displaytestonline.com/display-tests/dead-pixel-test/${d.slug}` 
+            : `https://displaytestonline.com/${lang}/display-tests/dead-pixel-test/${d.slug}`
         }))
       }
     }
@@ -103,7 +103,7 @@ const schemaGraph = {
         return (
           <section class="space-y-4">
             <div class="flex items-center gap-3 border-b border-border-hairline/60 pb-3">
-              <span class="text-xl">{cat.icon}</span>
+              <span class="text-xs font-mono px-2 py-0.5 rounded bg-bg-surface border border-border-hairline text-cyan-400 font-bold">{cat.icon}</span>
               <h2 class="text-xl font-bold text-text-primary font-mono">{cat.label}</h2>
               <span class="text-xs font-mono text-text-muted px-2 py-0.5 rounded bg-bg-surface border border-border-hairline">
                 {catDevices.length} Models

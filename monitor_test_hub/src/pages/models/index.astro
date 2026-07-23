@@ -3,6 +3,13 @@ import FAQSection from '../../components/ui/FAQSection.astro';
 import Layout from '../../layouts/Layout.astro';
 import Breadcrumbs from '../../components/ui/Breadcrumbs.astro';
 import { DeviceDatabase } from '../../engine/DeviceDatabase';
+import StepWorkflowSection from '../../components/ui/StepWorkflowSection.astro';
+import PanelTypeBreakdownSection from '../../components/ui/PanelTypeBreakdownSection.astro';
+
+// Right Sidebar Components
+import StatusCard from '../../components/ui/sidebar/StatusCard.astro';
+import ConfigurationCard from '../../components/ui/sidebar/ConfigurationCard.astro';
+import InfoCard from '../../components/ui/sidebar/InfoCard.astro';
 
 const breadcrumbItems = [
   { label: 'Device Database', href: '/models' },
@@ -60,7 +67,7 @@ const faqs = [
   description="Explore crowdsourced, cryptographically verified hardware telemetry and defect rates for 100+ top gaming monitors, OLED TVs, laptops, and handheld gaming PCs."
   faqs={faqs}
 >
-  <div class="max-w-7xl mx-auto px-4 py-8 space-y-8">
+  <div class="max-w-7xl mx-auto px-4 py-6 sm:py-8 space-y-8 font-sans">
     <Breadcrumbs items={breadcrumbItems} />
 
     <header class="space-y-3 border-b border-border-hairline pb-6">
@@ -76,62 +83,133 @@ const faqs = [
       </p>
     </header>
 
-    <!-- Model Search & Grid Deck -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 font-mono">
-      {devices.map((device) => (
-        <a 
-          href={`/models/${device.slug}`}
-          class="bg-bg-surface border border-border-hairline hover:border-status-pass/40 rounded-2xl p-5 space-y-4 transition-all hover:shadow-2xl hover:-translate-y-0.5 group flex flex-col justify-between"
-        >
-          <div class="space-y-2">
-            <div class="flex items-center justify-between text-[10px]">
-              <span class="px-2 py-0.5 rounded uppercase font-bold bg-bg-canvas text-text-muted border border-border-hairline">
-                {device.brand} • {device.category}
-              </span>
-              <span class="px-2 py-0.5 rounded font-bold uppercase bg-status-pass/10 text-status-pass border border-status-pass/20">
-                {device.displayTech}
-              </span>
-            </div>
+    <!-- 2-Column Responsive Layout -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+      <!-- Left Content & Model Search Grid -->
+      <div class="lg:col-span-8 space-y-8">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 font-mono">
+          {devices.map((device) => (
+            <a 
+              href={`/models/${device.slug}`}
+              class="bg-bg-surface border border-border-hairline hover:border-status-pass/40 rounded-3xl p-5 space-y-4 transition-colors duration-200 cursor-pointer group flex flex-col justify-between"
+            >
+              <div class="space-y-2">
+                <div class="flex items-center justify-between text-[10px]">
+                  <span class="px-2 py-0.5 rounded uppercase font-bold bg-bg-canvas text-text-muted border border-border-hairline">
+                    {device.brand} • {device.category}
+                  </span>
+                  <span class="px-2 py-0.5 rounded font-bold uppercase bg-status-pass/10 text-status-pass border border-status-pass/20">
+                    {device.displayTech}
+                  </span>
+                </div>
 
-            <h2 class="text-base font-bold text-text-primary group-hover:text-status-pass transition-colors font-sans line-clamp-2">
-              {device.name}
-            </h2>
+                <h2 class="text-base font-bold text-text-primary group-hover:text-status-pass transition-colors font-sans line-clamp-2">
+                  {device.name}
+                </h2>
 
-            <p class="text-xs text-text-secondary line-clamp-2 font-sans">
-              {device.description}
-            </p>
-          </div>
-
-          <div class="space-y-3 pt-3 border-t border-border-hairline text-xs">
-            <div class="grid grid-cols-2 gap-2 text-[11px]">
-              <div>
-                <span class="text-text-muted block text-[9px] uppercase">RESOLUTION</span>
-                <strong class="text-text-primary">{device.resolutionWidth}x{device.resolutionHeight}</strong>
+                <p class="text-xs text-text-secondary line-clamp-2 font-sans">
+                  {device.description}
+                </p>
               </div>
-              <div>
-                <span class="text-text-muted block text-[9px] uppercase">VERIFIED PASS</span>
-                <strong class="text-status-pass">{device.defectFreeRate}%</strong>
-              </div>
-            </div>
 
-            <div class="flex items-center justify-between text-[11px] pt-1 border-t border-border-hairline/60">
-              <span class="text-text-muted">{device.verifiedReportsCount.toLocaleString()} Signed Passports</span>
-              <span class="text-status-pass font-bold group-hover:underline flex items-center gap-1">
-                View Telemetry &rarr;
-              </span>
-            </div>
-          </div>
-        </a>
-      ))}
+              <div class="space-y-3 pt-3 border-t border-border-hairline text-xs">
+                <div class="grid grid-cols-2 gap-2 text-[11px]">
+                  <div>
+                    <span class="text-text-muted block text-[9px] uppercase">RESOLUTION</span>
+                    <strong class="text-text-primary">{device.resolutionWidth}x{device.resolutionHeight}</strong>
+                  </div>
+                  <div>
+                    <span class="text-text-muted block text-[9px] uppercase">VERIFIED PASS</span>
+                    <strong class="text-status-pass">{device.defectFreeRate}%</strong>
+                  </div>
+                </div>
+
+                <div class="flex items-center justify-between text-[11px] pt-1 border-t border-border-hairline/60">
+                  <span class="text-text-muted">{device.verifiedReportsCount.toLocaleString()} Signed Passports</span>
+                  <span class="text-status-pass font-bold group-hover:underline flex items-center gap-1">
+                    View Telemetry &rarr;
+                  </span>
+                </div>
+              </div>
+            </a>
+          ))}
+        </div>
+
+        <!-- Technical Guide & Methodology Footer -->
+        <section class="bg-bg-surface border border-border-hairline rounded-3xl p-6 md:p-8 space-y-4 font-mono">
+          <h2 class="text-xl font-bold text-text-primary font-sans">Crowdsourced Telemetry Methodology</h2>
+          <p class="text-xs text-text-secondary leading-relaxed font-sans max-w-4xl">
+            Every record in the Monitor Test Hub model database is certified via client-side Web Crypto SHA-256 signatures generated during hardware diagnostic runs. Telemetry logs physical display resolution, measured VSync frame pacing delta (1/FPS), ISO 9241-307 pixel defect counts, and OLED sub-pixel degradation heuristics without transmitting any personal identifiable information (PII).
+          </p>
+        </section>
+      </div>
+
+      <!-- Right Modular Control & Telemetry Sidebar -->
+      <div class="lg:col-span-4 sticky top-24 space-y-6">
+        <ConfigurationCard
+          title="Database Filters"
+          subtitle="Filter Flagship Displays"
+          badgeText="Filters"
+          controls={[
+            {
+              id: "tech-filter",
+              label: "Display Technology",
+              type: "select",
+              value: "all",
+              options: [
+                { value: "all", label: "All Technologies" },
+                { value: "qd-oled", label: "QD-OLED" },
+                { value: "woled", label: "WOLED" },
+                { value: "fast-ips", label: "Fast-IPS" },
+                { value: "tn-540hz", label: "540Hz E-TN" }
+              ]
+            },
+            {
+              id: "refresh-filter",
+              label: "Min Refresh Rate",
+              type: "presets",
+              value: "240",
+              options: [
+                { value: "144", label: "144Hz+" },
+                { value: "240", label: "240Hz+" },
+                { value: "360", label: "360Hz+" },
+                { value: "540", label: "540Hz" }
+              ]
+            }
+          ]}
+        />
+
+        <StatusCard
+          status="pass"
+          label="Community Lot-Variance Index"
+          subtitle="Cryptographic Telemetry Ledger"
+          score="96.4%"
+          maxScore="Pass Rate"
+          details={[
+            { label: "Signed Receipts", value: "14,820" },
+            { label: "ISO Class I Pass", value: "98.2%" }
+          ]}
+        />
+
+        <InfoCard
+          title="ISO 9241-307 RMA Standard"
+          subtitle="Quality Class Thresholds"
+          badgeText="ISO Specs"
+          accentColor="emerald"
+          citations={[
+            {
+              standard: "ISO 9241-307 Class I",
+              clause: "Zero Defect Limit",
+              description: "Mandates zero bright full pixels and max 1 dark pixel allowed per million pixels for Class I compliance."
+            }
+          ]}
+        />
+      </div>
     </div>
 
-    <!-- Technical Guide & Methodology Footer -->
-    <section class="bg-bg-surface border border-border-hairline rounded-2xl p-6 md:p-8 space-y-4 font-mono">
-      <h2 class="text-xl font-bold text-text-primary font-sans">Crowdsourced Telemetry Methodology</h2>
-      <p class="text-xs text-text-secondary leading-relaxed font-sans max-w-4xl">
-        Every record in the Monitor Test Hub model database is certified via client-side Web Crypto SHA-256 signatures generated during hardware diagnostic runs. Telemetry logs physical display resolution, measured VSync frame pacing delta (1/FPS), ISO 9241-307 pixel defect counts, and OLED sub-pixel degradation heuristics without transmitting any personal identifiable information (PII).
-      </p>
-    </section>
+    <!-- Standard 4-Part Sections -->
+    <StepWorkflowSection />
+    <PanelTypeBreakdownSection />
     <FAQSection faqs={faqs} />
-</div>
+  </div>
 </Layout>

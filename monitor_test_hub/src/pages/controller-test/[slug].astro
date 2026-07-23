@@ -1,7 +1,14 @@
 ---
 import Layout from '../../layouts/Layout.astro';
 import ControllerTesterCanvas from '../../components/diagnostics/ControllerTesterCanvas.astro';
-import MasterBentoDiagnosticSuite from '../../components/diagnostics/MasterBentoDiagnosticSuite.astro';
+import PsControllerCalibrationCanvas from '../../components/diagnostics/PsControllerCalibrationCanvas.astro';
+import SteeringWheelCanvas from '../../components/diagnostics/SteeringWheelCanvas.astro';
+import FightStickCanvas from '../../components/diagnostics/FightStickCanvas.astro';
+import JoystickHotasCanvas from '../../components/diagnostics/JoystickHotasCanvas.astro';
+import MidiTesterCanvas from '../../components/diagnostics/MidiTesterCanvas.astro';
+import GyroscopeTestCanvas from '../../components/diagnostics/GyroscopeTestCanvas.astro';
+import JoyConDriftCanvas from '../../components/diagnostics/JoyConDriftCanvas.astro';
+import ButtonMappingCanvas from '../../components/diagnostics/ButtonMappingCanvas.astro';
 import StepWorkflowSection from '../../components/ui/StepWorkflowSection.astro';
 import PanelTypeBreakdownSection from '../../components/ui/PanelTypeBreakdownSection.astro';
 import FAQSection from '../../components/ui/FAQSection.astro';
@@ -142,6 +149,158 @@ export function getStaticPaths() {
         { question: "Does Windows support DualShock 4 natively?", answer: "Windows supports DualShock 4 via DirectInput; DS4Windows translates input into virtual XInput for games." },
         { question: "How do I export my DualShock 4 test report?", answer: "Click 'Export Passport' to save your verified DualShock 4 hardware health certificate." }
       ]
+    },
+    {
+      slug: 'ps-controller-calibration',
+      title: 'PS Controller Calibration | DualSense & DualShock Center Offset',
+      h1: 'PS5 DualSense & PS4 DualShock Controller Calibration Tool',
+      description: 'Calibrate PS5 DualSense and PS4 DualShock analog sticks. Calculate center offsets, axis range scaling, deadzone previews, and browser hardware limitation notices.',
+      badge: 'SONY PS DUALSENSE CALIBRATION SPEC',
+      faqs: [
+        { question: "Can web browsers write permanent calibration to DualSense EEPROM firmware?", answer: "No. Web browsers operate in a sandbox and cannot write to hardware EEPROM firmware. This tool provides in-browser offset compensation." },
+        { question: "How do I calibrate my PS5 DualSense analog stick center offset?", answer: "Release sticks to neutral, click 'Zero Center Offsets', and test stick centering accuracy." },
+        { question: "What is the difference between software deadzones and hardware drift?", answer: "Software deadzones ignore small centering offsets in games; physical drift requires potentiometer cleaning or module replacement." },
+        { question: "Why do PS5 DualSense controllers develop stick drift?", answer: "Traditional RKJXV potentiometers wear down resistive carbon tracks over 400+ gaming hours." },
+        { question: "Does this calibration utility work on DualShock 4?", answer: "Yes, fully compatible with PS4 DualShock 4 controllers." },
+        { question: "How do I test deadzone thresholds?", answer: "Observe the inner 10% dashed deadzone circle to verify whether your stick rests cleanly within neutral bounds." },
+        { question: "Does this tool work on Chrome and Safari?", answer: "Yes, compatible with all Web Gamepad API browsers." },
+        { question: "What are Hall Effect analog sticks?", answer: "Hall Effect sensors use magnetic sensors instead of physical contacts, completely eliminating wear." },
+        { question: "Can I calibrate trigger travel depth?", answer: "Yes, analog triggers L2/R2 output continuous 0% to 100% linear pressure values." },
+        { question: "How do I export calibration reports?", answer: "Click 'Export Passport' to download a signed JSON telemetry report." }
+      ]
+    },
+    {
+      slug: 'steering-wheel-tester',
+      title: 'Steering Wheel & Pedals Tester | Racing Wheel Rotation & Deadzone',
+      h1: 'Logitech, Thrustmaster & Fanatec Racing Wheel Tester',
+      description: 'Test racing wheels and pedals online. Measure 900°/1080° steering wheel rotation, Throttle, Brake, Clutch pedal depth (0-100%), and H-shifter gears.',
+      badge: 'RACING WHEEL & PEDALS SPEC',
+      faqs: [
+        { question: "Which racing wheels are supported by this online test?", answer: "Supports Logitech G29/G920/G923, Thrustmaster T300/T248, Fanatec CSL DD, Moza Racing, and Simagic wheels." },
+        { question: "How do I test 900° steering wheel rotation?", answer: "Turn your wheel from lock to lock; the dial visualizer displays real-time steering angles from -450° to +450°." },
+        { question: "How do I test Throttle, Brake, and Clutch pedal travel?", answer: "Press each pedal to verify smooth linear travel from 0% idle to 100% full depression." },
+        { question: "Why does my brake pedal not reach 100% in racing games?", answer: "Load-cell or stiff rubber brake dampeners require firm pressure; calibrate pedal sensitivity ranges." },
+        { question: "Can I test H-pattern shifters and sequential paddle shifters?", answer: "Yes, gear shifts register as standard digital button inputs." },
+        { question: "How do I test handbrakes?", answer: "Analog or digital handbrakes map to dedicated axis or button inputs." },
+        { question: "What is steering wheel force feedback (FFB)?", answer: "FFB simulates tire grip and road surface forces; browser WebHID API support varies by platform." },
+        { question: "How do I test steering deadzones?", answer: "Turn the wheel slightly near center to verify the point where steering input registers." },
+        { question: "Does this tool support PC racing simulators like iRacing and Assetto Corsa?", answer: "Yes, verifies wheel inputs before launching sim racing games." },
+        { question: "How do I export wheel telemetry logs?", answer: "Click 'Export Passport' to save your verified racing wheel test report." }
+      ]
+    },
+    {
+      slug: 'fight-stick-tester',
+      title: 'Fight Stick & Hitbox Tester | Arcade Vewlix Layout & SOCD Cleaner',
+      h1: 'Arcade Fight Stick, Hitbox & Mixbox Diagnostic Tool',
+      description: 'Test arcade fight sticks, Hitbox, and Mixbox controllers. Audit 8-button Vewlix/Noir layouts, SOCD (Simultaneous Opposing Cardinal Directions) cleaner modes, and move command logs.',
+      badge: 'ARCADE FIGHT STICK & SOCD SPEC',
+      faqs: [
+        { question: "What is an arcade Fight Stick & Hitbox tester?", answer: "A diagnostic tool auditing arcade stick 8-way joystick levers, 8-button layouts (LP, MP, HP, LK, MK, HK), and SOCD cleaning rules." },
+        { question: "What is SOCD (Simultaneous Opposing Cardinal Directions)?", answer: "SOCD occurs when pressing Left + Right or Up + Down simultaneously on leverless Hitbox controllers." },
+        { question: "How does an SOCD cleaner resolve Left + Right inputs?", answer: "Tournament-legal SOCD cleaners output Neutral (Left + Right = 0) or Last Input Priority." },
+        { question: "Which arcade layouts are supported?", answer: "Supports Vewlix 8-button, Noir 8-button, Hitbox leverless, and Mixbox WASD layouts." },
+        { question: "How do I test fighting game move commands (Hadoken / Shoryuken)?", answer: "Execute motion inputs (e.g. 236 + Punch); the command history log records exact directional sequences." },
+        { question: "Can I test Sanwa, Seimitsu, and Crown arcade buttons?", answer: "Yes, all micro-switch arcade buttons dispatch instant 0.1ms actuation signals." },
+        { question: "Does this test work on PS5-compatible fight sticks?", answer: "Yes, supports Qanba, Razer Panthera, Hori Fighting Edge, and Victrix Pro FS." },
+        { question: "How do I test Turbo and Tournament lock switches?", answer: "Toggle switches to verify whether rapid auto-fire or button lockout triggers." },
+        { question: "Why is SOCD cleaning important for Street Fighter 6 and Tekken 8?", answer: "Tournament rules require consistent SOCD cleaning to prevent unfair simultaneous direction execution." },
+        { question: "How do I export fight stick telemetry?", answer: "Click 'Export Passport' to save a JSON report of button actuation and SOCD metrics." }
+      ]
+    },
+    {
+      slug: 'joystick-tester',
+      title: 'Joystick & HOTAS Tester | Flight Stick 128 Buttons & 10 Axes',
+      h1: 'HOTAS Flight Stick & Joystick Diagnostic Suite',
+      description: 'Test HOTAS flight sticks, throttles, and flight rudders. Audit 128 buttons, 10+ analog axes (Pitch, Roll, Yaw), 8-way POV hat switches, and dual throttles for MSFS 2020 & DCS.',
+      badge: 'HOTAS FLIGHT STICK SPEC',
+      faqs: [
+        { question: "Which HOTAS flight sticks are supported?", answer: "Supports Thrustmaster Warthog/T16000M, Logitech X56/VKB Gladiator, WinWing, and Turtle Beach VelocityOne." },
+        { question: "How many buttons and axes can this joystick tester audit?", answer: "Audits up to 128 digital buttons and 10+ analog axes (Pitch, Roll, Yaw/Rudder, Throttle 1 & 2)." },
+        { question: "How do I test 8-way POV Hat switches?", answer: "Move the thumb hat switch to verify 8 directional vector angles (Up, Up-Right, Right, etc.)." },
+        { question: "How do I test dual throttle split axes?", answer: "Move left and right throttle levers independently to verify dual engine axis tracking." },
+        { question: "How do I test rudder pedals (Yaw)?", answer: "Twist the joystick handle or press flight rudder pedals to audit z-axis deflection." },
+        { question: "Does this tool support Microsoft Flight Simulator 2020 and DCS World?", answer: "Yes, verifies flight controls before launching flight simulators." },
+        { question: "How do I test mini-stick analog hats?", answer: "Move thumb mini-sticks to verify secondary X/Y axis linear travel." },
+        { question: "What causes flight stick axis jitter?", answer: "Dirty potentiometers or unshielded USB cables cause fluctuating axis values at rest." },
+        { question: "How do I test trigger dual-stage detents?", answer: "Pull the trigger lightly for Stage 1, then pull fully for Stage 2 click registration." },
+        { question: "How do I export HOTAS test reports?", answer: "Click 'Export Passport' to save a JSON report certifying your flight control setup." }
+      ]
+    },
+    {
+      slug: 'midi-tester',
+      title: 'MIDI Tester | Web MIDI API Keyboard, Velocity & CC Inspector',
+      h1: 'Web MIDI API Keyboard & Controller Diagnostic Tool',
+      description: 'Test MIDI keyboards, synthesizers, and pad controllers online. Audit Note On/Off, Velocity (0-127), Control Change (CC), Pitch Bend, and 88-key piano visualizer.',
+      badge: 'W3C WEB MIDI API SPEC',
+      faqs: [
+        { question: "How does the Web MIDI API test work in browsers?", answer: "Uses W3C Web MIDI API (`navigator.requestMIDIAccess`) to capture raw MIDI packets directly from USB MIDI keyboards." },
+        { question: "Which browsers support the Web MIDI API?", answer: "Google Chrome, Microsoft Edge, Opera, and Brave support Web MIDI API natively." },
+        { question: "How do I test key press velocity (0 to 127)?", answer: "Play keys lightly or forcefully; the velocity readout displays exact 7-bit pressure values." },
+        { question: "Can I test Pitch Bend and Modulation wheels?", answer: "Yes, move wheels to monitor 14-bit Pitch Bend values (0 to 16383) and CC #1 Modulation signals." },
+        { question: "Does this test support 88-key weighted piano keyboards?", answer: "Yes, full A0 to C8 88-key range is monitored with real-time visual key highlighting." },
+        { question: "How do I test MIDI Control Change (CC) knobs and faders?", answer: "Turn knobs or slide faders to monitor continuous CC packet values (0 to 127)." },
+        { question: "Can I test MIDI drum pads (Akai MPC / Novation Launchpad)?", answer: "Yes, pad strikes dispatch Note On packets with velocity data." },
+        { question: "Do I need to install DAW software like Ableton or FL Studio to test MIDI?", answer: "No, runs 100% in browser without DAW software." },
+        { question: "How do I test sustain pedals (CC #64)?", answer: "Press your sustain pedal to verify CC #64 value 127 (on) and 0 (off)." },
+        { question: "How do I export MIDI event logs?", answer: "Click 'Copy Event Log' to copy raw MIDI hex telemetry to your clipboard." }
+      ]
+    },
+    {
+      slug: 'gyroscope-test',
+      title: 'Controller Gyroscope Test | DualSense & Switch Pro 6-Axis Motion',
+      h1: 'Controller Gyroscope & Accelerometer Motion Tester',
+      description: 'Test PS5 DualSense and Nintendo Switch Pro Controller motion sensors. Audit 6-axis IMU Gyroscope (Pitch, Roll, Yaw) and Accelerometer vectors.',
+      badge: '6-AXIS IMU GYRO SPEC',
+      faqs: [
+        { question: "How do I test controller gyroscope and motion sensors online?", answer: "Connect a gyro-enabled controller (DualSense or Switch Pro) and grant browser motion sensor permissions." },
+        { question: "What is a 6-Axis IMU motion sensor?", answer: "Combines a 3-axis Gyroscope (angular velocity) and 3-axis Accelerometer (linear gravity vectors)." },
+        { question: "Which controllers include built-in gyroscopes?", answer: "PS5 DualSense, PS4 DualShock 4, Nintendo Switch Pro Controller, Joy-Cons, and Steam Deck." },
+        { question: "Why do competitive FPS players use gyro aiming in Fortnite and Call of Duty?", answer: "Gyro aiming provides mouse-like micro-precision aiming speed without relying on auto aim-assist." },
+        { question: "What causes gyro sensor drift?", answer: "Temperature changes or uncalibrated IMU zero-points cause slow rotational drift over time." },
+        { question: "How do I calibrate controller gyro motion sensors?", answer: "Place the controller flat on a stable surface for 5 seconds to allow IMU auto-zeroing." },
+        { question: "Does standard Web Gamepad API expose gyro data?", answer: "Standard Gamepad API focuses on sticks/buttons; WebHID or DeviceOrientation APIs access raw IMU feeds." },
+        { question: "Does Xbox Series X Controller have a built-in gyroscope?", answer: "No, standard Xbox controllers do not include internal gyroscope motion sensors." },
+        { question: "How is 3D rotation visualized in this test?", answer: "A 3D canvas box rotates in real-time matching physical Pitch, Roll, and Yaw angles." },
+        { question: "How do I export gyro sensor telemetry?", answer: "Click 'Export Passport' to save your verified 6-axis motion test report." }
+      ]
+    },
+    {
+      slug: 'joycon-drift-test',
+      title: 'Joy-Con Drift Test | Nintendo Switch Left & Right Joy-Con Checker',
+      h1: 'Nintendo Switch Joy-Con Drift & SL/SR Diagnostic Tool',
+      description: 'Test Nintendo Switch Left and Right Joy-Cons for stick drift, circularity error %, and SL/SR shoulder button actuation.',
+      badge: 'NINTENDO JOY-CON DRIFT SPEC',
+      faqs: [
+        { question: "What causes Nintendo Switch Joy-Con drift?", answer: "Compact slider potentiometers shed conductive graphite debris, creating phantom electrical signals." },
+        { question: "How do I test Left and Right Joy-Cons independently?", answer: "Pair Joy-Cons via Bluetooth; our split view evaluates Left stick (Axes 0/1) and Right stick (Axes 2/3)." },
+        { question: "How do I test SL and SR shoulder buttons?", answer: "Press side SL and SR buttons when holding a single Joy-Con horizontally." },
+        { question: "What is acceptable stick drift for Joy-Cons?", answer: "Uncalibrated Joy-Cons with under 5% offset are playable; drift over 15% causes character movement." },
+        { question: "Can I fix Joy-Con drift without opening the shell?", answer: "Spraying 99% isopropyl alcohol under the rubber stick skirt offers temporary cleaning." },
+        { question: "What are Hall Effect replacement Joy-Con sticks?", answer: "Hall Effect magnetic sticks eliminate contact wear, permanently fixing Joy-Con drift." },
+        { question: "Does this test support Joy-Con HD Rumble?", answer: "Click 'Test Haptic Motor' to trigger LRA vibration motors." },
+        { question: "How do I test Joy-Con strap buttons?", answer: "Press SL/SR rail buttons to verify conductive rubber pad contact." },
+        { question: "Does this work on Nintendo Switch Lite?", answer: "Yes, connect Switch Lite to test built-in Joy-Con controls." },
+        { question: "How do I export Joy-Con health reports?", answer: "Click 'Export Passport' to save a signed JSON report." }
+      ]
+    },
+    {
+      slug: 'button-mapping-test',
+      title: 'Controller Button Mapping Test | W3C Standard Gamepad Remap',
+      h1: 'Gamepad Button Mapping & Remap Inspector',
+      description: 'Inspect W3C Standard Gamepad logical button indices (0-16) vs physical button labels across Xbox, PlayStation, and Nintendo controllers.',
+      badge: 'W3C BUTTON REMAP INSPECTOR',
+      faqs: [
+        { question: "What is W3C Standard Gamepad Button Mapping?", answer: "Standard Gamepad Mapping assigns fixed logical indices (0 to 16) to standardized physical controller locations." },
+        { question: "Why do button indices differ between DirectInput and XInput?", answer: "Legacy DirectInput assigns vendor-specific button numbers; XInput normalizes inputs to standard Xbox layouts." },
+        { question: "How do I test custom remapped buttons?", answer: "Press remapped buttons to verify whether software dispatches target logical indices." },
+        { question: "Which button index corresponds to A / Cross (✕)?", answer: "Button Index 0 maps to bottom primary face button (A on Xbox, Cross on PlayStation)." },
+        { question: "Which button index corresponds to B / Circle (◯)?", answer: "Button Index 1 maps to right face button (B on Xbox, Circle on PlayStation)." },
+        { question: "How do analog triggers register in the mapping table?", answer: "Triggers LT/L2 (Index 6) and RT/R2 (Index 7) output continuous float values from 0.0 to 1.0." },
+        { question: "How do I test D-pad button mapping?", answer: "D-pad Up (12), Down (13), Left (14), and Right (15) register as discrete digital button indices." },
+        { question: "Why does Nintendo Switch swap A/B buttons?", answer: "Nintendo places A on right and B on bottom; W3C Standard mapping maps physical locations to Index 0 (bottom) and Index 1 (right)." },
+        { question: "How do I inspect modifier button combinations?", answer: "Hold bumpers or triggers while pressing face buttons to monitor simultaneous input states." },
+        { question: "How do I export mapping log data?", answer: "Click 'Copy Event Log' to copy button mapping telemetry to your clipboard." }
+      ]
     }
   ];
 
@@ -237,7 +396,25 @@ const structuredFaqs = [
     </section>
 
     <!-- Master Diagnostic Component -->
-    <ControllerTesterCanvas />
+    {cat.slug === 'ps-controller-calibration' ? (
+      <PsControllerCalibrationCanvas />
+    ) : cat.slug === 'steering-wheel-tester' ? (
+      <SteeringWheelCanvas />
+    ) : cat.slug === 'fight-stick-tester' ? (
+      <FightStickCanvas />
+    ) : cat.slug === 'joystick-tester' ? (
+      <JoystickHotasCanvas />
+    ) : cat.slug === 'midi-tester' ? (
+      <MidiTesterCanvas />
+    ) : cat.slug === 'gyroscope-test' ? (
+      <GyroscopeTestCanvas />
+    ) : cat.slug === 'joycon-drift-test' ? (
+      <JoyConDriftCanvas />
+    ) : cat.slug === 'button-mapping-test' ? (
+      <ButtonMappingCanvas />
+    ) : (
+      <ControllerTesterCanvas />
+    )}
 
     <!-- Step Workflow Section -->
     <StepWorkflowSection />
@@ -247,7 +424,9 @@ const structuredFaqs = [
 
     <article class="bg-[#121215]/90 border border-white/10 rounded-3xl p-6 sm:p-10 space-y-6 text-zinc-300 font-sans leading-relaxed shadow-2xl backdrop-blur-xl">
       <h2 class="text-2xl font-semibold text-white font-mono flex items-center gap-2">
-        <span>🔬</span> E-E-A-T Technical Hardware Analysis & Standards
+        <svg class="w-5 h-5 text-status-pass inline-block shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M9.75 3.104v5.714a2.25 2.25 0 01-.659 1.591L5 15.414A2.25 2.25 0 006.59 19.25h10.82a2.25 2.25 0 001.59-3.836l-4.09-4.596a2.25 2.25 0 01-.659-1.591V3.104M9.75 3.104h4.5M9.75 3.104H7.5m6.75 0h2.25"></path>
+        </svg> E-E-A-T Technical Hardware Analysis & Standards
       </h2>
       <p>
         In accordance with strict Experience, Expertise, Authoritativeness, and Trustworthiness (E-E-A-T) guidelines, this diagnostic test utilizes direct hardware-level APIs. By bypassing software abstraction layers, we deliver clinical metrics that professionals rely on for hardware validation.

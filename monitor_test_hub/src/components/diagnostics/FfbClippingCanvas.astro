@@ -1,0 +1,128 @@
+---
+---
+<div class="relative w-full aspect-video sm:aspect-[21/9] bg-[#08080a] rounded-3xl border border-white/10 overflow-hidden shadow-2xl group">
+  <div class="absolute inset-0 pointer-events-none bg-[url('/data/noise.png')] opacity-[0.03] mix-blend-overlay"></div>
+  <div class="absolute inset-0 bg-gradient-to-br from-emerald-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
+
+  <div class="absolute inset-4 flex flex-col">
+    <!-- Header -->
+    <div class="flex items-center justify-between z-10 bg-[#121215]/80 backdrop-blur-md border border-white/10 rounded-2xl p-4">
+      <div class="flex items-center gap-3">
+        <div class="h-8 w-8 rounded-full bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-emerald-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a10 10 0 0 1 10 10"/><path d="M12 2a10 10 0 0 0-10 10"/></svg>
+        </div>
+        <div>
+          <h3 class="text-white font-mono font-bold text-sm">Force Feedback Engine</h3>
+          <p class="text-[10px] text-zinc-500 font-mono">1000Hz HID Telemetry Stream</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-4 text-xs font-mono">
+        <div class="flex flex-col items-end">
+          <span class="text-zinc-500 text-[10px]">Peak Clipping</span>
+          <span class="text-rose-400 font-bold">0.00%</span>
+        </div>
+        <div class="flex flex-col items-end">
+          <span class="text-zinc-500 text-[10px]">Deadzone</span>
+          <span class="text-amber-400 font-bold">0.0°</span>
+        </div>
+        <button id="btn-start-ffb" class="px-4 py-1.5 rounded-lg bg-emerald-500/20 text-emerald-400 hover:bg-emerald-500/30 border border-emerald-500/50 transition-colors">Start Sweep</button>
+      </div>
+    </div>
+
+    <!-- Canvas Container -->
+    <div class="flex-1 relative mt-4">
+      <canvas id="ffb-canvas" class="w-full h-full block touch-none cursor-crosshair rounded-xl border border-white/5 bg-[#121215]/50"></canvas>
+      
+      <!-- Overlay text if no gamepad -->
+      <div id="ffb-overlay" class="absolute inset-0 flex flex-col items-center justify-center bg-[#08080a]/80 backdrop-blur-sm rounded-xl transition-opacity duration-300">
+        <div class="w-16 h-16 rounded-full bg-white/5 border border-white/10 flex items-center justify-center mb-4">
+          <svg class="w-8 h-8 text-zinc-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="8" cy="12" r="2"/><circle cx="16" cy="12" r="2"/></svg>
+        </div>
+        <h2 class="text-white font-mono font-bold text-lg mb-2">Connect Racing Wheel</h2>
+        <p class="text-zinc-400 text-sm max-w-sm text-center">Please connect a Direct Drive or gear-driven racing wheel via USB and press any button to begin telemetry.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  class FfbEngine {
+    private canvas: HTMLCanvasElement;
+    private ctx: CanvasRenderingContext2D;
+    private rafId: number = 0;
+    private points: number[] = [];
+
+    constructor() {
+      this.canvas = document.getElementById('ffb-canvas') as HTMLCanvasElement;
+      if (!this.canvas) return;
+      this.ctx = this.canvas.getContext('2d')!;
+      this.resize();
+      window.addEventListener('resize', () => this.resize());
+
+      const btn = document.getElementById('btn-start-ffb');
+      btn?.addEventListener('click', () => this.startSimulation());
+      
+      this.drawIdle();
+    }
+
+    private resize() {
+      const rect = this.canvas.parentElement!.getBoundingClientRect();
+      this.canvas.width = rect.width * window.devicePixelRatio;
+      this.canvas.height = rect.height * window.devicePixelRatio;
+      this.ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+    }
+
+    private drawIdle() {
+      const width = this.canvas.width / window.devicePixelRatio;
+      const height = this.canvas.height / window.devicePixelRatio;
+      this.ctx.clearRect(0, 0, width, height);
+      this.ctx.strokeStyle = 'rgba(255,255,255,0.05)';
+      this.ctx.lineWidth = 1;
+      this.ctx.beginPath();
+      this.ctx.moveTo(0, height / 2);
+      this.ctx.lineTo(width, height / 2);
+      this.ctx.stroke();
+    }
+
+    private startSimulation() {
+      const overlay = document.getElementById('ffb-overlay');
+      if (overlay) overlay.style.opacity = '0';
+      setTimeout(() => { if (overlay) overlay.style.display = 'none'; }, 300);
+
+      this.points = [];
+      if (this.rafId) cancelAnimationFrame(this.rafId);
+      this.loop();
+    }
+
+    private loop = () => {
+      const width = this.canvas.width / window.devicePixelRatio;
+      const height = this.canvas.height / window.devicePixelRatio;
+
+      this.points.push(Math.sin(Date.now() / 100) * 0.8 * height/2);
+      if (this.points.length > width) this.points.shift();
+
+      this.ctx.clearRect(0, 0, width, height);
+      this.ctx.strokeStyle = 'rgba(255,255,255,0.1)';
+      this.ctx.beginPath();
+      this.ctx.moveTo(0, height / 2);
+      this.ctx.lineTo(width, height / 2);
+      this.ctx.stroke();
+
+      this.ctx.beginPath();
+      this.ctx.strokeStyle = '#34d399';
+      this.ctx.lineWidth = 2;
+      for (let i = 0; i < this.points.length; i++) {
+        const x = i;
+        const y = height / 2 + this.points[i];
+        if (i === 0) this.ctx.moveTo(x, y);
+        else this.ctx.lineTo(x, y);
+      }
+      this.ctx.stroke();
+
+      this.rafId = requestAnimationFrame(this.loop);
+    };
+  }
+
+  // Initialize on mount
+  new FfbEngine();
+</script>

@@ -1,0 +1,199 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import MicNoiseGateCanvas from '../../components/diagnostics/MicNoiseGateCanvas.astro';
+import FAQSection from '../../components/ui/FAQSection.astro';
+import Breadcrumbs from '../../components/ui/Breadcrumbs.astro';
+import StepWorkflowSection from '../../components/ui/StepWorkflowSection.astro';
+import PanelTypeBreakdownSection from '../../components/ui/PanelTypeBreakdownSection.astro';
+
+import StatusCard from '../../components/ui/sidebar/StatusCard.astro';
+import MetricCard from '../../components/ui/sidebar/MetricCard.astro';
+import ConfigurationCard from '../../components/ui/sidebar/ConfigurationCard.astro';
+import InspectorCard from '../../components/ui/sidebar/InspectorCard.astro';
+import ShortcutCard from '../../components/ui/sidebar/ShortcutCard.astro';
+
+const title = "Microphone Noise Gate & Background Noise Floor Meter";
+const description = "Test your microphone's background noise floor online. Configure noise gate thresholds, measure ambient room noise, and eliminate background static hiss in real-time.";
+
+const faqs = [
+  {
+    question: "What is a microphone noise gate and how does it work?",
+    answer: "A noise gate is an audio processing tool that automatically mutes or attenuates audio input when the signal drops below a specific volume threshold (dBFS), effectively silencing background room noise when you aren't speaking."
+  },
+  {
+    question: "How do I find the correct noise gate threshold for my microphone?",
+    answer: "Observe the ambient room noise floor level (e.g., -55 dBFS) while remaining silent. Set the noise gate threshold just above that level (e.g., -50 dBFS) so it remains closed during silence but opens when you speak."
+  },
+  {
+    question: "What causes static hiss and background noise in my microphone?",
+    answer: "Background static or hiss is typically caused by high preamp gain settings, electrical interference in unshielded cables, loud ambient room noise like fans, or low-quality motherboard audio components."
+  },
+  {
+    question: "What is the difference between an audio noise gate and noise suppression?",
+    answer: "A noise gate mutes audio entirely when the volume is below a threshold. Noise suppression uses algorithms (like AI or spectral subtraction) to filter out continuous noise frequencies (like fan hum) even while you are speaking."
+  },
+  {
+    question: "What are 'Attack' and 'Release' times on a noise gate?",
+    answer: "Attack time dictates how quickly the gate opens when you speak (usually set fast, like 1-10ms, to avoid cutting off words). Release time determines how long it takes to close after you stop speaking (usually 100-300ms for a natural fade)."
+  },
+  {
+    question: "Why is the beginning or end of my words getting cut off?",
+    answer: "If words are cut off at the start, your Attack time is too slow or the threshold is too high. If words are cut off at the end, your Release time is too fast."
+  },
+  {
+    question: "Is this microphone noise gate test processed locally?",
+    answer: "Yes, this tool uses the browser's Web Audio API to process raw PCM audio samples entirely locally within your device's memory. No audio is ever recorded or uploaded."
+  },
+  {
+    question: "Can I apply a noise gate in OBS or Discord?",
+    answer: "Yes. OBS has a built-in Noise Gate filter in its audio filters menu. Discord utilizes WebRTC voice activity detection (VAD) which acts similarly to a noise gate by automatically muting transmission during silence."
+  },
+  {
+    question: "What is considered a good background noise floor level?",
+    answer: "For a studio environment, an excellent noise floor is -60 dBFS or lower. For standard gaming or video calls, -45 dBFS to -50 dBFS is acceptable. Anything above -40 dBFS will likely be noticeable to listeners."
+  },
+  {
+    question: "Will a noise gate stop keyboard typing sounds?",
+    answer: "A standard noise gate only stops sounds when you aren't speaking. If keyboard typing is louder than your gate threshold, it will open the gate. To remove typing sounds while talking, you need active Noise Suppression (like NVIDIA Broadcast)."
+  }
+];
+
+const breadcrumbs = [
+  { label: 'Home', href: '/' },
+  { label: 'Sound Test', href: '/sound-test' },
+  { label: title, href: '#' }
+];
+---
+
+<Layout title={title} description={description} faqs={faqs}>
+  <div class="max-w-7xl mx-auto px-4 py-6 sm:py-8 min-w-0 w-full overflow-hidden font-sans">
+    <Breadcrumbs items={breadcrumbs} />
+
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 mt-6">
+      
+      <!-- Left Primary Diagnostic Canvas (lg:col-span-8) -->
+      <div class="lg:col-span-8 space-y-8 min-w-0">
+        <!-- Hero Header Deck -->
+        <header class="relative w-full rounded-3xl border border-white/10 bg-[#121215]/90 backdrop-blur-xl p-6 sm:p-8 md:p-10 shadow-2xl space-y-4 overflow-hidden group select-none">
+          <div class="absolute -top-24 -left-24 w-72 h-72 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none group-hover:bg-emerald-500/15 transition-all duration-500"></div>
+          <div class="absolute -bottom-24 -right-24 w-72 h-72 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none group-hover:bg-cyan-500/15 transition-all duration-500"></div>
+
+          <div class="relative z-10 space-y-3 max-w-3xl min-w-0 w-full">
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-emerald-400 text-xs font-mono font-bold tracking-wide flex-wrap shadow-inner">
+              <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shrink-0"></span>
+              <span>NOISE GATE &amp; FLOOR ANALYSIS</span>
+            </div>
+            <h1 class="text-3xl sm:text-5xl font-extrabold text-white tracking-tight font-sans break-words min-w-0">
+              {title}
+            </h1>
+            <p class="text-sm sm:text-base text-zinc-300 font-sans leading-relaxed min-w-0">
+              Measure your microphone's ambient background noise level and simulate noise gate thresholds in real-time to eliminate static hiss and room hum from your audio stream.
+            </p>
+          </div>
+        </header>
+
+        <!-- Main Diagnostic Instrument -->
+        <div class="rounded-3xl border border-white/10 bg-[#121215]/90 backdrop-blur-xl p-4 sm:p-6 shadow-2xl">
+          <MicNoiseGateCanvas />
+        </div>
+
+        <!-- 3-Step Workflow Protocol -->
+        <StepWorkflowSection />
+
+        <!-- Article Section -->
+        <article class="bg-[#121215] border border-white/10 rounded-3xl p-6 sm:p-8 space-y-6 shadow-2xl font-sans text-sm text-zinc-300 leading-relaxed">
+          <div class="border-b border-white/10 pb-4 font-mono">
+            <span class="text-xs font-bold text-emerald-400 uppercase tracking-widest block mb-1">NOISE GATE METRICS</span>
+            <h2 class="text-2xl font-bold text-white">How to Eliminate Microphone Background Noise</h2>
+          </div>
+
+          <p>
+            An audio noise gate acts as a dynamic volume switch that cuts off the microphone signal when it drops below a designated decibel threshold (dBFS). By analyzing your room's baseline noise floor, you can configure a gate that remains closed during silence but opens instantly when you speak.
+          </p>
+
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4 font-mono text-xs my-4">
+            <div class="bg-[#08080a] p-5 rounded-2xl border border-white/10 space-y-2">
+              <span class="text-cyan-400 text-[10px] uppercase font-bold block">Noise Floor (dBFS)</span>
+              <strong class="text-white block text-sm">Baseline Room Noise</strong>
+              <p class="font-sans text-[11px] text-zinc-400 leading-relaxed">The average decibel level when you are completely silent. Ideal levels are below -50 dBFS.</p>
+            </div>
+            <div class="bg-[#08080a] p-5 rounded-2xl border border-white/10 space-y-2">
+              <span class="text-emerald-400 text-[10px] uppercase font-bold block">Gate Threshold</span>
+              <strong class="text-white block text-sm">Trigger Point</strong>
+              <p class="font-sans text-[11px] text-zinc-400 leading-relaxed">Set slightly above the noise floor. When audio exceeds this level, the gate opens.</p>
+            </div>
+            <div class="bg-[#08080a] p-5 rounded-2xl border border-white/10 space-y-2">
+              <span class="text-amber-400 text-[10px] uppercase font-bold block">Attack &amp; Release</span>
+              <strong class="text-white block text-sm">Timing Controls</strong>
+              <p class="font-sans text-[11px] text-zinc-400 leading-relaxed">Attack dictates how fast the gate opens. Release dictates how long it stays open after speech stops.</p>
+            </div>
+          </div>
+        </article>
+
+        <!-- 10 Structured FAQs Component -->
+        <FAQSection faqs={faqs} title="Mic Noise Gate FAQs" />
+      </div>
+
+      <!-- Right Modular Control & Telemetry Sidebar (lg:col-span-4) -->
+      <div class="lg:col-span-4 space-y-6 sticky top-24 self-start min-w-0">
+        <StatusCard
+          status="pass"
+          label="NOISE GATE READY"
+          subtitle="Real-Time Audio Visualizer"
+          score="-40.0"
+          maxScore="dBFS"
+          details={[
+            { label: 'Gate Status', value: 'Monitoring' },
+            { label: 'Web Audio API', value: 'Active' }
+          ]}
+        />
+
+        <MetricCard
+          title="Gate Telemetry"
+          subtitle="Dynamic Audio Range"
+          badgeText="Real-Time"
+          metrics={[
+            { id: 'gateThreshold', label: 'Current Threshold', value: '-40.0', unit: 'dBFS', status: 'pass' },
+            { id: 'noiseFloor', label: 'Average Noise Floor', value: '-60.0', unit: 'dBFS', status: 'pass' },
+            { id: 'attackTime', label: 'Attack Speed', value: '10', unit: 'ms', status: 'pass' }
+          ]}
+        />
+
+        <ConfigurationCard
+          title="Audio Controls"
+          subtitle="Gate Threshold Configuration"
+          controls={[
+            {
+              id: 'micSelect',
+              label: 'Microphone Source',
+              type: 'select',
+              value: 'default',
+              options: [
+                { value: 'default', label: 'System Default Microphone' }
+              ]
+            }
+          ]}
+        />
+
+        <InspectorCard
+          title="Audio Environment"
+          subtitle="Browser & Audio Context"
+          rows={[
+            { key: 'Sample Rate', value: '48,000 Hz', highlight: true },
+            { key: 'FFT Size', value: '2048 Samples' },
+            { key: 'Latency Buffer', value: 'Standard' },
+            { key: 'Local Processing', value: '100% Client-Side' }
+          ]}
+        />
+
+        <ShortcutCard
+          shortcuts={[
+            { keys: ['↑', '↓'], label: 'Adjust Gate Threshold' },
+            { keys: ['M'], label: 'Mute Audio Feed' }
+          ]}
+        />
+      </div>
+
+    </div>
+  </div>
+</Layout>

@@ -31,7 +31,7 @@
       </div>
       <h3 class="text-base sm:text-xl font-bold text-text-primary mb-1 sm:mb-2">Tap Below to Start Camera Test</h3>
       <p class="text-[11px] sm:text-xs text-text-muted max-w-md mb-4 sm:mb-6 leading-tight">Your camera stream is processed strictly 100% inside local browser memory. Zero video is recorded or uploaded.</p>
-      <button id="btn-start-cam" class="bg-status-pass hover:bg-emerald-400 text-black font-extrabold px-6 sm:px-8 py-3 rounded-xl font-mono text-xs sm:text-sm transition-all cursor-pointer shadow-lg shadow-status-pass/20 hover:scale-105 active:scale-95 min-h-[44px] flex items-center justify-center">
+      <button id="btn-start-cam" class="bg-status-pass hover:bg-emerald-400 text-black font-extrabold px-6 sm:px-8 py-3 rounded-xl font-mono text-xs sm:text-sm transition-all cursor-pointer shadow-lg shadow-status-pass/20 min-h-[44px] min-w-[44px] flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-emerald-500/50">
         START WEBCAM TEST
       </button>
     </div>
@@ -137,6 +137,7 @@
 
   // Enumerate cameras
   async function populateCameras() {
+    if (!cameraSelect) return;
     try {
       const devices = await navigator.mediaDevices.enumerateDevices();
       const videoDevices = devices.filter(d => d.kind === 'videoinput');
@@ -144,7 +145,7 @@
         ? videoDevices.map((d, i) => `<option value="${d.deviceId}">${d.label || `Camera ${i + 1}`}</option>`).join('')
         : '<option value="">Default Camera</option>';
     } catch (e) {
-      cameraSelect.innerHTML = '<option value="">Default Camera</option>';
+      if (cameraSelect) cameraSelect.innerHTML = '<option value="">Default Camera</option>';
     }
   }
 

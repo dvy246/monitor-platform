@@ -1,0 +1,117 @@
+---
+/**
+ * KeyboardPollingRateCanvas.astro
+ * High-precision Keyboard Polling Rate (Hz) & Jitter Diagnostic Engine.
+ * Features:
+ * - Real-time microsecond timestamp delta profiler (t_delta).
+ * - Instantaneous & Peak Polling Rate (125Hz, 500Hz, 1000Hz, 4000Hz, 8000Hz).
+ * - Jitter & Inter-report stability score %.
+ */
+---
+
+<div class="w-full max-w-5xl mx-auto space-y-6 font-sans select-none min-w-0" id="polling-test-root">
+  <div class="relative bg-[#0c0d12]/90 border border-zinc-800/90 rounded-2xl p-4 sm:p-6 backdrop-blur-2xl shadow-[0_25px_60px_rgba(0,0,0,0.8)] space-y-6 overflow-hidden">
+    <!-- Ambient Radial Glows -->
+    <div class="absolute -top-24 -right-24 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl pointer-events-none"></div>
+    <div class="absolute -bottom-24 -left-24 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none"></div>
+
+    <div class="relative z-10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-zinc-800/70 pb-5">
+      <div>
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-500/10 border border-purple-500/30 text-[11px] font-mono text-purple-400 font-bold uppercase tracking-wider mb-2">
+          <span class="w-2 h-2 rounded-full bg-purple-400 shadow-[0_0_8px_rgba(192,132,252,0.9)] animate-pulse"></span>
+          <span>USB HID POLLING RATE &amp; FREQUENCY BENCHMARK</span>
+        </div>
+        <h2 class="text-xl sm:text-2xl font-bold font-mono text-white tracking-tight">Keyboard Polling Rate (Hz) Test</h2>
+      </div>
+
+      <button id="polling-reset-btn" class="px-4 py-2 rounded-xl bg-zinc-900 border border-zinc-800 text-xs font-mono text-zinc-400 hover:text-white cursor-pointer transition-all">
+        Reset Telemetry
+      </button>
+    </div>
+
+    <!-- Main Telemetry Grid -->
+    <div class="relative z-10 grid grid-cols-2 sm:grid-cols-4 gap-4 font-mono">
+      <div class="bg-zinc-950 p-4 rounded-xl border border-zinc-800 text-center space-y-1">
+        <div class="text-xs text-zinc-400 font-bold uppercase">Current Rate</div>
+        <div id="hz-current-val" class="text-4xl font-extrabold text-purple-400 tabular-nums">0 Hz</div>
+        <div class="text-[10px] text-zinc-400">Report Frequency</div>
+      </div>
+
+      <div class="bg-zinc-950 p-4 rounded-xl border border-zinc-800 text-center space-y-1">
+        <div class="text-xs text-zinc-400 font-bold uppercase">Peak Rate</div>
+        <div id="hz-peak-val" class="text-4xl font-extrabold text-emerald-400 tabular-nums">0 Hz</div>
+        <div class="text-[10px] text-zinc-400">Max Detected Hz</div>
+      </div>
+
+      <div class="bg-zinc-950 p-4 rounded-xl border border-zinc-800 text-center space-y-1">
+        <div class="text-xs text-zinc-400 font-bold uppercase">Report Interval</div>
+        <div id="hz-interval-val" class="text-4xl font-extrabold text-cyan-400 tabular-nums">0.00 ms</div>
+        <div class="text-[10px] text-zinc-400">Microsecond Delta</div>
+      </div>
+
+      <div class="bg-zinc-950 p-4 rounded-xl border border-zinc-800 text-center space-y-1">
+        <div class="text-xs text-zinc-400 font-bold uppercase">Stability Score</div>
+        <div id="hz-stability-val" class="text-4xl font-extrabold text-amber-400 tabular-nums">100%</div>
+        <div class="text-[10px] text-zinc-400">Pacing Consistency</div>
+      </div>
+    </div>
+
+    <!-- Target Tap Zone -->
+    <div id="polling-tap-zone" class="relative z-10 h-48 bg-zinc-950 rounded-2xl border-2 border-dashed border-purple-500/40 flex flex-col items-center justify-center p-6 text-center shadow-[inset_0_4px_16px_rgba(0,0,0,0.95)]">
+      <div class="text-lg font-bold font-mono text-white mb-1">HOLD ANY KEY TO TEST POLLING RATE</div>
+      <p class="text-xs text-zinc-400 font-mono">Press and hold any key to generate continuous USB HID report packets.</p>
+    </div>
+  </div>
+</div>
+
+<script>
+  let lastTime = 0;
+  let peakHz = 0;
+  let deltas: number[] = [];
+
+  const currentHzEl = document.getElementById('hz-current-val');
+  const peakHzEl = document.getElementById('hz-peak-val');
+  const intervalEl = document.getElementById('hz-interval-val');
+  const stabilityEl = document.getElementById('hz-stability-val');
+  const resetBtn = document.getElementById('polling-reset-btn');
+
+  function handleKeyDown() {
+    const now = performance.now();
+    if (lastTime > 0) {
+      const delta = now - lastTime;
+      if (delta > 0 && delta < 200) {
+        deltas.push(delta);
+        if (deltas.length > 50) deltas.shift();
+
+        const hz = Math.round(1000 / delta);
+        if (hz > peakHz) {
+          peakHz = hz;
+          if (peakHzEl) peakHzEl.textContent = `${peakHz} Hz`;
+        }
+
+        const avgDelta = deltas.reduce((a, b) => a + b, 0) / deltas.length;
+        const avgHz = Math.round(1000 / avgDelta);
+
+        if (currentHzEl) currentHzEl.textContent = `${avgHz} Hz`;
+        if (intervalEl) intervalEl.textContent = `${avgDelta.toFixed(2)} ms`;
+
+        // Calculate stability (variance of deltas)
+        const variance = deltas.reduce((a, b) => a + Math.abs(b - avgDelta), 0) / deltas.length;
+        const stability = Math.max(0, Math.min(100, Math.round(100 - (variance * 10))));
+        if (stabilityEl) stabilityEl.textContent = `${stability}%`;
+      }
+    }
+    lastTime = now;
+  }
+
+  window.addEventListener('keydown', handleKeyDown);
+  resetBtn?.addEventListener('click', () => {
+    lastTime = 0;
+    peakHz = 0;
+    deltas = [];
+    if (currentHzEl) currentHzEl.textContent = '0 Hz';
+    if (peakHzEl) peakHzEl.textContent = '0 Hz';
+    if (intervalEl) intervalEl.textContent = '0.00 ms';
+    if (stabilityEl) stabilityEl.textContent = '100%';
+  });
+</script>

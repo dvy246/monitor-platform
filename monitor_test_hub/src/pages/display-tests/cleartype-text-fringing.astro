@@ -1,0 +1,182 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import Breadcrumbs from '../../components/ui/Breadcrumbs.astro';
+import ClearTypeFringingCanvas from '../../components/diagnostics/ClearTypeFringingCanvas.astro';
+import HardwareLimitationNotice from '../../components/disclaimers/HardwareLimitationNotice.astro';
+import TestSwitcherBar from '../../components/ui/TestSwitcherBar.astro';
+
+import ConfigurationCard from '../../components/ui/sidebar/ConfigurationCard.astro';
+import MetricCard from '../../components/ui/sidebar/MetricCard.astro';
+import ShortcutCard from '../../components/ui/sidebar/ShortcutCard.astro';
+import InfoCard from '../../components/ui/sidebar/InfoCard.astro';
+import FAQSection from '../../components/ui/FAQSection.astro';
+import SEOHead from '../../components/seo/SEOHead.astro';
+
+const breadcrumbItems = [
+  { label: 'Display Suite', href: '/display-tests' },
+  { label: 'ClearType Text Fringing Inspector' }
+];
+
+const displayTests = [
+  { id: 'dead-pixel', label: 'Dead Pixel Test', href: '/display-tests/dead-pixel' },
+  { id: 'sub-pixel', label: 'Sub-Pixel Analyzer', href: '/display-tests/sub-pixel' },
+  { id: 'cleartype-fringing', label: 'ClearType Fringing', href: '/display-tests/cleartype-text-fringing', active: true },
+  { id: 'text-sharpness', label: 'Text Sharpness', href: '/display-tests/text-sharpness' },
+  { id: 'vrr', label: 'VRR Sync Engine', href: '/display-tests/vrr' },
+  { id: 'oled-burn-in', label: 'OLED Burn-In Risk', href: '/display-tests/oled-burn-in' }
+];
+
+const faqs = [
+  {
+    question: "What is ClearType text fringing?",
+    answer: "ClearType fringing occurs when the operating system's subpixel antialiasing algorithm does not match the physical subpixel layout of the monitor, causing visible color halos (usually cyan/magenta or red/blue) around text edges."
+  },
+  {
+    question: "Why does my text have color halos on a BGR monitor?",
+    answer: "Most operating systems assume an RGB subpixel layout. When a monitor uses a reversed BGR layout, the OS illuminates the wrong color subpixels to smooth the text, leading to severe chromatic aberration on vertical text strokes."
+  },
+  {
+    question: "How does QD-OLED subpixel layout affect text clarity?",
+    answer: "Gen 1 and Gen 2 QD-OLED panels use a triangular subpixel arrangement (green on top, red and blue on the bottom). ClearType is designed for horizontal stripes, so this triangular geometry creates a green top halo and magenta bottom shadow on high-contrast text."
+  },
+  {
+    question: "How do I adjust Windows ClearType settings?",
+    answer: "In Windows, search for 'Adjust ClearType text' in the Start menu. Run the tuner and select the text samples that look the sharpest. This helps calibrate the antialiasing weights, though it may not completely fix non-standard layouts like QD-OLED."
+  },
+  {
+    question: "Does macOS support subpixel antialiasing?",
+    answer: "No. Apple removed subpixel font antialiasing (subpixel rendering) in macOS Mojave (10.14). macOS now relies entirely on standard grayscale antialiasing and high pixel density (Retina displays) to achieve sharp text, meaning low-PPI monitors may look blurry."
+  },
+  {
+    question: "Can I fix WOLED text fringing?",
+    answer: "WOLED panels feature an RWBG layout with a dedicated white subpixel. While you cannot physically fix the layout, using a higher pixel density (4K resolution) or increasing OS scaling (e.g., 150%) significantly minimizes the visual impact of the fringing."
+  },
+  {
+    question: "What is the difference between RGB and BGR subpixel layouts?",
+    answer: "In an RGB layout, the red subpixel is on the left, green in the middle, and blue on the right. In a BGR layout, the order is reversed. Standard PC monitors use RGB, while many TVs and some large-format displays use BGR."
+  },
+  {
+    question: "Does scaling in Windows fix text fringing?",
+    answer: "Yes, increasing display scaling (e.g., to 125% or 150%) increases the number of pixels used to render a font glyph. This reduces the reliance on subpixel antialiasing, making any color fringing much less noticeable."
+  },
+  {
+    question: "Is 4K resolution necessary for crisp text on OLEDs?",
+    answer: "Because of the non-standard subpixel layouts on QD-OLED and WOLED panels, a 4K resolution (yielding a higher PPI) is highly recommended for productivity tasks, as the increased pixel density naturally hides subpixel fringing artifacts."
+  },
+  {
+    question: "What is MacType and how does it help?",
+    answer: "MacType is a third-party utility for Windows that replaces the default ClearType font rendering engine with one similar to macOS or Linux. It offers extensive customization, allowing users to fine-tune antialiasing for BGR or OLED displays."
+  }
+];
+---
+
+<Layout 
+  title="ClearType Text Fringing Inspector | Subpixel Antialiasing Test" 
+  description="Test your monitor for subpixel text fringing. Evaluate Windows ClearType compatibility on RGB, BGR, QD-OLED, and WOLED displays to achieve razor-sharp font clarity."
+>
+  <SEOHead
+    slot="head"
+    title="ClearType Text Fringing Inspector | Subpixel Antialiasing Test"
+    description="Test your monitor for subpixel text fringing. Evaluate Windows ClearType compatibility on RGB, BGR, QD-OLED, and WOLED displays to achieve razor-sharp font clarity."
+    canonicalUrl="https://displaytestonline.com/display-tests/cleartype-text-fringing"
+  />
+
+  <div class="max-w-7xl mx-auto px-4 py-8 space-y-8 min-w-0 w-full overflow-hidden font-sans">
+    <Breadcrumbs items={breadcrumbItems} />
+
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+      
+      <!-- Left Content (lg:col-span-8) -->
+      <div class="lg:col-span-8 space-y-8 min-w-0">
+        <header class="space-y-3 border-b border-border-hairline pb-6">
+          <div class="flex items-center gap-2 text-status-pass text-xs font-mono font-bold uppercase tracking-wider">
+            <span class="w-2 h-2 rounded-full bg-status-pass led-glow-pass"></span>
+            SUBPIXEL ANTIALIASING ENGINE
+          </div>
+          <h1 class="text-3xl sm:text-4xl font-extrabold text-text-primary tracking-tight">ClearType Text Fringing Inspector</h1>
+          <p class="text-sm text-text-secondary max-w-3xl leading-relaxed">
+            Diagnose chromatic aberration and text fringing artifacts caused by subpixel layout mismatches. Evaluate how Windows ClearType renders fonts across standard RGB, Reverse BGR, QD-OLED, and WOLED panel structures.
+          </p>
+        </header>
+
+        <ClearTypeFringingCanvas />
+
+        <!-- Scientific Methodology Article -->
+        <article class="bg-bg-surface border border-border-hairline rounded-2xl p-6 sm:p-8 space-y-6 shadow-specular-top font-sans text-sm text-text-secondary leading-relaxed">
+          <div class="border-b border-border-hairline pb-4">
+            <span class="font-mono text-[10px] font-bold text-status-pass uppercase tracking-widest block mb-1">FONT SMOOTHING SCIENCE</span>
+            <h2 class="text-xl font-bold text-text-primary">ClearType Mathematics & Chromatic Fringing</h2>
+          </div>
+
+          <p>
+            Operating systems use subpixel rendering (like Microsoft's ClearType) to increase the apparent horizontal resolution of text. By independently modulating the luminance of the red, green, and blue subpixels that make up a single pixel, the OS can smooth out jagged edges on font glyphs.
+          </p>
+          <p>
+            This technique relies heavily on the physical geometry of the display panel. If the OS assumes a standard left-to-right RGB stripe layout, but the panel uses a BGR or triangular layout, the wrong subpixels are illuminated at the glyph boundaries. This results in <strong>color fringing</strong>—noticeable cyan, magenta, or green halos around the text.
+          </p>
+
+          <HardwareLimitationNotice />
+          
+          <div class="mt-8">
+            <FAQSection faqs={faqs} />
+          </div>
+        </article>
+
+        <TestSwitcherBar tests={displayTests} currentId="cleartype-fringing" />
+      </div>
+
+      <!-- Right Modular Sidebar (lg:col-span-4) -->
+      <div class="lg:col-span-4 space-y-6 sticky top-24 self-start min-w-0">
+        <ConfigurationCard
+          title="Fringing Setup"
+          subtitle="Simulation Matrix"
+          controls={[
+            {
+              id: 'fringingMode',
+              label: 'Rendering Model',
+              type: 'select',
+              value: 'RGB',
+              options: [
+                { value: 'RGB', label: 'Native Stripe RGB' },
+                { value: 'BGR', label: 'Reverse BGR Aberration' },
+                { value: 'QDOLED', label: 'QD-OLED Triangular' },
+                { value: 'WOLED', label: 'WOLED RWBG' }
+              ]
+            }
+          ]}
+        />
+
+        <MetricCard
+          title="Antialiasing Metrics"
+          subtitle="Subpixel Rendering"
+          badgeText="ClearType"
+          layout="list"
+          metrics={[
+            { id: 'spatialRes', label: 'Horizontal Spatial Res', value: '3.00', unit: 'x', status: 'pass' },
+            { id: 'colorArtifacts', label: 'Chromatic Deviation', value: 'Minimal', unit: '', status: 'pass' }
+          ]}
+        />
+
+        <ShortcutCard
+          shortcuts={[
+            { keys: ['1'], label: 'Stripe RGB Mode' },
+            { keys: ['2'], label: 'Reverse BGR Mode' },
+            { keys: ['3'], label: 'QD-OLED Mode' },
+            { keys: ['4'], label: 'WOLED Mode' }
+          ]}
+        />
+
+        <InfoCard
+          title="Subpixel Rendering"
+          subtitle="OS Font Engine"
+          badgeText="Info"
+          citations={[
+            { standard: "ISO 9241-300", clause: "Ergonomics", description: "Guidelines for visual display requirements and text legibility." },
+            { standard: "ClearType", clause: "Microsoft", description: "Subpixel font rendering technology for LCD displays." }
+          ]}
+        />
+      </div>
+
+    </div>
+  </div>
+</Layout>

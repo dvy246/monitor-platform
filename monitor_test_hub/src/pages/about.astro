@@ -84,7 +84,9 @@ const orgSchema = {
               'Arcade Micro-Games',
             ].map((feature) => (
               <li class="flex items-center gap-2 bg-bg-canvas border border-border-hairline rounded-lg px-4 py-2 text-sm font-mono">
-                <span class="text-status-pass font-bold">✓</span>
+                <svg class="w-4 h-4 text-status-pass shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5" aria-hidden="true">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"></path>
+                </svg>
                 <span class="text-text-primary">{feature}</span>
               </li>
             ))}

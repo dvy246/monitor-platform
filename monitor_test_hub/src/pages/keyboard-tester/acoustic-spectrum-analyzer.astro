@@ -1,0 +1,93 @@
+---
+import FAQSection from '../../components/ui/FAQSection.astro';
+import Layout from '../../layouts/Layout.astro';
+import AcousticSpectrumCanvas from '../../components/diagnostics/AcousticSpectrumCanvas.astro';
+import { useTranslations } from '../../utils/i18n';
+
+const { lang } = useTranslations(Astro.url.pathname);
+const canonicalUrl = lang === 'en'
+  ? "https://displaytestonline.com/keyboard-tester/acoustic-spectrum-analyzer"
+  : `https://displaytestonline.com/${lang}/keyboard-tester/acoustic-spectrum-analyzer`;
+
+const seoTitle = "Mechanical Switch Acoustic Spectrum Analyzer | Monitor Test Hub";
+const seoDescription = "Free Web Audio mechanical switch acoustic spectrum analyzer. Visualize switch ping, thock, and scratchiness in real-time. 100% client-side privacy.";
+
+const faqs = [
+  {
+    question: "What is the Web Audio Mechanical Switch Acoustic Spectrum Analyzer?",
+    answer: "Our Acoustic Spectrum Analyzer is a diagnostic tool that uses the Web Audio API to process microphone input and generate a real-time spectrogram of mechanical keyboard switch clicks, helping you visualize their frequency signature."
+  },
+  {
+    question: "How do I use the acoustic spectrum analyzer?",
+    answer: "Simply click 'Enable Microphone', grant browser permissions, and place your microphone near your keyboard. Press a key to see its acoustic frequency profile, peak frequency, and maximum amplitude plotted in real-time."
+  },
+  {
+    question: "What is switch ping and how does this tool detect it?",
+    answer: "Switch ping is a metallic ringing noise caused by the spring vibrating inside the switch housing. On the spectrogram, ping appears as a sustained high-frequency peak (usually above 2000Hz) that lingers after the initial keystroke."
+  },
+  {
+    question: "Can I differentiate between linear, tactile, and clicky switches using the spectrum?",
+    answer: "Yes. Clicky switches produce sharp, high-frequency spikes. Tactile switches show a broad mid-range bump, while linear 'thocky' switches tend to have lower frequency acoustic profiles concentrated in the bass and mid-bass regions."
+  },
+  {
+    question: "Is my microphone data sent to a server?",
+    answer: "No. The Acoustic Spectrum Analyzer is 100% client-side. Audio data is processed locally in your browser using the Web Audio API AnalyserNode and is never transmitted or recorded."
+  },
+  {
+    question: "What does the Peak Frequency metric indicate?",
+    answer: "The Peak Frequency metric identifies the most prominent audio frequency in Hz during a keystroke. A higher peak frequency indicates a higher-pitched sound, typical of click jackets or unlubed springs."
+  },
+  {
+    question: "What is switch scratchiness and what does it look like on a spectrogram?",
+    answer: "Scratchiness is the friction sound of the switch stem rubbing against the housing. On the analyzer, it appears as a cluster of high-frequency white noise or 'fuzz' across the spectrum before the bottom-out sound."
+  },
+  {
+    question: "How does switch lube affect the acoustic spectrum?",
+    answer: "Applying lubricant (like Krytox 205g0) dampens high-frequency ringing and scratchiness. The resulting spectrum will show attenuated high frequencies and a more concentrated lower-frequency 'thock' signature."
+  },
+  {
+    question: "Does room background noise affect the test results?",
+    answer: "Yes, ambient noise like fans or air conditioning can clutter the lower frequency bins of the spectrogram. For accurate switch profiling, conduct the test in a quiet room with the microphone positioned closely."
+  },
+  {
+    question: "What is a normal maximum amplitude for mechanical switches?",
+    answer: "Amplitude varies based on microphone gain and distance, but mechanical switches typically register a distinct relative dB spike during bottom-out and top-out. Use the dB readout to compare the relative loudness of different switches."
+  }
+];
+---
+
+<Layout title={seoTitle} description={seoDescription} faqs={faqs} canonicalUrl={canonicalUrl}>
+  <div class="max-w-7xl mx-auto px-4 py-6 sm:py-8 min-w-0 w-full overflow-hidden font-sans">
+    <div class="space-y-8 min-w-0">
+      
+      <section class="max-w-4xl mx-auto text-center space-y-4">
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/30 text-xs font-mono text-cyan-400 font-bold">
+          <span>WEB AUDIO FFT ANALYSIS ENGINE</span>
+        </div>
+        <h1 class="text-3xl sm:text-4xl font-extrabold font-mono tracking-tight text-white">
+          Acoustic Spectrum Analyzer
+        </h1>
+        <p class="text-sm sm:text-base text-zinc-400 leading-relaxed max-w-2xl mx-auto">
+          Profile your mechanical keyboard's acoustic signature. Analyze bottom-out frequencies, detect spring ping, and verify lubrication dampening entirely in your browser.
+        </p>
+      </section>
+
+      <!-- Main Visual Diagnostic Engine Component -->
+      <AcousticSpectrumCanvas />
+
+      <!-- Educational Article Section -->
+      <article class="max-w-5xl mx-auto space-y-6 bg-[#121215] border border-white/10 rounded-3xl p-6 sm:p-8 backdrop-blur-xl text-sm text-zinc-300 leading-relaxed shadow-2xl">
+        <div class="border-b border-white/10 pb-4">
+          <h2 class="text-xl font-bold font-mono text-white">Understanding Mechanical Switch Acoustics & Spectrograms</h2>
+          <p class="mt-2 text-zinc-400">
+            A mechanical switch produces an acoustic signature composed of multiple events: the friction of the downstroke, the bottom-out impact, and the top-out return. By performing a Fast Fourier Transform (FFT) on microphone audio, we can convert these sound waves from the time domain to the frequency domain, creating a visual spectrogram. This helps keyboard enthusiasts objectively identify spring ping, scratchiness, and measure the acoustic effects of switch films and lubricants.
+          </p>
+        </div>
+      </article>
+
+      <!-- FAQ Section with JSON-LD Schema integration via Layout -->
+      <FAQSection faqs={faqs} />
+      
+    </div>
+  </div>
+</Layout>

@@ -3,10 +3,13 @@ import Layout from '../../layouts/Layout.astro';
 import AudioTesterCanvas from '../../components/diagnostics/AudioTesterCanvas.astro';
 import FAQSection from '../../components/ui/FAQSection.astro';
 import Breadcrumbs from '../../components/ui/Breadcrumbs.astro';
-import MasterBentoDiagnosticSuite from '../../components/diagnostics/MasterBentoDiagnosticSuite.astro';
 import StepWorkflowSection from '../../components/ui/StepWorkflowSection.astro';
 import PanelTypeBreakdownSection from '../../components/ui/PanelTypeBreakdownSection.astro';
 
+import StatusCard from '../../components/ui/sidebar/StatusCard.astro';
+import MetricCard from '../../components/ui/sidebar/MetricCard.astro';
+import ConfigurationCard from '../../components/ui/sidebar/ConfigurationCard.astro';
+import ShortcutCard from '../../components/ui/sidebar/ShortcutCard.astro';
 
 const title = "Headphone & Earbud Sound Test";
 const description = "Test headphone stereo channel separation, left/right driver balance, 20Hz-20kHz frequency response, and driver phase inversion online.";
@@ -62,71 +65,140 @@ const breadcrumbs = [
 ---
 
 <Layout title={title} description={description} faqs={faqs}>
-  <div  font-sans">
+  <div class="max-w-7xl mx-auto px-4 py-6 sm:py-8 min-w-0 w-full overflow-hidden font-sans">
     <Breadcrumbs items={breadcrumbs} />
 
-    <!-- Hero Header Deck -->
-    <header class="relative w-full rounded-3xl border border-white/10 bg-[#121215]/90 backdrop-blur-xl p-6 sm:p-8 md:p-10 shadow-2xl space-y-4 overflow-hidden group select-none">
-      <div class="absolute -top-24 -left-24 w-72 h-72 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none group-hover:bg-emerald-500/15 transition-all duration-500"></div>
-      <div class="absolute -bottom-24 -right-24 w-72 h-72 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none group-hover:bg-cyan-500/15 transition-all duration-500"></div>
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 mt-6">
+      
+      <!-- Left Primary Diagnostic Canvas (lg:col-span-8) -->
+      <div class="lg:col-span-8 space-y-8 min-w-0">
+        <!-- Hero Header Deck -->
+        <header class="relative w-full rounded-3xl border border-white/10 bg-[#121215]/90 backdrop-blur-xl p-6 sm:p-8 md:p-10 shadow-2xl space-y-4 overflow-hidden group select-none">
+          <div class="absolute -top-24 -left-24 w-72 h-72 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none group-hover:bg-emerald-500/15 transition-all duration-500"></div>
+          <div class="absolute -bottom-24 -right-24 w-72 h-72 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none group-hover:bg-cyan-500/15 transition-all duration-500"></div>
 
-      <div class="relative z-10 space-y-3 max-w-3xl min-w-0 w-full">
-        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-emerald-400 text-xs font-mono font-bold tracking-wide flex-wrap shadow-inner">
-          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shrink-0"></span>
-          <span>AES17 HEADPHONE ACOUSTIC METRICS</span>
+          <div class="relative z-10 space-y-3 max-w-3xl min-w-0 w-full">
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-emerald-400 text-xs font-mono font-bold tracking-wide flex-wrap shadow-inner">
+              <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shrink-0"></span>
+              <span>AES17 HEADPHONE ACOUSTIC METRICS</span>
+            </div>
+            <h1 class="text-3xl sm:text-5xl font-extrabold text-white tracking-tight font-sans break-words min-w-0">
+              {title}
+            </h1>
+            <p class="text-sm sm:text-base text-zinc-300 font-sans leading-relaxed min-w-0">
+              Test your headphones and earbuds for left/right channel orientation, driver volume matching, 20Hz-20kHz frequency sweeps, and acoustic phase inversion.
+            </p>
+          </div>
+        </header>
+
+        <!-- Main Diagnostic Instrument -->
+        <div class="rounded-3xl border border-white/10 bg-[#121215]/90 backdrop-blur-xl p-4 sm:p-6 shadow-2xl">
+          <AudioTesterCanvas />
         </div>
-        <h1 class="text-3xl sm:text-5xl font-extrabold text-white tracking-tight font-sans break-words min-w-0">
-          {title}
-        </h1>
-        <p class="text-sm sm:text-base text-zinc-300 font-sans leading-relaxed min-w-0">
-          Test your headphones and earbuds for left/right channel orientation, driver volume matching, 20Hz-20kHz frequency sweeps, and acoustic phase inversion.
-        </p>
-      </div>
-    </header>
 
-    <!-- Main Diagnostic Instrument -->
-    <div class="rounded-3xl border border-white/10 bg-[#121215]/90 backdrop-blur-xl p-4 sm:p-6 shadow-2xl">
-      <AudioTesterCanvas />
+        <!-- 3-Step Workflow Protocol -->
+        <StepWorkflowSection />
+
+        <!-- Panel Technology Breakdown -->
+        <PanelTypeBreakdownSection />
+
+        <!-- Article Section -->
+        <article class="bg-[#121215] border border-white/10 rounded-3xl p-6 sm:p-8 space-y-6 shadow-2xl font-sans text-sm text-zinc-300 leading-relaxed">
+          <div class="border-b border-white/10 pb-4 font-mono">
+            <span class="text-xs font-bold text-emerald-400 uppercase tracking-widest block mb-1">ACOUSTIC DRIVER PERFORMANCE</span>
+            <h2 class="text-2xl font-bold text-white">Headphone Frequency Response, Stereo Balance &amp; Phase</h2>
+          </div>
+
+          <p>
+            Accurate stereo imaging and linear frequency response are essential for critical listening, music production, and competitive gaming. Our suite evaluates driver balance, channel separation, and frequency response under AES17 digital audio guidelines.
+          </p>
+
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4 font-mono text-xs my-4">
+            <div class="bg-[#08080a] p-5 rounded-2xl border border-white/10 space-y-2">
+              <span class="text-cyan-400 text-[10px] uppercase font-bold block">Channel Balance</span>
+              <strong class="text-white block text-sm">L / R Isolation</strong>
+              <p class="font-sans text-[11px] text-zinc-400 leading-relaxed">Verifies zero channel crosstalk and equal left/right earcup volume matching.</p>
+            </div>
+            <div class="bg-[#08080a] p-5 rounded-2xl border border-white/10 space-y-2">
+              <span class="text-emerald-400 text-[10px] uppercase font-bold block">20Hz – 20kHz Sweep</span>
+              <strong class="text-white block text-sm">Linear Response</strong>
+              <p class="font-sans text-[11px] text-zinc-400 leading-relaxed">Scans full audible spectrum to detect driver rattling and frequency nulls.</p>
+            </div>
+            <div class="bg-[#08080a] p-5 rounded-2xl border border-white/10 space-y-2">
+              <span class="text-amber-400 text-[10px] uppercase font-bold block">Phase Alignment</span>
+              <strong class="text-white block text-sm">Driver Polarity</strong>
+              <p class="font-sans text-[11px] text-zinc-400 leading-relaxed">Confirms matching diaphragm motion direction to preserve bass and center soundstage.</p>
+            </div>
+          </div>
+        </article>
+
+        <!-- 10 Structured FAQs Component -->
+        <FAQSection faqs={faqs} title="Headphone & Earbud FAQs" />
+      </div>
+
+      <!-- Right Modular Control & Telemetry Sidebar (lg:col-span-4) -->
+      <div class="lg:col-span-4 space-y-6 sticky top-24 self-start min-w-0">
+        <StatusCard
+          status="pass"
+          label="HEADSET CONNECTED"
+          subtitle="DAC Headphone Output"
+          score="100"
+          maxScore="%"
+          details={[
+            { label: 'Earcup Balance', value: 'Matching (0dB)' },
+            { label: 'Driver Phase', value: 'In-Phase (Correct)' }
+          ]}
+        />
+
+        <MetricCard
+          title="Headphone Readout"
+          subtitle="Transducer Metric Telemetry"
+          badgeText="AES17 Standard"
+          metrics={[
+            { id: 'frequencyHz', label: 'Test Frequency', value: '1000', unit: 'Hz', status: 'pass' },
+            { id: 'driverMatching', label: 'L/R Driver Matching', value: '0.1', unit: 'dB', status: 'pass' },
+            { id: 'sweepSpan', label: 'Audible Sweep Span', value: '20-20k', unit: 'Hz', status: 'pass' }
+          ]}
+        />
+
+        <ConfigurationCard
+          title="Earcup Controls"
+          subtitle="Channel & Sweep Selection"
+          controls={[
+            {
+              id: 'earcupChannel',
+              label: 'Earcup Output Isolation',
+              type: 'presets',
+              value: 'both',
+              options: [
+                { value: 'both', label: 'Stereo (Left & Right)' },
+                { value: 'left', label: 'Left Earcup Only' },
+                { value: 'right', label: 'Right Earcup Only' }
+              ]
+            },
+            {
+              id: 'headphoneSignal',
+              label: 'Sweep Signal Mode',
+              type: 'select',
+              value: 'sine',
+              options: [
+                { value: 'sine', label: 'Pure 1kHz Sine Tone' },
+                { value: 'sweep', label: '20Hz-20kHz Logarithmic Sweep' },
+                { value: 'pink', label: 'Pink Noise (Equal Power)' }
+              ]
+            }
+          ]}
+        />
+
+        <ShortcutCard
+          shortcuts={[
+            { keys: ['L'], label: 'Isolate Left Earcup' },
+            { keys: ['R'], label: 'Isolate Right Earcup' },
+            { keys: ['P'], label: 'Toggle Phase Inversion' }
+          ]}
+        />
+      </div>
+
     </div>
-
-    <!-- 3-Step Workflow Protocol -->
-    <StepWorkflowSection />
-
-    <!-- Panel Technology Breakdown -->
-    <PanelTypeBreakdownSection />
-
-    <!-- Article Section -->
-    <article class="bg-[#121215] border border-white/10 rounded-3xl p-6 sm:p-8 space-y-6 shadow-2xl font-sans text-sm text-zinc-300 leading-relaxed">
-      <div class="border-b border-white/10 pb-4 font-mono">
-        <span class="text-xs font-bold text-emerald-400 uppercase tracking-widest block mb-1">ACOUSTIC DRIVER PERFORMANCE</span>
-        <h2 class="text-2xl font-bold text-white">Headphone Frequency Response, Stereo Balance &amp; Phase</h2>
-      </div>
-
-      <p>
-        Accurate stereo imaging and linear frequency response are essential for critical listening, music production, and competitive gaming. Our suite evaluates driver balance, channel separation, and frequency response under AES17 digital audio guidelines.
-      </p>
-
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 font-mono text-xs my-4">
-        <div class="bg-[#08080a] p-5 rounded-2xl border border-white/10 space-y-2">
-          <span class="text-cyan-400 text-[10px] uppercase font-bold block">Channel Balance</span>
-          <strong class="text-white block text-sm">L / R Isolation</strong>
-          <p class="font-sans text-[11px] text-zinc-400 leading-relaxed">Verifies zero channel crosstalk and equal left/right earcup volume matching.</p>
-        </div>
-        <div class="bg-[#08080a] p-5 rounded-2xl border border-white/10 space-y-2">
-          <span class="text-emerald-400 text-[10px] uppercase font-bold block">20Hz – 20kHz Sweep</span>
-          <strong class="text-white block text-sm">Linear Response</strong>
-          <p class="font-sans text-[11px] text-zinc-400 leading-relaxed">Scans full audible spectrum to detect driver rattling and frequency nulls.</p>
-        </div>
-        <div class="bg-[#08080a] p-5 rounded-2xl border border-white/10 space-y-2">
-          <span class="text-amber-400 text-[10px] uppercase font-bold block">Phase Alignment</span>
-          <strong class="text-white block text-sm">Driver Polarity</strong>
-          <p class="font-sans text-[11px] text-zinc-400 leading-relaxed">Confirms matching diaphragm motion direction to preserve bass and center soundstage.</p>
-        </div>
-      </div>
-    </article>
-
-    <!-- 10 Structured FAQs Component -->
-    <FAQSection faqs={faqs} title="Headphone & Earbud FAQs" />
-
   </div>
 </Layout>

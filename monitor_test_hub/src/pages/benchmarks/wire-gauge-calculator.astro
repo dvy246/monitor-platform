@@ -3,16 +3,24 @@ import Layout from '../../layouts/Layout.astro';
 import WireGaugeInspector from '../../components/diagnostics/WireGaugeInspector.astro';
 import SEOHead from '../../components/seo/SEOHead.astro';
 import SchemaGraph from '../../components/seo/SchemaGraph.astro';
-
 import { useTranslations, localizeLink } from '../../utils/i18n';
+import StepWorkflowSection from '../../components/ui/StepWorkflowSection.astro';
+import PanelTypeBreakdownSection from '../../components/ui/PanelTypeBreakdownSection.astro';
+import FAQSection from '../../components/ui/FAQSection.astro';
+
+// Right Sidebar Components
+import StatusCard from '../../components/ui/sidebar/StatusCard.astro';
+import ConfigurationCard from '../../components/ui/sidebar/ConfigurationCard.astro';
+import MetricCard from '../../components/ui/sidebar/MetricCard.astro';
+import InfoCard from '../../components/ui/sidebar/InfoCard.astro';
 
 const { lang } = useTranslations(Astro.url.pathname);
 
 const seoTitle = "NEC 2026 Wire Gauge & Voltage Drop Calculator — Conductor Ampacity";
 const seoDescription = "Calculate electrical wire gauge, voltage drop percentage, and conduit fill ratios according to NEC Table 310.16 and NEC 2026 standards.";
 const canonicalUrl = lang === 'en'
-  ? "https://monitortester.com/benchmarks/wire-gauge-calculator"
-  : `https://monitortester.com/${lang}/benchmarks/wire-gauge-calculator`;
+  ? "https://displaytestonline.com/benchmarks/wire-gauge-calculator"
+  : `https://displaytestonline.com/${lang}/benchmarks/wire-gauge-calculator`;
 
 const circuits = [
   { amp: 15, volt: 120, label: '15A 120V Lighting & Receptacle Circuit' },
@@ -22,12 +30,54 @@ const circuits = [
   { amp: 100, volt: 240, label: '100A 240V Residential Subpanel Feed' },
   { amp: 200, volt: 240, label: '200A 240V Main Service Electrical Panel' }
 ];
+
+const faqs = [
+  {
+    question: "What is NEC Table 310.16 ampacity?",
+    answer: "NEC Table 310.16 specifies allowable ampacities of insulated copper and aluminum conductors rated up to 2000 volts, categorized by insulation temperature ratings (60°C, 75°C, 90°C)."
+  },
+  {
+    question: "Why is voltage drop calculation important for electrical wiring?",
+    answer: "Excessive voltage drop causes electric motors to overheat, appliances to underperform, lights to flicker, and electrical energy to be wasted as heat in conductor wires."
+  },
+  {
+    question: "What is the NEC recommended maximum voltage drop limit?",
+    answer: "The National Electrical Code (NEC Fine Print Note 210.19) recommends that total voltage drop on a branch circuit should not exceed 3%, and total drop from service panel to furthest outlet should not exceed 5%."
+  },
+  {
+    question: "How is electrical wire voltage drop calculated?",
+    answer: "For single-phase AC circuits, single-phase voltage drop is calculated using the formula: V_drop = (2 × K × I × L) / CM, where K is conductor resistivity, I is current in amps, L is one-way length in feet, and CM is circular mil area."
+  },
+  {
+    question: "What size wire is needed for a 20-amp circuit at 120 volts?",
+    answer: "Standard 20-amp 120-volt branch circuits require a minimum of 12 AWG copper wire. For runs exceeding 70 feet, upsizing to 10 AWG copper prevents voltage drop from exceeding 3%."
+  },
+  {
+    question: "Can I use aluminum wire instead of copper for electrical circuits?",
+    answer: "Yes, aluminum conductors (e.g. AA-8000 series) are widely used for heavy feeder and subpanel circuits, but require larger wire gauges (e.g. 2 AWG aluminum vs 4 AWG copper) to achieve equivalent ampacity."
+  },
+  {
+    question: "What wire gauge is required for Level 2 EV chargers (50A 240V)?",
+    answer: "A continuous 50-amp 240V circuit for a Level 2 EV charger requires a minimum of 6 AWG copper wire or 4 AWG aluminum wire rated for 75°C terminals."
+  },
+  {
+    question: "How does temperature rating (60°C vs 75°C vs 90°C) affect wire size?",
+    answer: "Conductor ampacity increases with higher insulation temperature ratings, but final wire sizing must conform to the lowest temperature rating of connected terminals (typically 75°C for standard breakers)."
+  },
+  {
+    question: "What is conduit fill ratio percentage in NEC 2026?",
+    answer: "NEC Chapter 9 Table 1 limits conduit fill to 40% for three or more conductors in EMT or PVC conduit to prevent excessive heat accumulation and facilitate wire pulling."
+  },
+  {
+    question: "How do I export my wire gauge calculation report?",
+    answer: "Click 'Export Passport' to save your NEC 2026 conductor sizing, voltage drop, and ampacity calculations in a downloadable JSON hardware passport."
+  }
+];
 ---
 
-<Layout title={seoTitle} description={seoDescription} canonicalUrl={canonicalUrl}>
-
-  <div class="min-h-screen bg-[#08080a] text-slate-100 py-12 px-4 font-sans">
-    <div class="max-w-5xl mx-auto space-y-12">
+<Layout title={seoTitle} description={seoDescription} faqs={faqs} canonicalUrl={canonicalUrl}>
+  <div class="min-h-screen bg-[#08080a] text-slate-100 font-sans">
+    <div class="max-w-7xl mx-auto px-4 py-6 sm:py-8 space-y-8">
       <section class="text-center space-y-4">
         <h1 class="text-4xl sm:text-5xl font-black text-white tracking-tight">
           NEC 2026 Wire Gauge & <span class="text-rose-400">Voltage Drop</span> Calculator
@@ -37,35 +87,119 @@ const circuits = [
         </p>
       </section>
 
-      <WireGaugeInspector />
+      <!-- 2-Column Responsive Layout -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        <!-- Left Diagnostic Canvas & Directory -->
+        <div class="lg:col-span-8 space-y-8">
+          <WireGaugeInspector />
 
-      <!-- Circuit Amperage & Voltage Wire Sizing Directory -->
-      <section class="space-y-6 bg-[#121215] p-6 sm:p-8 rounded-2xl border border-white/10">
-        <div class="border-b border-white/10 pb-4">
-          <h2 class="text-2xl font-bold text-white font-sans">Branch Circuit Wire Sizing Directory</h2>
-          <p class="text-slate-400 text-sm mt-1">Explore NEC 2026 ampacity, wire gauge, and voltage drop compliance reports for common residential circuits.</p>
+          <!-- Circuit Amperage & Voltage Wire Sizing Directory -->
+          <section class="space-y-6 bg-[#121215] p-6 sm:p-8 rounded-3xl border border-white/10">
+            <div class="border-b border-white/10 pb-4">
+              <h2 class="text-2xl font-bold text-white font-sans">Branch Circuit Wire Sizing Directory</h2>
+              <p class="text-slate-400 text-sm mt-1">Explore NEC 2026 ampacity, wire gauge, and voltage drop compliance reports for common residential circuits.</p>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 font-mono text-xs">
+              {circuits.map(c => {
+                const slug = `${c.amp}-amp-${c.volt}v`;
+                const href = localizeLink(`/benchmarks/wire-gauge-calculator/${slug}`, lang);
+                return (
+                  <a
+                    href={href}
+                    class="p-3.5 rounded-xl bg-[#18181b] border border-white/5 hover:border-rose-400/50 hover:bg-rose-400/10 text-slate-300 hover:text-white transition-colors duration-200 cursor-pointer flex items-center justify-between group"
+                  >
+                    <div class="space-y-1 truncate pr-2">
+                      <div class="font-bold text-rose-400 text-xs font-sans">{c.amp}A {c.volt}V Circuit</div>
+                      <div class="text-[11px] text-slate-400 group-hover:text-slate-200 font-sans truncate">{c.label}</div>
+                    </div>
+                    <span class="text-rose-400 text-xs shrink-0">&rarr;</span>
+                  </a>
+                );
+              })}
+            </div>
+          </section>
         </div>
 
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 font-mono text-xs">
-          {circuits.map(c => {
-            const slug = `${c.amp}-amp-${c.volt}v`;
-            const href = localizeLink(`/benchmarks/wire-gauge-calculator/${slug}`, lang);
-            return (
-              <a
-                href={href}
-                class="p-3.5 rounded-xl bg-[#18181b] border border-white/5 hover:border-rose-400/50 hover:bg-rose-400/10 text-slate-300 hover:text-white transition-all flex items-center justify-between group"
-              >
-                <div class="space-y-1 truncate pr-2">
-                  <div class="font-bold text-rose-400 text-xs font-sans">{c.amp}A {c.volt}V Circuit</div>
-                  <div class="text-[11px] text-slate-400 group-hover:text-slate-200 font-sans truncate">{c.label}</div>
-                </div>
-                <span class="text-rose-400 group-hover:translate-x-0.5 transition-transform text-xs shrink-0">&rarr;</span>
-              </a>
-            );
-          })}
+        <!-- Right Modular Control & Telemetry Sidebar -->
+        <div class="lg:col-span-4 sticky top-24 space-y-6">
+          <StatusCard
+            status="pass"
+            label="NEC 2026 Compliance"
+            subtitle="Table 310.16 Ampacity Limits"
+            details={[
+              { label: "Conductor Rating", value: "75°C THHN" },
+              { label: "Voltage Drop Limit", value: "<3.0% NEC Rec" }
+            ]}
+          />
+
+          <ConfigurationCard
+            title="Circuit Setup"
+            subtitle="Amperage & Conductor Parameters"
+            badgeText="NEC Spec"
+            controls={[
+              {
+                id: "circuit-amps",
+                label: "Circuit Amperage",
+                type: "select",
+                value: "20",
+                options: [
+                  { value: "15", label: "15 Amp (120V)" },
+                  { value: "20", label: "20 Amp (120V)" },
+                  { value: "30", label: "30 Amp (240V)" },
+                  { value: "50", label: "50 Amp (240V)" }
+                ]
+              },
+              {
+                id: "run-length",
+                label: "One-Way Run Distance",
+                type: "slider",
+                min: 10,
+                max: 500,
+                step: 10,
+                value: 50,
+                unit: "ft"
+              }
+            ]}
+          />
+
+          <MetricCard
+            title="Voltage Drop Readout"
+            subtitle="Conductor Electrical Delta"
+            badgeText="Ampacity"
+            layout="list"
+            metrics={[
+              { id: "vd-volts", label: "Voltage Drop", value: "1.42", unit: "V", status: "pass" },
+              { id: "vd-pct", label: "Drop Percentage", value: "1.18", unit: "%", target: "3.00", progress: 39, status: "pass" },
+              { id: "awg", label: "Recommended Wire", value: "12 AWG", unit: "Cu", status: "pass" }
+            ]}
+          />
+
+          <InfoCard
+            title="NEC Standard Citations"
+            subtitle="National Electrical Code 2026"
+            badgeText="NEC Citations"
+            accentColor="amber"
+            citations={[
+              {
+                standard: "NEC 2026 Table 310.16",
+                clause: "75°C Conductor Ampacities",
+                description: "Mandates maximum continuous ampacity of 20A for 12 AWG Copper THHN conductors."
+              },
+              {
+                standard: "NEC Fine Print Note 210.19(A)",
+                clause: "Branch Circuit Drop",
+                description: "Recommends total voltage drop under 3% for branch circuits to ensure maximum operating efficiency."
+              }
+            ]}
+          />
         </div>
-      </section>
+      </div>
+
+      <!-- Standard 4-Part Sections -->
+      <StepWorkflowSection />
+      <PanelTypeBreakdownSection />
+      <FAQSection faqs={faqs} title="Wire Gauge & Voltage Drop FAQs" />
     </div>
   </div>
 </Layout>
-

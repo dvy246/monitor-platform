@@ -4,6 +4,13 @@ import Breadcrumbs from '../../components/ui/Breadcrumbs.astro';
 import SwipeTracker from '../../components/diagnostics/SwipeTracker.astro';
 import ErgonomicsNotice from '../../components/disclaimers/ErgonomicsNotice.astro';
 import TestSwitcherBar from '../../components/ui/TestSwitcherBar.astro';
+import FAQSection from '../../components/ui/FAQSection.astro';
+
+import StatusCard from '../../components/ui/sidebar/StatusCard.astro';
+import MetricCard from '../../components/ui/sidebar/MetricCard.astro';
+import TelemetryCard from '../../components/ui/sidebar/TelemetryCard.astro';
+import ShortcutCard from '../../components/ui/sidebar/ShortcutCard.astro';
+import InfoCard from '../../components/ui/sidebar/InfoCard.astro';
 
 const breadcrumbItems = [
   { label: 'Touch Suite', href: '/touch-tests' },
@@ -17,52 +24,158 @@ const touchTests = [
   { id: 'swipe-velocity', label: 'Swipe Velocity', href: '/touch-tests/swipe-velocity', active: true },
   { id: 'input-lag', label: 'Input Lag Test', href: '/touch-tests/input-lag' }
 ];
+
+const faqs = [
+  {
+    question: "What is the Swipe Velocity & Acceleration Benchmark?",
+    answer: "This test measures the speed (in pixels per second) and acceleration of your finger or stylus swipe gestures across the screen using high-resolution hardware touch event timestamps."
+  },
+  {
+    question: "How is swipe velocity calculated in web browsers?",
+    answer: "Swipe velocity is calculated as the Euclidean distance traversed between consecutive touch events divided by the time interval (v = √(Δx² + Δy²) / Δt)."
+  },
+  {
+    question: "What is a good swipe velocity score for mobile gaming?",
+    answer: "Fast gaming flicks reach velocities between 2,000 px/s and 8,000 px/s. High touch sampling digitizers (240Hz+) maintain smooth tracking at extreme speeds without dropping events."
+  },
+  {
+    question: "What is touch digitizer sampling rate vs screen refresh rate?",
+    answer: "Digitizer sampling rate is how often the touch screen scans for touch inputs (e.g. 240Hz or 480Hz), while screen refresh rate is how often visual frames are displayed (e.g. 60Hz or 120Hz)."
+  },
+  {
+    question: "Why does my swipe velocity graph show sudden spikes or drops?",
+    answer: "Spikes or drops in velocity telemetry are caused by OS event batching, browser main thread frame drops, or digitizer timestamp jitter."
+  },
+  {
+    question: "How does high touch sampling rate improve competitive mobile gaming?",
+    answer: "A 240Hz or 480Hz touch sampling rate cuts initial swipe detection latency down to ~2ms–4ms, providing near-instantaneous aiming response in competitive FPS games."
+  },
+  {
+    question: "Does screen size affect measured swipe velocity?",
+    answer: "Physical screen size affects gesture motion distance, but velocity measurements in px/s or mm/s remain normalized across devices."
+  },
+  {
+    question: "Can I benchmark active stylus swipe speeds with this tool?",
+    answer: "Yes, active pens like Apple Pencil or S-Pen stream high-precision position and velocity data to W3C PointerEvents."
+  },
+  {
+    question: "What causes gesture momentum and flick scrolling overshoot?",
+    answer: "Mobile operating systems use calculated release velocity to trigger kinetic momentum scrolling. Accurate end-velocity calculation prevents jerky list scrolling."
+  },
+  {
+    question: "How do I clear swipe velocity history?",
+    answer: "Press the 'C' hotkey or click 'Clear Telemetry' to reset maximum recorded speed and acceleration benchmarks."
+  }
+];
 ---
 
 <Layout 
   title="Swipe Velocity & Acceleration Benchmark | Monitor Test Hub" 
   description="Calculate touch gesture flick velocity (px/s), peak acceleration, and digitizer sampling rate consistency across mobile and tablet screens."
+  faqs={faqs}
 >
-  <div class="max-w-7xl mx-auto px-4 py-8 space-y-8">
+  <div class="max-w-7xl mx-auto px-4 py-6 sm:py-8 min-w-0 w-full overflow-hidden font-sans">
     <Breadcrumbs items={breadcrumbItems} />
 
-    <header class="space-y-3 border-b border-border-hairline pb-6">
-      <div class="flex items-center gap-2 text-status-pass text-xs font-mono font-bold uppercase tracking-wider">
-        <span class="w-2 h-2 rounded-full bg-status-pass led-glow-pass"></span>
-        HIGH-SPEED TOUCH SAMPLING &amp; FLICK KINEMATICS
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 mt-6">
+      
+      <!-- Left Primary Diagnostic Canvas (lg:col-span-8) -->
+      <div class="lg:col-span-8 space-y-8 min-w-0">
+        <header class="space-y-3 border-b border-border-hairline pb-6">
+          <div class="flex items-center gap-2 text-status-pass text-xs font-mono font-bold uppercase tracking-wider">
+            <span class="w-2 h-2 rounded-full bg-status-pass led-glow-pass"></span>
+            HIGH-SPEED TOUCH SAMPLING &amp; FLICK KINEMATICS
+          </div>
+          <h1 class="text-3xl sm:text-4xl font-extrabold text-text-primary tracking-tight">Swipe Velocity &amp; Acceleration Benchmark</h1>
+          <p class="text-sm text-text-secondary max-w-3xl">
+            Flick your finger or stylus across the canvas to measure instantaneous swipe velocity (pixels per second), peak acceleration, and digitizer timestamp stability.
+          </p>
+        </header>
+
+        <SwipeTracker />
+
+        <!-- Swipe Velocity Article -->
+        <article class="bg-[#121215] border border-white/10 rounded-3xl p-6 sm:p-8 space-y-6 shadow-2xl font-sans text-sm text-text-secondary leading-relaxed">
+          <div class="border-b border-white/10 pb-4">
+            <span class="font-mono text-[10px] font-bold text-emerald-400 uppercase tracking-widest block mb-1">GESTURE KINEMATICS &amp; SAMPLING STABILITY</span>
+            <h2 class="text-xl font-bold text-white">Touch Flick Kinematics, Velocity Derivation &amp; Timestamp Jitter</h2>
+          </div>
+
+          <p>
+            Touch gesture tracking performance depends on high-frequency sampling (120Hz to 360Hz digitizer polling) combined with low-variance timestamp intervals (\(\Delta t\)). Velocity (\(v\)) and acceleration (\(a\)) are derived from continuous spatial coordinate deltas:
+          </p>
+
+          <div class="bg-[#08080a] p-4 rounded-2xl border border-white/10 font-mono text-xs space-y-2 my-4">
+            <span class="text-zinc-400 text-[10px] uppercase block tracking-wider">KINEMATICS DERIVATION</span>
+            <div class="text-emerald-400 font-bold">
+              v(t) = √( (Δx/Δt)² + (Δy/Δt)² )
+            </div>
+            <div class="text-white">
+              a(t) = ( v(t) - v(t-1) ) / Δt
+            </div>
+          </div>
+
+          <ErgonomicsNotice />
+        </article>
+
+        <FAQSection faqs={faqs} />
+        <TestSwitcherBar tests={touchTests} currentId="swipe-velocity" />
       </div>
-      <h1 class="text-3xl sm:text-4xl font-extrabold text-text-primary tracking-tight">Swipe Velocity &amp; Acceleration Benchmark</h1>
-      <p class="text-sm text-text-secondary max-w-3xl">
-        Flick your finger or stylus across the canvas to measure instantaneous swipe velocity (pixels per second), peak acceleration, and digitizer timestamp stability.
-      </p>
-    </header>
 
-    <SwipeTracker />
+      <!-- Right Modular Control & Telemetry Sidebar (lg:col-span-4) -->
+      <div class="lg:col-span-4 space-y-6 sticky top-24 self-start min-w-0">
+        <StatusCard
+          status="pass"
+          label="HIGH-SPEED FLICK"
+          subtitle="Flick Speed Rating"
+          score="94"
+          maxScore="100"
+          details={[
+            { label: 'Max Velocity', value: '4,280 px/s' },
+            { label: 'Sampling Rate', value: '240 Hz' }
+          ]}
+        />
 
-    <!-- Swipe Velocity Article -->
-    <article class="bg-bg-surface border border-border-hairline rounded-2xl p-6 sm:p-8 space-y-6 shadow-specular-top font-sans text-sm text-text-secondary leading-relaxed">
-      <div class="border-b border-border-hairline pb-4">
-        <span class="font-mono text-[10px] font-bold text-status-pass uppercase tracking-widest block mb-1">GESTURE KINEMATICS &amp; SAMPLING STABILITY</span>
-        <h2 class="text-xl font-bold text-text-primary">Touch Flick Kinematics, Velocity Derivation &amp; Timestamp Jitter</h2>
+        <MetricCard
+          title="Kinematics Readout"
+          subtitle="Velocity & Acceleration"
+          badgeText="Live Flicks"
+          metrics={[
+            { id: 'velocity', label: 'Instantaneous Velocity', value: '3,450', unit: 'px/s', status: 'pass' },
+            { id: 'acceleration', label: 'Peak Acceleration', value: '18.2', unit: 'px/ms²', status: 'pass' }
+          ]}
+        />
+
+        <TelemetryCard
+          title="Kinematics Stream"
+          subtitle="Microsecond Delta Jitter"
+          type="graph"
+          currentHz={240}
+          jitterSigmaMs={0.08}
+          badgeText="240Hz Touch"
+        />
+
+        <ShortcutCard
+          shortcuts={[
+            { keys: ['F'], label: 'Toggle Fullscreen' },
+            { keys: ['C'], label: 'Clear Telemetry Log' }
+          ]}
+        />
+
+        <InfoCard
+          title="Kinematics & Physics"
+          subtitle="W3C PointerEvents Spec"
+          badgeText="W3C Spec"
+          citations={[
+            { standard: "W3C Pointer Events", clause: "high-resolution timestamps", description: "Sub-millisecond event timestamp resolution for precise derivative kinematic calculations." }
+          ]}
+          osdTips={[
+            "Swipe quickly across the full canvas width for maximum velocity registration.",
+            "Keep browser background tabs closed to prevent event batching."
+          ]}
+        />
       </div>
 
-      <p>
-        Touch gesture tracking performance depends on high-frequency sampling (120Hz to 360Hz digitizer polling) combined with low-variance timestamp intervals (\(\Delta t\)). Velocity (\(v\)) and acceleration (\(a\)) are derived from continuous spatial coordinate deltas:
-      </p>
-
-      <div class="bg-bg-canvas p-4 rounded-xl border border-border-hairline font-mono text-xs space-y-2 my-4">
-        <span class="text-text-muted text-[10px] uppercase block tracking-wider">KINEMATICS DERIVATION</span>
-        <div class="text-status-pass font-bold">
-          v(t) = √( (Δx/Δt)² + (Δy/Δt)² )
-        </div>
-        <div class="text-text-primary">
-          a(t) = ( v(t) - v(t-1) ) / Δt
-        </div>
-      </div>
-
-      <ErgonomicsNotice />
-    </article>
-
-    <TestSwitcherBar tests={touchTests} currentId="swipe-velocity" />
+    </div>
   </div>
 </Layout>

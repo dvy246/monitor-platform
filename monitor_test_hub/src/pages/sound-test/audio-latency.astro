@@ -3,10 +3,13 @@ import Layout from '../../layouts/Layout.astro';
 import AudioTesterCanvas from '../../components/diagnostics/AudioTesterCanvas.astro';
 import FAQSection from '../../components/ui/FAQSection.astro';
 import Breadcrumbs from '../../components/ui/Breadcrumbs.astro';
-import MasterBentoDiagnosticSuite from '../../components/diagnostics/MasterBentoDiagnosticSuite.astro';
 import StepWorkflowSection from '../../components/ui/StepWorkflowSection.astro';
 import PanelTypeBreakdownSection from '../../components/ui/PanelTypeBreakdownSection.astro';
 
+import StatusCard from '../../components/ui/sidebar/StatusCard.astro';
+import MetricCard from '../../components/ui/sidebar/MetricCard.astro';
+import ConfigurationCard from '../../components/ui/sidebar/ConfigurationCard.astro';
+import ShortcutCard from '../../components/ui/sidebar/ShortcutCard.astro';
 
 const title = "Audio Latency & Lip-Sync Test";
 const description = "Test Bluetooth wireless headphones and speaker audio-visual latency. Measure A/V sync delay in milliseconds using Web Audio API.";
@@ -62,58 +65,127 @@ const breadcrumbs = [
 ---
 
 <Layout title={title} description={description} faqs={faqs}>
-  <div  font-sans">
+  <div class="max-w-7xl mx-auto px-4 py-6 sm:py-8 min-w-0 w-full overflow-hidden font-sans">
     <Breadcrumbs items={breadcrumbs} />
 
-    <!-- Hero Header Deck -->
-    <header class="relative w-full rounded-3xl border border-white/10 bg-[#121215]/90 backdrop-blur-xl p-6 sm:p-8 md:p-10 shadow-2xl space-y-4 overflow-hidden group select-none">
-      <div class="absolute -top-24 -left-24 w-72 h-72 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none group-hover:bg-emerald-500/15 transition-all duration-500"></div>
-      <div class="absolute -bottom-24 -right-24 w-72 h-72 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none group-hover:bg-cyan-500/15 transition-all duration-500"></div>
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 mt-6">
+      
+      <!-- Left Primary Diagnostic Canvas (lg:col-span-8) -->
+      <div class="lg:col-span-8 space-y-8 min-w-0">
+        <!-- Hero Header Deck -->
+        <header class="relative w-full rounded-3xl border border-white/10 bg-[#121215]/90 backdrop-blur-xl p-6 sm:p-8 md:p-10 shadow-2xl space-y-4 overflow-hidden group select-none">
+          <div class="absolute -top-24 -left-24 w-72 h-72 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none group-hover:bg-emerald-500/15 transition-all duration-500"></div>
+          <div class="absolute -bottom-24 -right-24 w-72 h-72 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none group-hover:bg-cyan-500/15 transition-all duration-500"></div>
 
-      <div class="relative z-10 space-y-3 max-w-3xl min-w-0 w-full">
-        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-emerald-400 text-xs font-mono font-bold tracking-wide flex-wrap shadow-inner">
-          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shrink-0"></span>
-          <span>AES17 DIGITAL AUDIO SPECIFICATIONS</span>
+          <div class="relative z-10 space-y-3 max-w-3xl min-w-0 w-full">
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#08080a] border border-white/10 text-emerald-400 text-xs font-mono font-bold tracking-wide flex-wrap shadow-inner">
+              <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shrink-0"></span>
+              <span>AES17 DIGITAL AUDIO SPECIFICATIONS</span>
+            </div>
+            <h1 class="text-3xl sm:text-5xl font-extrabold text-white tracking-tight font-sans break-words min-w-0">
+              {title}
+            </h1>
+            <p class="text-sm sm:text-base text-zinc-300 font-sans leading-relaxed min-w-0">
+              Measure Bluetooth headphone latency, wireless speaker delay, and lip-sync audio-visual synchronization using precision Web Audio API microsecond timers.
+            </p>
+          </div>
+        </header>
+
+        <!-- Main Diagnostic Instrument -->
+        <div class="rounded-3xl border border-white/10 bg-[#121215]/90 backdrop-blur-xl p-4 sm:p-6 shadow-2xl">
+          <AudioTesterCanvas />
         </div>
-        <h1 class="text-3xl sm:text-5xl font-extrabold text-white tracking-tight font-sans break-words min-w-0">
-          {title}
-        </h1>
-        <p class="text-sm sm:text-base text-zinc-300 font-sans leading-relaxed min-w-0">
-          Measure Bluetooth headphone latency, wireless speaker delay, and lip-sync audio-visual synchronization using precision Web Audio API microsecond timers.
-        </p>
-      </div>
-    </header>
 
-    <!-- Main Diagnostic Instrument -->
-    <div class="rounded-3xl border border-white/10 bg-[#121215]/90 backdrop-blur-xl p-4 sm:p-6 shadow-2xl">
-      <AudioTesterCanvas />
+        <!-- 3-Step Workflow Protocol -->
+        <StepWorkflowSection />
+
+        <!-- Panel Technology Breakdown -->
+        <PanelTypeBreakdownSection />
+
+        <!-- Article Section -->
+        <article class="bg-[#121215] border border-white/10 rounded-3xl p-6 sm:p-8 space-y-6 shadow-2xl font-sans text-sm text-zinc-300 leading-relaxed">
+          <div class="border-b border-white/10 pb-4 font-mono">
+            <span class="text-xs font-bold text-emerald-400 uppercase tracking-widest block mb-1">AUDIO HARDWARE BENCHMARKING</span>
+            <h2 class="text-2xl font-bold text-white">Comprehensive Audio Diagnostics &amp; Engineering Standards</h2>
+          </div>
+
+          <p>
+            Ensuring high-fidelity audio reproduction requires clinical, uncompressed test signals generated by precision mathematical algorithms. Our suite leverages the modern Web Audio API to bypass typical browser compression, delivering pure sine waves, white noise, and exact channel routing directly to your DAC.
+          </p>
+
+          <h3 class="text-xl font-bold text-white font-mono mt-6">Bluetooth Audio Codecs &amp; Latency Measurement</h3>
+          <p>
+            Standard Bluetooth SBC or AAC codecs introduce 150ms to 250ms of audio lag, resulting in noticeable lip-sync issues in movies and severe disadvantages in gaming. Advanced codecs like aptX Low Latency or LDAC reduce this overhead. Our audio-visual synchronization test provides empirical telemetry to quantify exactly how many milliseconds your wireless connection is lagging behind the video frame.
+          </p>
+        </article>
+
+        <!-- 10 Structured FAQs Component -->
+        <FAQSection faqs={faqs} title="Audio Latency & Lip-Sync FAQs" />
+      </div>
+
+      <!-- Right Modular Control & Telemetry Sidebar (lg:col-span-4) -->
+      <div class="lg:col-span-4 space-y-6 sticky top-24 self-start min-w-0">
+        <StatusCard
+          status="pass"
+          label="AUDIO SYNC OPTIMAL"
+          subtitle="Audio-Visual Latency Status"
+          score="12.4"
+          maxScore="ms"
+          details={[
+            { label: 'Measured Delay', value: '12.4 ms (Wired)' },
+            { label: 'Codec Rating', value: 'Imperceptible (< 40ms)' }
+          ]}
+        />
+
+        <MetricCard
+          title="Latency Metrics"
+          subtitle="Audio-Visual Telemetry"
+          badgeText="AES17 Sync"
+          metrics={[
+            { id: 'avDelayMs', label: 'Audio-Visual Delay', value: '12.4', unit: 'ms', status: 'pass' },
+            { id: 'codecLatency', label: 'Bluetooth Codec Delay', value: '25.0', unit: 'ms', status: 'pass' },
+            { id: 'bufferSize', label: 'Audio Hardware Buffer', value: '512', unit: 'samples', status: 'pass' }
+          ]}
+        />
+
+        <ConfigurationCard
+          title="Lip-Sync Generator"
+          subtitle="Flash & Ping Settings"
+          controls={[
+            {
+              id: 'flashInterval',
+              label: 'Sync Flash Tempo',
+              type: 'select',
+              value: '1000',
+              options: [
+                { value: '500', label: 'Fast Tempo (500ms / 120 BPM)' },
+                { value: '1000', label: 'Standard Tempo (1000ms / 60 BPM)' },
+                { value: '2000', label: 'Slow Tempo (2000ms / 30 BPM)' }
+              ]
+            },
+            {
+              id: 'pingFreq',
+              label: 'Audio Ping Frequency',
+              type: 'presets',
+              value: '1000',
+              options: [
+                { value: '440', label: '440 Hz (Note A4)' },
+                { value: '1000', label: '1000 Hz (Standard Ping)' },
+                { value: '2000', label: '2000 Hz (High Beep)' }
+              ]
+            }
+          ]}
+        />
+
+        <ShortcutCard
+          shortcuts={[
+            { keys: ['Space'], label: 'Trigger Lip-Sync Flash & Ping' },
+            { keys: ['C'], label: 'Calibrate User Reaction Lag' },
+            { keys: ['R'], label: 'Reset Sync Telemetry' }
+          ]}
+        />
+      </div>
+
     </div>
-
-    <!-- 3-Step Workflow Protocol -->
-    <StepWorkflowSection />
-
-    <!-- Panel Technology Breakdown -->
-    <PanelTypeBreakdownSection />
-
-    <!-- Article Section -->
-    <article class="bg-[#121215] border border-white/10 rounded-3xl p-6 sm:p-8 space-y-6 shadow-2xl font-sans text-sm text-zinc-300 leading-relaxed">
-      <div class="border-b border-white/10 pb-4 font-mono">
-        <span class="text-xs font-bold text-emerald-400 uppercase tracking-widest block mb-1">AUDIO HARDWARE BENCHMARKING</span>
-        <h2 class="text-2xl font-bold text-white">Comprehensive Audio Diagnostics &amp; Engineering Standards</h2>
-      </div>
-
-      <p>
-        Ensuring high-fidelity audio reproduction requires clinical, uncompressed test signals generated by precision mathematical algorithms. Our suite leverages the modern Web Audio API to bypass typical browser compression, delivering pure sine waves, white noise, and exact channel routing directly to your DAC.
-      </p>
-
-      <h3 class="text-xl font-bold text-white font-mono mt-6">Bluetooth Audio Codecs &amp; Latency Measurement</h3>
-      <p>
-        Standard Bluetooth SBC or AAC codecs introduce 150ms to 250ms of audio lag, resulting in noticeable lip-sync issues in movies and severe disadvantages in gaming. Advanced codecs like aptX Low Latency or LDAC reduce this overhead. Our audio-visual synchronization test provides empirical telemetry to quantify exactly how many milliseconds your wireless connection is lagging behind the video frame.
-      </p>
-    </article>
-
-    <!-- 10 Structured FAQs Component -->
-    <FAQSection faqs={faqs} title="Audio Latency & Lip-Sync FAQs" />
-
   </div>
 </Layout>

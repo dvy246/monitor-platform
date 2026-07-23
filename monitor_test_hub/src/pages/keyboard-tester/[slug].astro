@@ -1,8 +1,18 @@
 ---
 import Layout from '../../layouts/Layout.astro';
 import KeyboardTesterCanvas from '../../components/diagnostics/KeyboardTesterCanvas.astro';
-import SEOHead from '../../components/seo/SEOHead.astro';
-import SchemaGraph from '../../components/seo/SchemaGraph.astro';
+import SpacebarCounterCanvas from '../../components/diagnostics/SpacebarCounterCanvas.astro';
+import KeyboardCpsCanvas from '../../components/diagnostics/KeyboardCpsCanvas.astro';
+import TypingSpeedCanvas from '../../components/diagnostics/TypingSpeedCanvas.astro';
+import KeyboardPollingRateCanvas from '../../components/diagnostics/KeyboardPollingRateCanvas.astro';
+import KeyDropCanvas from '../../components/diagnostics/KeyDropCanvas.astro';
+import FAQSection from '../../components/ui/FAQSection.astro';
+
+import StatusCard from '../../components/ui/sidebar/StatusCard.astro';
+import PaletteCard from '../../components/ui/sidebar/PaletteCard.astro';
+import MetricCard from '../../components/ui/sidebar/MetricCard.astro';
+import TelemetryCard from '../../components/ui/sidebar/TelemetryCard.astro';
+import ShortcutCard from '../../components/ui/sidebar/ShortcutCard.astro';
 
 export function getStaticPaths() {
   const keyboardCategories = [
@@ -271,6 +281,177 @@ export function getStaticPaths() {
         { question: "Can Bluetooth keyboards support full NKRO?", answer: "Most Bluetooth HID profiles cap simultaneous key reports at 6KRO to conserve wireless bandwidth and power." },
         { question: "How do I export my NKRO rollover test score?", answer: "Click 'Download Certificate' to export a cryptographically signed report certifying your keyboard's peak NKRO count." }
       ]
+    },
+    {
+      slug: 'spacebar-counter',
+      title: 'Spacebar Counter & Speed Test | High-Precision CPS Speedometer',
+      h1: 'Spacebar CPS Counter & Speed Test',
+      description: 'Test your spacebar press speed in CPS (clicks per second). Features 5s/10s/30s/60s time trials, live cadence graph, Web Audio acoustic feedback, and SHA-256 signed hardware passport certificates.',
+      badge: 'HIGH-PRECISION SPACEBAR SPEEDOMETER',
+      faqs: [
+        { question: "What is a spacebar counter speed test?", answer: "A spacebar counter measures how many times you can press your keyboard spacebar within a set time trial interval (e.g. 5s, 10s, 30s, 60s), calculating your peak CPS (clicks per second)." },
+        { question: "How is spacebar CPS (clicks per second) calculated?", answer: "CPS is calculated by dividing total spacebar keystrokes registered by elapsed duration in seconds, with microsecond event timestamp precision." },
+        { question: "What is a good spacebar CPS score?", answer: "The average person registers 6 to 7 CPS. Fast typists and gamers achieve 8 to 10 CPS, while butterfly or jitter technique practitioners can exceed 12 CPS." },
+        { question: "Does spacebar switch bounce or chatter affect CPS testing?", answer: "Faulty switches with contact chatter can inject erroneous extra clicks; our hardware engine applies microsecond debounce validation to ensure authentic scores." },
+        { question: "Can I use mouse clicks or touchscreen taps on the spacebar counter?", answer: "Yes, you can press the physical Spacebar key on your keyboard or tap/click the interactive keycap surface on screen." },
+        { question: "What are Hooda Math spacebar clicker time trial intervals?", answer: "Popular time trial intervals include 5 seconds (burst speed), 10 seconds, 30 seconds (endurance), and 60 seconds (marathon speed)." },
+        { question: "How do mechanical switch types affect spacebar tapping speed?", answer: "Linear light-actuation switches (e.g. Cherry MX Red or Speed Silver with 45g force) allow faster rapid cycling than heavy tactile switches." },
+        { question: "What is spacebar stabilizer chatter or rattle?", answer: "Loose spacebar stabilizers (wire rattle) can cause uneven key travel or stuck spacebar keys during rapid clicking." },
+        { question: "Does this spacebar test export hardware passport certificates?", answer: "Yes! Click 'Download Certificate' upon test completion to generate a cryptographically signed SHA-256 JSON report of your spacebar CPS score." },
+        { question: "Is this spacebar counter test 100% free and client-side?", answer: "Yes, 100% free, ad-free, and runs entirely in your web browser without sending any keystroke telemetry to remote servers." }
+      ]
+    },
+    {
+      slug: 'mac-keyboard-tester',
+      title: 'Mac Keyboard Tester | Apple Magic Keyboard & MacBook Pro Key Check',
+      h1: 'Apple Mac & MacBook Pro Keyboard Tester',
+      description: 'Test your Mac keyboard online. Verify Command (⌘), Option (⌥), Control (⌃), Fn, Globe (🌐), and Touch ID compatibility across Apple Magic Keyboards and MacBooks.',
+      badge: 'APPLE MACOS & MACBOOK PRO MATRIX',
+      faqs: [
+        { question: "How do I test an Apple Mac keyboard or MacBook Pro online?", answer: "Press any key on your Mac keyboard; responsive keys highlight green while verifying Command (⌘), Option (⌥), and Fn key layers." },
+        { question: "How do Command (⌘) and Option (⌥) modifier keys register in the test?", answer: "Left/Right Command keys register as MetaLeft and MetaRight, while Left/Right Option keys register as AltLeft and AltRight." },
+        { question: "Can I test Apple Magic Keyboards connected via Bluetooth or USB-C?", answer: "Yes, wireless and USB-C Magic Keyboards dispatch full W3C KeyboardEvent codes natively." },
+        { question: "Does this test support MacBook scissor switches and butterfly switch keyboards?", answer: "Yes, it accurately diagnoses sticky butterfly keys, missing keystrokes, and scissor switch actuation." },
+        { question: "How do I test the Fn (Function) key and Globe (🌐) key on macOS?", answer: "Press Fn or Globe while targeting top-row media keys to verify secondary macOS shortcut dispatch." },
+        { question: "Why does pressing Command+Q close my browser tab?", answer: "macOS reserves ⌘Q for application quit; test Command keys in combination with letter keys like ⌘A or ⌘C instead." },
+        { question: "Does Touch ID dispatch browser keyboard events?", answer: "Touch ID hardware power buttons do not dispatch standard browser JS keyboard events due to Apple Secure Enclave security." },
+        { question: "Can I test PC keyboards connected to a Mac?", answer: "Yes, PC Windows keys map automatically to Command (⌘) and Alt maps to Option (⌥) in macOS." },
+        { question: "How do I test Option-code accent character entry on Mac?", answer: "Hold Option while pressing letter keys to inspect unicode character generation and VirtualKey mappings." },
+        { question: "What should I do if a MacBook key stops responding?", answer: "Clean under keycaps with compressed air or run a full key matrix scan to isolate broken PCB traces." }
+      ]
+    },
+    {
+      slug: 'keyboard-cps-test',
+      title: 'Keyboard CPS Test | Click Speed Challenge & Keystrokes Per Second',
+      h1: 'Keyboard CPS Speed Test & Click Challenge',
+      description: 'Benchmark your keyboard click speed in CPS (clicks per second). Features 1s, 5s, 10s, 30s, and 60s time trials, real-time cadence graph, and peak CPS telemetry.',
+      badge: 'KEYBOARD CPS SPEEDOMETER',
+      faqs: [
+        { question: "What is a keyboard CPS test?", answer: "A keyboard CPS test measures how many times you can tap a key on your keyboard in one second (Clicks Per Second)." },
+        { question: "How is keyboard CPS calculated?", answer: "CPS is calculated by taking total registered keystrokes and dividing by elapsed duration in seconds using microsecond timers." },
+        { question: "What is a good keyboard CPS score?", answer: "Average typing CPS is 5-7 CPS. Fast gamers achieve 8-10 CPS, while butterfly or jitter technique practitioners exceed 12+ CPS." },
+        { question: "Which time trial duration should I use (1s, 5s, 10s, 30s, 60s)?", answer: "Use 1s or 5s for peak burst speed testing, 10s for competitive benchmarks, and 30s or 60s for endurance testing." },
+        { question: "Can mechanical switches increase keyboard CPS?", answer: "Yes, light linear switches (e.g. Cherry MX Speed Silver with 45g actuation) enable faster key cycling than heavy switches." },
+        { question: "Does key chatter artificially inflate CPS scores?", answer: "Our testing engine applies microsecond debounce filtering to eliminate false double-clicks caused by switch chatter." },
+        { question: "Can I use any key on my keyboard for the CPS challenge?", answer: "Yes, you can tap Spacebar, Enter, WASD, or any alphanumeric key to benchmark your tapping velocity." },
+        { question: "How does polling rate (1000Hz vs 125Hz) affect CPS performance?", answer: "Higher 1000Hz polling rates process key reports every 1ms, providing instant responsiveness during fast tapping." },
+        { question: "How do I improve my keyboard CPS score?", answer: "Practice jitter tapping or butterfly tapping techniques while maintaining relaxed wrist posture." },
+        { question: "Is this keyboard CPS test leaderboard-ready?", answer: "Yes, scores are logged with microsecond precision and can be exported as hardware certificates." }
+      ]
+    },
+    {
+      slug: 'nkro-test',
+      title: 'NKRO Test | N-Key Rollover & Anti-Ghosting Keyboard Matrix',
+      h1: 'N-Key Rollover (NKRO) & Anti-Ghosting Test',
+      description: 'Test N-Key Rollover (NKRO) and anti-ghosting capabilities on your keyboard. Verify simultaneous keypress limits and diode matrix protection.',
+      badge: 'NKRO ANTI-GHOSTING BENCHMARK',
+      faqs: [
+        { question: "What is N-Key Rollover (NKRO)?", answer: "NKRO allows every key on the keyboard to be pressed simultaneously without key blocking or ghosting." },
+        { question: "What is 6KRO vs NKRO?", answer: "6KRO restricts simultaneous key reports to 6 keys, while NKRO allows unlimited concurrent key presses." },
+        { question: "What is keyboard ghosting?", answer: "Ghosting occurs when pressing multiple keys causes an unpressed key to falsely trigger due to missing PCB diodes." },
+        { question: "How do I perform an NKRO rollover test?", answer: "Press both palms down across your keyboard matrix; the counter records total simultaneous registered keys." },
+        { question: "Why do some keyboards require Fn+N to enable NKRO?", answer: "Some keyboards default to 6KRO for legacy BIOS compatibility; Fn+N toggles full USB NKRO mode." },
+        { question: "Is NKRO important for gaming?", answer: "Yes, competitive games require complex multi-key chords (e.g. WASD + Shift + Space + Skill keys)." },
+        { question: "Do membrane keyboards support full NKRO?", answer: "Most membrane keyboards are limited to 2KRO or 6KRO; mechanical keyboards with diodes support full NKRO." },
+        { question: "Can Bluetooth keyboards support NKRO?", answer: "Bluetooth HID profiles typically limit reports to 6KRO to conserve wireless bandwidth." },
+        { question: "Does Web Audio give feedback during NKRO testing?", answer: "Yes, optional audio feedback triggers as new simultaneous keys register in the matrix." },
+        { question: "How do I export my NKRO test score?", answer: "Click 'Download Certificate' to export a cryptographically signed report of your peak NKRO count." }
+      ]
+    },
+    {
+      slug: 'keyboard-chatter-test',
+      title: 'Keyboard Chatter Test | Switch Double-Typing & Debounce Check',
+      h1: 'Keyboard Switch Chatter & Double-Typing Diagnostic Tool',
+      description: 'Detect mechanical switch contact chatter, double-typing faults, and key bounce errors with adjustable debounce threshold (5ms-50ms) microsecond timestamp analysis.',
+      badge: 'SWITCH CHATTER DEBOUNCE ANALYZER',
+      faqs: [
+        { question: "What is mechanical switch chatter?", answer: "Switch chatter occurs when oxidized metal contacts bounce, registering multiple character inputs from a single physical press." },
+        { question: "How does the chatter test detect double typing?", answer: "Logs microsecond timestamp deltas between key release and immediate re-press (t_delta <= 35ms), flagging chatty keys in red." },
+        { question: "Can I adjust the chatter debounce threshold?", answer: "Yes, use the threshold slider to adjust detection sensitivity from 5ms up to 50ms." },
+        { question: "How do I fix a chatty mechanical switch?", answer: "Replace the switch on hot-swappable PCBs or clean contact leaves with 99% isopropyl alcohol." },
+        { question: "Do optical or Hall Effect switches chatter?", answer: "No, optical and magnetic switches do not use metallic contact leaves and are immune to chatter." },
+        { question: "Can dust cause switch chatter?", answer: "Yes, dust or debris inside switch housings prevents clean contact closure, causing erratic bouncing." },
+        { question: "What is MCU debounce delay?", answer: "Debounce delay is a software timer in keyboard firmware that ignores rapid contact bouncing signals." },
+        { question: "How does Windows Filter Keys help with chatter?", answer: "Enabling Filter Keys sets a minimum repeat delay to block rapid unintentional double keystrokes." },
+        { question: "What is the difference between bounce and chatter?", answer: "Bounce is the physical vibration of metal contacts; chatter is the resulting double-typing bug." },
+        { question: "How do I export a chatter audit report?", answer: "Click 'Download Certificate' to save a JSON hardware passport detailing chatty key locations." }
+      ]
+    },
+    {
+      slug: 'key-drop-test',
+      title: 'Key Drop Test | Gaming Keyboard Signal Interruption & Hold Inspector',
+      h1: 'Gaming Keyboard Key Drop & Signal Interruption Tester',
+      description: 'Test gaming keyboards for key signal drops, hold interruptions, and latency spikes during WASD movement in Valorant, CS2, Fortnite, and Apex Legends.',
+      badge: 'FPS GAMING KEY DROP INSPECTOR',
+      faqs: [
+        { question: "What is a key drop test?", answer: "A key drop test monitors whether holding a movement key (e.g. W or Shift) suffers signal interruptions or drops while held down." },
+        { question: "Why do key drops happen during gaming?", answer: "Key drops occur due to oxidized switch contacts, worn rubber domes, USB hub packet overruns, or wireless interference." },
+        { question: "How does key drop affect games like Valorant or CS2?", answer: "A dropped 'W' or 'A' key causes your character to stop moving mid-strafe, compromising competitive gunfights." },
+        { question: "How do I test for signal interruptions?", answer: "Hold WASD, Shift, and Space simultaneously; the tool graphs continuous key hold signals and flags unexpected releases." },
+        { question: "Do wireless keyboards suffer more key drops than wired?", answer: "2.4GHz wireless can drop key packets if USB 3.0 RF interference or low battery causes packet loss." },
+        { question: "How do magnetic Hall Effect switches prevent key drops?", answer: "Hall Effect switches use continuous magnetic position sensing, eliminating physical contact chatter and signal drops." },
+        { question: "Can USB port power saving cause key drops?", answer: "Yes, disable 'USB Selective Suspend' in Windows Power Options to prevent USB ports from sleeping." },
+        { question: "What is the difference between key chatter and key drop?", answer: "Key chatter causes extra unwanted presses, while key drop causes missing or interrupted key hold signals." },
+        { question: "How do I fix key drops on my keyboard?", answer: "Clean switch stems with isopropyl alcohol, update keyboard firmware, or switch to a direct USB motherboard port." },
+        { question: "Can I export key drop diagnostic logs?", answer: "Yes, click 'Download Certificate' to save a JSON report of signal stability metrics." }
+      ]
+    },
+    {
+      slug: 'keyboard-latency-test',
+      title: 'Keyboard Latency Test | Input Lag & Microsecond Response Profiler',
+      h1: 'Keyboard Latency & Input Lag Diagnostic Tool',
+      description: 'Measure keyboard latency, microsecond switch bounce timing, and input lag response. Includes P50/P90/P99 percentile statistics and latency histograms.',
+      badge: 'MICROSECOND LATENCY PROFILER',
+      faqs: [
+        { question: "How is keyboard latency measured?", answer: "Measures microsecond delta between physical switch contact closure dispatch and browser DOM event loop processing." },
+        { question: "What is good keyboard latency for gaming?", answer: "Sub-1ms to 3ms is elite for competitive gaming; 5ms-10ms is good; over 15ms causes noticeable delay." },
+        { question: "What is P50, P90, and P99 latency?", answer: "Percentile metrics showing input lag consistency: P50 is median latency, P90 is 90th percentile, and P99 tracks worst-case lag spikes." },
+        { question: "Does USB polling rate (1000Hz vs 8000Hz) reduce latency?", answer: "Yes, 1000Hz polls every 1ms, while 8000Hz polls every 0.125ms, reducing maximum polling delay." },
+        { question: "How do optical switches reduce latency?", answer: "Optical switches actuate instantly when a light beam is broken, bypassing metallic debounce delays (1-5ms)." },
+        { question: "Does monitor refresh rate impact perceived latency?", answer: "Higher refresh rate monitors (240Hz/540Hz) render keystroke visual feedback faster, lowering total click-to-photon lag." },
+        { question: "Why does Bluetooth have higher latency than 2.4GHz wireless?", answer: "Bluetooth operates at 125Hz polling (~8-15ms delay), while 2.4GHz wireless achieves 1000Hz+ (1ms delay)." },
+        { question: "What is DPC latency on Windows?", answer: "Deferred Procedure Call (DPC) latency in Windows drivers can delay USB packet processing, causing keystroke lag spikes." },
+        { question: "Can browser hardware acceleration lower latency?", answer: "Yes, hardware acceleration offloads DOM event loop rendering to GPU, eliminating CPU frame stutters." },
+        { question: "How do I export latency histogram reports?", answer: "Click 'Download Certificate' to export a cryptographically signed report of your keyboard latency metrics." }
+      ]
+    },
+    {
+      slug: 'keyboard-polling-rate-test',
+      title: 'Keyboard Polling Rate Test | 1000Hz to 8000Hz USB Hz Benchmark',
+      h1: 'Keyboard Polling Rate (Hz) & Report Frequency Benchmark',
+      description: 'Measure keyboard USB HID report polling rates (125Hz, 500Hz, 1000Hz, 4000Hz, 8000Hz). Includes jitter graph, rolling average Hz, and stability score.',
+      badge: '1000HZ / 8000HZ USB POLLING BENCHMARK',
+      faqs: [
+        { question: "What is keyboard polling rate (Hz)?", answer: "Polling rate measures how many times per second (Hz) your keyboard sends input report packets to your computer." },
+        { question: "What is the difference between 125Hz, 500Hz, 1000Hz, and 8000Hz?", answer: "125Hz = 8ms delay; 500Hz = 2ms delay; 1000Hz = 1ms delay; 8000Hz = 0.125ms delay." },
+        { question: "How do I test my keyboard polling rate online?", answer: "Press and hold any key on your keyboard; the test calculates microsecond report deltas and displays real-time Hz." },
+        { question: "Why is my 1000Hz keyboard showing lower Hz online?", answer: "Keyboards send reports when keys state changes; continuous holding or OS repeat rates determine incoming packet frequency." },
+        { question: "Does an 8000Hz polling rate increase CPU usage?", answer: "Yes, 8000Hz generates 8,000 interrupts per second, requiring a high-performance multi-core CPU." },
+        { question: "Can web browsers accurately measure 1000Hz polling rates?", answer: "Modern browsers (Chrome/Edge) with microsecond performance.now() timers process high-frequency HID report packets." },
+        { question: "What is polling jitter?", answer: "Jitter measures variance between report arrival intervals; lower jitter indicates a stable USB connection." },
+        { question: "Does USB 2.0 vs USB 3.0 affect keyboard polling rate?", answer: "Standard 1000Hz operates on USB 2.0; 4000Hz and 8000Hz high-rate keyboards require USB 3.0+ ports." },
+        { question: "What is keyboard stability score?", answer: "Stability score (%) evaluates inter-report consistency and flags dropped or delayed USB packets." },
+        { question: "How do I export my polling rate benchmark?", answer: "Click 'Download Certificate' to save a JSON report detailing peak Hz, average Hz, and stability score." }
+      ]
+    },
+    {
+      slug: 'typing-speed-test',
+      title: 'Typing Speed Test | WPM, CPM & Accuracy Speedometer',
+      h1: 'Typing Speed Test & WPM Practice Benchmark',
+      description: 'Benchmark your typing speed in WPM (Words Per Minute) and CPM (Characters Per Minute). Includes accuracy heatmap, Coding Mode, and Punctuation Mode.',
+      badge: 'WPM & CPM TYPING SPEEDOMETER',
+      faqs: [
+        { question: "How is typing speed (WPM) calculated?", answer: "WPM is calculated as (Net Characters / 5) / Elapsed Minutes. Standard word length unit is 5 characters." },
+        { question: "What is the difference between WPM and CPM?", answer: "WPM measures standardized word output per minute, while CPM counts individual character keystrokes per minute." },
+        { question: "What is a good WPM typing speed?", answer: "Average speed is 40 WPM; above 70 WPM is fast; competitive typists exceed 100-120+ WPM." },
+        { question: "What difficulty modes are available?", answer: "Features Standard English text, Coding Mode (JS/Python syntax), and Punctuation Mode." },
+        { question: "How does typing accuracy affect your WPM score?", answer: "Uncorrected typing errors lower net WPM; maintaining 98%+ accuracy yields maximum sustained speed." },
+        { question: "Can mechanical keyboards increase typing speed?", answer: "Yes, tactile or linear mechanical switches provide consistent actuation feedback, reducing finger fatigue." },
+        { question: "How does touch typing improve WPM?", answer: "Touch typing utilizes muscle memory across all 10 fingers, eliminating hunt-and-peck visual delay." },
+        { question: "How do I fix common typing errors?", answer: "Use the error heatmap to identify problematic key combinations and practice homing key finger placement." },
+        { question: "Is this typing speed test free?", answer: "Yes, 100% free, browser-based, and private with zero keystroke data recorded." },
+        { question: "How do I restart the typing speed test?", answer: "Click 'Restart Test' or press Escape at any point to reset text prompts and speedometer metrics." }
+      ]
     }
   ];
 
@@ -289,43 +470,99 @@ const cat = Astro.props.cat || {
   faqs: []
 };
 
-const canonicalUrl = `https://monitortester.com/keyboard-tester/${cat.slug}`;
+const canonicalUrl = `https://displaytestonline.com/keyboard-tester/${cat.slug}`;
 ---
 
 <Layout title={cat.title} description={cat.description} faqs={cat.faqs} canonicalUrl={canonicalUrl}>
+  <div class="max-w-7xl mx-auto px-4 py-6 sm:py-8 min-w-0 w-full overflow-hidden font-sans">
+    
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 mt-6">
+      
+      <!-- Left Primary Diagnostic Canvas (lg:col-span-8) -->
+      <div class="lg:col-span-8 space-y-8 min-w-0">
+        <section class="max-w-4xl mx-auto text-center space-y-4">
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-xs font-mono text-emerald-400 font-bold uppercase tracking-wider flex-wrap min-w-0 justify-center">
+            <span>{cat.badge}</span>
+          </div>
+          <h1 class="text-3xl sm:text-4xl font-extrabold font-mono tracking-tight text-white">
+            {cat.h1}
+          </h1>
+          <p class="text-sm sm:text-base text-zinc-400 leading-relaxed max-w-2xl mx-auto">
+            {cat.description}
+          </p>
+        </section>
 
-  <div class="py-10 px-4 sm:px-6 lg:px-8 space-y-12 bg-bg-canvas">
-    <section class="max-w-4xl mx-auto text-center space-y-4">
-      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-status-pass/10 border border-status-pass/30 text-xs font-mono text-status-pass font-bold">
-        <span>{cat.badge}</span>
+        <!-- Main Visual Diagnostic Engine Component -->
+        {cat.slug === 'spacebar-counter' || cat.slug === 'keyboard-cps-test' ? (
+          <KeyboardCpsCanvas />
+        ) : cat.slug === 'typing-speed-test' || cat.slug === 'keyboard-test-speed' ? (
+          <TypingSpeedCanvas />
+        ) : cat.slug === 'keyboard-polling-rate-test' ? (
+          <KeyboardPollingRateCanvas />
+        ) : cat.slug === 'key-drop-test' ? (
+          <KeyDropCanvas />
+        ) : (
+          <KeyboardTesterCanvas />
+        )}
+
+        <!-- 10-Item Technical FAQ Section -->
+        {cat.faqs && cat.faqs.length > 0 && (
+          <FAQSection faqs={cat.faqs} title={`Frequently Asked Questions (${cat.h1})`} />
+        )}
       </div>
-      <h1 class="text-3xl sm:text-4xl font-extrabold font-mono tracking-tight text-text-primary">
-        {cat.h1}
-      </h1>
-      <p class="text-sm sm:text-base text-text-muted leading-relaxed max-w-2xl mx-auto">
-        {cat.description}
-      </p>
-    </section>
 
-    <!-- Main Visual Diagnostic Engine Component -->
-    <KeyboardTesterCanvas />
+      <!-- Right Modular Control & Telemetry Sidebar (lg:col-span-4) -->
+      <div class="lg:col-span-4 space-y-6 sticky top-24 self-start min-w-0">
+        <StatusCard
+          status="pass"
+          label="KEY MATRIX ACTIVE"
+          subtitle="HID Keycode Telemetry"
+          score="100"
+          maxScore="%"
+          details={[
+            { label: 'Event Target', value: 'KeyboardEvent' },
+            { label: 'Chatter Guard', value: 'Active (35ms)' }
+          ]}
+        />
 
-    <!-- 10-Item Technical FAQ Section -->
-    {cat.faqs && cat.faqs.length > 0 && (
-      <section class="max-w-5xl mx-auto space-y-6 bg-bg-surface/80 border border-border-hairline rounded-2xl p-6 sm:p-8 backdrop-blur-xl font-sans">
-        <div class="border-b border-border-hairline pb-4">
-          <h2 class="text-xl font-bold font-mono text-text-primary">Frequently Asked Questions ({cat.h1})</h2>
-          <p class="text-xs text-text-muted mt-1 font-mono">10-Item Technical FAQ &amp; USB HID Diagnostic Troubleshooting</p>
-        </div>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {cat.faqs.map(faq => (
-            <div class="p-4 rounded-xl bg-bg-canvas border border-border-hairline space-y-1.5">
-              <h3 class="font-bold text-text-primary font-mono text-xs sm:text-sm">{faq.question}</h3>
-              <p class="text-xs text-text-muted leading-relaxed">{faq.answer}</p>
-            </div>
-          ))}
-        </div>
-      </section>
-    )}
+        <PaletteCard
+          title="Keyboard Geometry"
+          subtitle="Matrix Mapping Standard"
+          layoutPresets={[
+            { id: 'ansi-104', name: 'ANSI 104 Full', keyCount: 104 },
+            { id: 'macbook', name: 'Apple Mac Layout', keyCount: 78 },
+            { id: 'mini-60', name: '60% Compact', keyCount: 61 }
+          ]}
+          activePresetId="ansi-104"
+        />
+
+        <MetricCard
+          title="Keycode Readout"
+          subtitle="DOM Event Telemetry"
+          badgeText="W3C HID"
+          metrics={[
+            { id: 'keyCode', label: 'W3C Key Code', value: 'KeyA', status: 'pass' },
+            { id: 'hexCode', label: 'Virtual Scan Code', value: '0x1E', status: 'pass' },
+            { id: 'debounceMs', label: 'Debounce Delta', value: '0.0', unit: 'ms', status: 'pass' },
+            { id: 'eventFlags', label: 'Modifier State', value: 'Clean', status: 'pass' }
+          ]}
+        />
+
+        <TelemetryCard
+          title="Modifier & Event Flags"
+          subtitle="Shift / Ctrl / Alt / Meta Status"
+          type="event-log"
+          badgeText="DOM Flags"
+        />
+
+        <ShortcutCard
+          shortcuts={[
+            { keys: ['Esc'], label: 'Reset Diagnostic Matrix' },
+            { keys: ['Space'], label: 'Audit Spacebar Switch' }
+          ]}
+        />
+      </div>
+
+    </div>
   </div>
 </Layout>

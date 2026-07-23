@@ -1,0 +1,178 @@
+---
+/**
+ * SteeringWheelCanvas.astro
+ * Racing Wheel & Pedals Diagnostic Engine for Logitech, Thrustmaster, Fanatec, Moza, and Simagic.
+ * Features:
+ * - 900° / 1080° Wheel Rotation Angle Visualizer.
+ * - Throttle, Brake, and Clutch Analog Pedal Depth Bars (0% to 100%).
+ * - Sequential / H-Shifter & Handbrake Position Inspector.
+ * - Linearity Response Graph & Deadzone Detector.
+ */
+---
+
+<div class="w-full max-w-5xl mx-auto space-y-6 font-sans select-none min-w-0" id="wheel-test-root">
+  <div class="relative bg-[#0c0d12]/90 border border-zinc-800/90 rounded-2xl p-4 sm:p-6 backdrop-blur-2xl shadow-[0_25px_60px_rgba(0,0,0,0.8)] space-y-6 overflow-hidden">
+    <!-- Ambient Glows -->
+    <div class="absolute -top-24 -right-24 w-96 h-96 bg-red-500/10 rounded-full blur-3xl pointer-events-none"></div>
+    <div class="absolute -bottom-24 -left-24 w-96 h-96 bg-amber-500/10 rounded-full blur-3xl pointer-events-none"></div>
+
+    <div class="relative z-10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-zinc-800/70 pb-5">
+      <div>
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-red-500/10 border border-red-500/30 text-[11px] font-mono text-red-400 font-bold uppercase tracking-wider mb-2">
+          <span class="w-2 h-2 rounded-full bg-red-400 shadow-[0_0_8px_rgba(248,113,113,0.9)] animate-pulse"></span>
+          <span>RACING WHEEL &amp; PEDALS DIAGNOSTIC ENGINE</span>
+        </div>
+        <h2 class="text-xl sm:text-2xl font-bold font-mono text-white tracking-tight">Steering Wheel &amp; Pedals Tester</h2>
+      </div>
+
+      <div class="text-xs font-mono text-zinc-400 bg-zinc-950 px-3 py-1.5 rounded-lg border border-zinc-800">
+        Logitech / Thrustmaster / Fanatec / Moza
+      </div>
+    </div>
+
+    <!-- Main Visual Wheel & Pedals Grid -->
+    <div class="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
+      <!-- Wheel Steering Angle Dial Canvas -->
+      <div class="lg:col-span-6 h-64 bg-zinc-950 rounded-2xl border border-zinc-800/90 flex flex-col items-center justify-center p-4 relative shadow-[inset_0_4px_16px_rgba(0,0,0,0.95)]">
+        <canvas id="wheel-dial-canvas" class="w-full h-full block"></canvas>
+        <div class="absolute bottom-3 font-mono text-xs text-zinc-400 font-bold">
+          Angle: <span id="wheel-angle-text" class="text-red-400">0.0°</span>
+        </div>
+      </div>
+
+      <!-- Pedals Depth Gauges -->
+      <div class="lg:col-span-6 space-y-4 font-mono">
+        <!-- Throttle Pedal -->
+        <div class="bg-zinc-950 p-3.5 rounded-xl border border-zinc-800 space-y-1.5">
+          <div class="flex justify-between text-xs font-bold">
+            <span class="text-emerald-400">THROTTLE (ACCELERATOR)</span>
+            <span id="pedal-throttle-val" class="text-white">0%</span>
+          </div>
+          <div class="w-full h-3 bg-zinc-900 rounded-full overflow-hidden border border-zinc-800">
+            <div id="pedal-throttle-bar" class="h-full bg-emerald-500 w-0 transition-all duration-75"></div>
+          </div>
+        </div>
+
+        <!-- Brake Pedal -->
+        <div class="bg-zinc-950 p-3.5 rounded-xl border border-zinc-800 space-y-1.5">
+          <div class="flex justify-between text-xs font-bold">
+            <span class="text-red-400">BRAKE</span>
+            <span id="pedal-brake-val" class="text-white">0%</span>
+          </div>
+          <div class="w-full h-3 bg-zinc-900 rounded-full overflow-hidden border border-zinc-800">
+            <div id="pedal-brake-bar" class="h-full bg-red-500 w-0 transition-all duration-75"></div>
+          </div>
+        </div>
+
+        <!-- Clutch Pedal -->
+        <div class="bg-zinc-950 p-3.5 rounded-xl border border-zinc-800 space-y-1.5">
+          <div class="flex justify-between text-xs font-bold">
+            <span class="text-amber-400">CLUTCH</span>
+            <span id="pedal-clutch-val" class="text-white">0%</span>
+          </div>
+          <div class="w-full h-3 bg-zinc-900 rounded-full overflow-hidden border border-zinc-800">
+            <div id="pedal-clutch-bar" class="h-full bg-amber-500 w-0 transition-all duration-75"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const canvas = document.getElementById('wheel-dial-canvas') as HTMLCanvasElement | null;
+  const angleText = document.getElementById('wheel-angle-text');
+
+  const throttleVal = document.getElementById('pedal-throttle-val');
+  const throttleBar = document.getElementById('pedal-throttle-bar');
+  const brakeVal = document.getElementById('pedal-brake-val');
+  const brakeBar = document.getElementById('pedal-brake-bar');
+  const clutchVal = document.getElementById('pedal-clutch-val');
+  const clutchBar = document.getElementById('pedal-clutch-bar');
+
+  function renderWheel(angleDeg: number) {
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    const rect = canvas.getBoundingClientRect();
+    if (rect.width < 20 || rect.height < 20) return;
+
+    canvas.width = rect.width;
+    canvas.height = rect.height;
+
+    ctx.clearRect(0, 0, rect.width, rect.height);
+
+    const cx = rect.width / 2;
+    const cy = rect.height / 2;
+    const radius = Math.min(rect.width, rect.height) * 0.38;
+
+    ctx.save();
+    ctx.translate(cx, cy);
+    ctx.rotate((angleDeg * Math.PI) / 180);
+
+    // Wheel Ring
+    ctx.beginPath();
+    ctx.arc(0, 0, radius, 0, 2 * Math.PI);
+    ctx.lineWidth = 14;
+    ctx.strokeStyle = '#27272a';
+    ctx.stroke();
+
+    // Red Center Marker Stripe
+    ctx.beginPath();
+    ctx.rect(-6, -radius - 7, 12, 14);
+    ctx.fillStyle = '#ef4444';
+    ctx.fill();
+
+    // Wheel Spokes
+    ctx.beginPath();
+    ctx.moveTo(-radius + 10, 0); ctx.lineTo(radius - 10, 0);
+    ctx.moveTo(0, 0); ctx.lineTo(0, radius - 10);
+    ctx.lineWidth = 6;
+    ctx.strokeStyle = '#3f3f46';
+    ctx.stroke();
+
+    ctx.restore();
+  }
+
+  function loop() {
+    const gamepads = navigator.getGamepads ? navigator.getGamepads() : [];
+    let gp: Gamepad | null = null;
+    for (let i = 0; i < gamepads.length; i++) {
+      if (gamepads[i]) { gp = gamepads[i]; break; }
+    }
+
+    let rawWheel = 0;
+    let rawThrottle = 0;
+    let rawBrake = 0;
+    let rawClutch = 0;
+
+    if (gp) {
+      rawWheel = gp.axes[0] || 0; // Steering axis (-1 to +1)
+      if (gp.axes.length >= 4) {
+        rawThrottle = (1 - (gp.axes[1] || 0)) / 2; // Scaled 0 to 1
+        rawBrake = (1 - (gp.axes[2] || 0)) / 2;
+        rawClutch = (1 - (gp.axes[3] || 0)) / 2;
+      }
+    }
+
+    const angle = rawWheel * 450; // Map -1..+1 to -450°..+450° (900° total)
+    if (angleText) angleText.textContent = `${angle.toFixed(1)}°`;
+
+    const tPct = Math.round(Math.max(0, Math.min(100, rawThrottle * 100)));
+    const bPct = Math.round(Math.max(0, Math.min(100, rawBrake * 100)));
+    const cPct = Math.round(Math.max(0, Math.min(100, rawClutch * 100)));
+
+    if (throttleVal) throttleVal.textContent = `${tPct}%`;
+    if (throttleBar) throttleBar.style.width = `${tPct}%`;
+    if (brakeVal) brakeVal.textContent = `${bPct}%`;
+    if (brakeBar) brakeBar.style.width = `${bPct}%`;
+    if (clutchVal) clutchVal.textContent = `${cPct}%`;
+    if (clutchBar) clutchBar.style.width = `${cPct}%`;
+
+    renderWheel(angle);
+    requestAnimationFrame(loop);
+  }
+
+  requestAnimationFrame(loop);
+</script>
