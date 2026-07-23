@@ -538,24 +538,21 @@ const homepageFaqSchema = {
     const dprEl = document.getElementById('tel-dpr');
     const fpsEl = document.getElementById('tel-fps');
     const ctaLabel = document.getElementById('cta-label');
+    const smartCta = document.getElementById('smart-hero-cta') as HTMLAnchorElement;
 
-    if (resEl) {
-      resEl.textContent = `${window.screen.width * window.devicePixelRatio} x ${window.screen.height * window.devicePixelRatio}`;
+    if (!resEl || !dprEl || !fpsEl || !ctaLabel || !smartCta) {
+      return;
     }
-    if (dprEl) {
-      dprEl.textContent = `${window.devicePixelRatio.toFixed(2)}x`;
-    }
+
+    resEl.textContent = `${window.screen.width * window.devicePixelRatio} x ${window.screen.height * window.devicePixelRatio}`;
+    dprEl.textContent = `${window.devicePixelRatio.toFixed(2)}x`;
 
     let lastUpdate = 0;
     const engine = new VsyncSyncEngine((stats) => {
       const now = performance.now();
       if (now - lastUpdate >= 250) {
-        if (fpsEl) {
-          fpsEl.textContent = `${stats.currentFps.toFixed(1)} Hz`;
-        }
-        if (ctaLabel) {
-          ctaLabel.textContent = `START MONITOR TEST (${stats.currentFps.toFixed(0)}Hz DETECTED)`;
-        }
+        fpsEl.textContent = `${stats.currentFps.toFixed(1)} Hz`;
+        ctaLabel.textContent = `START MONITOR TEST (${stats.currentFps.toFixed(0)}Hz DETECTED)`;
         lastUpdate = now;
       }
     });
@@ -571,10 +568,9 @@ const homepageFaqSchema = {
     });
 
     // Device route optimization
-    const smartCta = document.getElementById('smart-hero-cta') as HTMLAnchorElement;
-    if (smartCta && ('ontouchstart' in window || navigator.maxTouchPoints > 0) && window.innerWidth < 768) {
+    if (('ontouchstart' in window || navigator.maxTouchPoints > 0) && window.innerWidth < 768) {
       smartCta.href = '/touch-tests';
-      if (ctaLabel) ctaLabel.textContent = 'RUN DIGITIZER CALIBRATION';
+      ctaLabel.textContent = 'RUN DIGITIZER CALIBRATION';
     }
   }
 

@@ -67,9 +67,9 @@ export default defineConfig({
     plugins: [tailwindcv4()],
     build: {
       rollupOptions: {
-        output: {
-          manualChunks: () => 'shared'
-        }
+        // output: {
+        //   manualChunks: () => 'shared'
+        // }
       }
     }
   },
