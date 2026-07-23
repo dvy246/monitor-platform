@@ -1,0 +1,98 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import WaterEjectorCanvas from '../../components/diagnostics/WaterEjectorCanvas.astro';
+import FAQSection from '../../components/ui/FAQSection.astro';
+import { useTranslations, localizeLink } from '../../utils/i18n';
+
+const { t, lang } = useTranslations(Astro.url.pathname);
+
+const waterEjectFaqs = [
+  {
+    q: 'How does a water eject sound work?',
+    a: 'Water ejection sounds generate low-frequency acoustic sine waves (typically between 150Hz and 175Hz). These low frequencies force the speaker diaphragm and voice coil to vibrate rapidly at high mechanical amplitude, pushing out trapped liquid droplets through physical air displacement.'
+  },
+  {
+    q: 'Why is 165Hz recommended for speaker water removal?',
+    a: '165Hz lies near the mechanical resonant frequency of modern smartphone micro-speakers (such as Apple iPhone, Samsung Galaxy, and Google Pixel speakers). At resonance, physical diaphragm displacement is maximized with minimal electrical strain.'
+  },
+  {
+    q: 'Will playing a water eject sound damage my phone speaker?',
+    a: 'No. Playing a 165Hz water eject sound at 100% volume for 60-120 seconds is completely safe. Modern smartphone speakers are factory-tested to withstand sustained maximum volume output without voice coil damage.'
+  },
+  {
+    q: 'How do I get water out of my iPhone speaker or Android earpiece?',
+    a: 'Turn your device volume up to 100%, point your device speaker mesh downward toward the ground, and press "Start Water Eject". Run the sweep for 60 seconds. Repeat 2 to 3 times if audio remains muffled.'
+  },
+  {
+    q: 'What should I do if my speaker still sounds muffled or crackling?',
+    a: 'If audio remains muffled after 3 cycles, use our "Left/Right Channel Target" controls to isolate the top earpiece speaker or bottom firing speaker individually. Follow with our "Crackle & Distortion Check" mode to diagnose mechanical cone damage.'
+  },
+  {
+    q: 'Can I remove water from Apple Watch or AirPods speakers?',
+    a: 'Yes. Open this page on your connected smartphone or laptop and play the sound while holding your AirPods or Apple Watch speaker mesh near the sound output, or use our mobile touch layout directly.'
+  },
+  {
+    q: 'Does rice actually dry out a phone speaker faster than sound?',
+    a: 'No. Rice is inefficient and dangerous. Starch dust from uncooked rice can enter speaker grills and charging ports, combining with liquid to form hard paste. Acoustic sound wave ejection is faster, safer, and immediate.'
+  },
+  {
+    q: 'How do I test if my microphone was damaged by water?',
+    a: 'After running the speaker water eject sound, visit our free online Microphone Test suite to record a 3-second audio loop and verify if your mic capsule captured clear audio without static floor noise.'
+  },
+  {
+    q: 'Does this tool work on tablets and laptop speakers?',
+    a: 'Yes. Our AudioDiagnosticEngine detects your browser audio hardware and supports multi-speaker arrays across MacBooks, Windows laptops, iPads, and Android tablets.'
+  },
+  {
+    q: 'Is this water eject tool completely free and private?',
+    a: 'Yes. Display Test Online is 100% free with zero ads, zero software downloads, and zero data collection. All audio sweeps execute locally inside your browser.'
+  }
+];
+---
+
+<Layout
+  title="Fix My Speaker: Water Eject Sound & Speaker Cleaner | Display Test Online"
+  description="Remove water from phone speakers instantly using 165Hz acoustic frequency sweeps. Safe for iPhone, Android, and laptops. Run free online water eject tool now."
+  faqs={waterEjectFaqs.map(item => ({ question: item.q, answer: item.a }))}
+>
+  <main id="main-content" class="py-10 space-y-12">
+    <!-- Page Header & SEO Hero -->
+    <section class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-4">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-status-pass/10 border border-status-pass/30 font-mono text-xs text-status-pass font-bold tracking-wider uppercase">
+        <span class="w-2 h-2 rounded-full bg-status-pass animate-pulse"></span>
+        Phone Speaker Doctor Suite
+      </div>
+
+      <h1 class="text-3xl sm:text-5xl font-extrabold text-text-primary tracking-tight font-mono">
+        Water Eject Sound &amp; Speaker Cleaner
+      </h1>
+
+      <p class="text-sm sm:text-base text-text-secondary max-w-2xl mx-auto leading-relaxed">
+        Dropped your phone in water or dealing with muffled audio? Run our free browser-native 165Hz acoustic sound wave generator to clear liquid and dust from your smartphone, tablet, or laptop speakers instantly.
+      </p>
+    </section>
+
+    <!-- Interactive Diagnostic Canvas Component -->
+    <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <WaterEjectorCanvas />
+    </section>
+
+    <!-- Deep Technical Information & SEO Suite -->
+    <section class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10 text-text-secondary text-sm leading-relaxed">
+      <div class="p-6 rounded-2xl bg-bg-surface border border-border-hairline space-y-4">
+        <h2 class="text-xl font-bold font-mono text-text-primary">
+          Why Does Water Make Smartphone Speakers Sound Muffled?
+        </h2>
+        <p>
+          When liquid enters a smartphone speaker grill, surface tension traps microscopic water droplets directly against the speaker membrane (diaphragm). Because water is substantially denser than air, it restricts the voice coil from vibrating freely, suppressing higher frequencies and producing muffled, distorted audio output.
+        </p>
+        <p>
+          Standard drying methods like towels or blowing cannot break surface tension trapped inside micro-perforations. Our <strong>AudioDiagnosticEngine</strong> generates low-frequency resonant acoustic pressure waves (150Hz to 175Hz) that physically displace trapped moisture in seconds.
+        </p>
+      </div>
+
+      <!-- FAQ Section Accordion UI -->
+      <FAQSection faqs={waterEjectFaqs.map(item => ({ question: item.q, answer: item.a }))} />
+    </section>
+  </main>
+</Layout>

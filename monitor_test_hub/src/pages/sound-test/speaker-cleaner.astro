@@ -1,0 +1,82 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import WaterEjectorCanvas from '../../components/diagnostics/WaterEjectorCanvas.astro';
+import FAQSection from '../../components/ui/FAQSection.astro';
+import { useTranslations } from '../../utils/i18n';
+
+const { t, lang } = useTranslations(Astro.url.pathname);
+
+const speakerCleanerFaqs = [
+  {
+    q: 'What is a speaker cleaner sound?',
+    a: 'A speaker cleaner sound is a specialized audio signal engineered with high-energy harmonic waveforms (such as sawtooth waves and frequency sweeps) designed to shake loose dust particles, lint, and dried debris from speaker meshes.'
+  },
+  {
+    q: 'How does dust affect phone speaker volume and quality?',
+    a: 'Dust and pocket lint collect inside tiny speaker grilles over time, creating a physical barrier that restricts acoustic air displacement, reducing maximum volume output and muffling vocal clarity.'
+  },
+  {
+    q: 'Can a sound wave really clean dust out of a speaker?',
+    a: 'Yes. Sound waves create physical air compression and rarefaction. High-intensity sawtooth waves produce sharp transient impulses that dislodge particulate matter stuck to outer mesh layers.'
+  },
+  {
+    q: 'Is it safe to clean a phone speaker with compressed air or needles?',
+    a: 'No! Needles can pierce the delicate speaker membrane or waterproof adhesive seals. Compressed air can blast debris deeper into the acoustic chamber. Acoustic sound cleaning is 100% non-invasive and safe.'
+  },
+  {
+    q: 'How often should I run the speaker cleaner tool?',
+    a: 'We recommend running a 60-second speaker clean cycle once a month, or whenever you notice muffled call audio or reduced speaker volume.'
+  },
+  {
+    q: 'How do I clean both the top earpiece speaker and bottom main speaker?',
+    a: 'Use our channel selector buttons to toggle between "Left", "Right", and "All" speakers to direct max acoustic pressure to individual driver units.'
+  },
+  {
+    q: 'Does this speaker cleaner tool work on MacBooks and laptops?',
+    a: 'Yes. It works natively across all HTML5 compliant browsers on macOS, Windows, Linux, iOS, and Android.'
+  },
+  {
+    q: 'What volume level should I set during the speaker cleaning process?',
+    a: 'Set your device volume to 80%–100% for maximum acoustic energy.'
+  },
+  {
+    q: 'What should I do if speaker volume remains low after cleaning?',
+    a: 'Run our "Crackle & Distortion Check" or check for physical wax/oil buildup on the outer grill that may require a soft dry toothbrush brush.'
+  },
+  {
+    q: 'Is this speaker cleaner tool 100% free and ad-free?',
+    a: 'Yes. Display Test Online is free, privacy-focused, and executes all DSP locally inside your web browser.'
+  }
+];
+---
+
+<Layout
+  title="Online Speaker Cleaner: Dust & Water Removal Sound Tool | Display Test Online"
+  description="Clean your phone speaker with high-frequency sound waves. Remove dust, dirt, and water from iPhone, Android, and laptop speakers safely online."
+  faqs={speakerCleanerFaqs.map(item => ({ question: item.q, answer: item.a }))}
+>
+  <main id="main-content" class="py-10 space-y-12">
+    <section class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-4">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/30 font-mono text-xs text-cyan-400 font-bold tracking-wider uppercase">
+        <span class="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></span>
+        Dust &amp; Acoustic Cleaner
+      </div>
+
+      <h1 class="text-3xl sm:text-5xl font-extrabold text-text-primary tracking-tight font-mono">
+        Online Speaker Cleaner Tool
+      </h1>
+
+      <p class="text-sm sm:text-base text-text-secondary max-w-2xl mx-auto leading-relaxed">
+        Dislodge dust, pocket lint, and debris from your mobile speaker grills using high-energy sawtooth acoustic impulses. Non-invasive, safe, and instant.
+      </p>
+    </section>
+
+    <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <WaterEjectorCanvas />
+    </section>
+
+    <section class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10 text-text-secondary text-sm leading-relaxed">
+      <FAQSection faqs={speakerCleanerFaqs.map(item => ({ question: item.q, answer: item.a }))} />
+    </section>
+  </main>
+</Layout>

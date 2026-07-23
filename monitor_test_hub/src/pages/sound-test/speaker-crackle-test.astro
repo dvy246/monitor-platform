@@ -1,0 +1,79 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import WaterEjectorCanvas from '../../components/diagnostics/WaterEjectorCanvas.astro';
+import FAQSection from '../../components/ui/FAQSection.astro';
+
+const crackleFaqs = [
+  {
+    q: 'Why is my phone speaker crackling or making buzzing sounds?',
+    a: 'Speaker crackling is usually caused by trapped water droplets, physical dust buildup on the speaker cone, or mechanical damage to the speaker membrane from dropping your device.'
+  },
+  {
+    q: 'How does the Crackling & Distortion Check mode work?',
+    a: 'Our Crackling Check mode sweeps triangle acoustic waveforms from 100Hz to 1000Hz. Triangle waves produce odd harmonics that highlight physical rattle, coil rubbing, or membrane tears.'
+  },
+  {
+    q: 'How can I tell if my speaker is physically blown vs just wet?',
+    a: 'If your speaker crackles only after liquid exposure, running our 165Hz water eject sound for 60 seconds will restore clarity. If crackling persists across all volume levels even when completely dry, the speaker cone may be physically blown.'
+  },
+  {
+    q: 'Can I test left and right stereo speakers individually for crackling?',
+    a: 'Yes. Use our channel toggle buttons to isolate the left earpiece speaker or right bottom speaker to determine which driver is buzzing.'
+  },
+  {
+    q: 'What should I do if my speaker crackles only at high volume?',
+    a: 'High-volume crackling often indicates amplifier clipping or loose housing screws. Test at 50% volume first, then increase incrementally.'
+  },
+  {
+    q: 'Does this crackle test work on Bluetooth headphones and external speakers?',
+    a: 'Yes. Connect your Bluetooth headphones or external speaker to your device and run the frequency sweep to inspect driver distortion.'
+  },
+  {
+    q: 'Is this distortion test safe for phone hardware?',
+    a: 'Yes. All signals are generated within safe decibel and frequency bounds designed for consumer mobile hardware.'
+  },
+  {
+    q: 'Can software updates cause speaker crackling?',
+    a: 'Occasionally audio EQ bugs in OS updates can cause digital clipping. Restarting your device or running our browser test helps isolate hardware vs software issues.'
+  },
+  {
+    q: 'How do I test my microphone for static after speaker repair?',
+    a: 'Visit our Microphone Test suite to record your voice and verify if mic capsule audio is free from background crackling.'
+  },
+  {
+    q: 'Is this crackle diagnostic tool 100% free?',
+    a: 'Yes. Display Test Online provides free browser-native hardware diagnostics with zero ads and zero downloads.'
+  }
+];
+---
+
+<Layout
+  title="Phone Speaker Crackling Test: Fix Buzzing & Distortion Online | Display Test Online"
+  description="Diagnose speaker crackling, buzzing, and distortion on iPhone, Android, and laptops. Run free frequency sweep distortion check online now."
+  faqs={crackleFaqs.map(item => ({ question: item.q, answer: item.a }))}
+>
+  <main id="main-content" class="py-10 space-y-12">
+    <section class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-4">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 font-mono text-xs text-amber-400 font-bold tracking-wider uppercase">
+        <span class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
+        Distortion &amp; Crackle Inspector
+      </div>
+
+      <h1 class="text-3xl sm:text-5xl font-extrabold text-text-primary tracking-tight font-mono">
+        Speaker Crackling &amp; Distortion Test
+      </h1>
+
+      <p class="text-sm sm:text-base text-text-secondary max-w-2xl mx-auto leading-relaxed">
+        Test your phone or laptop speaker for mechanical buzzing, blown voice coils, and harmonic distortion with our browser-native frequency sweep diagnostic.
+      </p>
+    </section>
+
+    <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <WaterEjectorCanvas />
+    </section>
+
+    <section class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10 text-text-secondary text-sm leading-relaxed">
+      <FAQSection faqs={crackleFaqs.map(item => ({ question: item.q, answer: item.a }))} />
+    </section>
+  </main>
+</Layout>
