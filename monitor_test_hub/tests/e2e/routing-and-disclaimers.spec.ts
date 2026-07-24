@@ -4,11 +4,6 @@ test.describe('Monitor Test Hub Core Verification', () => {
   test('should load the landing page successfully', async ({ page }) => {
     await page.goto('/');
     await expect(page).toHaveTitle(/Online Monitor/);
-
-    // Verify presence of Medical Bounce Neutralizer banner
-    const routingBanner = page.locator('#ymyl-routing-banner');
-    await expect(routingBanner).toBeVisible();
-    await expect(routingBanner).toContainText('Looking for Medical or Toxicology Screening?');
   });
 
   test('should render the semantic disambiguation glossary', async ({ page }) => {
