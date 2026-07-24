@@ -8,51 +8,51 @@ const { t, lang } = useTranslations(Astro.url.pathname);
 
 const waterEjectFaqs = [
   {
-    q: 'Will rice fix water-damaged speakers?',
-    a: 'Rice really is not the fix people hope it is. It can leave dust inside your device and it does not actively pull water out of a speaker. You will get much better results using our water eject tone method and then letting your device sit in open air. If you want step-by-step help for your exact device, jump over to our device-specific tools.'
+    q: 'How do I fix my speaker after dropping my phone in water?',
+    a: 'To fix my speaker when water is trapped, immediately turn off your device, remove the protective case, and play our 165Hz water eject sound at full volume. The acoustic pressure creates gentle vibrations that force water droplets out of the speaker mesh within 30 to 60 seconds.'
   },
   {
-    q: 'How long does speaker drying take?',
-    a: 'For a light splash, most speakers sound clear again within 2 to 4 hours after using the sound method. If your device took a real dunking, give it 24 to 48 hours before you go back to normal use. Our FAQ page has more detail on timing for different situations.'
+    q: 'How does the water remover from phone tool work?',
+    a: 'Our browser-based water remover from phone tool generates precise low-frequency sound waves (165Hz–500Hz). These audio frequencies mirror the Apple Watch water eject function, pushing trapped moisture out through the speaker grille using kinetic air displacement.'
   },
   {
-    q: 'Can I charge my phone when it is wet?',
-    a: 'No, please do not. Water in the charging port can cause a short circuit and permanently damage your phone. Wait until everything is fully dry before plugging in a cable. If your phone supports wireless charging and the back is dry, that is a safer option in a pinch.'
+    q: 'Is the water eject sound safe for iPhone and Android speakers?',
+    a: 'Yes, the water eject sound is completely safe for all smartphones including iPhone, Samsung Galaxy, Google Pixel, and tablets. It uses standard Web Audio API signals that vibrate the speaker membrane within manufacturer-rated hardware limits.'
   },
   {
-    q: 'Does water damage affect warranty?',
-    a: 'In most cases yes. Manufacturer warranties usually do not cover liquid damage, even on water-resistant models. It is worth checking your warranty details or looking into device insurance that includes accidental liquid damage.'
+    q: 'Can this speaker dust cleaning sound water tool also remove dirt?',
+    a: 'Yes! In addition to emergency water removal, our speaker dust cleaning sound water mode uses a high-frequency sweep (up to 500Hz) that breaks up dried dust, lint, and salt residue trapped inside speaker grilles.'
   },
   {
-    q: 'What frequency should I use for my device?',
-    a: 'A good starting point is 165Hz for most phones with light water exposure. Bump it up to around 300Hz for tablets and bigger speakers, and try 500Hz if water is stuck in a smaller speaker like an earpiece. If you are not sure, the sweep mode cycles through the range for you.'
+    q: 'Will rice fix water-damaged phone speakers?',
+    a: 'No. Placing a phone in raw rice is ineffective and can introduce harmful starch particles and dust into your charging port and speaker mesh. Using a dedicated water remover speaker utility combined with open-air drying is far more effective.'
   },
   {
-    q: 'Is water eject sound safe for my speakers?',
-    a: 'Yes, it is safe. The frequencies work on the same principle as the Apple Watch water eject feature. The vibrations are gentle enough that they will not damage your speaker but strong enough to push water droplets out.'
+    q: 'How long does emergency water removal and drying take?',
+    a: 'For light surface splashes, running the water eject sound for 60 seconds will clear muffled audio almost instantly. For deeper submersion, run the emergency water removal tone 2 to 3 times, then allow your device to air dry in a well-ventilated space for 2 to 4 hours.'
   },
   {
-    q: 'How many times should I play the water eject sound?',
-    a: 'Play the tone for 30 to 60 seconds at full volume, then check how it sounds. If audio is still muffled, wait 5 to 10 minutes and repeat two or three times. Most speakers clear up completely within a couple of cycles.'
+    q: 'Can I charge my phone while removing water from speaker?',
+    a: 'No! Never plug in a charging cable while moisture is detected or while your speaker is wet. Charging a wet device can cause a fatal short circuit. Wait until all water removal procedures are complete and the phone is fully dry.'
   },
   {
-    q: 'Does this work for salt water or pool water?',
-    a: 'Yes, it works for salt water, pool water, and regular water. If it was salt water, gently rinse the outside with fresh water first so salt crystals do not build up, then run the water eject tool.'
+    q: 'Does water eject iPhone mode work on all Apple devices?',
+    a: 'Yes, water eject iPhone mode is optimized for all Apple models, including iPhone 16, 15, 14, 13, 12, 11 series, iPad Pro, and Apple Watch. It works directly in Safari without requiring Siri Shortcuts or app installations.'
   },
   {
-    q: 'Can I use this on AirPods or wireless earbuds?',
-    a: 'Absolutely. It works with AirPods Pro, Galaxy Buds, and most other wireless earbuds. Just connect them to your device over Bluetooth, turn the volume up all the way, and play the tone with the earbuds sitting speaker-side down on a soft cloth.'
+    q: 'What frequency is best for a water remover speaker test?',
+    a: '165Hz is ideal for standard smartphone main speakers, 300Hz works best for tablets and laptops with larger driver diaphragms, and 500Hz targets small call speakers (earpiece).'
   },
   {
-    q: 'What should I do if water eject sound does not work?',
-    a: 'If the sound has not fully cleared things after a few tries, let your device air dry for 24 to 48 hours in a well-ventilated spot and avoid any heat source. If problems stick around after that, there may be internal water damage that needs a professional look.'
+    q: 'What should I do if the water eject sound does not fix my speaker?',
+    a: 'If your speaker remains muffled after multiple water eject cycles, let your device sit in a dry, ventilated room for 24 to 48 hours. If distorted sound or moisture warnings persist, seek professional hardware repair.'
   }
 ];
 ---
 
 <Layout
-  title="Fix My Speaker: Water Eject Sound & Speaker Cleaner | Display Test Online"
-  description="Remove water from phone speakers instantly using 165Hz acoustic frequency sweeps. Safe for iPhone, Android, and laptops. Run free online water eject tool now."
+  title="Fix My Speaker: Water Eject Sound & Water Remover From Phone | Display Test Online"
+  description="Fix my speaker instantly! Run our free water eject sound tool to remove water from phone speakers, iPhones, Androids, and laptops using 165Hz emergency water removal tones."
   faqs={waterEjectFaqs.map(item => ({ question: item.q, answer: item.a }))}
 >
   <main id="main-content" class="py-10 space-y-12">
@@ -60,15 +60,15 @@ const waterEjectFaqs = [
     <section class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-4">
       <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-status-pass/10 border border-status-pass/30 font-mono text-xs text-status-pass font-bold tracking-wider uppercase">
         <span class="w-2 h-2 rounded-full bg-status-pass animate-pulse"></span>
-        Phone Speaker Doctor Suite
+        Fix My Speaker & Emergency Water Removal
       </div>
 
       <h1 class="text-3xl sm:text-5xl font-extrabold text-text-primary tracking-tight font-mono">
-        Water Eject Sound &amp; Speaker Cleaner
+        Fix My Speaker: Water Eject Sound & Phone Cleaner
       </h1>
 
       <p class="text-sm sm:text-base text-text-secondary max-w-2xl mx-auto leading-relaxed">
-        Select your device type below for optimized water eject sound frequencies (165Hz–300Hz) and device-specific instructions to clear liquid instantly.
+        Need to <strong class="text-text-primary">fix my speaker</strong> or <strong class="text-text-primary">remove water from phone</strong>? Select your device type below to play acoustic <strong class="text-text-primary">water eject sound</strong> frequencies (165Hz–500Hz) and clean muffled phone speakers instantly.
       </p>
     </section>
 
