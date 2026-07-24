@@ -159,6 +159,19 @@ const { defaultMode = 'water-sweep' } = Astro.props;
     </div>
   </div>
 
+  <!-- Prominent Volume & Headphone Warning Banner -->
+  <div class="p-4 sm:p-5 rounded-2xl bg-amber-500/10 border border-amber-500/30 flex items-start gap-4 shadow-specular-top">
+    <div class="w-10 h-10 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center shrink-0 font-bold text-lg">
+      ⚠️
+    </div>
+    <div class="space-y-1 text-sm">
+      <h3 class="font-bold text-amber-400 font-mono tracking-tight text-base">SAFETY WARNING &amp; PREPARATION</h3>
+      <p class="text-text-secondary text-xs sm:text-sm leading-relaxed">
+        <strong class="text-amber-300">Turn your volume to maximum.</strong> <strong class="text-rose-400 underline">Do not use headphones!</strong> Remove your device case, face the speaker downwards toward a soft cloth, and disconnect Bluetooth headsets before playing eject tones.
+      </p>
+    </div>
+  </div>
+
   <!-- Hardware Control Deck Container -->
   <div class="relative overflow-hidden rounded-2xl bg-bg-surface border border-border-hairline p-6 sm:p-8 shadow-specular-top">
     <div class="absolute -top-32 -right-32 w-80 h-80 bg-status-pass/10 blur-3xl rounded-full pointer-events-none z-0"></div>
@@ -178,14 +191,54 @@ const { defaultMode = 'water-sweep' } = Astro.props;
           </h2>
         </div>
 
-        <div class="flex items-center gap-2 font-mono text-xs">
-          <span class="text-text-muted text-[11px]">Channel:</span>
-          <div class="inline-flex p-1 bg-bg-canvas border border-border-hairline rounded-lg" id="channel-target-group">
-            <button data-target="all" class="px-3 py-1.5 rounded-md text-text-primary bg-bg-elevated font-bold transition-all shadow-sm">All</button>
-            <button data-target="left" class="px-3 py-1.5 rounded-md text-text-secondary hover:text-text-primary transition-all">Left</button>
-            <button data-target="right" class="px-3 py-1.5 rounded-md text-text-secondary hover:text-text-primary transition-all">Right</button>
+        <div class="flex flex-wrap items-center gap-4 font-mono text-xs">
+          <!-- Channel selector -->
+          <div class="flex items-center gap-2">
+            <span class="text-text-muted text-[11px]">Channel:</span>
+            <div class="inline-flex p-1 bg-bg-canvas border border-border-hairline rounded-lg" id="channel-target-group">
+              <button data-target="all" class="px-3 py-1.5 rounded-md text-text-primary bg-bg-elevated font-bold transition-all shadow-sm">All</button>
+              <button data-target="left" class="px-3 py-1.5 rounded-md text-text-secondary hover:text-text-primary transition-all">Left</button>
+              <button data-target="right" class="px-3 py-1.5 rounded-md text-text-secondary hover:text-text-primary transition-all">Right</button>
+            </div>
           </div>
         </div>
+      </div>
+
+      <!-- Target & Intensity Configuration Control Bar -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 rounded-xl bg-bg-canvas border border-border-hairline">
+        
+        <!-- 1. Cleaning Target Selector (Water vs Dust) -->
+        <div class="space-y-2">
+          <label class="text-[11px] font-mono font-bold uppercase tracking-wider text-text-muted flex items-center justify-between">
+            <span>1. Cleaning Target</span>
+            <span class="text-status-pass font-normal text-[10px]" id="target-mode-label">💧 Water Removal (165Hz)</span>
+          </label>
+          <div class="grid grid-cols-2 gap-2" id="clean-target-group">
+            <button data-target-type="water" class="target-type-btn active px-3 py-2 rounded-lg bg-status-pass/10 border border-status-pass/40 text-status-pass font-mono text-xs font-bold transition-all flex items-center justify-center gap-2 shadow-sm">
+              💧 Water Eject
+            </button>
+            <button data-target-type="dust" class="target-type-btn px-3 py-2 rounded-lg bg-bg-surface border border-border-hairline text-text-secondary hover:text-text-primary font-mono text-xs font-bold transition-all flex items-center justify-center gap-2">
+              🧹 Dust Clean
+            </button>
+          </div>
+        </div>
+
+        <!-- 2. Cleaning Intensity (Quick vs Deep) -->
+        <div class="space-y-2">
+          <label class="text-[11px] font-mono font-bold uppercase tracking-wider text-text-muted flex items-center justify-between">
+            <span>2. Cleaning Profile</span>
+            <span class="text-cyan-400 font-normal text-[10px]" id="intensity-mode-label">⚡ Quick Clean (30s)</span>
+          </label>
+          <div class="grid grid-cols-2 gap-2" id="clean-intensity-group">
+            <button data-intensity="quick" class="intensity-btn active px-3 py-2 rounded-lg bg-cyan-500/10 border border-cyan-500/40 text-cyan-400 font-mono text-xs font-bold transition-all flex items-center justify-center gap-2 shadow-sm">
+              ⚡ Quick Clean (30s)
+            </button>
+            <button data-intensity="deep" class="intensity-btn px-3 py-2 rounded-lg bg-bg-surface border border-border-hairline text-text-secondary hover:text-text-primary font-mono text-xs font-bold transition-all flex items-center justify-center gap-2">
+              🔬 Deep Clean (60s)
+            </button>
+          </div>
+        </div>
+
       </div>
 
       <!-- Real-Time Waveform & Particle Canvas -->
@@ -222,7 +275,7 @@ const { defaultMode = 'water-sweep' } = Astro.props;
             <span id="btn-label">START WATER EJECT</span>
           </button>
           <p class="text-xs text-text-muted max-w-xs leading-normal">
-            Turn device volume up to <strong>100%</strong> and face screen downward for maximum momentum.
+            Max volume <strong>100%</strong> required. Face speaker downward. <strong>No headphones.</strong>
           </p>
         </div>
 
@@ -329,6 +382,11 @@ const { defaultMode = 'water-sweep' } = Astro.props;
     let currentPreset: DevicePreset = 'mobile';
     let currentMode: DiagnosticMode = (defaultModeStr as DiagnosticMode) || 'water-sweep';
     let currentTarget: EjectTarget = 'all';
+    let currentCleanTarget: 'water' | 'dust' = 'water';
+    let currentIntensity: 'quick' | 'deep' = 'quick';
+
+    const targetModeLabel = document.getElementById('target-mode-label');
+    const intensityModeLabel = document.getElementById('intensity-mode-label');
 
     const engine = new AudioDiagnosticEngine(
       (freq) => {
@@ -355,6 +413,64 @@ const { defaultMode = 'water-sweep' } = Astro.props;
     }
     resizeCanvas();
     window.addEventListener('resize', resizeCanvas);
+
+    // Target Selection: Water Eject vs Dust Clean
+    const cleanTargetGroup = document.getElementById('clean-target-group');
+    if (cleanTargetGroup) {
+      cleanTargetGroup.querySelectorAll('button').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          const type = btn.getAttribute('data-target-type') as 'water' | 'dust';
+          if (!type) return;
+          currentCleanTarget = type;
+
+          cleanTargetGroup.querySelectorAll('button').forEach((b) => {
+            b.className = 'target-type-btn px-3 py-2 rounded-lg bg-bg-surface border border-border-hairline text-text-secondary hover:text-text-primary font-mono text-xs font-bold transition-all flex items-center justify-center gap-2';
+          });
+
+          if (type === 'water') {
+            btn.className = 'target-type-btn active px-3 py-2 rounded-lg bg-status-pass/10 border border-status-pass/40 text-status-pass font-mono text-xs font-bold transition-all flex items-center justify-center gap-2 shadow-sm';
+            if (targetModeLabel) targetModeLabel.textContent = '💧 Water Removal (165Hz)';
+            if (btnLabel && !engine.active) btnLabel.textContent = 'START WATER EJECT';
+          } else {
+            btn.className = 'target-type-btn active px-3 py-2 rounded-lg bg-amber-500/10 border border-amber-500/40 text-amber-400 font-mono text-xs font-bold transition-all flex items-center justify-center gap-2 shadow-sm';
+            if (targetModeLabel) targetModeLabel.textContent = '🧹 Dust Dislodge (440Hz)';
+            if (btnLabel && !engine.active) btnLabel.textContent = 'START DUST CLEAN';
+          }
+
+          if (engine.active) {
+            startEject();
+          }
+        });
+      });
+    }
+
+    // Intensity Profile: Quick Clean (30s) vs Deep Clean (60s)
+    const cleanIntensityGroup = document.getElementById('clean-intensity-group');
+    if (cleanIntensityGroup) {
+      cleanIntensityGroup.querySelectorAll('button').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          const profile = btn.getAttribute('data-intensity') as 'quick' | 'deep';
+          if (!profile) return;
+          currentIntensity = profile;
+
+          cleanIntensityGroup.querySelectorAll('button').forEach((b) => {
+            b.className = 'intensity-btn px-3 py-2 rounded-lg bg-bg-surface border border-border-hairline text-text-secondary hover:text-text-primary font-mono text-xs font-bold transition-all flex items-center justify-center gap-2';
+          });
+
+          if (profile === 'quick') {
+            btn.className = 'intensity-btn active px-3 py-2 rounded-lg bg-cyan-500/10 border border-cyan-500/40 text-cyan-400 font-mono text-xs font-bold transition-all flex items-center justify-center gap-2 shadow-sm';
+            if (intensityModeLabel) intensityModeLabel.textContent = '⚡ Quick Clean (30s)';
+          } else {
+            btn.className = 'intensity-btn active px-3 py-2 rounded-lg bg-purple-500/10 border border-purple-500/40 text-purple-400 font-mono text-xs font-bold transition-all flex items-center justify-center gap-2 shadow-sm';
+            if (intensityModeLabel) intensityModeLabel.textContent = '🔬 Deep Clean (60s)';
+          }
+
+          if (engine.active) {
+            startEject();
+          }
+        });
+      });
+    }
 
     // Device Preset Selection
     const deviceCards = document.querySelectorAll('.device-card');
@@ -441,22 +557,36 @@ const { defaultMode = 'water-sweep' } = Astro.props;
 
     function startEject() {
       const pConfig = DEVICE_PRESETS[currentPreset] || DEVICE_PRESETS.mobile;
+      
+      let baseFreq = pConfig.baseFreq;
+      let endFreq = pConfig.endFreq;
+      let selectedMode = currentMode;
+
+      if (currentCleanTarget === 'dust') {
+        selectedMode = 'dust-blower';
+        baseFreq = currentIntensity === 'deep' ? 350 : 440;
+        endFreq = currentIntensity === 'deep' ? 1200 : 880;
+      } else {
+        baseFreq = currentIntensity === 'deep' ? Math.max(120, pConfig.baseFreq - 20) : pConfig.baseFreq;
+        endFreq = currentIntensity === 'deep' ? Math.min(600, pConfig.endFreq + 250) : pConfig.endFreq;
+      }
+
       engine.start({
-        mode: currentMode,
+        mode: selectedMode,
         target: currentTarget,
         preset: currentPreset,
-        baseFreq: currentMode === 'dust-blower' ? 220 : pConfig.baseFreq,
-        endFreq: currentMode === 'dust-blower' ? 320 : pConfig.endFreq,
-        intensity: 1.0,
+        baseFreq,
+        endFreq,
+        intensity: currentIntensity === 'deep' ? 1.2 : 1.0,
         volume: 1.0
       });
 
-      if (btnLabel) btnLabel.textContent = 'STOP EJECTION';
+      if (btnLabel) btnLabel.textContent = currentCleanTarget === 'dust' ? 'STOP DUST CLEANING' : 'STOP WATER EJECT';
       if (btnToggle) {
         btnToggle.classList.remove('bg-status-pass', 'hover:bg-emerald-400');
         btnToggle.classList.add('bg-status-fail', 'hover:bg-rose-500');
       }
-      if (statusText) statusText.textContent = 'EJECTING SOUND ACTIVE';
+      if (statusText) statusText.textContent = `${currentCleanTarget.toUpperCase()} EJECTION ACTIVE (${currentIntensity.toUpperCase()})`;
       if (statusLed) {
         statusLed.classList.remove('bg-border-interactive');
         statusLed.classList.add('bg-status-pass', 'animate-pulse');
@@ -465,7 +595,7 @@ const { defaultMode = 'water-sweep' } = Astro.props;
 
     function stopEject() {
       engine.stop();
-      if (btnLabel) btnLabel.textContent = 'START WATER EJECT';
+      if (btnLabel) btnLabel.textContent = currentCleanTarget === 'dust' ? 'START DUST CLEAN' : 'START WATER EJECT';
       if (btnToggle) {
         btnToggle.classList.remove('bg-status-fail', 'hover:bg-rose-500');
         btnToggle.classList.add('bg-status-pass', 'hover:bg-emerald-400');
