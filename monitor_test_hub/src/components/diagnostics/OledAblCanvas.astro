@@ -1,26 +1,157 @@
 ---
 ---
-<div class="relative w-full aspect-video sm:aspect-[21/9] bg-[#08080a] rounded-3xl border border-white/10 overflow-hidden shadow-2xl group flex flex-col items-center justify-center transition-colors duration-500" id="abl-container">
-  <div id="abl-window" class="bg-white rounded shadow-[0_0_50px_rgba(255,255,255,0.5)] flex items-center justify-center transition-all duration-300" style="width: 10%; height: 10%;">
-    <span class="text-black font-mono font-bold text-sm" id="abl-text">1% Window</span>
+<div class="relative w-full space-y-4">
+  <!-- Main Test Window -->
+  <div id="abl-container" class="relative w-full aspect-video sm:aspect-[21/9] bg-[#000000] rounded-3xl border border-white/10 overflow-hidden shadow-2xl flex items-center justify-center transition-colors duration-700">
+    <!-- Measurement window -->
+    <div id="abl-window" class="rounded shadow-[0_0_60px_rgba(255,255,255,0.6)] flex flex-col items-center justify-center transition-all duration-500 relative" style="width:31.6%;height:31.6%">
+      <div class="absolute inset-0 bg-white rounded"></div>
+      <div class="relative z-10 text-center">
+        <div class="text-black font-mono font-bold text-xs" id="abl-label">10% Window</div>
+      </div>
+    </div>
+
+    <!-- HUD Overlay -->
+    <div class="absolute top-0 inset-x-0 p-4 flex items-start justify-between pointer-events-none z-20">
+      <div class="bg-black/60 backdrop-blur-md border border-white/10 rounded-xl px-4 py-2 font-mono text-xs space-y-1">
+        <div class="flex items-center gap-2">
+          <div class="w-2 h-2 rounded-full bg-white animate-pulse"></div>
+          <span class="text-white font-bold">ABL LUMINANCE MONITOR</span>
+        </div>
+        <div class="text-zinc-400 text-[10px]">OLED Automatic Brightness Limiting</div>
+      </div>
+      <div class="flex gap-3">
+        <div class="bg-black/60 backdrop-blur-md border border-white/10 rounded-xl px-3 py-2 font-mono text-xs text-center">
+          <div class="text-zinc-400 text-[9px] tracking-widest">WINDOW SIZE</div>
+          <div class="text-white font-bold text-lg" id="abl-size-display">10%</div>
+        </div>
+        <div class="bg-black/60 backdrop-blur-md border border-white/10 rounded-xl px-3 py-2 font-mono text-xs text-center">
+          <div class="text-zinc-400 text-[9px] tracking-widest">EST. BRIGHTNESS</div>
+          <div class="text-amber-400 font-bold text-lg" id="abl-nits">~1000 nits</div>
+        </div>
+        <div class="bg-black/60 backdrop-blur-md border border-white/10 rounded-xl px-3 py-2 font-mono text-xs text-center">
+          <div class="text-zinc-400 text-[9px] tracking-widest">ABL RISK</div>
+          <div class="text-emerald-400 font-bold text-lg" id="abl-risk">LOW</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bottom controls -->
+    <div class="absolute bottom-4 inset-x-0 flex justify-center gap-3 z-20 px-4">
+      <button data-size="3.16" data-label="1% Window" data-nits="~1400+ nits" data-risk="NONE" data-risk-color="text-emerald-400" 
+        class="abl-btn px-4 py-2 bg-white/10 backdrop-blur border border-white/20 rounded-lg text-white hover:bg-white/20 transition-colors font-mono text-xs font-bold">
+        1% Window
+      </button>
+      <button data-size="31.6" data-label="10% Window" data-nits="~1000 nits" data-risk="LOW" data-risk-color="text-emerald-400"
+        class="abl-btn px-4 py-2 bg-white/20 backdrop-blur border border-white/40 rounded-lg text-white font-mono text-xs font-bold ring-1 ring-white/50">
+        10% Window
+      </button>
+      <button data-size="50" data-label="25% Window" data-nits="~600 nits" data-risk="MODERATE" data-risk-color="text-amber-400"
+        class="abl-btn px-4 py-2 bg-white/10 backdrop-blur border border-white/20 rounded-lg text-white hover:bg-white/20 transition-colors font-mono text-xs font-bold">
+        25% Window
+      </button>
+      <button data-size="70.7" data-label="50% Window" data-nits="~400 nits" data-risk="HIGH" data-risk-color="text-rose-400"
+        class="abl-btn px-4 py-2 bg-white/10 backdrop-blur border border-white/20 rounded-lg text-white hover:bg-white/20 transition-colors font-mono text-xs font-bold">
+        50% Window
+      </button>
+      <button data-size="100" data-label="100% Full" data-nits="~200 nits" data-risk="SEVERE" data-risk-color="text-red-500"
+        class="abl-btn px-4 py-2 bg-white/10 backdrop-blur border border-white/20 rounded-lg text-white hover:bg-white/20 transition-colors font-mono text-xs font-bold">
+        100% Full
+      </button>
+    </div>
   </div>
-  
-  <div class="absolute bottom-4 flex gap-4 font-mono text-xs z-20">
-    <button class="px-4 py-2 bg-[#121215] border border-white/20 rounded-lg text-white hover:bg-white/10 transition-colors" onclick="setAbl(10, '1% Window')">1%</button>
-    <button class="px-4 py-2 bg-[#121215] border border-white/20 rounded-lg text-white hover:bg-white/10 transition-colors" onclick="setAbl(31.6, '10% Window')">10%</button>
-    <button class="px-4 py-2 bg-[#121215] border border-white/20 rounded-lg text-white hover:bg-white/10 transition-colors" onclick="setAbl(70.7, '50% Window')">50%</button>
-    <button class="px-4 py-2 bg-[#121215] border border-white/20 rounded-lg text-white hover:bg-white/10 transition-colors" onclick="setAbl(100, '100% Full Screen')">100%</button>
+
+  <!-- Luminance curve display -->
+  <div class="bg-[#121215] border border-white/10 rounded-2xl p-4 font-mono text-xs">
+    <div class="text-zinc-500 text-[10px] tracking-widest mb-3 uppercase">Estimated ABL Luminance Curve (VESA DisplayHDR Reference)</div>
+    <div class="flex items-end gap-1 h-16">
+      <div class="abl-bar flex-1 flex flex-col items-center gap-1" data-target-size="3.16">
+        <div class="bg-white rounded-t w-full transition-all duration-500" style="height:100%" id="bar-1"></div>
+        <span class="text-[8px] text-zinc-500">1%</span>
+      </div>
+      <div class="abl-bar flex-1 flex flex-col items-center gap-1" data-target-size="31.6">
+        <div class="bg-white/70 rounded-t w-full transition-all duration-500" style="height:72%" id="bar-10"></div>
+        <span class="text-[8px] text-zinc-500">10%</span>
+      </div>
+      <div class="abl-bar flex-1 flex flex-col items-center gap-1" data-target-size="50">
+        <div class="bg-white/50 rounded-t w-full transition-all duration-500" style="height:44%" id="bar-25"></div>
+        <span class="text-[8px] text-zinc-500">25%</span>
+      </div>
+      <div class="abl-bar flex-1 flex flex-col items-center gap-1" data-target-size="70.7">
+        <div class="bg-amber-400/60 rounded-t w-full transition-all duration-500" style="height:30%" id="bar-50"></div>
+        <span class="text-[8px] text-zinc-500">50%</span>
+      </div>
+      <div class="abl-bar flex-1 flex flex-col items-center gap-1" data-target-size="100">
+        <div class="bg-rose-400/60 rounded-t w-full transition-all duration-500" style="height:15%" id="bar-100"></div>
+        <span class="text-[8px] text-zinc-500">100%</span>
+      </div>
+    </div>
+    <div class="text-zinc-600 text-[9px] mt-2">▲ Peak brightness drops significantly above 25% window due to OLED thermal & power management (ABL)</div>
   </div>
 </div>
 
 <script is:inline>
-  function setAbl(size, text) {
+  function initABL() {
     const win = document.getElementById('abl-window');
-    const txt = document.getElementById('abl-text');
-    if(win && txt) {
+    const label = document.getElementById('abl-label');
+    const sizeDisplay = document.getElementById('abl-size-display');
+    const nitsEl = document.getElementById('abl-nits');
+    const riskEl = document.getElementById('abl-risk');
+
+    const barHeights = { '3.16': '100%', '31.6': '72%', '50': '44%', '70.7': '30%', '100': '15%' };
+    const barIds = { '3.16': 'bar-1', '31.6': 'bar-10', '50': 'bar-25', '70.7': 'bar-50', '100': 'bar-100' };
+
+    function setActive(btn) {
+      document.querySelectorAll('.abl-btn').forEach(b => {
+        b.classList.remove('ring-1', 'ring-white/50', 'bg-white/20', 'border-white/40');
+        b.classList.add('bg-white/10', 'border-white/20');
+      });
+      btn.classList.add('ring-1', 'ring-white/50', 'bg-white/20', 'border-white/40');
+      btn.classList.remove('bg-white/10', 'border-white/20');
+    }
+
+    function setAbl(size, lbl, nits, risk, riskColor) {
+      if (!win || !label) return;
       win.style.width = `${size}%`;
       win.style.height = `${size}%`;
-      txt.innerText = text;
+      label.textContent = lbl;
+      if (sizeDisplay) sizeDisplay.textContent = lbl.replace(' Window','').replace(' Full','');
+      if (nitsEl) nitsEl.textContent = nits;
+      if (riskEl) {
+        riskEl.textContent = risk;
+        riskEl.className = 'font-bold text-lg ' + riskColor;
+      }
+      // Highlight bar
+      Object.entries(barIds).forEach(([s, id]) => {
+        const bar = document.getElementById(id);
+        if (bar) {
+          if (s === String(size)) {
+            bar.style.outline = '1px solid rgba(56,189,248,0.8)';
+            bar.style.boxShadow = '0 0 6px rgba(56,189,248,0.5)';
+          } else {
+            bar.style.outline = '';
+            bar.style.boxShadow = '';
+          }
+        }
+      });
     }
+
+    document.querySelectorAll('.abl-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const size = parseFloat(btn.getAttribute('data-size'));
+        const lbl = btn.getAttribute('data-label');
+        const nits = btn.getAttribute('data-nits');
+        const risk = btn.getAttribute('data-risk');
+        const riskColor = btn.getAttribute('data-risk-color');
+        setAbl(size, lbl, nits, risk, riskColor);
+        setActive(btn);
+      });
+    });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initABL);
+  } else {
+    initABL();
   }
 </script>

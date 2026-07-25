@@ -1,29 +1,40 @@
 # Original User Request
 
-## Initial Request — 2026-07-23T09:50:18+05:30
+## 2026-07-23T18:30:11Z
 
-You are the Project Orchestrator for the DisplayTestOnline.com Diagnostic Test Page Redesign mission.
+Goal: Redesign the entire diagnostic experience of DisplayTestOnline.com into a premium engineering tool by extracting UX principles from ScreenTester.io and implementing a unified, highly reusable component system (Left Canvas + Right Sidebar), without altering the core visual identity or the homepage.
 
-Working directory: /Users/divyyadav/newws/.agents/orchestrator_redesign
-Project directory: /Users/divyyadav/newws/monitor_test_hub
-Original user request file: /Users/divyyadav/newws/.agents/ORIGINAL_REQUEST.md
-
-## Mission & Scope
-Redesign every diagnostic test page across DisplayTestOnline.com into a state-of-the-art visual suite featuring curved box containers (`rounded-3xl`/`rounded-2xl`), specular highlights (`border-white/10`), 4-part Master Bento Diagnostic Suite (`ScreenInfoCard`, `QuickColorPalette`, `KeyboardShortcutsCard`, `CustomColorPicker`), Numbered Step Circle Workflows (`01`, `02`, `03`), Panel Type Breakdown Cards (*Professional IPS*, *Consumer IPS*, *VA Panel*, *OLED*), and E-E-A-T SEO technical articles with 10 structured FAQs.
+Working directory: `/Users/divyyadav/newws/monitor_test_hub`
+Integrity mode: development
 
 ## Requirements
-1. Diagnostic Bento Integration: Incorporate 4-card diagnostic bento (`ScreenInfoCard`, `QuickColorPalette` with 12 swatches & active glow, `KeyboardShortcutsCard` with capsule keys & yellow TV remote hint, `CustomColorPicker` with hex input & preview CTA) across test pages.
-2. Numbered Step Workflow Cards (`01`, `02`, `03`): Add "How To Test / Calibrate" section with numbered step circles inside dark rounded containers (`rounded-3xl border border-white/10 bg-[#121215]`), title, and description. (Standardized `StepWorkflowSection.astro` created).
-3. Panel Type & Device Capability Comparison Grid: Add 4-card grid (*Professional IPS*, *Consumer IPS*, *VA Panel*, *OLED*) featuring colored monitor SVG icons (Red, Blue, Yellow, Purple), `rounded-3xl` cards with inner `rounded-2xl` dark containers (`bg-[#08080a]`), and detailed accuracy characteristics. (Standardized `PanelTypeBreakdownSection.astro` created).
-4. E-E-A-T Technical SEO Articles & 10-Item Structured FAQs: Technical engineering articles with SVGs, tables, metrics, and exactly 10 real-intent technical FAQs paired with automatic `FAQPage` JSON-LD schema generation.
 
-## Technical Verification Targets
-- `npx tsc --noEmit` returns 0 errors.
-- `TMPDIR=$PWD/.tmp npm test` passes 100% (329/329 unit tests across 57 test files).
-- `TMPDIR=$PWD/.tmp npm run build` compiles cleanly (2,800+ static HTML pages).
+### R1. Cross-Functional Design Analysis
+Act as a Product Design Review Board. Audit every existing diagnostic page (Visual Display, Touch Screen, Audio & Input, and Utility pages) and identify inconsistencies. Study ScreenTester.io strictly to extract UX principles (information hierarchy, progressive disclosure, workflow, visual rhythm) without copying their layouts. Generate a complete redesign plan (Phase 1). **Wait for approval before proceeding.**
 
-## Operational Rules
-- Work within `.agents/orchestrator_redesign/` for your planning and progress documents.
-- Keep `.agents/orchestrator_redesign/progress.md` updated continuously with active status, completed items, and verification status so the Sentinel can track progress via cron scan.
-- Dispatch worker/explorer subagents to execute implementation tasks cleanly and efficiently.
-- When all tasks are complete and verified against acceptance criteria, produce `.agents/orchestrator_redesign/handoff.md` and claim victory to the Sentinel via `send_message`.
+### R2. Unified Component System Architecture
+Design a new reusable component system for the Right Sidebar across all tests, including: InfoCard, MetricCard, ShortcutCard, ConfigurationCard, StatusCard, PaletteCard, TelemetryCard, and InspectorCard. Retain the existing dark theme, typography, hero language, and technical branding. Create a map of where each component applies (Phase 2). **Wait for approval before proceeding.**
+
+### R3. Strict Incremental Implementation & Verification
+Implement the redesign incrementally (one feature group at a time). For every change, you must rigorously verify zero regressions. If a regression is detected, you must roll back the change immediately and debug (Phase 3). 
+
+### R4. Automated Visual Regression Testing
+Create new Playwright visual regression scripts to capture and compare "Before" and "After" screenshots of the UI. Use these scripts to objectively verify that no visual, layout, or hydration regressions exist between your modifications and the baseline implementation. 
+
+### R5. Local Development Constraints
+Do NOT deploy automatically. Do NOT push commits. Do NOT modify production. All work must be verified via `npm run build` and `npm run preview` in the local environment, checked via Playwright visual verification, and presented for explicit approval before moving forward.
+
+## Acceptance Criteria
+
+### Technical & Verification Integrity
+- [ ] New Playwright visual regression test scripts are created and successfully execute Before/After screenshot comparisons.
+- [ ] `npm run build` completes successfully with zero warnings or errors on every iteration.
+- [ ] `npm run preview` matches the development environment output identically.
+- [ ] Zero browser console errors or runtime exceptions across all modified routes.
+
+### Design Adherence
+- [ ] Visual identity (colors, typography, hero language, animations) remains identical to the original baseline.
+- [ ] All diagnostic pages adhere to the new Left Canvas / Right Sidebar structural paradigm.
+- [ ] Components (InfoCard, MetricCard, etc.) are reused systematically rather than hardcoded per page.
+- [ ] WCAG 2.2 AA accessibility standards are met (visible focus, screen reader labels, keyboard navigation, 44px touch targets).
+- [ ] No layout shifts, horizontal scrolling, or overflow on Desktop, Laptop, Tablet, and Mobile viewports.

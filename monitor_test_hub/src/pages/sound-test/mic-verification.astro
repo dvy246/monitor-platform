@@ -1,0 +1,92 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import MicVerificationCanvas from '../../components/diagnostics/MicVerificationCanvas.astro';
+import FAQSection from '../../components/ui/FAQSection.astro';
+
+const micVerificationFaqs = [
+  {
+    q: 'How does mic-based speaker verification work?',
+    a: 'Our closed-loop verification tool measures pre-cleaning decibels (dB) and post-cleaning decibels (dB) by processing live audio input through Web Audio API AnalyserNodes. This gives you mathematical proof of volume recovery after running water or dust ejection.'
+  },
+  {
+    q: 'Why do I need to grant microphone permissions?',
+    a: 'Microphone access is required solely to listen to the test tones played by your speaker and measure RMS amplitude levels. Your microphone audio is processed 100% locally in your browser and is never recorded, saved, or uploaded to any server.'
+  },
+  {
+    q: 'What is a good acoustic decibel gain after water ejection?',
+    a: 'A gain of +2 dB to +6 dB indicates that water droplets or dust buildup blocking the speaker membrane have been successfully expelled, restoring acoustic clarity and loudness.'
+  },
+  {
+    q: 'What if the acoustic verification shows no volume change?',
+    a: 'If decibel levels remain identical after water ejection, try switching your cleaner to Deep Clean mode (60s cycle). If audio is still severely muffled after 24 hours of drying, physical water damage may require professional hardware repair.'
+  },
+  {
+    q: 'How close should I hold the microphone to the speaker during testing?',
+    a: 'Hold your device or microphone approximately 2 to 4 inches (5 to 10 cm) away from the speaker opening in a quiet room for consistent decibel measurement.'
+  },
+  {
+    q: 'Can I use this to test wireless earbuds or AirPods?',
+    a: 'Yes! Connect your earbuds via Bluetooth, place them speaker-side up near your phone or computer microphone, and run the verification sequence.'
+  },
+  {
+    q: 'Is my microphone data kept private?',
+    a: 'Yes, 100% private. All DSP analysis happens in real-time inside your local browser memory using HTML5 Web Audio API nodes. Zero audio data is transmitted across the network.'
+  },
+  {
+    q: 'Does background noise affect the decibel measurement?',
+    a: 'Yes. For accurate verification, run the test in a quiet room with minimal ambient noise (fans, air conditioning, or background talking).'
+  },
+  {
+    q: 'What frequency tone is used for verification?',
+    a: 'The verification engine uses a clean 1000Hz reference calibration tone because 1kHz is standard in acoustic engineering for measuring speaker driver output and sensitivity.'
+  },
+  {
+    q: 'Can I re-run the verification test multiple times?',
+    a: 'Absolutely. You can run unlimited baseline and post-clean verification cycles to monitor your speaker recovery progress over time.'
+  }
+];
+---
+
+<Layout
+  title="Speaker Water Eject Verification & Decibel Recovery Tool | Display Test Online"
+  description="Verify speaker volume recovery after water eject or dust cleaning using closed-loop decibel testing. Measure pre vs post acoustic recovery instantly."
+  faqs={micVerificationFaqs.map(item => ({ question: item.q, answer: item.a }))}
+>
+  <main id="main-content" class="py-10 space-y-12">
+    <!-- Hero Header -->
+    <section class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-4">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-status-pass/10 border border-status-pass/30 font-mono text-xs text-status-pass font-bold tracking-wider uppercase">
+        <span class="w-2 h-2 rounded-full bg-status-pass animate-pulse"></span>
+        Closed-Loop Speaker Verification
+      </div>
+
+      <h1 class="text-3xl sm:text-5xl font-extrabold text-text-primary tracking-tight font-mono">
+        Speaker Water Recovery Verification
+      </h1>
+
+      <p class="text-sm sm:text-base text-text-secondary max-w-2xl mx-auto leading-relaxed">
+        Test and verify if your speaker volume has fully recovered after running water ejection or dust cleaning. Measure pre vs post decibels ($\Delta dB$) in real-time.
+      </p>
+    </section>
+
+    <!-- Main Canvas -->
+    <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <MicVerificationCanvas />
+    </section>
+
+    <!-- SEO Content Section -->
+    <section class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8 text-text-secondary text-sm leading-relaxed">
+      <div class="space-y-4">
+        <h2 class="text-2xl font-bold font-mono text-text-primary">Why Closed-Loop Verification Matters</h2>
+        <p>
+          Most online water eject tools only play sound outward without giving you feedback on whether your speaker actually improved. Our browser-native Acoustic Verification Engine measures your speaker's physical acoustic output before and after water ejection, calculating exact decibel gain recovery (&Delta;dB = dB_post - dB_pre).
+        </p>
+      </div>
+
+      <!-- FAQ Section Accordion UI -->
+      <div class="pt-8">
+        <FAQSection faqs={micVerificationFaqs.map(item => ({ question: item.q, answer: item.a }))} />
+      </div>
+    </section>
+  </main>
+</Layout>

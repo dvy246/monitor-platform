@@ -191,4 +191,81 @@ Every primary tool page must feature a detailed technical engineering article wi
 - [ ] `TMPDIR=$PWD/.tmp npm test` passes 100% (329/329 unit tests across 57 test files).
 - [ ] `TMPDIR=$PWD/.tmp npm run build` compiles cleanly (2,800+ static HTML pages).
 
+## 2026-07-23T18:30:11Z
+
+# Teamwork Project Prompt
+
+> Goal: Redesign the entire diagnostic experience of DisplayTestOnline.com into a premium engineering tool by extracting UX principles from ScreenTester.io and implementing a unified, highly reusable component system (Left Canvas + Right Sidebar), without altering the core visual identity or the homepage.
+
+Working directory: `/Users/divyyadav/newws/monitor_test_hub`
+Integrity mode: development
+
+## Requirements
+
+### R1. Cross-Functional Design Analysis
+Act as a Product Design Review Board. Audit every existing diagnostic page (Visual Display, Touch Screen, Audio & Input, and Utility pages) and identify inconsistencies. Study ScreenTester.io strictly to extract UX principles (information hierarchy, progressive disclosure, workflow, visual rhythm) without copying their layouts. Generate a complete redesign plan (Phase 1). **Wait for approval before proceeding.**
+
+### R2. Unified Component System Architecture
+Design a new reusable component system for the Right Sidebar across all tests, including: InfoCard, MetricCard, ShortcutCard, ConfigurationCard, StatusCard, PaletteCard, TelemetryCard, and InspectorCard. Retain the existing dark theme, typography, hero language, and technical branding. Create a map of where each component applies (Phase 2). **Wait for approval before proceeding.**
+
+### R3. Strict Incremental Implementation & Verification
+Implement the redesign incrementally (one feature group at a time). For every change, you must rigorously verify zero regressions. If a regression is detected, you must roll back the change immediately and debug (Phase 3). 
+
+### R4. Automated Visual Regression Testing
+Create new Playwright visual regression scripts to capture and compare "Before" and "After" screenshots of the UI. Use these scripts to objectively verify that no visual, layout, or hydration regressions exist between your modifications and the baseline implementation. 
+
+### R5. Local Development Constraints
+Do NOT deploy automatically. Do NOT push commits. Do NOT modify production. All work must be verified via `npm run build` and `npm run preview` in the local environment, checked via Playwright visual verification, and presented for explicit approval before moving forward.
+
+## Acceptance Criteria
+
+### Technical & Verification Integrity
+- [ ] New Playwright visual regression test scripts are created and successfully execute Before/After screenshot comparisons.
+- [ ] `npm run build` completes successfully with zero warnings or errors on every iteration.
+- [ ] `npm run preview` matches the development environment output identically.
+- [ ] Zero browser console errors or runtime exceptions across all modified routes.
+
+### Design Adherence
+- [ ] Visual identity (colors, typography, hero language, animations) remains identical to the original baseline.
+- [ ] All diagnostic pages adhere to the new Left Canvas / Right Sidebar structural paradigm.
+- [ ] Components (InfoCard, MetricCard, etc.) are reused systematically rather than hardcoded per page.
+- [ ] WCAG 2.2 AA accessibility standards are met (visible focus, screen reader labels, keyboard navigation, 44px touch targets).
+- [ ] No layout shifts, horizontal scrolling, or overflow on Desktop, Laptop, Tablet, and Mobile viewports.
+
+## Follow-up — 2026-07-23T18:33:00Z
+
+UPDATE TO PHASE 1 DESIGN ANALYSIS & ARCHITECTURE (ui-ux-pro-max skill integration):
+
+1. **Icons & Assets**: STRICTLY NO emoji icons. Must use professional SVG icons (Lucide or Heroicons) with fixed viewBox and consistent sizing (e.g. `w-6 h-6`).
+2. **Interaction & Feedback**: All clickable/interactive cards must have `cursor-pointer`. Provide smooth visual feedback using color/opacity transitions (`transition-colors duration-200`).
+3. **Hover Stability**: DO NOT use scale transforms (`scale-105`) or anything that shifts the layout on hover. Use border, shadow, or background color interpolation instead.
+4. **Touch & Accessibility**: Ensure all interactive targets are at least `44x44px`. Focus states must be visibly prominent for keyboard navigation.
+5. **Consistency**: Ensure all components respect the global `max-w-7xl` grid and use consistent glassmorphic opacities (e.g. `bg-bg-surface/90 backdrop-blur-xl border border-border-hairline`).
+
+## Follow-up — 2026-07-23T18:44:00Z
+
+USER APPROVAL GRANTED FOR PHASE 1. Phase 2 Authorized.
+
+The user has reviewed and explicitly approved the Phase 1 Cross-Functional Design Analysis and Master Redesign Plan.
+
+Instructions for Phase 2:
+1. Design the reusable components for the Right Sidebar (`InfoCard`, `MetricCard`, `ShortcutCard`, `ConfigurationCard`, `StatusCard`, `PaletteCard`, `TelemetryCard`, `InspectorCard`, `PassportCard`).
+2. Show exactly where each component will be used across all diagnostic tools.
+3. Wait for explicit user approval before beginning Phase 3 implementation.
+
+## Follow-up — 2026-07-23T19:01:00Z
+
+USER APPROVAL GRANTED FOR PHASE 2. Phase 3 Authorized.
+
+The user has reviewed and explicitly approved the Phase 2 Unified Component System Architecture & Mapping Plan.
+
+Instructions for Phase 3:
+1. Setup Playwright visual regression tests first to capture baseline screenshots before making layout modifications.
+2. Incrementally implement the new component system architecture group by group, strictly adhering to `ui-ux-pro-max` guidelines.
+3. Continually verify all changes locally (`npm run build`, `npm run preview`, zero console errors).
+
+
+
+
+
 

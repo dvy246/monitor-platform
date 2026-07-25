@@ -1,0 +1,160 @@
+---
+import { useTranslations } from '../../utils/i18n';
+const { t } = useTranslations(Astro.url.pathname);
+---
+
+<div class="w-full max-w-4xl mx-auto space-y-8 font-sans" id="earpiece-cleaner-wrapper">
+  
+  <!-- Preparation & Warning Banner -->
+  <div class="p-4 sm:p-5 rounded-2xl bg-rose-500/10 border border-rose-500/30 flex items-start gap-4 shadow-specular-top">
+    <div class="w-10 h-10 rounded-xl bg-rose-500/20 text-rose-400 flex items-center justify-center shrink-0 font-bold text-lg">
+      📱
+    </div>
+    <div class="space-y-1 text-sm">
+      <h3 class="font-bold text-rose-400 font-mono tracking-tight text-base">CALL SPEAKER (EARPIECE) DIAGNOSTIC PREPARATION</h3>
+      <p class="text-text-secondary text-xs sm:text-sm leading-relaxed">
+        <strong class="text-rose-300">Place phone face down on a soft towel.</strong> The top earpiece speaker capsule is delicate and smaller than the bottom speaker. Do NOT insert toothpicks or cotton swabs into the earpiece grille!
+      </p>
+    </div>
+  </div>
+
+  <!-- Main Diagnostic Control Container -->
+  <div class="relative overflow-hidden rounded-2xl bg-bg-surface border border-border-hairline p-6 sm:p-8 shadow-specular-top space-y-8">
+    <div class="flex flex-wrap items-center justify-between gap-4 border-b border-border-hairline pb-4">
+      <div>
+        <div class="inline-flex items-center gap-2 px-2.5 py-1 rounded-md bg-rose-500/10 border border-rose-500/30 font-mono text-[10px] text-rose-400 font-bold uppercase tracking-widest mb-1.5">
+          <span class="w-1.5 h-1.5 rounded-full bg-rose-400 animate-pulse"></span>
+          Top Speaker Capsule Ejector
+        </div>
+        <h2 class="text-xl sm:text-2xl font-bold font-mono text-text-primary tracking-tight">
+          Earpiece Call Speaker Cleaner
+        </h2>
+      </div>
+      <span class="px-3 py-1 rounded bg-bg-canvas border border-border-hairline font-mono text-xs text-text-muted">
+        Target: 250Hz–600Hz Capsule Sweep
+      </span>
+    </div>
+
+    <!-- Visualizer Canvas Deck -->
+    <div class="relative h-44 sm:h-52 bg-bg-canvas border border-border-hairline rounded-xl overflow-hidden flex flex-col justify-between p-4 shadow-inner">
+      <canvas id="earpiece-visualizer" class="absolute inset-0 w-full h-full opacity-80 pointer-events-none"></canvas>
+
+      <div class="relative z-10 flex items-center justify-between font-mono text-xs">
+        <div class="flex items-center gap-2 text-text-secondary">
+          <span class="w-2 h-2 rounded-full bg-border-interactive" id="earpiece-led"></span>
+          <span id="earpiece-status" class="text-[11px] uppercase font-semibold">Ready for Earpiece Ejection</span>
+        </div>
+        <div class="text-right">
+          <span class="text-[10px] text-text-muted block">Capsule Freq</span>
+          <span id="earpiece-freq" class="text-xl font-bold font-mono text-rose-400 tabular-nums">500 Hz</span>
+        </div>
+      </div>
+
+      <div class="relative z-10 flex items-center justify-between font-mono text-[11px] text-text-muted">
+        <span>High-Pass Biquad Capsule Filter</span>
+        <span>Output: 100% Earpiece Focus</span>
+      </div>
+    </div>
+
+    <!-- Eject Control -->
+    <div class="flex flex-col items-center justify-center space-y-4 text-center">
+      <button 
+        id="btn-earpiece-toggle"
+        class="w-full sm:w-80 h-16 sm:h-20 rounded-2xl bg-rose-500 hover:bg-rose-400 text-white font-mono font-extrabold text-lg sm:text-xl tracking-wider uppercase transition-all duration-200 shadow-[0_0_30px_rgba(244,63,94,0.3)] active:scale-95 flex items-center justify-center gap-3 cursor-pointer"
+      >
+        <svg class="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 13.5L12 21m0 0l-7.5-7.5M12 21V3" />
+        </svg>
+        <span id="earpiece-btn-label">CLEAN EARPIECE SPEAKER</span>
+      </button>
+      <p class="text-xs text-text-muted max-w-sm leading-normal">
+        Hold device upside down so gravity assists water droplets out of the top receiver slot.
+      </p>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  import { AudioDiagnosticEngine } from '../../engine/AudioDiagnosticEngine';
+
+  function initEarpieceCleaner() {
+    const btnToggle = document.getElementById('btn-earpiece-toggle');
+    const btnLabel = document.getElementById('earpiece-btn-label');
+    const freqReadout = document.getElementById('earpiece-freq');
+    const statusText = document.getElementById('earpiece-status');
+    const statusLed = document.getElementById('earpiece-led');
+    const canvas = document.getElementById('earpiece-visualizer') as HTMLCanvasElement;
+    const ctx = canvas ? canvas.getContext('2d') : null;
+
+    if (!btnToggle) return;
+
+    const engine = new AudioDiagnosticEngine(
+      (freq) => {
+        if (freqReadout) freqReadout.textContent = `${freq} Hz`;
+      },
+      (data) => {
+        if (ctx && canvas) {
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+          const barW = canvas.width / data.length;
+          for (let i = 0; i < data.length; i++) {
+            const h = (data[i] / 255) * canvas.height;
+            ctx.fillStyle = 'rgba(244, 63, 94, 0.5)';
+            ctx.fillRect(i * barW, canvas.height - h, barW - 2, h);
+          }
+        }
+      }
+    );
+
+    function resizeCanvas() {
+      if (canvas) {
+        canvas.width = canvas.offsetWidth;
+        canvas.height = canvas.offsetHeight;
+      }
+    }
+    resizeCanvas();
+
+    btnToggle.addEventListener('click', async () => {
+      await engine.initAudio();
+      if (engine.active) {
+        engine.stop();
+        if (btnLabel) btnLabel.textContent = 'CLEAN EARPIECE SPEAKER';
+        if (btnToggle) {
+          btnToggle.classList.remove('bg-status-fail');
+          btnToggle.classList.add('bg-rose-500');
+        }
+        if (statusText) statusText.textContent = 'Ready for Earpiece Ejection';
+        if (statusLed) {
+          statusLed.classList.remove('bg-status-pass', 'animate-pulse');
+          statusLed.classList.add('bg-border-interactive');
+        }
+      } else {
+        engine.start({
+          mode: 'water-sweep',
+          target: 'earpiece',
+          preset: 'earpiece',
+          baseFreq: 250,
+          endFreq: 600,
+          intensity: 1.1,
+          volume: 1.0
+        });
+        if (btnLabel) btnLabel.textContent = 'STOP EARPIECE CLEANING';
+        if (btnToggle) {
+          btnToggle.classList.remove('bg-rose-500');
+          btnToggle.classList.add('bg-status-fail');
+        }
+        if (statusText) statusText.textContent = 'EARPIECE CAPSULE EJECT ACTIVE';
+        if (statusLed) {
+          statusLed.classList.remove('bg-border-interactive');
+          statusLed.classList.add('bg-status-pass', 'animate-pulse');
+        }
+      }
+    });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initEarpieceCleaner);
+  } else {
+    initEarpieceCleaner();
+  }
+</script>

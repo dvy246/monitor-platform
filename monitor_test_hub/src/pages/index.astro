@@ -58,49 +58,100 @@ const homepageFaqSchema = {
   title="Online Monitor & Touch Screen Test Suite | Display Test Online" 
   description="Test your monitor for dead pixels, color accuracy, Hz refresh rate, OLED burn-in, and touch response. Run free browser diagnostics now—no downloads needed."
 >
-  <!-- Hero Experience: Hardware Calibration Control Deck -->
-  <section aria-labelledby="hero-title" class="relative border-b border-border-hairline bg-bg-canvas overflow-hidden py-12 md:py-20">
-    <!-- Precision Background Grid Layer with Masking (Confined to Background) -->
+  <!-- Hero Experience: Premium Instrument Lab Control Deck -->
+  <section aria-labelledby="hero-title" class="relative border-b border-border-hairline bg-bg-canvas overflow-hidden py-16 md:py-24">
+    <!-- Dual-layer precision oscilloscope grid -->
     <div class="absolute inset-0 bg-precision-grid bg-grid-mask pointer-events-none z-0"></div>
-    <div class="pointer-events-none absolute -top-40 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-radial from-white/[0.025] to-transparent blur-3xl z-0"></div>
+
+    <!-- Ambient phosphor glow blobs — the signature element -->
+    <div class="pointer-events-none absolute -top-32 -left-32 w-[600px] h-[600px] glow-blob-mint opacity-60 z-0"></div>
+    <div class="pointer-events-none absolute -bottom-48 -right-48 w-[700px] h-[700px] glow-blob-cerulean opacity-40 z-0"></div>
+
+    <!-- CRT scan-line ambient animation -->
+    <div aria-hidden="true" class="absolute inset-0 z-1 overflow-hidden pointer-events-none">
+      <div class="scan-line-ambient"></div>
+      <div class="scan-line-ambient"></div>
+      <div class="scan-line-ambient"></div>
+    </div>
 
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center min-w-0">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center min-w-0">
         
         <!-- Left Column: Headline & Tactical Action Deck -->
-        <div class="lg:col-span-7 flex flex-col gap-6 min-w-0">
-          <div class="font-mono text-[11px] uppercase tracking-widest text-text-secondary flex items-center gap-2.5 flex-wrap">
-            <span class="px-2.5 py-1 rounded-md bg-bg-surface border border-border-subtle text-status-pass font-bold shadow-specular-top flex items-center gap-2">
+        <div class="lg:col-span-7 flex flex-col gap-7 min-w-0">
+
+          <!-- Live status eyebrow -->
+          <div class="flex items-center gap-3 flex-wrap">
+            <span class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[rgba(0,229,160,0.06)] border border-[rgba(0,229,160,0.22)] text-[11px] font-mono font-bold text-status-pass uppercase tracking-widest shadow-specular-top">
               <span class="w-1.5 h-1.5 rounded-full bg-status-pass led-glow-pass animate-pulse"></span>
-              Thought Your Screen or Hardware Was Broken? Test It Free Instantly.
+              All Systems Live · Zero Downloads
+            </span>
+            <span class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[rgba(77,159,255,0.06)] border border-[rgba(77,159,255,0.20)] text-[11px] font-mono font-bold text-status-info uppercase tracking-widest">
+              60+ Diagnostic Instruments
             </span>
           </div>
 
-          <h1 id="hero-title" class="text-3xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.1] text-text-primary heading-brand">
-            Free Online Display Test &amp; Hardware Diagnostics
-          </h1>
+          <!-- Display headline -->
+          <div>
+            <h1 id="hero-title" class="text-4xl sm:text-5xl lg:text-[3.75rem] font-extrabold tracking-tight leading-[1.05] text-text-primary heading-brand">
+              Free Online<br>
+              <span style="background: linear-gradient(135deg, #00e5a0 0%, #4d9fff 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">Display Test</span><br>
+              &amp; Hardware Diagnostics
+            </h1>
+          </div>
 
           <p class="text-base sm:text-lg text-text-secondary leading-relaxed font-sans max-w-xl">
-            Run instant hardware diagnostics in your browser. Check for dead pixels, stuck 60Hz refresh rates, keyboard double-typing, and controller stick drift in seconds—no software downloads or video uploads required.
+            Instant browser diagnostics for dead pixels, refresh rate, keyboard chatter, mouse polling, controller drift, OLED burn-in, and audio. No software. No uploads. 100% private.
           </p>
 
-          <div class="flex flex-wrap gap-3 items-center pt-2">
-            <a id="smart-hero-cta" href={localizeLink("/display-tests", lang)} aria-label="Run Free Display Diagnostics" class="inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-text-primary text-bg-canvas font-bold text-xs md:text-sm shadow-specular-top hover:opacity-90 active:scale-[0.98] transition-all duration-150 ease-[cubic-bezier(0.16,1,0.3,1)] cursor-pointer font-mono">
+          <!-- Metric pills strip -->
+          <div class="flex flex-wrap gap-2.5 font-mono text-[11px]">
+            <span class="px-3 py-1.5 rounded-full bg-bg-surface border border-border-hairline text-text-secondary">
+              <span class="text-status-pass font-bold">540Hz+</span> Refresh
+            </span>
+            <span class="px-3 py-1.5 rounded-full bg-bg-surface border border-border-hairline text-text-secondary">
+              <span class="text-status-info font-bold">8000Hz</span> Mouse
+            </span>
+            <span class="px-3 py-1.5 rounded-full bg-bg-surface border border-border-hairline text-text-secondary">
+              <span class="text-status-warn font-bold">10-Bit</span> HDR PQ
+            </span>
+            <span class="px-3 py-1.5 rounded-full bg-bg-surface border border-border-hairline text-text-secondary">
+              <span class="text-[#a78bfa] font-bold">HRTF</span> Spatial Audio
+            </span>
+            <span class="px-3 py-1.5 rounded-full bg-bg-surface border border-border-hairline text-text-secondary">
+              <span class="text-status-pass font-bold">0</span> Downloads
+            </span>
+          </div>
+
+          <!-- CTAs -->
+          <div class="flex flex-wrap gap-3 items-center">
+            <a id="smart-hero-cta" href={localizeLink("/display-tests", lang)} aria-label="Run Free Display Diagnostics"
+               class="btn-primary">
               <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/></svg>
-              <span id="cta-label" class="tabular-nums">START MONITOR TEST</span>
-              <kbd class="hidden sm:inline-flex items-center px-1.5 py-0.5 ml-1 text-[10px] font-mono font-medium rounded bg-bg-canvas/20 border border-bg-canvas/30 text-bg-canvas">↵</kbd>
+              <span id="cta-label">START MONITOR TEST</span>
+              <kbd class="hidden sm:inline-flex items-center px-1.5 py-0.5 text-[10px] font-mono font-medium rounded bg-[#07080f]/20 border border-[#07080f]/30">↵</kbd>
             </a>
 
-            <a href={localizeLink("/touch-tests", lang)} class="inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-bg-surface text-text-primary border border-border-hairline shadow-specular-top hover:border-border-interactive active:scale-[0.98] transition-all duration-150 ease-[cubic-bezier(0.16,1,0.3,1)] cursor-pointer text-xs md:text-sm font-mono group">
+            <a href={localizeLink("/touch-tests", lang)} class="btn-ghost">
               <span>TOUCH SCREEN TEST</span>
-              <span class="text-text-muted group-hover:translate-x-0.5 transition-transform duration-150">&rarr;</span>
+              <span class="text-text-muted">&rarr;</span>
             </a>
           </div>
         </div>
 
-        <!-- Right Column: Real-Time Scope Canvas -->
+        <!-- Right Column: Real-Time Scope Canvas — elevated instrument panel -->
         <div class="lg:col-span-5 relative">
-          <div class="rounded-xl border border-border-hairline bg-bg-surface p-2 shadow-specular-top">
+          <!-- Outer glow ring -->
+          <div class="absolute -inset-1 rounded-2xl bg-gradient-to-br from-[rgba(0,229,160,0.08)] via-transparent to-[rgba(77,159,255,0.08)] pointer-events-none z-0"></div>
+          <div class="relative z-10 rounded-2xl border border-border-hairline bg-bg-surface p-2 shadow-specular-top overflow-hidden">
+            <!-- Top instrument bar -->
+            <div class="px-3 py-2 flex items-center justify-between border-b border-border-hairline mb-2">
+              <div class="flex items-center gap-2 font-mono text-[10px] text-text-muted uppercase tracking-widest">
+                <span class="w-1.5 h-1.5 rounded-full bg-status-pass led-glow-pass animate-pulse"></span>
+                LIVE DIAGNOSTIC SCOPE
+              </div>
+              <div class="font-mono text-[10px] text-text-muted">rAF · 1/60s</div>
+            </div>
             <HeroDiagnosticScope />
           </div>
         </div>
@@ -175,36 +226,37 @@ const homepageFaqSchema = {
 
       <!-- FEATURED FLAGSHIP TOOL -->
       <section class="space-y-4 mb-10">
-        <div class="relative overflow-hidden rounded-2xl bg-[#08080a] border border-emerald-500/30 p-1">
+        <div class="relative overflow-hidden rounded-2xl bg-bg-canvas border border-[rgba(0,229,160,0.25)] p-1">
           <!-- Background Glow -->
-          <div class="absolute -top-24 -right-24 w-64 h-64 bg-emerald-500/20 blur-3xl rounded-full pointer-events-none"></div>
+          <div class="absolute -top-24 -right-24 w-64 h-64 rounded-full pointer-events-none" style="background:radial-gradient(ellipse,rgba(0,229,160,0.15) 0%,transparent 70%);filter:blur(24px)"></div>
+          <div class="absolute -bottom-16 -left-16 w-48 h-48 rounded-full pointer-events-none" style="background:radial-gradient(ellipse,rgba(77,159,255,0.10) 0%,transparent 70%);filter:blur(24px)"></div>
           
           <div class="relative bg-bg-surface/90 backdrop-blur-xl rounded-xl p-6 sm:p-10 border border-white/5 flex flex-col md:flex-row items-center gap-8 shadow-2xl">
             <div class="flex-1 space-y-4">
-              <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-xs font-mono text-emerald-400 font-bold tracking-wider uppercase">
-                <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+              <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[rgba(0,229,160,0.08)] border border-[rgba(0,229,160,0.28)] text-xs font-mono text-status-pass font-bold tracking-wider uppercase">
+                <span class="w-2 h-2 rounded-full bg-status-pass led-glow-pass animate-pulse"></span>
                 Featured Flagship Tool
               </div>
-              <h2 class="text-2xl sm:text-3xl font-extrabold text-white font-mono tracking-tight">
-                System Latency & Input Lag Test
+              <h2 class="text-2xl sm:text-3xl font-extrabold text-text-primary font-mono tracking-tight">
+                System Latency &amp; Input Lag Test
               </h2>
-              <p class="text-sm sm:text-base text-zinc-400 leading-relaxed font-sans max-w-2xl">
-                Stop guessing your PC's delay. Our brand-new browser-native End-to-End (E2E) Latency Analyzer uses cutting-edge WebCodecs and DSP algorithms to measure your true system latency. Just drop a 240fps slow-motion video from your smartphone.
+              <p class="text-sm sm:text-base text-text-secondary leading-relaxed font-sans max-w-2xl">
+                Stop guessing your PC's delay. Our browser-native End-to-End (E2E) Latency Analyzer uses WebCodecs and DSP algorithms to measure your true system latency. Just drop a 240fps slow-motion video from your smartphone.
               </p>
               <div class="pt-2">
-                <a href="/mouse-test/e2e-latency-test" class="inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-black font-bold font-mono text-sm transition-colors shadow-[0_0_15px_rgba(16,185,129,0.4)]">
+                <a href="/mouse-test/e2e-latency-test" class="btn-primary">
                   Measure Input Lag Now &rarr;
                 </a>
               </div>
             </div>
             
-            <div class="hidden md:flex flex-col items-center justify-center shrink-0 w-48 h-48 rounded-full bg-emerald-500/5 border border-emerald-500/20 shadow-[inset_0_0_30px_rgba(16,185,129,0.1)] p-6">
-              <svg class="w-16 h-16 text-emerald-400 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
+            <div class="hidden md:flex flex-col items-center justify-center shrink-0 w-48 h-48 rounded-full border border-[rgba(0,229,160,0.20)] p-6" style="background:radial-gradient(ellipse,rgba(0,229,160,0.05) 0%,transparent 70%);box-shadow:inset 0 0 30px rgba(0,229,160,0.08)">
+              <svg class="w-16 h-16 text-status-pass mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
               <div class="text-center font-mono">
-                <div class="text-3xl font-black text-white">14<span class="text-emerald-400 text-lg">ms</span></div>
-                <div class="text-[10px] text-zinc-500 uppercase tracking-widest mt-1">E2E Latency</div>
+                <div class="text-3xl font-black text-text-primary">14<span class="text-status-pass text-lg">ms</span></div>
+                <div class="text-[10px] text-text-muted uppercase tracking-widest mt-1">E2E Latency</div>
               </div>
             </div>
           </div>

@@ -1,0 +1,1075 @@
+---
+// FrequencyGeneratorCanvas.astro — World-Class Frequency Generator & Oscilloscope
+export interface Props {
+  initialFreq?: number;
+}
+
+const { initialFreq = 440 } = Astro.props;
+---
+
+<div class="frequency-generator-container w-full max-w-4xl mx-auto space-y-6 font-sans select-none">
+  
+  <!-- Interactive Frequency Finder Wizard Banner -->
+  <div class="p-4 sm:p-5 rounded-3xl border flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-specular-top" style="background:linear-gradient(135deg,rgba(0,229,160,0.06) 0%,rgba(77,159,255,0.06) 50%,rgba(0,229,160,0.04) 100%);border-color:rgba(0,229,160,0.25)">
+    <div class="space-y-1">
+      <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-[rgba(0,229,160,0.08)] border border-[rgba(0,229,160,0.25)] text-status-pass font-mono text-[10px] font-bold uppercase tracking-wider">
+        <span class="w-1.5 h-1.5 rounded-full bg-status-pass led-glow-pass animate-pulse"></span>
+        AI Frequency Recommendation Wizard
+      </div>
+      <h3 class="text-base sm:text-lg font-extrabold text-text-primary font-mono tracking-tight">Need help picking the best frequency?</h3>
+      <p class="text-xs text-text-secondary leading-relaxed">Answer 3 quick questions about your goal and environment to automatically configure the perfect frequency and waveform.</p>
+    </div>
+    <button
+      id="fg-open-wizard-btn"
+      type="button"
+      class="btn-primary shrink-0 cursor-pointer"
+    >
+      <span>✨ Find My Frequency</span>
+      <span class="font-sans">&rarr;</span>
+    </button>
+  </div>
+
+  <!-- Main Display Card -->
+  <div class="relative overflow-hidden rounded-3xl bg-bg-surface border border-border-hairline p-6 sm:p-8 shadow-specular-top space-y-6">
+    
+    <!-- Top Header & LED Status -->
+    <div class="flex items-center justify-between border-b border-border-hairline/60 pb-4">
+      <div class="flex items-center gap-2.5">
+        <span id="fg-led" class="w-3 h-3 rounded-full bg-zinc-600 shadow-[0_0_10px_rgba(255,255,255,0.2)] transition-all"></span>
+        <h2 class="text-base sm:text-lg font-extrabold text-text-primary font-mono tracking-tight">Frequency Generator</h2>
+      </div>
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-bg-canvas border border-border-hairline font-mono text-xs text-text-muted">
+        <span id="fg-engine-status">WEB AUDIO API • 64-BIT SYNTH</span>
+      </div>
+    </div>
+
+    <!-- Oscilloscope Real-Time Waveform Canvas -->
+    <div class="relative w-full h-44 sm:h-52 rounded-2xl bg-[#08080a] border border-border-hairline overflow-hidden shadow-inner flex items-center justify-center group">
+      <canvas id="fg-oscilloscope-canvas" class="w-full h-full block opacity-90"></canvas>
+      
+      <!-- Overlay Reticle & Grid Lines -->
+      <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_0%,rgba(8,8,10,0.6)_100%)] pointer-events-none"></div>
+      <div class="absolute inset-0 border border-white/5 pointer-events-none"></div>
+
+      <!-- Scope HUD Telemetry -->
+      <div class="absolute top-3 left-3 flex items-center gap-2 text-[11px] font-mono bg-bg-surface/80 backdrop-blur-md border border-border-hairline px-3 py-1 rounded-lg text-text-primary shadow-xs pointer-events-none">
+        <span id="hud-waveform-label" class="text-status-pass font-bold">SINE WAVE</span>
+        <span>•</span>
+        <span id="hud-thd-label" class="text-text-muted">&lt; 0.001% THD</span>
+      </div>
+
+      <div class="absolute top-3 right-3 text-[10px] font-mono bg-bg-surface/80 backdrop-blur-md border border-border-hairline px-2.5 py-1 rounded-lg text-text-muted pointer-events-none">
+        48,000 Hz REAL-TIME SCOPE
+      </div>
+    </div>
+
+    <!-- Readout Deck: Giant Frequency Value & Musical Note Heuristic -->
+    <div class="text-center space-y-1 py-2">
+      <div class="flex items-baseline justify-center gap-2">
+        <span id="fg-big-readout" class="text-5xl sm:text-7xl font-extrabold text-status-pass font-mono tracking-tight" style="text-shadow:0 0 25px rgba(0,229,160,0.4)">
+          {initialFreq}
+        </span>
+        <span class="text-xl sm:text-2xl font-bold text-text-secondary font-mono">Hz</span>
+      </div>
+      <div id="fg-note-label" class="text-xs sm:text-sm font-mono font-medium text-text-muted tracking-wider">
+        A4 - Concert Pitch Standard
+      </div>
+    </div>
+
+    <!-- Waveform Type Selector Cards -->
+    <div class="space-y-2">
+      <label class="block text-xs font-mono font-bold uppercase tracking-wider text-text-muted">Select Waveform</label>
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-3" id="fg-waveform-group">
+        
+        <!-- Sine Card -->
+        <button type="button" data-waveform="sine" class="fg-wf-btn active p-3 rounded-2xl border-2 text-status-pass flex flex-col items-center gap-1.5 transition-all cursor-pointer hover:scale-[1.02] shadow-sm" style="background:rgba(0,229,160,0.08);border-color:#00e5a0">
+          <svg class="w-7 h-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12c3-8 6-8 9 0s6 8 9 0" stroke-linecap="round"/></svg>
+          <span class="font-bold font-mono text-xs">Sine</span>
+        </button>
+
+        <!-- Square Card -->
+        <button type="button" data-waveform="square" class="fg-wf-btn p-3 rounded-2xl bg-bg-canvas border-2 border-border-hairline text-text-secondary flex flex-col items-center gap-1.5 transition-all cursor-pointer hover:scale-[1.02] hover:border-white/20">
+          <svg class="w-7 h-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 17V7h6v10h6V7h6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <span class="font-bold font-mono text-xs">Square</span>
+        </button>
+
+        <!-- Triangle Card -->
+        <button type="button" data-waveform="triangle" class="fg-wf-btn p-3 rounded-2xl bg-bg-canvas border-2 border-border-hairline text-text-secondary flex flex-col items-center gap-1.5 transition-all cursor-pointer hover:scale-[1.02] hover:border-white/20">
+          <svg class="w-7 h-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 17l6-10 6 10 6-10" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <span class="font-bold font-mono text-xs">Triangle</span>
+        </button>
+
+        <!-- Sawtooth Card -->
+        <button type="button" data-waveform="sawtooth" class="fg-wf-btn p-3 rounded-2xl bg-bg-canvas border-2 border-border-hairline text-text-secondary flex flex-col items-center gap-1.5 transition-all cursor-pointer hover:scale-[1.02] hover:border-white/20">
+          <svg class="w-7 h-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 17l9-10v10l9-10v10" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <span class="font-bold font-mono text-xs">Sawtooth</span>
+        </button>
+
+      </div>
+    </div>
+
+    <!-- Master Frequency Slider & Precision Number Input -->
+    <div class="space-y-3 p-4 rounded-2xl bg-bg-canvas border border-border-hairline">
+      <div class="flex items-center justify-between">
+        <label for="fg-num-input" class="text-xs font-mono font-bold uppercase tracking-wider text-text-muted">Target Frequency</label>
+        <div class="flex items-center gap-2">
+          <!-- Octave Adjusters -->
+          <button id="btn-octave-down" title="Half Frequency (Octave Down)" class="px-2 py-1 rounded-lg bg-bg-surface border border-border-hairline text-text-secondary font-mono text-xs font-bold hover:text-white transition-colors">÷2</button>
+          <button id="btn-octave-up" title="Double Frequency (Octave Up)" class="px-2 py-1 rounded-lg bg-bg-surface border border-border-hairline text-text-secondary font-mono text-xs font-bold hover:text-white transition-colors">×2</button>
+          
+          <div class="relative flex items-center">
+            <input
+              id="fg-num-input"
+              type="number"
+              min="1"
+              max="20000"
+              value={initialFreq}
+              class="w-24 px-3 py-1.5 rounded-xl bg-bg-surface border border-border-hairline text-right font-mono font-bold text-status-pass text-sm focus:outline-none focus:border-status-pass"
+            />
+            <span class="ml-1 text-xs font-mono text-text-muted">Hz</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Frequency Range Slider -->
+      <div class="space-y-1">
+        <input
+          id="fg-slider"
+          type="range"
+          min="1"
+          max="20000"
+          step="1"
+          value={initialFreq}
+          class="w-full h-2 rounded-lg bg-bg-surface cursor-pointer accent-[#00e5a0]"
+        />
+        <div class="flex justify-between text-[10px] font-mono text-text-muted">
+          <span>1 Hz (Infrasound)</span>
+          <span>1,000 Hz</span>
+          <span>20,000 Hz (Ultrasound)</span>
+        </div>
+      </div>
+
+      <!-- Fine-Tuning Micro Step Buttons -->
+      <div class="flex items-center justify-center gap-2 pt-1">
+        <button data-step="-10" class="fg-step-btn px-2.5 py-1 rounded-lg bg-bg-surface border border-border-hairline text-text-secondary font-mono text-xs hover:text-white transition-colors">-10 Hz</button>
+        <button data-step="-1" class="fg-step-btn px-2.5 py-1 rounded-lg bg-bg-surface border border-border-hairline text-text-secondary font-mono text-xs hover:text-white transition-colors">-1 Hz</button>
+        <button data-step="+1" class="fg-step-btn px-2.5 py-1 rounded-lg bg-bg-surface border border-border-hairline text-text-secondary font-mono text-xs hover:text-white transition-colors">+1 Hz</button>
+        <button data-step="+10" class="fg-step-btn px-2.5 py-1 rounded-lg bg-bg-surface border border-border-hairline text-text-secondary font-mono text-xs hover:text-white transition-colors">+10 Hz</button>
+      </div>
+    </div>
+
+    <!-- Master Play Tone Button -->
+    <button
+      id="fg-btn-play"
+      type="button"
+      class="w-full py-4 rounded-2xl font-extrabold font-mono text-lg transition-all transform active:scale-[0.99] flex items-center justify-center gap-3 cursor-pointer btn-primary"
+    >
+      <svg id="fg-play-icon" class="w-6 h-6 fill-current" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+      <svg id="fg-pause-icon" class="w-6 h-6 fill-current hidden" viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+      <span id="fg-play-label">Play Tone</span>
+    </button>
+
+    <!-- Volume & Balance Controls Deck -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+      <!-- Volume Slider -->
+      <div class="p-3.5 rounded-2xl bg-bg-canvas border border-border-hairline space-y-2">
+        <div class="flex items-center justify-between text-xs font-mono font-bold">
+          <span class="text-text-muted">MASTER VOLUME</span>
+          <span id="fg-vol-val" class="text-status-pass font-bold">50%</span>
+        </div>
+        <div class="flex items-center gap-3">
+          <button id="fg-btn-mute" type="button" class="text-text-muted hover:text-white transition-colors">
+            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"/></svg>
+          </button>
+          <input
+            id="fg-vol-slider"
+            type="range"
+            min="0"
+            max="100"
+            value="50"
+            class="w-full h-2 rounded-lg bg-bg-surface cursor-pointer accent-[#00e5a0]"
+          />
+        </div>
+      </div>
+
+      <!-- Stereo Channel Balance -->
+      <div class="p-3.5 rounded-2xl bg-bg-canvas border border-border-hairline space-y-2">
+        <div class="flex items-center justify-between text-xs font-mono font-bold">
+          <span class="text-text-muted">STEREO BALANCE</span>
+          <span id="fg-pan-val" class="text-indigo-400">CENTER</span>
+        </div>
+        <input
+          id="fg-pan-slider"
+          type="range"
+          min="-1"
+          max="1"
+          step="0.05"
+          value="0"
+          class="w-full h-2 rounded-lg bg-bg-surface cursor-pointer accent-indigo-400"
+        />
+      </div>
+    </div>
+
+    <!-- Brainwave Focus Frequencies Deck -->
+    <div class="p-4 sm:p-5 rounded-2xl bg-indigo-500/10 border border-indigo-500/30 space-y-3">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <span class="text-base">🧠</span>
+          <h3 class="font-bold font-mono text-sm text-indigo-300">Brainwave Focus Frequencies (Study &amp; Deep Work)</h3>
+        </div>
+        <span class="text-[10px] font-mono font-bold bg-indigo-500/20 text-indigo-300 px-2 py-0.5 rounded-full border border-indigo-500/30">Headphones Recommended</span>
+      </div>
+
+      <!-- Brainwave Wave Cards -->
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+        
+        <!-- Beta Waves -->
+        <button type="button" data-freq="20" data-note="Beta Wave (20 Hz) - Deep Work & Studying" class="fg-preset-btn p-3 rounded-xl bg-bg-surface border border-border-hairline hover:border-indigo-500/50 text-left transition-all group">
+          <div class="flex items-center justify-between mb-1">
+            <span class="font-bold font-mono text-xs text-indigo-400 group-hover:text-indigo-300">Beta Waves</span>
+            <span class="text-[11px] font-mono font-bold text-text-muted">14–30 Hz</span>
+          </div>
+          <p class="text-[11px] text-text-secondary leading-snug">Ideal for active studying, deep work, and analytical thinking. Keeps your brain in "traffic controller" mode.</p>
+        </button>
+
+        <!-- Gamma Waves -->
+        <button type="button" data-freq="40" data-note="Gamma Wave (40 Hz) - Rapid Learning & Cognition" class="fg-preset-btn p-3 rounded-xl bg-bg-surface border border-border-hairline hover:border-cyan-500/50 text-left transition-all group">
+          <div class="flex items-center justify-between mb-1">
+            <span class="font-bold font-mono text-xs text-cyan-400 group-hover:text-cyan-300">Gamma Waves</span>
+            <span class="text-[11px] font-mono font-bold text-text-muted">40 Hz</span>
+          </div>
+          <p class="text-[11px] text-text-secondary leading-snug">Excellent for advanced cognition, rapid learning, and memory consolidation. Best for intense focus.</p>
+        </button>
+
+        <!-- Alpha Waves -->
+        <button type="button" data-freq="10" data-note="Alpha Wave (10 Hz) - Relaxed Creative Alertness" class="fg-preset-btn p-3 rounded-xl bg-bg-surface border border-border-hairline hover:border-emerald-500/50 text-left transition-all group">
+          <div class="flex items-center justify-between mb-1">
+            <span class="font-bold font-mono text-xs text-emerald-400 group-hover:text-emerald-300">Alpha Waves</span>
+            <span class="text-[11px] font-mono font-bold text-text-muted">8–13 Hz</span>
+          </div>
+          <p class="text-[11px] text-text-secondary leading-snug">Best for creative problem-solving and relaxed alertness rather than purely analytical tasks.</p>
+        </button>
+
+      </div>
+
+      <!-- How To Use Binaural Beats Banner -->
+      <div class="p-3 rounded-xl bg-bg-canvas border border-border-hairline/80 text-[11px] text-text-secondary leading-relaxed flex items-start gap-2.5">
+        <span class="text-indigo-400 text-sm shrink-0 font-bold mt-0.5">🎧</span>
+        <div>
+          <strong class="text-text-primary font-mono font-bold block mb-0.5">How Binaural Focus Beats Work:</strong>
+          To hear binaural beats properly, listen with stereo headphones. The generator plays a slightly different carrier tone in each ear (e.g. 200 Hz Left vs 220 Hz Right), and your brain perceives the difference as a 20 Hz focus-inducing frequency.
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick Presets Deck -->
+    <div class="space-y-2 pt-2">
+      <label class="block text-xs font-mono font-bold uppercase tracking-wider text-text-muted">Popular Audio Presets</label>
+      <div class="flex flex-wrap gap-2" id="fg-presets-group">
+        <button data-freq="165" data-note="Water Eject Tone" class="fg-preset-btn px-3 py-1.5 rounded-xl bg-bg-canvas border border-border-hairline text-text-secondary font-mono text-xs hover:border-cyan-500/50 hover:text-cyan-300 transition-all">
+          💧 165 Hz <span class="text-[10px] text-text-muted">Water Eject</span>
+        </button>
+        <button data-freq="432" data-note="Verdi Solfeggio Pitch" class="fg-preset-btn px-3 py-1.5 rounded-xl bg-bg-canvas border border-border-hairline text-text-secondary font-mono text-xs hover:border-cyan-500/50 hover:text-cyan-300 transition-all">
+          ✨ 432 Hz
+        </button>
+        <button data-freq="440" data-note="A4 - Concert Pitch" class="fg-preset-btn active px-3 py-1.5 rounded-xl bg-cyan-500/20 border border-cyan-500 text-cyan-300 font-bold font-mono text-xs transition-all">
+          🎵 440 Hz <span class="text-[10px] text-cyan-400">A4</span>
+        </button>
+        <button data-freq="528" data-note="Transformation Solfeggio" class="fg-preset-btn px-3 py-1.5 rounded-xl bg-bg-canvas border border-border-hairline text-text-secondary font-mono text-xs hover:border-cyan-500/50 hover:text-cyan-300 transition-all">
+          🌿 528 Hz
+        </button>
+        <button data-freq="1000" data-note="Reference Audio Standard" class="fg-preset-btn px-3 py-1.5 rounded-xl bg-bg-canvas border border-border-hairline text-text-secondary font-mono text-xs hover:border-cyan-500/50 hover:text-cyan-300 transition-all">
+          🔊 1 kHz
+        </button>
+        <button data-freq="60" data-note="Sub-Bass Test" class="fg-preset-btn px-3 py-1.5 rounded-xl bg-bg-canvas border border-border-hairline text-text-secondary font-mono text-xs hover:border-cyan-500/50 hover:text-cyan-300 transition-all">
+          🎧 60 Hz <span class="text-[10px] text-text-muted">Sub-Bass</span>
+        </button>
+        <button data-freq="15000" data-note="High Frequency Hearing" class="fg-preset-btn px-3 py-1.5 rounded-xl bg-bg-canvas border border-border-hairline text-text-secondary font-mono text-xs hover:border-cyan-500/50 hover:text-cyan-300 transition-all">
+          👂 15 kHz <span class="text-[10px] text-text-muted">High Pitch</span>
+        </button>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Interactive 3-Step Frequency Finder Modal -->
+  <div id="fg-wizard-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-xl flex items-center justify-center p-4 hidden opacity-0 transition-opacity duration-300">
+    <div class="relative w-full max-w-xl bg-bg-surface border border-border-hairline rounded-3xl p-6 sm:p-8 shadow-2xl space-y-6 overflow-hidden">
+      
+      <!-- Modal Close Button -->
+      <button id="fg-wizard-close" type="button" class="absolute top-5 right-5 text-text-muted hover:text-text-primary p-2 rounded-full hover:bg-bg-elevated transition-colors">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+      </button>
+
+      <!-- Step Progress Header -->
+      <div class="space-y-2 border-b border-border-hairline/60 pb-4">
+        <div class="flex items-center justify-between text-xs font-mono font-bold text-cyan-400">
+          <span id="fg-wiz-step-badge">STEP 1 OF 3</span>
+          <span class="text-text-muted">15-SECOND GUIDE</span>
+        </div>
+        <h3 id="fg-wiz-title" class="text-xl font-extrabold text-text-primary font-mono">What is your primary goal today?</h3>
+        <p id="fg-wiz-subtitle" class="text-xs text-text-secondary">We will calculate the optimal frequency and waveform tailored to your needs.</p>
+      </div>
+
+      <!-- Step 1 Options: Primary Goal -->
+      <div id="fg-wiz-step-1" class="wiz-step-panel space-y-3">
+        <button type="button" data-goal="beta" class="wiz-opt-btn w-full p-3.5 rounded-2xl bg-bg-canvas border border-border-hairline hover:border-cyan-500/50 text-left transition-all flex items-center justify-between group">
+          <div class="flex items-center gap-3">
+            <span class="text-xl text-indigo-400"><svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg></span>
+            <div>
+              <strong class="font-bold text-sm text-text-primary group-hover:text-cyan-300 block">Deep Work &amp; Studying</strong>
+              <span class="text-xs text-text-muted">Beta Waves (20 Hz) • Reduce Distractions</span>
+            </div>
+          </div>
+          <span class="text-cyan-400 text-xs font-mono font-bold">&rarr;</span>
+        </button>
+
+        <button type="button" data-goal="gamma" class="wiz-opt-btn w-full p-3.5 rounded-2xl bg-bg-canvas border border-border-hairline hover:border-cyan-500/50 text-left transition-all flex items-center justify-between group">
+          <div class="flex items-center gap-3">
+            <span class="text-xl text-cyan-400"><svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg></span>
+            <div>
+              <strong class="font-bold text-sm text-text-primary group-hover:text-cyan-300 block">Intense Memory &amp; Rapid Learning</strong>
+              <span class="text-xs text-text-muted">Gamma Waves (40 Hz) • High Cognition</span>
+            </div>
+          </div>
+          <span class="text-cyan-400 text-xs font-mono font-bold">&rarr;</span>
+        </button>
+
+        <button type="button" data-goal="alpha" class="wiz-opt-btn w-full p-3.5 rounded-2xl bg-bg-canvas border border-border-hairline hover:border-cyan-500/50 text-left transition-all flex items-center justify-between group">
+          <div class="flex items-center gap-3">
+            <span class="text-xl text-emerald-400"><svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"/></svg></span>
+            <div>
+              <strong class="font-bold text-sm text-text-primary group-hover:text-cyan-300 block">Creative Problem Solving</strong>
+              <span class="text-xs text-text-muted">Alpha Waves (10 Hz) • Relaxed Alertness</span>
+            </div>
+          </div>
+          <span class="text-cyan-400 text-xs font-mono font-bold">&rarr;</span>
+        </button>
+
+        <button type="button" data-goal="water" class="wiz-opt-btn w-full p-3.5 rounded-2xl bg-bg-canvas border border-border-hairline hover:border-cyan-500/50 text-left transition-all flex items-center justify-between group">
+          <div class="flex items-center gap-3">
+            <span class="text-xl text-blue-400"><svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 13.5L12 21m0 0l-7.5-7.5M12 21V3"/></svg></span>
+            <div>
+              <strong class="font-bold text-sm text-text-primary group-hover:text-cyan-300 block">Eject Water from Phone Speaker</strong>
+              <span class="text-xs text-text-muted">165 Hz Sawtooth • Displace Liquid</span>
+            </div>
+          </div>
+          <span class="text-cyan-400 text-xs font-mono font-bold">&rarr;</span>
+        </button>
+
+        <button type="button" data-goal="tune" class="wiz-opt-btn w-full p-3.5 rounded-2xl bg-bg-canvas border border-border-hairline hover:border-cyan-500/50 text-left transition-all flex items-center justify-between group">
+          <div class="flex items-center gap-3">
+            <span class="text-xl text-amber-400"><svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3"/></svg></span>
+            <div>
+              <strong class="font-bold text-sm text-text-primary group-hover:text-cyan-300 block">Tune Instrument / Audio Reference</strong>
+              <span class="text-xs text-text-muted">440 Hz Sine • Concert Pitch Standard</span>
+            </div>
+          </div>
+          <span class="text-cyan-400 text-xs font-mono font-bold">&rarr;</span>
+        </button>
+      </div>
+
+      <!-- Step 2 Options: Device & Environment -->
+      <div id="fg-wiz-step-2" class="wiz-step-panel space-y-3 hidden">
+        <button type="button" data-device="headphones" class="wiz-opt-btn w-full p-4 rounded-2xl bg-bg-canvas border border-border-hairline hover:border-cyan-500/50 text-left transition-all flex items-center justify-between group">
+          <div class="flex items-center gap-3">
+            <span class="text-xl text-indigo-400"><svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"/></svg></span>
+            <div>
+              <strong class="font-bold text-sm text-text-primary group-hover:text-cyan-300 block">Stereo Headphones / Earbuds</strong>
+              <span class="text-xs text-text-muted">Enables Binaural Beats &amp; Dual Phase Focus</span>
+            </div>
+          </div>
+          <span class="text-cyan-400 text-xs font-mono font-bold">&rarr;</span>
+        </button>
+
+        <button type="button" data-device="phone" class="wiz-opt-btn w-full p-4 rounded-2xl bg-bg-canvas border border-border-hairline hover:border-cyan-500/50 text-left transition-all flex items-center justify-between group">
+          <div class="flex items-center gap-3">
+            <span class="text-xl text-blue-400"><svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg></span>
+            <div>
+              <strong class="font-bold text-sm text-text-primary group-hover:text-cyan-300 block">Smartphone / Tablet Speaker</strong>
+              <span class="text-xs text-text-muted">Optimized for Small Receiver Diaphragms</span>
+            </div>
+          </div>
+          <span class="text-cyan-400 text-xs font-mono font-bold">&rarr;</span>
+        </button>
+
+        <button type="button" data-device="speakers" class="wiz-opt-btn w-full p-4 rounded-2xl bg-bg-canvas border border-border-hairline hover:border-cyan-500/50 text-left transition-all flex items-center justify-between group">
+          <div class="flex items-center gap-3">
+            <span class="text-xl text-emerald-400"><svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg></span>
+            <div>
+              <strong class="font-bold text-sm text-text-primary group-hover:text-cyan-300 block">Desktop Speakers / Soundbar</strong>
+              <span class="text-xs text-text-muted">Full Dynamic Range Room Acoustics</span>
+            </div>
+          </div>
+          <span class="text-cyan-400 text-xs font-mono font-bold">&rarr;</span>
+        </button>
+      </div>
+
+      <!-- Step 3 Options: Preferred Intensity -->
+      <div id="fg-wiz-step-3" class="wiz-step-panel space-y-3 hidden">
+        <button type="button" data-intensity="gentle" class="wiz-opt-btn w-full p-4 rounded-2xl bg-bg-canvas border border-border-hairline hover:border-cyan-500/50 text-left transition-all flex items-center justify-between group">
+          <div class="flex items-center gap-3">
+            <span class="text-xl">🍃</span>
+            <div>
+              <strong class="font-bold text-sm text-text-primary group-hover:text-cyan-300 block">Soft &amp; Gentle Session</strong>
+              <span class="text-xs text-text-muted">Moderate volume (35%), smooth sine waveform</span>
+            </div>
+          </div>
+          <span class="text-cyan-400 text-xs font-mono font-bold">&rarr;</span>
+        </button>
+
+        <button type="button" data-intensity="balanced" class="wiz-opt-btn w-full p-4 rounded-2xl bg-bg-canvas border border-border-hairline hover:border-cyan-500/50 text-left transition-all flex items-center justify-between group">
+          <div class="flex items-center gap-3">
+            <span class="text-xl">⚡</span>
+            <div>
+              <strong class="font-bold text-sm text-text-primary group-hover:text-cyan-300 block">Focused &amp; Standard Work</strong>
+              <span class="text-xs text-text-muted">Standard volume (50%), optimized harmonics</span>
+            </div>
+          </div>
+          <span class="text-cyan-400 text-xs font-mono font-bold">&rarr;</span>
+        </button>
+
+        <button type="button" data-intensity="intense" class="wiz-opt-btn w-full p-4 rounded-2xl bg-bg-canvas border border-border-hairline hover:border-cyan-500/50 text-left transition-all flex items-center justify-between group">
+          <div class="flex items-center gap-3">
+            <span class="text-xl">🔥</span>
+            <div>
+              <strong class="font-bold text-sm text-text-primary group-hover:text-cyan-300 block">Maximum Intensity / Power</strong>
+              <span class="text-xs text-text-muted">High volume (80%), full harmonic dispersion</span>
+            </div>
+          </div>
+          <span class="text-cyan-400 text-xs font-mono font-bold">&rarr;</span>
+        </button>
+      </div>
+
+      <!-- Step 4: Recommendation Result Card -->
+      <div id="fg-wiz-step-result" class="wiz-step-panel space-y-4 hidden">
+        <div class="p-5 rounded-2xl bg-cyan-500/10 border border-cyan-500/30 space-y-3">
+          <div class="flex items-center justify-between border-b border-cyan-500/20 pb-2">
+            <span class="text-xs font-mono font-bold text-cyan-400">RECOMMENDED FREQUENCY CONFIGURATION</span>
+            <span id="wiz-res-badge" class="text-[10px] font-mono bg-cyan-500/20 text-cyan-300 px-2 py-0.5 rounded font-bold">CALCULATED</span>
+          </div>
+
+          <div class="space-y-1">
+            <h4 id="wiz-res-freq-name" class="text-2xl font-extrabold text-white font-mono">20 Hz (Beta Wave Focus)</h4>
+            <p id="wiz-res-reason" class="text-xs text-zinc-300 leading-relaxed">
+              Beta waves (14-30 Hz) stimulate analytical focus and eliminate background distractions during deep work sessions.
+            </p>
+          </div>
+
+          <div class="grid grid-cols-3 gap-2 pt-2 text-center font-mono text-xs">
+            <div class="bg-bg-surface p-2 rounded-xl border border-border-hairline">
+              <span class="text-[10px] text-text-muted block">WAVEFORM</span>
+              <strong id="wiz-res-wf" class="text-cyan-400 font-bold">Sine</strong>
+            </div>
+            <div class="bg-bg-surface p-2 rounded-xl border border-border-hairline">
+              <span class="text-[10px] text-text-muted block">VOLUME</span>
+              <strong id="wiz-res-vol" class="text-emerald-400 font-bold">50%</strong>
+            </div>
+            <div class="bg-bg-surface p-2 rounded-xl border border-border-hairline">
+              <span class="text-[10px] text-text-muted block">STEREO PAN</span>
+              <strong id="wiz-res-pan" class="text-indigo-400 font-bold font-sans">Center</strong>
+            </div>
+          </div>
+        </div>
+
+        <button
+          id="fg-wiz-apply-btn"
+          type="button"
+          class="w-full py-3.5 rounded-2xl bg-cyan-500 hover:bg-cyan-400 text-black font-extrabold font-mono text-sm transition-all shadow-[0_0_25px_rgba(6,182,212,0.4)] cursor-pointer flex items-center justify-center gap-2"
+        >
+          <span>Apply Configuration &amp; Start Tone →</span>
+        </button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+  // Web Audio & Oscilloscope Logic
+  let audioCtx: AudioContext | null = null;
+  let osc: OscillatorNode | null = null;
+  let gainNode: GainNode | null = null;
+  let pannerNode: StereoPannerNode | null = null;
+  let analyserNode: AnalyserNode | null = null;
+  let animFrameId: number | null = null;
+
+  let isPlaying = false;
+  let currentFreq = 440;
+  let currentWaveform: OscillatorType = 'sine';
+  let currentVolume = 0.5;
+  let currentPan = 0;
+
+  // DOM Elements
+  const canvas = document.getElementById('fg-oscilloscope-canvas') as HTMLCanvasElement;
+  const ctx = canvas?.getContext('2d');
+  const bigReadout = document.getElementById('fg-big-readout');
+  const noteLabel = document.getElementById('fg-note-label');
+  const numInput = document.getElementById('fg-num-input') as HTMLInputElement;
+  const slider = document.getElementById('fg-slider') as HTMLInputElement;
+  const volSlider = document.getElementById('fg-vol-slider') as HTMLInputElement;
+  const volVal = document.getElementById('fg-vol-val');
+  const panSlider = document.getElementById('fg-pan-slider') as HTMLInputElement;
+  const panVal = document.getElementById('fg-pan-val');
+  const btnPlay = document.getElementById('fg-btn-play');
+  const playLabel = document.getElementById('fg-play-label');
+  const playIcon = document.getElementById('fg-play-icon');
+  const pauseIcon = document.getElementById('fg-pause-icon');
+  const led = document.getElementById('fg-led');
+  const hudWaveform = document.getElementById('hud-waveform-label');
+
+  // Pitch Note Lookup Table (A4 = 440Hz)
+  const NOTE_NAMES = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
+
+  function getNoteInfo(freq: number): string {
+    if (freq === 10) return '10 Hz - Alpha Wave (Relaxed Creative Alertness)';
+    if (freq === 20) return '20 Hz - Beta Wave (Deep Work, Studying & Focus)';
+    if (freq === 40) return '40 Hz - Gamma Wave (Advanced Cognition & Rapid Learning)';
+    if (freq === 165) return '165 Hz - Phone Speaker Water Eject Tone';
+    if (freq === 432) return '432 Hz - Verdi Solfeggio Tuning';
+    if (freq === 440) return 'A4 - Concert Pitch Standard';
+    if (freq === 528) return '528 Hz - Transformation Solfeggio Pitch';
+    if (freq === 1000) return '1 kHz - Audio Interface Calibration Standard';
+    
+    // Calculate nearest musical note
+    const noteNum = 12 * (Math.log2(freq / 440)) + 57; // 57 is A4 in MIDI
+    const roundedMIDI = Math.round(noteNum);
+    const octave = Math.floor(roundedMIDI / 12) - 1;
+    const noteIndex = (roundedMIDI % 12 + 12) % 12;
+    const noteName = NOTE_NAMES[noteIndex];
+    
+    const exactFreq = 440 * Math.pow(2, (roundedMIDI - 57) / 12);
+    const centsOff = Math.round(1200 * Math.log2(freq / exactFreq));
+    const centsStr = centsOff === 0 ? '' : centsOff > 0 ? ` (+${centsOff} cents)` : ` (${centsOff} cents)`;
+
+    return `${noteName}${octave} - ${freq} Hz${centsStr}`;
+  }
+
+  function updateUI() {
+    if (bigReadout) bigReadout.textContent = Math.round(currentFreq).toString();
+    if (noteLabel) noteLabel.textContent = getNoteInfo(currentFreq);
+    if (numInput && document.activeElement !== numInput) numInput.value = Math.round(currentFreq).toString();
+    if (slider && document.activeElement !== slider) slider.value = Math.round(currentFreq).toString();
+    if (volVal) volVal.textContent = `${Math.round(currentVolume * 100)}%`;
+    
+    if (hudWaveform) hudWaveform.textContent = `${currentWaveform.toUpperCase()} WAVE`;
+
+    // Highlight active preset button
+    document.querySelectorAll('.fg-preset-btn').forEach(btn => {
+      const f = parseFloat(btn.getAttribute('data-freq') || '0');
+      if (Math.abs(f - currentFreq) < 0.5) {
+        btn.className = 'fg-preset-btn active px-3 py-1.5 rounded-xl bg-cyan-500/20 border border-cyan-500 text-cyan-300 font-bold font-mono text-xs transition-all';
+      } else {
+        btn.className = 'fg-preset-btn px-3 py-1.5 rounded-xl bg-bg-canvas border border-border-hairline text-text-secondary font-mono text-xs hover:border-cyan-500/50 hover:text-cyan-300 transition-all';
+      }
+    });
+  }
+
+  function setFrequency(freq: number) {
+    currentFreq = Math.max(1, Math.min(20000, freq));
+    if (osc) {
+      osc.frequency.setTargetAtTime(currentFreq, audioCtx?.currentTime || 0, 0.01);
+    }
+    updateUI();
+  }
+
+  function setupWebAudio() {
+    if (audioCtx) return;
+    const AudioCtxClass = window.AudioContext || (window as any).webkitAudioContext;
+    audioCtx = new AudioCtxClass();
+
+    analyserNode = audioCtx.createAnalyser();
+    analyserNode.fftSize = 1024;
+
+    gainNode = audioCtx.createGain();
+    gainNode.gain.value = currentVolume;
+
+    pannerNode = audioCtx.createStereoPanner ? audioCtx.createStereoPanner() : null;
+    if (pannerNode) pannerNode.pan.value = currentPan;
+
+    // Connect chain
+    if (pannerNode) {
+      gainNode.connect(pannerNode);
+      pannerNode.connect(analyserNode);
+    } else {
+      gainNode.connect(analyserNode);
+    }
+    analyserNode.connect(audioCtx.destination);
+
+    resizeCanvas();
+    window.addEventListener('resize', resizeCanvas);
+    drawOscilloscope();
+  }
+
+  let animPhase = 0;
+
+  function resizeCanvas() {
+    if (!canvas) return;
+    canvas.width = canvas.offsetWidth;
+    canvas.height = canvas.offsetHeight;
+  }
+
+  function drawOscilloscope() {
+    if (!ctx || !canvas) return;
+    animFrameId = requestAnimationFrame(drawOscilloscope);
+
+    const width = canvas.width;
+    const height = canvas.height;
+    const centerY = height / 2;
+
+    ctx.clearRect(0, 0, width, height);
+
+    // 1. Draw Scope Grid Lines (10x6 reticle matrix)
+    ctx.beginPath();
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.04)';
+    ctx.lineWidth = 1;
+    const cols = 10;
+    const rows = 6;
+    for (let c = 1; c < cols; c++) {
+      const gx = (width / cols) * c;
+      ctx.moveTo(gx, 0);
+      ctx.lineTo(gx, height);
+    }
+    for (let r = 1; r < rows; r++) {
+      const gy = (height / rows) * r;
+      ctx.moveTo(0, gy);
+      ctx.lineTo(width, gy);
+    }
+    ctx.stroke();
+
+    // Center Crosshair Axis
+    ctx.beginPath();
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.08)';
+    ctx.moveTo(0, centerY);
+    ctx.lineTo(width, centerY);
+    ctx.moveTo(width / 2, 0);
+    ctx.lineTo(width / 2, height);
+    ctx.stroke();
+
+    // 2. Color Theme per Waveform Type — Phosphor-Mint Design System
+    let strokeColor = '#00e5a0'; // Phosphor Mint (Sine)
+    let glowColor = 'rgba(0, 229, 160, 0.9)';
+    let barColor = 'rgba(0, 229, 160, 0.12)';
+    
+    if (currentWaveform === 'square') {
+      strokeColor = '#4d9fff'; // Electric Cerulean (Square)
+      glowColor = 'rgba(77, 159, 255, 0.9)';
+      barColor = 'rgba(77, 159, 255, 0.12)';
+    } else if (currentWaveform === 'triangle') {
+      strokeColor = '#a78bfa'; // Violet (Triangle)
+      glowColor = 'rgba(167, 139, 250, 0.9)';
+      barColor = 'rgba(167, 139, 250, 0.12)';
+    } else if (currentWaveform === 'sawtooth') {
+      strokeColor = '#ffb340'; // Signal Amber (Sawtooth)
+      glowColor = 'rgba(255, 179, 64, 0.9)';
+      barColor = 'rgba(255, 179, 64, 0.12)';
+    }
+
+    // 3. Draw Background FFT Spectrum Analyzer Bars (when active)
+    if (isPlaying && analyserNode) {
+      const fftBins = 64;
+      const freqData = new Uint8Array(fftBins);
+      analyserNode.getByteFrequencyData(freqData);
+
+      const barWidth = width / fftBins;
+      ctx.fillStyle = barColor;
+      for (let b = 0; b < fftBins; b++) {
+        const barH = (freqData[b] / 255) * (height * 0.7);
+        ctx.fillRect(b * barWidth, height - barH, barWidth - 1, barH);
+      }
+    }
+
+    // 4. Oscilloscope Waveform Trajectory Calculation
+    const targetAmp = (height * 0.38) * Math.max(0.1, currentVolume);
+
+    // Calculate timebase scaling ($t_{\text{div}}$) so 3-6 cycles are always visible regardless of 20Hz vs 15kHz
+    const cyclesToShow = Math.min(6, Math.max(2, Math.log10(currentFreq) * 1.5));
+
+    // Phase progression speed proportional to current frequency
+    const speed = isPlaying ? Math.min(0.25, 0.003 + (currentFreq / 20000) * 0.15) : 0.015;
+    animPhase += speed;
+
+    const points: Array<{ x: number; y: number }> = [];
+
+    if (isPlaying && analyserNode) {
+      // Live Web Audio Oscilloscope with Hardware Zero-Crossing Rising Edge Trigger
+      const bufferLength = analyserNode.frequencyBinCount;
+      const timeData = new Float32Array(bufferLength);
+      analyserNode.getFloatTimeDomainData(timeData);
+
+      // Search for Zero-Crossing Rising Edge trigger point (sample[i] <= 0 && sample[i+1] > 0)
+      let triggerIndex = 0;
+      for (let i = 0; i < bufferLength - 1; i++) {
+        if (timeData[i] <= 0 && timeData[i + 1] > 0) {
+          triggerIndex = i;
+          break;
+        }
+      }
+
+      // Sample window based on target frequency cycles
+      const samplesPerCycle = (audioCtx?.sampleRate || 48000) / currentFreq;
+      const windowSamples = Math.min(bufferLength - triggerIndex, Math.round(samplesPerCycle * cyclesToShow));
+      const step = Math.max(1, windowSamples / width);
+
+      for (let x = 0; x < width; x++) {
+        const idx = Math.min(bufferLength - 1, triggerIndex + Math.floor(x * step));
+        const val = timeData[idx] || 0;
+        const y = centerY - (val * targetAmp * 1.3);
+        points.push({ x, y });
+      }
+    } else {
+      // Real-Time Synthetic Oscilloscope Preview matching current frequency & waveform selection
+      for (let x = 0; x < width; x++) {
+        const theta = (x / width) * cyclesToShow * Math.PI * 2 + animPhase;
+        let normY = 0;
+
+        if (currentWaveform === 'sine') {
+          normY = Math.sin(theta);
+        } else if (currentWaveform === 'square') {
+          const s = Math.sin(theta);
+          // Realistic square wave with soft micro-edge transition and subtle ringing
+          normY = Math.tanh(s * 8);
+        } else if (currentWaveform === 'triangle') {
+          normY = (2 / Math.PI) * Math.asin(Math.sin(theta));
+        } else if (currentWaveform === 'sawtooth') {
+          const modT = ((theta / (Math.PI * 2)) % 1 + 1) % 1;
+          normY = modT * 2 - 1;
+        }
+
+        // Apply channel pan amplitude offset if configured
+        const panFactor = 1 - Math.abs(currentPan) * 0.15;
+        const y = centerY - (normY * targetAmp * panFactor);
+        points.push({ x, y });
+      }
+    }
+
+    if (points.length === 0) return;
+
+    // 5. Dual-Pass CRT Phosphor Glow Line Rendering
+    // Pass 1: Wide Phosphor Ambient Halo
+    ctx.beginPath();
+    ctx.lineWidth = 7;
+    ctx.strokeStyle = strokeColor;
+    ctx.globalAlpha = 0.25;
+    ctx.shadowColor = glowColor;
+    ctx.shadowBlur = 18;
+
+    ctx.moveTo(points[0].x, points[0].y);
+    for (let i = 1; i < points.length; i++) {
+      ctx.lineTo(points[i].x, points[i].y);
+    }
+    ctx.stroke();
+
+    // Pass 2: High-Intensity Sharp Beam Core
+    ctx.beginPath();
+    ctx.lineWidth = 2.5;
+    ctx.strokeStyle = '#ffffff'; // Sharp beam center line
+    ctx.globalAlpha = 0.95;
+    ctx.shadowColor = strokeColor;
+    ctx.shadowBlur = 8;
+
+    ctx.moveTo(points[0].x, points[0].y);
+    for (let i = 1; i < points.length; i++) {
+      ctx.lineTo(points[i].x, points[i].y);
+    }
+    ctx.stroke();
+
+    // Reset Canvas State
+    ctx.globalAlpha = 1.0;
+    ctx.shadowBlur = 0;
+  }
+
+  async function startTone() {
+    setupWebAudio();
+    if (audioCtx?.state === 'suspended') {
+      await audioCtx.resume();
+    }
+
+    if (osc) {
+      osc.stop();
+      osc.disconnect();
+    }
+
+    osc = audioCtx!.createOscillator();
+    osc.type = currentWaveform;
+    osc.frequency.setValueAtTime(currentFreq, audioCtx!.currentTime);
+    osc.connect(gainNode!);
+    osc.start();
+
+    isPlaying = true;
+    if (led) led.className = 'w-3 h-3 rounded-full bg-cyan-400 shadow-[0_0_12px_rgba(6,182,212,0.9)] animate-pulse';
+    if (playIcon) playIcon.classList.add('hidden');
+    if (pauseIcon) pauseIcon.classList.remove('hidden');
+    if (playLabel) playLabel.textContent = 'Stop Tone';
+    if (btnPlay) btnPlay.className = 'w-full py-4 rounded-2xl bg-rose-500 hover:bg-rose-400 text-white font-extrabold font-mono text-lg transition-all transform active:scale-[0.99] shadow-[0_0_30px_rgba(244,63,94,0.4)] flex items-center justify-center gap-3 cursor-pointer';
+  }
+
+  function stopTone() {
+    if (osc) {
+      osc.stop();
+      osc.disconnect();
+      osc = null;
+    }
+    isPlaying = false;
+    if (led) led.className = 'w-3 h-3 rounded-full bg-zinc-600 shadow-[0_0_10px_rgba(255,255,255,0.2)]';
+    if (playIcon) playIcon.classList.remove('hidden');
+    if (pauseIcon) pauseIcon.classList.add('hidden');
+    if (playLabel) playLabel.textContent = 'Play Tone';
+    if (btnPlay) btnPlay.className = 'w-full py-4 rounded-2xl bg-cyan-500 hover:bg-cyan-400 text-black font-extrabold font-mono text-lg transition-all transform active:scale-[0.99] shadow-[0_0_30px_rgba(6,182,212,0.4)] flex items-center justify-center gap-3 cursor-pointer';
+  }
+
+  // Event Listeners
+  btnPlay?.addEventListener('click', () => {
+    if (isPlaying) stopTone();
+    else startTone();
+  });
+
+  // Waveform selector
+  const waveformGroup = document.getElementById('fg-waveform-group');
+  if (waveformGroup) {
+    waveformGroup.querySelectorAll('button').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const wf = btn.getAttribute('data-waveform') as OscillatorType;
+        if (!wf) return;
+
+        currentWaveform = wf;
+        if (osc) osc.type = currentWaveform;
+
+        waveformGroup.querySelectorAll('button').forEach(b => {
+          b.className = 'fg-wf-btn p-3 rounded-2xl bg-bg-canvas border-2 border-border-hairline text-text-secondary flex flex-col items-center gap-1.5 transition-all cursor-pointer hover:scale-[1.02] hover:border-white/20';
+        });
+        btn.className = 'fg-wf-btn active p-3 rounded-2xl bg-cyan-500/10 border-2 border-cyan-500 text-cyan-300 flex flex-col items-center gap-1.5 transition-all cursor-pointer hover:scale-[1.02] shadow-sm';
+        
+        updateUI();
+      });
+    });
+  }
+
+  // Inputs
+  numInput?.addEventListener('input', () => {
+    const val = parseFloat(numInput.value);
+    if (!isNaN(val)) setFrequency(val);
+  });
+
+  slider?.addEventListener('input', () => {
+    const val = parseFloat(slider.value);
+    setFrequency(val);
+  });
+
+  volSlider?.addEventListener('input', () => {
+    currentVolume = parseFloat(volSlider.value) / 100;
+    if (gainNode) gainNode.gain.value = currentVolume;
+    updateUI();
+  });
+
+  panSlider?.addEventListener('input', () => {
+    currentPan = parseFloat(panSlider.value);
+    if (pannerNode) pannerNode.pan.value = currentPan;
+    if (panVal) {
+      if (currentPan === 0) panVal.textContent = 'CENTER';
+      else if (currentPan < 0) panVal.textContent = `${Math.round(Math.abs(currentPan)*100)}% LEFT`;
+      else panVal.textContent = `${Math.round(currentPan*100)}% RIGHT`;
+    }
+  });
+
+  // Micro-step adjustment
+  document.querySelectorAll('.fg-step-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const step = parseFloat(btn.getAttribute('data-step') || '0');
+      setFrequency(currentFreq + step);
+    });
+  });
+
+  // Octaves
+  document.getElementById('btn-octave-down')?.addEventListener('click', () => setFrequency(currentFreq / 2));
+  document.getElementById('btn-octave-up')?.addEventListener('click', () => setFrequency(currentFreq * 2));
+
+  // Presets
+  document.querySelectorAll('.fg-preset-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const freq = parseFloat(btn.getAttribute('data-freq') || '440');
+      setFrequency(freq);
+    });
+  });
+
+  // Mute button
+  document.getElementById('fg-btn-mute')?.addEventListener('click', () => {
+    if (currentVolume > 0) {
+      currentVolume = 0;
+      if (volSlider) volSlider.value = '0';
+    } else {
+      currentVolume = 0.5;
+      if (volSlider) volSlider.value = '50';
+    }
+    if (gainNode) gainNode.gain.value = currentVolume;
+    updateUI();
+  });
+
+  // Frequency Finder Wizard Modal Logic
+  const wizModal = document.getElementById('fg-wizard-modal');
+  const openWizBtn = document.getElementById('fg-open-wizard-btn');
+  const closeWizBtn = document.getElementById('fg-wizard-close');
+  const wizApplyBtn = document.getElementById('fg-wiz-apply-btn');
+
+  const wizTitle = document.getElementById('fg-wiz-title');
+  const wizSubtitle = document.getElementById('fg-wiz-subtitle');
+  const wizBadge = document.getElementById('fg-wiz-step-badge');
+
+  const step1 = document.getElementById('fg-wiz-step-1');
+  const step2 = document.getElementById('fg-wiz-step-2');
+  const step3 = document.getElementById('fg-wiz-step-3');
+  const stepResult = document.getElementById('fg-wiz-step-result');
+
+  let wizState = {
+    goal: 'beta',
+    device: 'headphones',
+    intensity: 'balanced',
+    recFreq: 20,
+    recWaveform: 'sine' as OscillatorType,
+    recVol: 0.5,
+    recPan: 0,
+    title: '20 Hz (Beta Wave Focus)',
+    reason: 'Beta waves (14-30 Hz) stimulate analytical focus and eliminate background distractions during deep work sessions.'
+  };
+
+  function openWizard() {
+    if (!wizModal) return;
+    wizModal.classList.remove('hidden');
+    setTimeout(() => wizModal.classList.remove('opacity-0'), 10);
+    showWizStep(1);
+  }
+
+  function closeWizard() {
+    if (!wizModal) return;
+    wizModal.classList.add('opacity-0');
+    setTimeout(() => wizModal.classList.add('hidden'), 300);
+  }
+
+  function showWizStep(stepNum: number) {
+    step1?.classList.add('hidden');
+    step2?.classList.add('hidden');
+    step3?.classList.add('hidden');
+    stepResult?.classList.add('hidden');
+
+    if (stepNum === 1) {
+      if (wizBadge) wizBadge.textContent = 'STEP 1 OF 3';
+      if (wizTitle) wizTitle.textContent = 'What is your primary goal today?';
+      if (wizSubtitle) wizSubtitle.textContent = 'Select your main activity or target outcome.';
+      step1?.classList.remove('hidden');
+    } else if (stepNum === 2) {
+      if (wizBadge) wizBadge.textContent = 'STEP 2 OF 3';
+      if (wizTitle) wizTitle.textContent = 'What listening device are you using?';
+      if (wizSubtitle) wizSubtitle.textContent = 'This ensures proper channel balance and binaural beats optimization.';
+      step2?.classList.remove('hidden');
+    } else if (stepNum === 3) {
+      if (wizBadge) wizBadge.textContent = 'STEP 3 OF 3';
+      if (wizTitle) wizTitle.textContent = 'What intensity level do you prefer?';
+      if (wizSubtitle) wizSubtitle.textContent = 'Choose your preferred listening volume and harmonic richness.';
+      step3?.classList.remove('hidden');
+    } else if (stepNum === 4) {
+      calculateRecommendation();
+      if (wizBadge) wizBadge.textContent = 'RECOMMENDATION READY';
+      if (wizTitle) wizTitle.textContent = 'Your Ideal Frequency Configuration';
+      if (wizSubtitle) wizSubtitle.textContent = 'Based on your selections, we configured the optimal settings below.';
+      stepResult?.classList.remove('hidden');
+    }
+  }
+
+  function calculateRecommendation() {
+    if (wizState.goal === 'beta') {
+      wizState.recFreq = 20;
+      wizState.recWaveform = 'sine';
+      wizState.title = '20 Hz (Beta Wave Focus)';
+      wizState.reason = 'Beta waves (14–30 Hz) stimulate analytical focus, keep your brain in "traffic controller" mode, and reduce study distractions.';
+    } else if (wizState.goal === 'gamma') {
+      wizState.recFreq = 40;
+      wizState.recWaveform = 'sine';
+      wizState.title = '40 Hz (Gamma Wave Cognition)';
+      wizState.reason = 'Gamma waves (40 Hz) promote advanced cognition, rapid information processing, and memory consolidation during intense sprints.';
+    } else if (wizState.goal === 'alpha') {
+      wizState.recFreq = 10;
+      wizState.recWaveform = 'sine';
+      wizState.title = '10 Hz (Alpha Wave Alertness)';
+      wizState.reason = 'Alpha waves (8–13 Hz) trigger relaxed alertness and creative problem solving rather than rigid analytical processing.';
+    } else if (wizState.goal === 'water') {
+      wizState.recFreq = 165;
+      wizState.recWaveform = 'sawtooth';
+      wizState.title = '165 Hz (Speaker Water Eject)';
+      wizState.reason = 'Low-frequency sawtooth transients generate kinetic pressure waves that physically expel water droplets from phone speaker grilles.';
+    } else if (wizState.goal === 'tune') {
+      wizState.recFreq = 440;
+      wizState.recWaveform = 'sine';
+      wizState.title = '440 Hz (A4 Concert Pitch)';
+      wizState.reason = '440 Hz is the universal acoustic tuning standard for guitar, piano, and orchestral instrument calibration.';
+    }
+
+    if (wizState.intensity === 'gentle') wizState.recVol = 0.35;
+    else if (wizState.intensity === 'balanced') wizState.recVol = 0.50;
+    else if (wizState.intensity === 'intense') wizState.recVol = 0.80;
+
+    // Update Result UI Card
+    const nameEl = document.getElementById('wiz-res-freq-name');
+    const reasonEl = document.getElementById('wiz-res-reason');
+    const wfEl = document.getElementById('wiz-res-wf');
+    const volEl = document.getElementById('wiz-res-vol');
+    const panEl = document.getElementById('wiz-res-pan');
+
+    if (nameEl) nameEl.textContent = wizState.title;
+    if (reasonEl) reasonEl.textContent = wizState.reason;
+    if (wfEl) wfEl.textContent = wizState.recWaveform.toUpperCase();
+    if (volEl) volEl.textContent = `${Math.round(wizState.recVol * 100)}%`;
+    if (panEl) panEl.textContent = wizState.device === 'headphones' ? 'Binaural Stereo' : 'Center';
+  }
+
+  // Wizard Option Click Handlers
+  step1?.querySelectorAll('.wiz-opt-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      wizState.goal = btn.getAttribute('data-goal') || 'beta';
+      showWizStep(2);
+    });
+  });
+
+  step2?.querySelectorAll('.wiz-opt-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      wizState.device = btn.getAttribute('data-device') || 'headphones';
+      showWizStep(3);
+    });
+  });
+
+  step3?.querySelectorAll('.wiz-opt-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      wizState.intensity = btn.getAttribute('data-intensity') || 'balanced';
+      showWizStep(4);
+    });
+  });
+
+  openWizBtn?.addEventListener('click', openWizard);
+  closeWizBtn?.addEventListener('click', closeWizard);
+
+  wizApplyBtn?.addEventListener('click', () => {
+    setFrequency(wizState.recFreq);
+    currentWaveform = wizState.recWaveform;
+    currentVolume = wizState.recVol;
+    if (volSlider) volSlider.value = Math.round(wizState.recVol * 100).toString();
+    if (gainNode) gainNode.gain.value = currentVolume;
+    
+    // Select active waveform card
+    const wfGroup = document.getElementById('fg-waveform-group');
+    wfGroup?.querySelectorAll('button').forEach(b => {
+      if (b.getAttribute('data-waveform') === currentWaveform) {
+        b.className = 'fg-wf-btn active p-3 rounded-2xl bg-cyan-500/10 border-2 border-cyan-500 text-cyan-300 flex flex-col items-center gap-1.5 transition-all cursor-pointer hover:scale-[1.02] shadow-sm';
+      } else {
+        b.className = 'fg-wf-btn p-3 rounded-2xl bg-bg-canvas border-2 border-border-hairline text-text-secondary flex flex-col items-center gap-1.5 transition-all cursor-pointer hover:scale-[1.02] hover:border-white/20';
+      }
+    });
+
+    closeWizard();
+    startTone();
+  });
+
+  // Initial draw & start animation loop
+  resizeCanvas();
+  window.addEventListener('resize', resizeCanvas);
+  updateUI();
+  drawOscilloscope();
+</script>

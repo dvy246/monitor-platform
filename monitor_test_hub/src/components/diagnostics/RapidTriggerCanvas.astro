@@ -1,52 +1,285 @@
 ---
 ---
-<div class="relative w-full aspect-video sm:aspect-[21/9] bg-[#08080a] rounded-3xl border border-white/10 overflow-hidden shadow-2xl group">
-  <div class="absolute inset-0 pointer-events-none bg-[url('/data/noise.png')] opacity-[0.03] mix-blend-overlay"></div>
-  <div class="absolute inset-0 flex flex-col items-center justify-center">
-    <div class="w-32 h-32 relative flex items-center justify-center">
-      <!-- Switch Housing -->
-      <div class="absolute inset-0 border-2 border-white/20 rounded-xl bg-[#121215]"></div>
-      <!-- Stem -->
-      <div id="switch-stem" class="absolute top-4 w-16 h-16 bg-rose-500/80 border border-rose-400 rounded shadow-[0_0_15px_rgba(244,63,94,0.5)] transition-transform duration-75" style="transform: translateY(0px)"></div>
-      <!-- Sensor -->
-      <div class="absolute bottom-2 w-24 h-2 bg-emerald-500/30 rounded-full blur-[2px]"></div>
+<div class="relative w-full space-y-4">
+  <!-- Main Rapid Trigger Panel -->
+  <div class="relative w-full aspect-video sm:aspect-[21/9] bg-[#08080a] rounded-3xl border border-white/10 overflow-hidden shadow-2xl">
+    <div class="absolute inset-0 pointer-events-none bg-[radial-gradient(ellipse_at_center,rgba(244,63,94,0.04),transparent_60%)]"></div>
+
+    <!-- Canvas for waveform -->
+    <canvas id="rt-canvas" class="absolute inset-0 w-full h-full z-0 pointer-events-none"></canvas>
+
+    <!-- HUD top -->
+    <div class="absolute top-0 inset-x-0 p-4 flex items-center justify-between z-20 bg-gradient-to-b from-[#08080a]/90 to-transparent pointer-events-none">
+      <div class="flex items-center gap-2 font-mono text-xs">
+        <div class="w-2 h-2 rounded-full bg-rose-400" id="rt-led"></div>
+        <span class="text-rose-400 font-bold tracking-widest" id="rt-status-label">WAITING FOR INPUT</span>
+      </div>
+      <div class="flex gap-4 text-xs font-mono">
+        <div class="flex flex-col items-end">
+          <span class="text-zinc-500 text-[9px] tracking-widest">ACTUATION DEPTH</span>
+          <span class="text-rose-400 font-bold" id="rt-depth">0.00mm</span>
+        </div>
+        <div class="flex flex-col items-end">
+          <span class="text-zinc-500 text-[9px] tracking-widest">TRIGGER THRESHOLD</span>
+          <span class="text-amber-400 font-bold" id="rt-threshold">0.10mm</span>
+        </div>
+        <div class="flex flex-col items-end">
+          <span class="text-zinc-500 text-[9px] tracking-widest">ACTUATION TIME</span>
+          <span class="text-emerald-400 font-bold" id="rt-time">—</span>
+        </div>
+      </div>
     </div>
-    
-    <div class="mt-8 flex gap-8 font-mono text-center">
-      <div>
-        <div class="text-zinc-500 text-xs">Actuation Point</div>
-        <div class="text-white text-xl font-bold" id="rt-actuation">0.0mm</div>
+
+    <!-- Center: Key switch visualization -->
+    <div class="absolute inset-0 z-10 flex items-center justify-center gap-16 pointer-events-none">
+      <!-- Switch housing animation (3 keys) -->
+      <div class="flex gap-6" id="key-display">
+        <!-- Each key is an animated Hall Effect switch -->
+        <div class="flex flex-col items-center gap-2 key-switch-wrap" data-key="a">
+          <div class="w-14 h-20 relative">
+            <div class="absolute inset-x-0 bottom-0 h-16 bg-[#1a1a1f] border border-white/20 rounded-lg shadow-inner"></div>
+            <div class="key-stem absolute inset-x-1 top-0 h-10 bg-gradient-to-b from-rose-400 to-rose-600 border border-rose-300/30 rounded-t-md shadow-[0_4px_12px_rgba(244,63,94,0.4)] transition-transform duration-75" style="transform:translateY(0px)"></div>
+            <div class="absolute bottom-1 inset-x-2 h-1.5 bg-emerald-500/30 rounded blur-[1px]"></div>
+          </div>
+          <span class="text-zinc-500 text-[10px] font-mono font-bold">A</span>
+        </div>
+        <div class="flex flex-col items-center gap-2 key-switch-wrap" data-key=" ">
+          <div class="w-24 h-20 relative">
+            <div class="absolute inset-x-0 bottom-0 h-16 bg-[#1a1a1f] border border-white/20 rounded-lg shadow-inner"></div>
+            <div class="key-stem absolute inset-x-1 top-0 h-10 bg-gradient-to-b from-rose-400 to-rose-600 border border-rose-300/30 rounded-t-md shadow-[0_4px_12px_rgba(244,63,94,0.4)] transition-transform duration-75" style="transform:translateY(0px)"></div>
+            <div class="absolute bottom-1 inset-x-2 h-1.5 bg-emerald-500/30 rounded blur-[1px]"></div>
+          </div>
+          <span class="text-zinc-500 text-[10px] font-mono font-bold">SPACE</span>
+        </div>
+        <div class="flex flex-col items-center gap-2 key-switch-wrap" data-key="d">
+          <div class="w-14 h-20 relative">
+            <div class="absolute inset-x-0 bottom-0 h-16 bg-[#1a1a1f] border border-white/20 rounded-lg shadow-inner"></div>
+            <div class="key-stem absolute inset-x-1 top-0 h-10 bg-gradient-to-b from-rose-400 to-rose-600 border border-rose-300/30 rounded-t-md shadow-[0_4px_12px_rgba(244,63,94,0.4)] transition-transform duration-75" style="transform:translateY(0px)"></div>
+            <div class="absolute bottom-1 inset-x-2 h-1.5 bg-emerald-500/30 rounded blur-[1px]"></div>
+          </div>
+          <span class="text-zinc-500 text-[10px] font-mono font-bold">D</span>
+        </div>
       </div>
-      <div>
-        <div class="text-zinc-500 text-xs">Rapid Trigger</div>
-        <div class="text-emerald-400 text-xl font-bold" id="rt-status">READY</div>
+
+      <!-- Stats panel -->
+      <div class="bg-[#121215]/80 backdrop-blur border border-white/10 rounded-2xl p-5 min-w-[180px] space-y-3 font-mono text-xs">
+        <div class="text-zinc-400 text-[10px] tracking-widest mb-1">HALL EFFECT TELEMETRY</div>
+        <div class="flex justify-between"><span class="text-zinc-500">Key Presses</span><span class="text-white font-bold" id="rt-presses">0</span></div>
+        <div class="flex justify-between"><span class="text-zinc-500">Avg Release</span><span class="text-white font-bold" id="rt-release">—</span></div>
+        <div class="flex justify-between"><span class="text-zinc-500">RT Events</span><span class="text-emerald-400 font-bold" id="rt-events">0</span></div>
+        <div class="flex justify-between"><span class="text-zinc-500">Bounce Detect</span><span class="text-white font-bold" id="rt-bounce">0ms</span></div>
+        <div class="border-t border-white/10 pt-3">
+          <div class="text-zinc-500 text-[10px] mb-1">THRESHOLD</div>
+          <input id="rt-threshold-slider" type="range" min="1" max="40" value="10" step="1"
+            class="w-full accent-rose-500 cursor-pointer" />
+          <div class="text-[10px] text-zinc-500 mt-1">0.<span id="rt-thresh-val">10</span>mm</div>
+        </div>
       </div>
+    </div>
+
+    <!-- Bottom hint -->
+    <div class="absolute bottom-4 inset-x-0 flex justify-center z-20 pointer-events-none">
+      <div class="bg-black/60 border border-white/10 rounded-full px-4 py-1.5 text-zinc-500 font-mono text-[10px]">
+        Press <span class="text-white">A · D · Space</span> to test rapid trigger actuation depth
+      </div>
+    </div>
+  </div>
+
+  <!-- Stats bar -->
+  <div class="grid grid-cols-4 gap-3 font-mono text-xs">
+    <div class="bg-[#121215] border border-white/10 rounded-xl p-3 flex flex-col gap-1">
+      <span class="text-zinc-500 text-[9px] tracking-widest uppercase">Min Actuation</span>
+      <span class="text-white font-bold text-base" id="stat-min-act">—</span>
+    </div>
+    <div class="bg-[#121215] border border-white/10 rounded-xl p-3 flex flex-col gap-1">
+      <span class="text-zinc-500 text-[9px] tracking-widest uppercase">Max Depth</span>
+      <span class="text-white font-bold text-base" id="stat-max-depth">—</span>
+    </div>
+    <div class="bg-[#121215] border border-white/10 rounded-xl p-3 flex flex-col gap-1">
+      <span class="text-zinc-500 text-[9px] tracking-widest uppercase">Hall Grade</span>
+      <span class="text-emerald-400 font-bold text-base" id="stat-hall-grade">—</span>
+    </div>
+    <div class="bg-[#121215] border border-white/10 rounded-xl p-3 flex flex-col gap-1">
+      <span class="text-zinc-500 text-[9px] tracking-widest uppercase">Switch Type</span>
+      <span class="text-cyan-400 font-bold text-base" id="stat-switch-type">Detecting…</span>
     </div>
   </div>
 </div>
 
 <script>
   class RapidTriggerEngine {
-    private stem: HTMLElement;
-    private actDisplay: HTMLElement;
-    
+    private canvas: HTMLCanvasElement;
+    private ctx: CanvasRenderingContext2D;
+    private depthPoints: number[] = [];
+    private dpr = window.devicePixelRatio || 1;
+    private threshold = 0.10; // mm
+    private presses = 0;
+    private rtEvents = 0;
+    private bounces = 0;
+    private lastKeyTime: Record<string, number> = {};
+    private lastDepth: Record<string, number> = {};
+    private actuations: number[] = [];
+    private maxDepth = 0;
+    private minActuation = Infinity;
+    private keyState: Record<string, boolean> = {};
+
+    // Simulated Hall Effect depth tracking (since browsers don't expose raw analog input)
+    private animFrame = 0;
+    private depthTarget: Record<string, number> = {a: 0, ' ': 0, d: 0};
+    private depthCurrent: Record<string, number> = {a: 0, ' ': 0, d: 0};
+
     constructor() {
-      this.stem = document.getElementById('switch-stem')!;
-      this.actDisplay = document.getElementById('rt-actuation')!;
-      
-      window.addEventListener('keydown', (e) => {
-        if(e.key === 'a' || e.key === 'w' || e.key === 's' || e.key === 'd') {
-          this.stem.style.transform = 'translateY(24px)';
-          this.actDisplay.innerText = '1.2mm';
-        }
+      this.canvas = document.getElementById('rt-canvas') as HTMLCanvasElement;
+      this.ctx = this.canvas.getContext('2d')!;
+      this.resize();
+      window.addEventListener('resize', () => this.resize());
+
+      window.addEventListener('keydown', this.onKeyDown);
+      window.addEventListener('keyup', this.onKeyUp);
+
+      const slider = document.getElementById('rt-threshold-slider') as HTMLInputElement;
+      slider?.addEventListener('input', () => {
+        this.threshold = parseInt(slider.value) / 100;
+        document.getElementById('rt-thresh-val')!.textContent = slider.value;
+        document.getElementById('rt-threshold')!.textContent = `0.${slider.value.padStart(2,'0')}mm`;
       });
-      window.addEventListener('keyup', (e) => {
-        if(e.key === 'a' || e.key === 'w' || e.key === 's' || e.key === 'd') {
-          this.stem.style.transform = 'translateY(0px)';
-          this.actDisplay.innerText = '0.0mm';
-        }
-      });
+
+      requestAnimationFrame(this.renderLoop);
     }
+
+    private resize() {
+      const rect = this.canvas.parentElement!.getBoundingClientRect();
+      this.canvas.width = rect.width * this.dpr;
+      this.canvas.height = rect.height * this.dpr;
+      this.ctx.scale(this.dpr, this.dpr);
+    }
+
+    private onKeyDown = (e: KeyboardEvent) => {
+      const key = e.key.toLowerCase();
+      if (!['a', 'd', ' '].includes(key)) return;
+      if (this.keyState[key]) return; // already held
+
+      const now = performance.now();
+      // Bounce detection
+      if (this.lastKeyTime[key]) {
+        const delta = now - this.lastKeyTime[key];
+        if (delta < 5) this.bounces++;
+        document.getElementById('rt-bounce')!.textContent = delta.toFixed(1) + 'ms';
+      }
+      this.lastKeyTime[key] = now;
+      this.keyState[key] = true;
+      this.depthTarget[key] = 4.0; // Full 4mm travel
+      this.presses++;
+      document.getElementById('rt-presses')!.textContent = String(this.presses);
+
+      const led = document.getElementById('rt-led');
+      if (led) led.className = 'w-2 h-2 rounded-full bg-rose-400 animate-pulse shadow-[0_0_6px_rgba(244,63,94,0.8)]';
+      document.getElementById('rt-status-label')!.textContent = `KEY "${key.toUpperCase()}" ACTUATED`;
+    };
+
+    private onKeyUp = (e: KeyboardEvent) => {
+      const key = e.key.toLowerCase();
+      if (!['a', 'd', ' '].includes(key)) return;
+      this.keyState[key] = false;
+      this.depthTarget[key] = 0;
+
+      const depth = this.depthCurrent[key];
+      this.actuations.push(depth);
+      if (depth < this.minActuation) {
+        this.minActuation = depth;
+        document.getElementById('stat-min-act')!.textContent = depth.toFixed(2) + 'mm';
+      }
+      if (depth > this.maxDepth) {
+        this.maxDepth = depth;
+        document.getElementById('stat-max-depth')!.textContent = depth.toFixed(2) + 'mm';
+      }
+
+      // Check if rapid trigger fired (actuation at threshold, not full depth)
+      if (depth < 2.0 && depth > this.threshold) {
+        this.rtEvents++;
+        document.getElementById('rt-events')!.textContent = String(this.rtEvents);
+      }
+
+      const releaseTime = performance.now() - (this.lastKeyTime[key] || performance.now());
+      document.getElementById('rt-release')!.textContent = releaseTime.toFixed(0) + 'ms';
+
+      // Determine switch type from actuation pattern
+      const avgAct = this.actuations.reduce((a,b) => a+b, 0) / this.actuations.length;
+      let grade = 'Hall Effect';
+      if (avgAct > 3.5) grade = 'Mechanical';
+      else if (avgAct > 1.5) grade = 'Optical';
+      document.getElementById('stat-switch-type')!.textContent = grade;
+      document.getElementById('stat-hall-grade')!.textContent = this.rtEvents > 3 ? 'RT Active' : 'Standard';
+      document.getElementById('stat-hall-grade')!.className = this.rtEvents > 3 ? 'text-emerald-400 font-bold text-base' : 'text-amber-400 font-bold text-base';
+
+      document.getElementById('rt-status-label')!.textContent = 'WAITING FOR INPUT';
+    };
+
+    private renderLoop = () => {
+      // Animate depth values
+      let totalDepth = 0;
+      for (const key of ['a', ' ', 'd']) {
+        const diff = this.depthTarget[key] - this.depthCurrent[key];
+        this.depthCurrent[key] += diff * 0.25;
+        totalDepth = Math.max(totalDepth, this.depthCurrent[key]);
+      }
+
+      // Update switch visuals
+      for (const key of ['a', ' ', 'd']) {
+        const wrapper = document.querySelector(`[data-key="${key}"]`);
+        const stem = wrapper?.querySelector('.key-stem') as HTMLElement;
+        if (stem) {
+          const pct = this.depthCurrent[key] / 4.0;
+          const maxTravel = 24;
+          stem.style.transform = `translateY(${pct * maxTravel}px)`;
+          const isTriggered = this.depthCurrent[key] > this.threshold;
+          stem.style.background = isTriggered
+            ? 'linear-gradient(to bottom, #4ade80, #16a34a)'
+            : 'linear-gradient(to bottom, #fb7185, #e11d48)';
+          stem.style.boxShadow = isTriggered
+            ? '0 4px 12px rgba(74,222,128,0.4)'
+            : '0 4px 12px rgba(244,63,94,0.4)';
+        }
+      }
+
+      // Update displays
+      document.getElementById('rt-depth')!.textContent = totalDepth.toFixed(2) + 'mm';
+
+      // Push waveform
+      this.depthPoints.push(totalDepth);
+      const w = this.canvas.width / this.dpr;
+      if (this.depthPoints.length > w) this.depthPoints.shift();
+
+      // Draw waveform
+      const h = this.canvas.height / this.dpr;
+      this.ctx.clearRect(0, 0, w, h);
+
+      // Threshold line
+      const threshY = h - (this.threshold / 4.0) * h * 0.5;
+      this.ctx.setLineDash([4, 4]);
+      this.ctx.strokeStyle = 'rgba(245,158,11,0.3)';
+      this.ctx.lineWidth = 1;
+      this.ctx.beginPath();
+      this.ctx.moveTo(0, threshY);
+      this.ctx.lineTo(w, threshY);
+      this.ctx.stroke();
+      this.ctx.setLineDash([]);
+
+      // Waveform
+      this.ctx.beginPath();
+      this.ctx.strokeStyle = 'rgba(251,113,133,0.8)';
+      this.ctx.lineWidth = 2;
+      for (let i = 0; i < this.depthPoints.length; i++) {
+        const x = i;
+        const y = h - (this.depthPoints[i] / 4.0) * h * 0.5 - 20;
+        if (i === 0) this.ctx.moveTo(x, y);
+        else this.ctx.lineTo(x, y);
+      }
+      this.ctx.stroke();
+
+      requestAnimationFrame(this.renderLoop);
+    };
   }
+
   new RapidTriggerEngine();
 </script>

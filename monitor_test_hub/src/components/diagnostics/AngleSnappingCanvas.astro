@@ -1,54 +1,332 @@
 ---
 ---
-<div class="relative w-full aspect-video sm:aspect-[21/9] bg-[#08080a] rounded-3xl border border-white/10 overflow-hidden shadow-2xl group cursor-crosshair">
-  <div class="absolute inset-0 pointer-events-none bg-[url('/data/noise.png')] opacity-[0.03] mix-blend-overlay"></div>
-  <canvas id="angle-snap-canvas" class="w-full h-full block relative z-10"></canvas>
-  <div class="absolute bottom-4 left-4 z-20 flex gap-4 font-mono text-xs text-white/50">
-    <div class="px-3 py-1 bg-white/5 rounded-full border border-white/10">Draw continuous curves to detect snapping</div>
+<div class="relative w-full space-y-4">
+  <!-- Main Canvas Panel -->
+  <div class="relative w-full aspect-video sm:aspect-[21/9] bg-[#08080a] rounded-3xl border border-white/10 overflow-hidden shadow-2xl group cursor-crosshair select-none">
+    <div class="absolute inset-0 pointer-events-none bg-[radial-gradient(ellipse_at_top,rgba(56,189,248,0.03),transparent_60%)]"></div>
+    
+    <!-- Reticle grid overlay -->
+    <canvas id="angle-grid-canvas" class="absolute inset-0 w-full h-full pointer-events-none opacity-10 z-0"></canvas>
+    
+    <!-- Drawing canvas -->
+    <canvas id="angle-snap-canvas" class="w-full h-full block relative z-10"></canvas>
+
+    <!-- HUD top bar -->
+    <div class="absolute top-0 inset-x-0 p-3 flex items-center justify-between z-20 bg-gradient-to-b from-[#08080a]/90 to-transparent pointer-events-none">
+      <div class="flex items-center gap-2 font-mono text-xs">
+        <div class="w-2 h-2 rounded-full bg-sky-400 animate-pulse shadow-[0_0_6px_rgba(56,189,248,0.8)]"></div>
+        <span class="text-sky-400 font-bold tracking-widest">SENSOR TRACE LIVE</span>
+      </div>
+      <div class="flex items-center gap-4 text-xs font-mono">
+        <div class="flex flex-col items-end">
+          <span class="text-zinc-500 text-[9px] tracking-widest">SNAP EVENTS</span>
+          <span class="text-rose-400 font-bold text-sm" id="snap-count">0</span>
+        </div>
+        <div class="flex flex-col items-end">
+          <span class="text-zinc-500 text-[9px] tracking-widest">STRAIGHTNESS</span>
+          <span class="text-amber-400 font-bold text-sm" id="snap-straight">—</span>
+        </div>
+        <div class="flex flex-col items-end">
+          <span class="text-zinc-500 text-[9px] tracking-widest">STATUS</span>
+          <span class="text-emerald-400 font-bold text-sm" id="snap-status">DRAW</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bottom hint bar -->
+    <div class="absolute bottom-0 inset-x-0 p-3 flex items-center justify-between z-20 bg-gradient-to-t from-[#08080a]/90 to-transparent pointer-events-none">
+      <div class="flex gap-3 font-mono text-[10px] text-zinc-500">
+        <div class="px-2 py-1 bg-white/5 rounded border border-white/10">Draw diagonal curves to detect snapping</div>
+        <div class="px-2 py-1 bg-white/5 rounded border border-white/10">Press <kbd class="text-zinc-300 font-bold">C</kbd> to clear</div>
+      </div>
+      <div class="flex flex-col items-end font-mono text-[10px] text-zinc-500">
+        <span>Angle deviation threshold: <span class="text-sky-400">±8°</span></span>
+      </div>
+    </div>
+
+    <!-- Verdict overlay (shown after drawing) -->
+    <div id="snap-verdict" class="absolute inset-0 z-30 flex items-center justify-center bg-[#08080a]/80 backdrop-blur-sm rounded-3xl opacity-0 pointer-events-none transition-opacity duration-500">
+      <div class="text-center space-y-3 p-8">
+        <div id="verdict-icon" class="text-6xl">✅</div>
+        <div id="verdict-title" class="text-2xl font-black font-mono text-emerald-400">NO SNAPPING DETECTED</div>
+        <div id="verdict-subtitle" class="text-sm text-zinc-400 max-w-sm">Your mouse sensor delivers raw 1:1 tracking with no artificial prediction or line straightening detected.</div>
+        <button id="btn-clear-verdict" class="mt-4 px-6 py-2 rounded-xl bg-white/10 text-white border border-white/20 font-mono text-sm hover:bg-white/20 transition-colors">Draw Again</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Stats bar -->
+  <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 font-mono text-xs">
+    <div class="bg-[#121215] border border-white/10 rounded-xl p-3 flex flex-col gap-1">
+      <span class="text-zinc-500 text-[9px] tracking-widest uppercase">Path Points</span>
+      <span class="text-white font-bold text-lg" id="stat-points">0</span>
+    </div>
+    <div class="bg-[#121215] border border-white/10 rounded-xl p-3 flex flex-col gap-1">
+      <span class="text-zinc-500 text-[9px] tracking-widest uppercase">Avg Δ Angle</span>
+      <span class="text-white font-bold text-lg" id="stat-angle">0.0°</span>
+    </div>
+    <div class="bg-[#121215] border border-white/10 rounded-xl p-3 flex flex-col gap-1">
+      <span class="text-zinc-500 text-[9px] tracking-widest uppercase">Max Jitter</span>
+      <span class="text-white font-bold text-lg" id="stat-jitter">0.0px</span>
+    </div>
+    <div class="bg-[#121215] border border-white/10 rounded-xl p-3 flex flex-col gap-1">
+      <span class="text-zinc-500 text-[9px] tracking-widest uppercase">Sensor Grade</span>
+      <span class="text-emerald-400 font-bold text-lg" id="stat-grade">—</span>
+    </div>
   </div>
 </div>
 
 <script>
   class AngleSnappingEngine {
     private canvas: HTMLCanvasElement;
+    private gridCanvas: HTMLCanvasElement;
     private ctx: CanvasRenderingContext2D;
+    private gridCtx: CanvasRenderingContext2D;
     private isDrawing = false;
-    
+    private path: Array<{x: number; y: number}> = [];
+    private allPaths: Array<Array<{x: number; y: number}>> = [];
+    private snapEvents = 0;
+    private maxJitter = 0;
+    private angleChanges: number[] = [];
+    private dpr = window.devicePixelRatio || 1;
+
+    // Snap detection state
+    private prevAngle: number | null = null;
+
     constructor() {
       this.canvas = document.getElementById('angle-snap-canvas') as HTMLCanvasElement;
+      this.gridCanvas = document.getElementById('angle-grid-canvas') as HTMLCanvasElement;
       this.ctx = this.canvas.getContext('2d')!;
+      this.gridCtx = this.gridCanvas.getContext('2d')!;
+
       this.resize();
       window.addEventListener('resize', () => this.resize());
-      
-      this.canvas.addEventListener('mousedown', this.start);
-      this.canvas.addEventListener('mousemove', this.draw);
-      window.addEventListener('mouseup', this.stop);
+
+      this.canvas.addEventListener('mousedown', this.onStart);
+      this.canvas.addEventListener('mousemove', this.onMove);
+      window.addEventListener('mouseup', this.onStop);
+      this.canvas.addEventListener('touchstart', this.onTouchStart, {passive:true});
+      this.canvas.addEventListener('touchmove', this.onTouchMove, {passive:true});
+      this.canvas.addEventListener('touchend', this.onTouchStop);
+
+      window.addEventListener('keydown', (e) => {
+        if (e.key === 'c' || e.key === 'C') this.clearAll();
+      });
+
+      document.getElementById('btn-clear-verdict')?.addEventListener('click', () => this.clearAll());
+
+      this.drawGrid();
     }
-    
+
     private resize() {
+      this.dpr = window.devicePixelRatio || 1;
       const rect = this.canvas.parentElement!.getBoundingClientRect();
-      this.canvas.width = rect.width * window.devicePixelRatio;
-      this.canvas.height = rect.height * window.devicePixelRatio;
-      this.ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+      for (const c of [this.canvas, this.gridCanvas]) {
+        (c as HTMLCanvasElement).width = rect.width * this.dpr;
+        (c as HTMLCanvasElement).height = rect.height * this.dpr;
+      }
+      this.ctx.scale(this.dpr, this.dpr);
+      this.gridCtx.scale(this.dpr, this.dpr);
+      this.drawGrid();
+      this.redrawAllPaths();
     }
-    
-    private start = (e: MouseEvent) => {
+
+    private drawGrid() {
+      const w = this.gridCanvas.width / this.dpr;
+      const h = this.gridCanvas.height / this.dpr;
+      this.gridCtx.clearRect(0, 0, w, h);
+      this.gridCtx.strokeStyle = 'rgba(56,189,248,0.3)';
+      this.gridCtx.lineWidth = 0.5;
+      const step = 40;
+      for (let x = 0; x < w; x += step) {
+        this.gridCtx.beginPath();
+        this.gridCtx.moveTo(x, 0);
+        this.gridCtx.lineTo(x, h);
+        this.gridCtx.stroke();
+      }
+      for (let y = 0; y < h; y += step) {
+        this.gridCtx.beginPath();
+        this.gridCtx.moveTo(0, y);
+        this.gridCtx.lineTo(w, y);
+        this.gridCtx.stroke();
+      }
+    }
+
+    private getPos(e: MouseEvent): {x: number; y: number} {
+      const rect = this.canvas.getBoundingClientRect();
+      return {x: e.clientX - rect.left, y: e.clientY - rect.top};
+    }
+
+    private onStart = (e: MouseEvent) => {
       this.isDrawing = true;
+      this.path = [];
+      this.prevAngle = null;
+      const pos = this.getPos(e);
+      this.path.push(pos);
       this.ctx.beginPath();
-      this.ctx.moveTo(e.offsetX, e.offsetY);
-      this.ctx.strokeStyle = '#38bdf8';
-      this.ctx.lineWidth = 1.5;
+      this.ctx.moveTo(pos.x, pos.y);
+
+      // Hide verdict if shown
+      const verdict = document.getElementById('snap-verdict');
+      if (verdict) { verdict.style.opacity = '0'; verdict.style.pointerEvents = 'none'; }
     };
-    
-    private draw = (e: MouseEvent) => {
+
+    private onMove = (e: MouseEvent) => {
       if (!this.isDrawing) return;
-      this.ctx.lineTo(e.offsetX, e.offsetY);
+      const pos = this.getPos(e);
+      this.path.push(pos);
+
+      if (this.path.length >= 3) {
+        const a = this.path[this.path.length - 3];
+        const b = this.path[this.path.length - 2];
+        const c = pos;
+
+        const ang1 = Math.atan2(b.y - a.y, b.x - a.x);
+        const ang2 = Math.atan2(c.y - b.y, c.x - b.x);
+        let delta = Math.abs(ang2 - ang1) * 180 / Math.PI;
+        if (delta > 180) delta = 360 - delta;
+        this.angleChanges.push(delta);
+
+        const jitter = Math.sqrt((c.x - b.x) ** 2 + (c.y - b.y) ** 2);
+        if (jitter > this.maxJitter) this.maxJitter = jitter;
+
+        // Detect snap: large sudden angle correction (>30°) after moving in one direction
+        const isSnap = delta > 30 && this.prevAngle !== null;
+        if (isSnap) {
+          this.snapEvents++;
+          // Draw red snap marker
+          this.ctx.save();
+          this.ctx.fillStyle = 'rgba(239,68,68,0.8)';
+          this.ctx.beginPath();
+          this.ctx.arc(b.x, b.y, 4, 0, Math.PI * 2);
+          this.ctx.fill();
+          this.ctx.restore();
+        }
+        this.prevAngle = ang2;
+      }
+
+      // Draw path segment — color based on snap risk
+      const isRisky = this.snapEvents > 0;
+      this.ctx.strokeStyle = isRisky ? '#f87171' : '#38bdf8';
+      this.ctx.lineWidth = 1.5;
+      this.ctx.lineJoin = 'round';
+      this.ctx.lineCap = 'round';
+      this.ctx.lineTo(pos.x, pos.y);
       this.ctx.stroke();
+      this.ctx.beginPath();
+      this.ctx.moveTo(pos.x, pos.y);
+
+      this.updateStats();
     };
-    
-    private stop = () => {
+
+    private onStop = () => {
+      if (!this.isDrawing || this.path.length < 5) { this.isDrawing = false; return; }
       this.isDrawing = false;
+      this.allPaths.push([...this.path]);
+      this.showVerdict();
     };
+
+    private onTouchStart = (e: TouchEvent) => {
+      const t = e.touches[0];
+      this.onStart({ clientX: t.clientX, clientY: t.clientY } as MouseEvent);
+    };
+    private onTouchMove = (e: TouchEvent) => {
+      const t = e.touches[0];
+      this.onMove({ clientX: t.clientX, clientY: t.clientY } as MouseEvent);
+    };
+    private onTouchStop = () => this.onStop();
+
+    private updateStats() {
+      const el = (id: string) => document.getElementById(id);
+      el('stat-points')!.textContent = String(this.path.length);
+      el('snap-count')!.textContent = String(this.snapEvents);
+      const avgAngle = this.angleChanges.length ? (this.angleChanges.reduce((a,b) => a+b, 0) / this.angleChanges.length) : 0;
+      el('stat-angle')!.textContent = avgAngle.toFixed(1) + '°';
+      el('stat-jitter')!.textContent = this.maxJitter.toFixed(1) + 'px';
+
+      if (this.snapEvents > 3) {
+        el('snap-status')!.textContent = 'SNAPPING!';
+        el('snap-status')!.className = 'text-rose-400 font-bold text-sm';
+      } else if (this.snapEvents > 0) {
+        el('snap-status')!.textContent = 'SUSPECT';
+        el('snap-status')!.className = 'text-amber-400 font-bold text-sm';
+      } else {
+        el('snap-status')!.textContent = 'CLEAN';
+        el('snap-status')!.className = 'text-emerald-400 font-bold text-sm';
+      }
+
+      // Straightness score: how often angle delta < 2° (artificially straight)
+      const straight = this.angleChanges.filter(a => a < 2).length;
+      const straightPct = this.angleChanges.length ? (straight / this.angleChanges.length * 100) : 0;
+      el('snap-straight')!.textContent = straightPct.toFixed(0) + '%';
+
+      // Grade
+      let grade = 'S+ (Flawless)';
+      let gradeColor = 'text-emerald-400';
+      if (this.snapEvents > 10 || straightPct > 60) { grade = 'F (Heavy Snap)'; gradeColor = 'text-rose-400'; }
+      else if (this.snapEvents > 5 || straightPct > 40) { grade = 'C (Moderate)'; gradeColor = 'text-amber-400'; }
+      else if (this.snapEvents > 2 || straightPct > 25) { grade = 'B (Light)'; gradeColor = 'text-yellow-400'; }
+      const gradeEl = el('stat-grade')!;
+      gradeEl.textContent = grade;
+      gradeEl.className = `font-bold text-lg ${gradeColor}`;
+    }
+
+    private showVerdict() {
+      const hasSnap = this.snapEvents > 3;
+      const verdict = document.getElementById('snap-verdict');
+      const icon = document.getElementById('verdict-icon');
+      const title = document.getElementById('verdict-title');
+      const sub = document.getElementById('verdict-subtitle');
+      if (!verdict || !icon || !title || !sub) return;
+
+      if (hasSnap) {
+        icon.textContent = '⚠️';
+        title.textContent = 'ANGLE SNAPPING DETECTED';
+        title.className = 'text-2xl font-black font-mono text-rose-400';
+        sub.textContent = `${this.snapEvents} snap event(s) recorded. Your mouse sensor or driver is applying artificial trajectory correction. Disable it in your mouse software.`;
+      } else {
+        icon.textContent = '✅';
+        title.textContent = 'NO SNAPPING DETECTED';
+        title.className = 'text-2xl font-black font-mono text-emerald-400';
+        sub.textContent = 'Your mouse sensor delivers raw 1:1 tracking with no artificial prediction or line straightening detected.';
+      }
+      verdict.style.opacity = '1';
+      verdict.style.pointerEvents = 'auto';
+    }
+
+    private clearAll() {
+      const w = this.canvas.width / this.dpr;
+      const h = this.canvas.height / this.dpr;
+      this.ctx.clearRect(0, 0, w, h);
+      this.path = [];
+      this.allPaths = [];
+      this.snapEvents = 0;
+      this.maxJitter = 0;
+      this.angleChanges = [];
+      this.prevAngle = null;
+      const verdict = document.getElementById('snap-verdict');
+      if (verdict) { verdict.style.opacity = '0'; verdict.style.pointerEvents = 'none'; }
+
+      ['stat-points','snap-count','stat-jitter'].forEach(id => { document.getElementById(id)!.textContent = '0'; });
+      document.getElementById('stat-angle')!.textContent = '0.0°';
+      document.getElementById('stat-grade')!.textContent = '—';
+      document.getElementById('snap-straight')!.textContent = '—';
+      document.getElementById('snap-status')!.textContent = 'DRAW';
+      document.getElementById('snap-status')!.className = 'text-emerald-400 font-bold text-sm';
+    }
+
+    private redrawAllPaths() {
+      for (const p of this.allPaths) {
+        if (p.length < 2) continue;
+        this.ctx.beginPath();
+        this.ctx.strokeStyle = '#38bdf8';
+        this.ctx.lineWidth = 1.5;
+        this.ctx.moveTo(p[0].x, p[0].y);
+        for (let i = 1; i < p.length; i++) this.ctx.lineTo(p[i].x, p[i].y);
+        this.ctx.stroke();
+      }
+    }
   }
+
   new AngleSnappingEngine();
 </script>

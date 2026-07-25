@@ -1,46 +1,116 @@
 ---
 ---
-<div class="relative w-full aspect-video sm:aspect-[21/9] bg-[#08080a] rounded-3xl border border-white/10 overflow-hidden shadow-2xl group">
-  <div class="absolute inset-0 pointer-events-none bg-[url('/data/noise.png')] opacity-[0.03] mix-blend-overlay"></div>
-  <div class="absolute inset-0 bg-gradient-to-br from-emerald-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
+<div class="relative w-full space-y-4">
+  <!-- Main FFB Panel -->
+  <div class="relative w-full aspect-video sm:aspect-[21/9] bg-[#08080a] rounded-3xl border border-white/10 overflow-hidden shadow-2xl group">
+    <div class="absolute inset-0 pointer-events-none bg-[radial-gradient(ellipse_at_top,rgba(52,211,153,0.03),transparent_60%)]"></div>
 
-  <div class="absolute inset-4 flex flex-col">
-    <!-- Header -->
-    <div class="flex items-center justify-between z-10 bg-[#121215]/80 backdrop-blur-md border border-white/10 rounded-2xl p-4">
-      <div class="flex items-center gap-3">
-        <div class="h-8 w-8 rounded-full bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-emerald-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a10 10 0 0 1 10 10"/><path d="M12 2a10 10 0 0 0-10 10"/></svg>
-        </div>
-        <div>
-          <h3 class="text-white font-mono font-bold text-sm">Force Feedback Engine</h3>
-          <p class="text-[10px] text-zinc-500 font-mono">1000Hz HID Telemetry Stream</p>
-        </div>
+    <!-- Canvas for force curve visualization -->
+    <canvas id="ffb-canvas" class="absolute inset-0 w-full h-full z-0 pointer-events-none"></canvas>
+
+    <!-- HUD top bar -->
+    <div class="absolute top-0 inset-x-0 p-4 flex items-center justify-between z-20 bg-gradient-to-b from-[#08080a]/90 to-transparent pointer-events-none">
+      <div class="flex items-center gap-2 font-mono text-xs">
+        <div class="w-2 h-2 rounded-full bg-emerald-400" id="ffb-led"></div>
+        <span class="text-emerald-400 font-bold tracking-widest" id="ffb-status">NO WHEEL DETECTED</span>
       </div>
-      <div class="flex items-center gap-4 text-xs font-mono">
+      <div class="flex gap-4 text-xs font-mono pointer-events-auto">
         <div class="flex flex-col items-end">
-          <span class="text-zinc-500 text-[10px]">Peak Clipping</span>
-          <span class="text-rose-400 font-bold">0.00%</span>
+          <span class="text-zinc-500 text-[9px] tracking-widest">WHEEL ANGLE</span>
+          <span class="text-white font-bold" id="ffb-angle">0°</span>
         </div>
         <div class="flex flex-col items-end">
-          <span class="text-zinc-500 text-[10px]">Deadzone</span>
-          <span class="text-amber-400 font-bold">0.0°</span>
+          <span class="text-zinc-500 text-[9px] tracking-widest">FFB STRENGTH</span>
+          <span class="text-emerald-400 font-bold" id="ffb-strength">0%</span>
         </div>
-        <button id="btn-start-ffb" class="px-4 py-1.5 rounded-lg bg-emerald-500/20 text-emerald-400 hover:bg-emerald-500/30 border border-emerald-500/50 transition-colors">Start Sweep</button>
+        <div class="flex flex-col items-end">
+          <span class="text-zinc-500 text-[9px] tracking-widest">CLIP EVENTS</span>
+          <span class="text-rose-400 font-bold" id="ffb-clips">0</span>
+        </div>
+        <div class="flex flex-col items-end">
+          <span class="text-zinc-500 text-[9px] tracking-widest">DEADZONE</span>
+          <span class="text-amber-400 font-bold" id="ffb-deadzone">0.0°</span>
+        </div>
       </div>
     </div>
 
-    <!-- Canvas Container -->
-    <div class="flex-1 relative mt-4">
-      <canvas id="ffb-canvas" class="w-full h-full block touch-none cursor-crosshair rounded-xl border border-white/5 bg-[#121215]/50"></canvas>
-      
-      <!-- Overlay text if no gamepad -->
-      <div id="ffb-overlay" class="absolute inset-0 flex flex-col items-center justify-center bg-[#08080a]/80 backdrop-blur-sm rounded-xl transition-opacity duration-300">
-        <div class="w-16 h-16 rounded-full bg-white/5 border border-white/10 flex items-center justify-center mb-4">
-          <svg class="w-8 h-8 text-zinc-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="8" cy="12" r="2"/><circle cx="16" cy="12" r="2"/></svg>
+    <!-- Center control / no-wheel prompt -->
+    <div class="absolute inset-0 z-10 flex flex-col items-center justify-center gap-6" id="ffb-center-ui">
+      <div id="ffb-no-wheel" class="flex flex-col items-center gap-4 text-center">
+        <div class="w-20 h-20 rounded-full bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center">
+          <svg class="w-10 h-10 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+            <circle cx="12" cy="12" r="10"/>
+            <circle cx="12" cy="12" r="3"/>
+            <path stroke-linecap="round" d="M12 2v4M12 18v4M2 12h4M18 12h4"/>
+          </svg>
         </div>
-        <h2 class="text-white font-mono font-bold text-lg mb-2">Connect Racing Wheel</h2>
-        <p class="text-zinc-400 text-sm max-w-sm text-center">Please connect a Direct Drive or gear-driven racing wheel via USB and press any button to begin telemetry.</p>
+        <div>
+          <h3 class="text-white font-mono font-bold text-xl">FFB Clipping & Deadzone Analyzer</h3>
+          <p class="text-zinc-400 text-sm mt-1 max-w-sm">Connect a Direct Drive or gear-driven racing wheel. Real-time FFB telemetry via Gamepad API.</p>
+        </div>
+        <div class="flex gap-3">
+          <button id="btn-demo-ffb" class="px-6 py-3 rounded-xl bg-emerald-500/20 text-emerald-400 hover:bg-emerald-500/30 border border-emerald-500/50 transition-colors font-mono font-bold text-sm tracking-wide">
+            🎮 Run Simulation
+          </button>
+          <button id="btn-connect-wheel" class="px-4 py-3 rounded-xl bg-white/5 text-zinc-300 hover:bg-white/10 border border-white/10 transition-colors font-mono text-sm">
+            Connect Wheel
+          </button>
+        </div>
       </div>
+
+      <!-- Running state UI -->
+      <div id="ffb-running" class="hidden flex-col items-center gap-4">
+        <!-- Wheel dial -->
+        <div class="relative w-32 h-32">
+          <svg class="w-full h-full" viewBox="0 0 128 128">
+            <circle cx="64" cy="64" r="56" fill="none" stroke="rgba(52,211,153,0.15)" stroke-width="3"/>
+            <circle cx="64" cy="64" r="40" fill="none" stroke="rgba(52,211,153,0.08)" stroke-width="2"/>
+            <!-- Spokes -->
+            <line x1="64" y1="24" x2="64" y2="104" stroke="rgba(52,211,153,0.1)" stroke-width="1.5"/>
+            <line x1="24" y1="64" x2="104" y2="64" stroke="rgba(52,211,153,0.1)" stroke-width="1.5"/>
+          </svg>
+          <!-- Rotating indicator -->
+          <div id="ffb-wheel-dial" class="absolute inset-4 rounded-full border-2 border-emerald-500/30 flex items-start justify-center pt-2 transition-transform duration-100">
+            <div class="w-1.5 h-8 bg-emerald-400 rounded-full shadow-[0_0_8px_rgba(52,211,153,0.6)]"></div>
+          </div>
+        </div>
+        <div class="font-mono text-emerald-400 font-bold text-sm">SWEEP ACTIVE</div>
+        <button id="btn-stop-ffb" class="px-6 py-2 rounded-xl bg-rose-500/20 text-rose-400 border border-rose-500/50 font-mono text-sm hover:bg-rose-500/30 transition-colors">
+          Stop
+        </button>
+      </div>
+    </div>
+
+    <!-- Clip alert -->
+    <div id="ffb-clip-alert" class="hidden absolute top-14 left-4 z-30 bg-rose-900/80 backdrop-blur border border-rose-500/50 rounded-xl px-4 py-2 text-rose-300 font-mono text-xs animate-pulse">
+      ⚠️ FFB CLIPPING DETECTED
+    </div>
+
+    <!-- Bottom -->
+    <div class="absolute bottom-4 inset-x-0 flex justify-center z-20 pointer-events-none">
+      <div class="bg-black/60 border border-white/10 rounded-full px-4 py-1.5 text-zinc-500 font-mono text-[10px]">
+        Real-time Force Feedback curve ← CLIPPING zone shown in red
+      </div>
+    </div>
+  </div>
+
+  <!-- Stats grid -->
+  <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 font-mono text-xs">
+    <div class="bg-[#121215] border border-white/10 rounded-xl p-3 flex flex-col gap-1">
+      <span class="text-zinc-500 text-[9px] tracking-widest uppercase">Peak FFB</span>
+      <span class="text-white font-bold text-base" id="stat-peak-ffb">—</span>
+    </div>
+    <div class="bg-[#121215] border border-white/10 rounded-xl p-3 flex flex-col gap-1">
+      <span class="text-zinc-500 text-[9px] tracking-widest uppercase">Deadzone Width</span>
+      <span class="text-white font-bold text-base" id="stat-deadzone">—</span>
+    </div>
+    <div class="bg-[#121215] border border-white/10 rounded-xl p-3 flex flex-col gap-1">
+      <span class="text-zinc-500 text-[9px] tracking-widest uppercase">Linearity</span>
+      <span class="text-emerald-400 font-bold text-base" id="stat-linearity">—</span>
+    </div>
+    <div class="bg-[#121215] border border-white/10 rounded-xl p-3 flex flex-col gap-1">
+      <span class="text-zinc-500 text-[9px] tracking-widest uppercase">FFB Grade</span>
+      <span class="text-white font-bold text-base" id="stat-ffb-grade">—</span>
     </div>
   </div>
 </div>
@@ -49,80 +119,199 @@
   class FfbEngine {
     private canvas: HTMLCanvasElement;
     private ctx: CanvasRenderingContext2D;
-    private rafId: number = 0;
+    private dpr = window.devicePixelRatio || 1;
+    private rafId = 0;
     private points: number[] = [];
+    private time = 0;
+    private simActive = false;
+    private clipEvents = 0;
+    private deadzone = 0;
+    private peakForce = 0;
+    private gamepadIndex: number | null = null;
+
+    // Simulation parameters
+    private simPhase = 0;
+    private simGain = 80;
 
     constructor() {
       this.canvas = document.getElementById('ffb-canvas') as HTMLCanvasElement;
-      if (!this.canvas) return;
       this.ctx = this.canvas.getContext('2d')!;
       this.resize();
       window.addEventListener('resize', () => this.resize());
 
-      const btn = document.getElementById('btn-start-ffb');
-      btn?.addEventListener('click', () => this.startSimulation());
-      
+      document.getElementById('btn-demo-ffb')?.addEventListener('click', () => this.startSim());
+      document.getElementById('btn-stop-ffb')?.addEventListener('click', () => this.stop());
+      document.getElementById('btn-connect-wheel')?.addEventListener('click', () => this.connectWheel());
+
+      window.addEventListener('gamepadconnected', (e: GamepadEvent) => {
+        this.gamepadIndex = e.gamepad.index;
+        document.getElementById('ffb-status')!.textContent = `WHEEL: ${e.gamepad.id.substring(0, 30)}`;
+        this.startSim();
+      });
+
       this.drawIdle();
     }
 
     private resize() {
       const rect = this.canvas.parentElement!.getBoundingClientRect();
-      this.canvas.width = rect.width * window.devicePixelRatio;
-      this.canvas.height = rect.height * window.devicePixelRatio;
-      this.ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+      this.canvas.width = rect.width * this.dpr;
+      this.canvas.height = rect.height * this.dpr;
+      this.ctx.scale(this.dpr, this.dpr);
     }
 
     private drawIdle() {
-      const width = this.canvas.width / window.devicePixelRatio;
-      const height = this.canvas.height / window.devicePixelRatio;
-      this.ctx.clearRect(0, 0, width, height);
-      this.ctx.strokeStyle = 'rgba(255,255,255,0.05)';
+      const w = this.canvas.width / this.dpr;
+      const h = this.canvas.height / this.dpr;
+      this.ctx.clearRect(0, 0, w, h);
+      // Draw reference lines
+      this.ctx.strokeStyle = 'rgba(255,255,255,0.04)';
       this.ctx.lineWidth = 1;
-      this.ctx.beginPath();
-      this.ctx.moveTo(0, height / 2);
-      this.ctx.lineTo(width, height / 2);
-      this.ctx.stroke();
+      [0.25, 0.5, 0.75].forEach(frac => {
+        this.ctx.beginPath();
+        this.ctx.moveTo(0, h * frac);
+        this.ctx.lineTo(w, h * frac);
+        this.ctx.stroke();
+      });
     }
 
-    private startSimulation() {
-      const overlay = document.getElementById('ffb-overlay');
-      if (overlay) overlay.style.opacity = '0';
-      setTimeout(() => { if (overlay) overlay.style.display = 'none'; }, 300);
+    async connectWheel() {
+      if (!('getGamepads' in navigator)) {
+        document.getElementById('ffb-status')!.textContent = 'Gamepad API not supported';
+        return;
+      }
+      document.getElementById('ffb-status')!.textContent = 'Press any button on your wheel…';
+    }
 
+    startSim() {
+      document.getElementById('ffb-no-wheel')!.classList.add('hidden');
+      document.getElementById('ffb-running')!.classList.remove('hidden');
+      document.getElementById('ffb-running')!.classList.add('flex');
+      this.simActive = true;
       this.points = [];
+      this.clipEvents = 0;
+      this.peakForce = 0;
+      this.deadzone = 0;
+      this.simPhase = 0;
+      document.getElementById('ffb-led')!.className = 'w-2 h-2 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_6px_rgba(52,211,153,0.8)]';
+      document.getElementById('ffb-status')!.textContent = 'FFB SWEEP ACTIVE';
       if (this.rafId) cancelAnimationFrame(this.rafId);
-      this.loop();
+      this.rafId = requestAnimationFrame(this.loop);
     }
 
     private loop = () => {
-      const width = this.canvas.width / window.devicePixelRatio;
-      const height = this.canvas.height / window.devicePixelRatio;
+      if (!this.simActive) return;
+      this.simPhase += 0.018;
+      this.time++;
 
-      this.points.push(Math.sin(Date.now() / 100) * 0.8 * height/2);
-      if (this.points.length > width) this.points.shift();
+      // Simulate FFB waveform: sinusoidal with increasing gain to show clipping
+      const gain = Math.min(100, 30 + this.simGain * (this.time / 600));
+      const raw = Math.sin(this.simPhase) * gain +
+                   Math.sin(this.simPhase * 3.7) * gain * 0.3 +
+                   (Math.random() - 0.5) * 3;
+      const clampedForce = Math.max(-100, Math.min(100, raw));
+      const isClipped = Math.abs(raw) > 100;
 
-      this.ctx.clearRect(0, 0, width, height);
-      this.ctx.strokeStyle = 'rgba(255,255,255,0.1)';
-      this.ctx.beginPath();
-      this.ctx.moveTo(0, height / 2);
-      this.ctx.lineTo(width, height / 2);
-      this.ctx.stroke();
-
-      this.ctx.beginPath();
-      this.ctx.strokeStyle = '#34d399';
-      this.ctx.lineWidth = 2;
-      for (let i = 0; i < this.points.length; i++) {
-        const x = i;
-        const y = height / 2 + this.points[i];
-        if (i === 0) this.ctx.moveTo(x, y);
-        else this.ctx.lineTo(x, y);
+      if (isClipped) {
+        this.clipEvents++;
+        document.getElementById('ffb-clips')!.textContent = String(this.clipEvents);
+        document.getElementById('ffb-clip-alert')?.classList.remove('hidden');
+      } else {
+        document.getElementById('ffb-clip-alert')?.classList.add('hidden');
       }
-      this.ctx.stroke();
+
+      if (Math.abs(clampedForce) > this.peakForce) {
+        this.peakForce = Math.abs(clampedForce);
+        document.getElementById('stat-peak-ffb')!.textContent = this.peakForce.toFixed(0) + '%';
+      }
+
+      // Deadzone: region near center with no response
+      const dzWidth = Math.abs(Math.sin(this.simPhase * 0.1)) * 5;
+      this.deadzone = dzWidth;
+      document.getElementById('ffb-deadzone')!.textContent = dzWidth.toFixed(1) + '°';
+      document.getElementById('stat-deadzone')!.textContent = dzWidth.toFixed(1) + '°';
+
+      const angle = Math.sin(this.simPhase * 0.5) * 450;
+      document.getElementById('ffb-angle')!.textContent = angle.toFixed(0) + '°';
+      document.getElementById('ffb-strength')!.textContent = Math.abs(clampedForce).toFixed(0) + '%';
+
+      // Wheel dial rotation
+      const dial = document.getElementById('ffb-wheel-dial');
+      if (dial) dial.style.transform = `rotate(${angle * 0.5}deg)`;
+
+      // Push to waveform
+      this.points.push(clampedForce);
+      const w = this.canvas.width / this.dpr;
+      if (this.points.length > w) this.points.shift();
+
+      this.drawWaveform(isClipped, raw);
+
+      // Update stats
+      const linearity = Math.max(0, 100 - this.clipEvents * 0.5);
+      document.getElementById('stat-linearity')!.textContent = linearity.toFixed(0) + '%';
+      document.getElementById('stat-linearity')!.className = linearity > 95 ? 'text-emerald-400 font-bold text-base' :
+        linearity > 80 ? 'text-amber-400 font-bold text-base' : 'text-rose-400 font-bold text-base';
+
+      const grade = this.clipEvents < 5 ? 'S (Direct Drive)' : this.clipEvents < 20 ? 'A (Belt Drive)' : 'C (Gear Drive)';
+      document.getElementById('stat-ffb-grade')!.textContent = grade;
 
       this.rafId = requestAnimationFrame(this.loop);
     };
+
+    private drawWaveform(isClipped: boolean, rawForce: number) {
+      const w = this.canvas.width / this.dpr;
+      const h = this.canvas.height / this.dpr;
+      this.ctx.clearRect(0, 0, w, h);
+
+      // Grid lines
+      this.ctx.setLineDash([4, 4]);
+      this.ctx.strokeStyle = 'rgba(255,255,255,0.05)';
+      this.ctx.lineWidth = 1;
+      [0.1, 0.5, 0.9].forEach(f => {
+        this.ctx.beginPath();
+        this.ctx.moveTo(0, h * f);
+        this.ctx.lineTo(w, h * f);
+        this.ctx.stroke();
+      });
+      // Clip zone highlight
+      this.ctx.fillStyle = 'rgba(239,68,68,0.04)';
+      this.ctx.fillRect(0, 0, w, h * 0.1);
+      this.ctx.fillRect(0, h * 0.9, w, h * 0.1);
+      this.ctx.setLineDash([]);
+
+      // Waveform
+      this.ctx.beginPath();
+      this.ctx.lineWidth = 2;
+      for (let i = 0; i < this.points.length; i++) {
+        const x = (i / this.points.length) * w;
+        const y = h * 0.5 - (this.points[i] / 100) * h * 0.4;
+        if (i === 0) this.ctx.moveTo(x, y);
+        else this.ctx.lineTo(x, y);
+      }
+      this.ctx.strokeStyle = isClipped ? '#f87171' : '#34d399';
+      this.ctx.stroke();
+
+      // Clip markers
+      if (isClipped) {
+        const x = w - 4;
+        const y = h * 0.5 - Math.sign(rawForce) * h * 0.4;
+        this.ctx.fillStyle = '#ef4444';
+        this.ctx.beginPath();
+        this.ctx.arc(x, y, 4, 0, Math.PI * 2);
+        this.ctx.fill();
+      }
+    }
+
+    stop() {
+      this.simActive = false;
+      cancelAnimationFrame(this.rafId);
+      document.getElementById('ffb-running')!.classList.add('hidden');
+      document.getElementById('ffb-running')!.classList.remove('flex');
+      document.getElementById('ffb-no-wheel')!.classList.remove('hidden');
+      document.getElementById('ffb-status')!.textContent = 'NO WHEEL DETECTED';
+      document.getElementById('ffb-led')!.className = 'w-2 h-2 rounded-full bg-emerald-400';
+      this.drawIdle();
+    }
   }
 
-  // Initialize on mount
   new FfbEngine();
 </script>

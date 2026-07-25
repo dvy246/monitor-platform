@@ -1,6 +1,6 @@
 ---
 import Layout from '../../layouts/Layout.astro';
-import AudioTesterCanvas from '../../components/diagnostics/AudioTesterCanvas.astro';
+import FrequencyGeneratorCanvas from '../../components/diagnostics/FrequencyGeneratorCanvas.astro';
 import FAQSection from '../../components/ui/FAQSection.astro';
 import Breadcrumbs from '../../components/ui/Breadcrumbs.astro';
 import StepWorkflowSection from '../../components/ui/StepWorkflowSection.astro';
@@ -11,8 +11,8 @@ import MetricCard from '../../components/ui/sidebar/MetricCard.astro';
 import ConfigurationCard from '../../components/ui/sidebar/ConfigurationCard.astro';
 import ShortcutCard from '../../components/ui/sidebar/ShortcutCard.astro';
 
-const title = "Online Audio Tone Generator & Frequency Synthesizer";
-const description = "Generate pure sine, square, triangle, and sawtooth audio frequencies (1Hz to 20kHz) online using uncompressed Web Audio API synthesis.";
+const title = "Free Online Tone Generator & Frequency Sound Maker";
+const description = "100% Free Online Tone Generator and Frequency Sound Maker. Synthesize pure sine, square, triangle, and sawtooth audio frequencies (1Hz to 20kHz) online instantly.";
 
 const faqs = [
   {
@@ -73,27 +73,27 @@ const breadcrumbs = [
       <!-- Left Primary Diagnostic Canvas (lg:col-span-8) -->
       <div class="lg:col-span-8 space-y-8 min-w-0">
         <!-- Hero Header Deck -->
-        <header class="relative w-full rounded-3xl border border-white/10 bg-[#121215]/90 backdrop-blur-xl p-6 sm:p-8 md:p-10 shadow-2xl space-y-4 overflow-hidden group select-none">
-          <div class="absolute -top-24 -left-24 w-72 h-72 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none group-hover:bg-emerald-500/15 transition-all duration-500"></div>
-          <div class="absolute -bottom-24 -right-24 w-72 h-72 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none group-hover:bg-cyan-500/15 transition-all duration-500"></div>
+        <header class="relative w-full rounded-3xl border border-[rgba(0,229,160,0.18)] bg-bg-surface p-6 sm:p-8 md:p-10 shadow-specular-top space-y-4 overflow-hidden group select-none">
+          <div class="absolute -top-24 -left-24 w-72 h-72 rounded-full blur-3xl pointer-events-none" style="background:radial-gradient(ellipse,rgba(0,229,160,0.10) 0%,transparent 70%)"></div>
+          <div class="absolute -bottom-24 -right-24 w-72 h-72 rounded-full blur-3xl pointer-events-none" style="background:radial-gradient(ellipse,rgba(77,159,255,0.08) 0%,transparent 70%)"></div>
 
           <div class="relative z-10 space-y-3 max-w-3xl min-w-0 w-full">
-            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#08080a] border border-white/10 text-emerald-400 text-xs font-mono font-bold tracking-wide flex-wrap shadow-inner">
-              <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shrink-0"></span>
+            <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[rgba(0,229,160,0.06)] border border-[rgba(0,229,160,0.22)] text-status-pass text-xs font-mono font-bold tracking-wider flex-wrap">
+              <span class="w-1.5 h-1.5 rounded-full bg-status-pass led-glow-pass animate-pulse shrink-0"></span>
               <span>UNCOMPRESSED WEBAUDIO OSCILLATOR SYNTHESIS</span>
             </div>
-            <h1 class="text-3xl sm:text-5xl font-extrabold text-white tracking-tight font-sans break-words min-w-0">
+            <h1 class="text-3xl sm:text-5xl font-extrabold text-text-primary tracking-tight heading-brand break-words min-w-0">
               {title}
             </h1>
-            <p class="text-sm sm:text-base text-zinc-300 font-sans leading-relaxed min-w-0">
+            <p class="text-sm sm:text-base text-text-secondary font-sans leading-relaxed min-w-0">
               Synthesize pure sine, square, triangle, and sawtooth audio waveforms from 1Hz to 20,000Hz. Calibrate speakers, tune instruments, and test room acoustics with 64-bit precision.
             </p>
           </div>
         </header>
 
         <!-- Main Diagnostic Instrument -->
-        <div class="rounded-3xl border border-white/10 bg-[#121215]/90 backdrop-blur-xl p-4 sm:p-6 shadow-2xl">
-          <AudioTesterCanvas initialFreq={440} />
+        <div class="rounded-3xl border border-[rgba(77,159,255,0.12)] bg-bg-surface p-4 sm:p-6 shadow-specular-top">
+          <FrequencyGeneratorCanvas initialFreq={440} />
         </div>
 
         <!-- 3-Step Workflow Protocol -->
@@ -103,10 +103,10 @@ const breadcrumbs = [
         <PanelTypeBreakdownSection />
 
         <!-- Article Section -->
-        <article class="bg-[#121215] border border-white/10 rounded-3xl p-6 sm:p-8 space-y-6 shadow-2xl font-sans text-sm text-zinc-300 leading-relaxed">
-          <div class="border-b border-white/10 pb-4 font-mono">
-            <span class="text-xs font-bold text-emerald-400 uppercase tracking-widest block mb-1">SIGNAL SYNTHESIS MATHEMATICS</span>
-            <h2 class="text-2xl font-bold text-white">Waveform Harmonics, Nyquist Sampling &amp; Pure Oscillators</h2>
+        <article class="bg-bg-surface border border-[rgba(77,159,255,0.10)] rounded-3xl p-6 sm:p-8 space-y-6 shadow-specular-top font-sans text-sm text-text-secondary leading-relaxed">
+          <div class="pb-4 font-mono" style="border-bottom: 1px solid rgba(77,159,255,0.10)">
+            <span class="text-xs font-bold text-status-pass uppercase tracking-widest block mb-1">SIGNAL SYNTHESIS MATHEMATICS</span>
+            <h2 class="text-2xl font-bold text-text-primary">Waveform Harmonics, Nyquist Sampling &amp; Pure Oscillators</h2>
           </div>
 
           <p>
@@ -114,25 +114,25 @@ const breadcrumbs = [
           </p>
 
           <div class="grid grid-cols-1 md:grid-cols-4 gap-4 font-mono text-xs my-4">
-            <div class="bg-[#08080a] p-4 rounded-2xl border border-white/10 space-y-1">
-              <span class="text-cyan-400 text-[10px] uppercase font-bold block">Sine Wave</span>
-              <strong class="text-white block text-sm">Fundamental Only</strong>
-              <p class="font-sans text-[11px] text-zinc-400 leading-relaxed">Pure harmonic-free tone ideal for audio testing and calibration.</p>
+            <div class="bg-bg-canvas p-4 rounded-2xl border border-border-hairline space-y-1">
+              <span class="text-status-info text-[10px] uppercase font-bold block">Sine Wave</span>
+              <strong class="text-text-primary block text-sm">Fundamental Only</strong>
+              <p class="font-sans text-[11px] text-text-muted leading-relaxed">Pure harmonic-free tone ideal for audio testing and calibration.</p>
             </div>
-            <div class="bg-[#08080a] p-4 rounded-2xl border border-white/10 space-y-1">
-              <span class="text-emerald-400 text-[10px] uppercase font-bold block">Square Wave</span>
-              <strong class="text-white block text-sm">Odd Harmonics</strong>
-              <p class="font-sans text-[11px] text-zinc-400 leading-relaxed">Hollow, punchy timbre used for testing digital amplifier slew rates.</p>
+            <div class="bg-bg-canvas p-4 rounded-2xl border border-border-hairline space-y-1">
+              <span class="text-status-pass text-[10px] uppercase font-bold block">Square Wave</span>
+              <strong class="text-text-primary block text-sm">Odd Harmonics</strong>
+              <p class="font-sans text-[11px] text-text-muted leading-relaxed">Hollow, punchy timbre used for testing digital amplifier slew rates.</p>
             </div>
-            <div class="bg-[#08080a] p-4 rounded-2xl border border-white/10 space-y-1">
-              <span class="text-amber-400 text-[10px] uppercase font-bold block">Sawtooth Wave</span>
-              <strong class="text-white block text-sm">All Harmonics</strong>
-              <p class="font-sans text-[11px] text-zinc-400 leading-relaxed">Rich brassy tone containing integer harmonics (1/n amplitude decay).</p>
+            <div class="bg-bg-canvas p-4 rounded-2xl border border-border-hairline space-y-1">
+              <span class="text-status-warn text-[10px] uppercase font-bold block">Sawtooth Wave</span>
+              <strong class="text-text-primary block text-sm">All Harmonics</strong>
+              <p class="font-sans text-[11px] text-text-muted leading-relaxed">Rich brassy tone containing integer harmonics (1/n amplitude decay).</p>
             </div>
-            <div class="bg-[#08080a] p-4 rounded-2xl border border-white/10 space-y-1">
-              <span class="text-purple-400 text-[10px] uppercase font-bold block">Triangle Wave</span>
-              <strong class="text-white block text-sm">Soft Harmonics</strong>
-              <p class="font-sans text-[11px] text-zinc-400 leading-relaxed">Mellow flute-like tone with rapid odd harmonic roll-off (1/n² decay).</p>
+            <div class="bg-bg-canvas p-4 rounded-2xl border border-border-hairline space-y-1">
+              <span class="text-[#a78bfa] text-[10px] uppercase font-bold block">Triangle Wave</span>
+              <strong class="text-text-primary block text-sm">Soft Harmonics</strong>
+              <p class="font-sans text-[11px] text-text-muted leading-relaxed">Mellow flute-like tone with rapid odd harmonic roll-off (1/n² decay).</p>
             </div>
           </div>
         </article>

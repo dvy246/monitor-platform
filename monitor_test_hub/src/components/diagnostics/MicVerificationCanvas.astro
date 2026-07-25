@@ -1,0 +1,215 @@
+---
+import { useTranslations } from '../../utils/i18n';
+const { t } = useTranslations(Astro.url.pathname);
+---
+
+<div class="w-full max-w-4xl mx-auto space-y-8 font-sans" id="mic-verify-wrapper">
+  
+  <!-- Safety Banner -->
+  <div class="p-4 sm:p-5 rounded-2xl bg-cyan-500/10 border border-cyan-500/30 flex items-start gap-4 shadow-specular-top">
+    <div class="w-10 h-10 rounded-xl bg-cyan-500/20 text-cyan-400 flex items-center justify-center shrink-0 font-bold text-lg">
+      🎙️
+    </div>
+    <div class="space-y-1 text-sm">
+      <h3 class="font-bold text-cyan-400 font-mono tracking-tight text-base">ACOUSTIC VERIFICATION ENGINE</h3>
+      <p class="text-text-secondary text-xs sm:text-sm leading-relaxed">
+        Verify your speaker recovery in 3 quick steps using closed-loop microphone measurement. No guesswork—see exact decibel output gains (&Delta;dB) before and after cleaning.
+      </p>
+    </div>
+  </div>
+
+  <!-- Main Diagnostic Deck Container -->
+  <div class="relative overflow-hidden rounded-2xl bg-bg-surface border border-border-hairline p-6 sm:p-8 shadow-specular-top space-y-8">
+    
+    <!-- 3-Step Process Steps Header -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 font-mono text-xs">
+      <div id="step-card-1" class="step-card active p-4 rounded-xl border border-status-pass bg-status-pass/10 space-y-1 transition-all">
+        <div class="flex items-center justify-between">
+          <span class="font-bold text-status-pass">STEP 1</span>
+          <span class="text-[10px] bg-status-pass/20 text-status-pass px-2 py-0.5 rounded font-mono">Baseline</span>
+        </div>
+        <div class="font-bold text-text-primary text-sm font-sans">Pre-Clean Calibration</div>
+        <p class="text-[11px] text-text-muted font-sans">Measure initial acoustic volume (dB_pre)</p>
+      </div>
+
+      <div id="step-card-2" class="step-card p-4 rounded-xl border border-border-hairline bg-bg-canvas space-y-1 transition-all opacity-60">
+        <div class="flex items-center justify-between">
+          <span class="font-bold text-text-muted">STEP 2</span>
+          <span class="text-[10px] bg-bg-elevated text-text-muted px-2 py-0.5 rounded font-mono">Eject</span>
+        </div>
+        <div class="font-bold text-text-primary text-sm font-sans">Run Cleaning Tool</div>
+        <p class="text-[11px] text-text-muted font-sans">Play Water/Dust ejection frequencies</p>
+      </div>
+
+      <div id="step-card-3" class="step-card p-4 rounded-xl border border-border-hairline bg-bg-canvas space-y-1 transition-all opacity-60">
+        <div class="flex items-center justify-between">
+          <span class="font-bold text-text-muted">STEP 3</span>
+          <span class="text-[10px] bg-bg-elevated text-text-muted px-2 py-0.5 rounded font-mono">Verify</span>
+        </div>
+        <div class="font-bold text-text-primary text-sm font-sans">Post-Clean Measure</div>
+        <p class="text-[11px] text-text-muted font-sans">Calculate empirical volume gain (&Delta;dB)</p>
+      </div>
+    </div>
+
+    <!-- Live Visualizer Deck -->
+    <div class="p-6 rounded-xl bg-bg-canvas border border-border-hairline text-center space-y-6 shadow-inner">
+      <div class="flex flex-wrap items-center justify-between font-mono text-xs">
+        <span class="text-text-muted">Mic Acoustic Monitor</span>
+        <span id="status-badge" class="px-3 py-1 rounded-full bg-status-pass/10 text-status-pass border border-status-pass/30 font-bold uppercase tracking-wider text-[10px]">
+          Ready for Baseline Test
+        </span>
+      </div>
+
+      <!-- Meter Readouts -->
+      <div class="grid grid-cols-2 md:grid-cols-3 gap-4 text-center py-4">
+        <div class="p-4 rounded-xl bg-bg-surface border border-border-hairline space-y-1">
+          <span class="text-[10px] font-mono text-text-muted uppercase block">Pre-Clean Output</span>
+          <span id="readout-pre" class="text-2xl font-bold font-mono text-text-primary">-- dB</span>
+        </div>
+        <div class="p-4 rounded-xl bg-bg-surface border border-border-hairline space-y-1">
+          <span class="text-[10px] font-mono text-text-muted uppercase block">Post-Clean Output</span>
+          <span id="readout-post" class="text-2xl font-bold font-mono text-text-primary">-- dB</span>
+        </div>
+        <div class="p-4 rounded-xl bg-bg-surface border border-border-hairline space-y-1 col-span-2 md:col-span-1">
+          <span class="text-[10px] font-mono text-text-muted uppercase block">Acoustic Gain</span>
+          <span id="readout-delta" class="text-2xl font-bold font-mono text-status-pass">-- dB</span>
+        </div>
+      </div>
+
+      <!-- Live Meter Bar -->
+      <div class="w-full bg-bg-surface h-4 rounded-full overflow-hidden border border-border-hairline p-0.5">
+        <div id="meter-bar" class="h-full w-0 bg-gradient-to-r from-cyan-500 to-status-pass rounded-full transition-all duration-100"></div>
+      </div>
+
+      <!-- Result Banner (Hidden initially) -->
+      <div id="result-box" class="hidden p-4 rounded-xl bg-status-pass/10 border border-status-pass/30 text-left space-y-2 font-sans">
+        <div class="flex items-center gap-2 text-status-pass font-bold font-mono text-sm">
+          <span>✓</span>
+          <span id="result-title">Acoustic Verification Complete</span>
+        </div>
+        <p id="result-desc" class="text-xs text-text-secondary leading-relaxed"></p>
+      </div>
+
+      <!-- Controls -->
+      <div class="flex flex-wrap items-center justify-center gap-4 pt-2">
+        <button id="btn-measure" class="px-8 py-3.5 rounded-xl bg-status-pass hover:bg-emerald-400 text-bg-canvas font-mono font-bold text-sm tracking-wider uppercase transition-all shadow-lg active:scale-95 cursor-pointer">
+          START BASELINE TEST (STEP 1)
+        </button>
+        <a href="/sound-test/water-eject" id="btn-goto-eject" class="hidden px-6 py-3.5 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-white font-mono font-bold text-sm tracking-wider uppercase transition-all shadow-lg">
+          GO TO WATER EJECT TOOL &rarr;
+        </a>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  import { MicVerificationEngine } from '../../engine/MicVerificationEngine';
+
+  function initMicVerification() {
+    const btnMeasure = document.getElementById('btn-measure') as HTMLButtonElement;
+    const btnGotoEject = document.getElementById('btn-goto-eject');
+    const readoutPre = document.getElementById('readout-pre');
+    const readoutPost = document.getElementById('readout-post');
+    const readoutDelta = document.getElementById('readout-delta');
+    const meterBar = document.getElementById('meter-bar');
+    const statusBadge = document.getElementById('status-badge');
+    const resultBox = document.getElementById('result-box');
+    const resultTitle = document.getElementById('result-title');
+    const resultDesc = document.getElementById('result-desc');
+
+    const step1 = document.getElementById('step-card-1');
+    const step2 = document.getElementById('step-card-2');
+    const step3 = document.getElementById('step-card-3');
+
+    if (!btnMeasure) return;
+
+    const engine = new MicVerificationEngine();
+    let currentStep: 1 | 2 | 3 = 1;
+    let preDbVal = 0;
+    let postDbVal = 0;
+
+    btnMeasure.addEventListener('click', async () => {
+      if (currentStep === 1) {
+        if (statusBadge) statusBadge.textContent = 'MEASURING BASELINE... (HOLD MIC NEAR SPEAKER)';
+        btnMeasure.disabled = true;
+        btnMeasure.textContent = 'RECORDING (2S)...';
+
+        // Animate meter
+        let mVal = 0;
+        const interval = setInterval(() => {
+          mVal = Math.min(90, mVal + 15);
+          if (meterBar) meterBar.style.width = `${mVal}%`;
+        }, 100);
+
+        preDbVal = await engine.measureAcousticAmplitude(2500);
+        clearInterval(interval);
+
+        if (readoutPre) readoutPre.textContent = `${preDbVal} dB`;
+        if (meterBar) meterBar.style.width = `${preDbVal}%`;
+
+        // Advance to Step 2
+        currentStep = 2;
+        if (statusBadge) statusBadge.textContent = 'STEP 1 COMPLETE. RUN CLEANER NOW.';
+        if (step1) {
+          step1.className = 'step-card p-4 rounded-xl border border-border-hairline bg-bg-canvas space-y-1 opacity-60';
+        }
+        if (step2) {
+          step2.className = 'step-card active p-4 rounded-xl border border-cyan-400 bg-cyan-500/10 space-y-1 transition-all';
+        }
+        if (btnGotoEject) btnGotoEject.classList.remove('hidden');
+        btnMeasure.disabled = false;
+        btnMeasure.textContent = 'PROCEED TO POST-CLEAN TEST (STEP 3)';
+      } else if (currentStep === 2 || currentStep === 3) {
+        currentStep = 3;
+        if (statusBadge) statusBadge.textContent = 'MEASURING POST-CLEAN OUTPUT...';
+        btnMeasure.disabled = true;
+        btnMeasure.textContent = 'RECORDING (2S)...';
+
+        let mVal = 0;
+        const interval = setInterval(() => {
+          mVal = Math.min(95, mVal + 15);
+          if (meterBar) meterBar.style.width = `${mVal}%`;
+        }, 100);
+
+        postDbVal = await engine.measureAcousticAmplitude(2500);
+        clearInterval(interval);
+
+        if (readoutPost) readoutPost.textContent = `${postDbVal} dB`;
+        if (meterBar) meterBar.style.width = `${postDbVal}%`;
+
+        const evaluation = engine.evaluateRecovery(preDbVal, postDbVal);
+        if (readoutDelta) {
+          readoutDelta.textContent = evaluation.deltaDb > 0 ? `+${evaluation.deltaDb} dB` : `${evaluation.deltaDb} dB`;
+        }
+
+        // Update step UI
+        if (step2) {
+          step2.className = 'step-card p-4 rounded-xl border border-border-hairline bg-bg-canvas space-y-1 opacity-60';
+        }
+        if (step3) {
+          step3.className = 'step-card active p-4 rounded-xl border border-status-pass bg-status-pass/10 space-y-1 transition-all';
+        }
+
+        // Show result box
+        if (resultBox && resultTitle && resultDesc) {
+          resultBox.classList.remove('hidden');
+          resultTitle.textContent = evaluation.status === 'improved' ? '✓ Verification Passed: Speaker Volume Restored' : 'Acoustic Verification Complete';
+          resultDesc.textContent = evaluation.recommendation;
+        }
+
+        if (statusBadge) statusBadge.textContent = 'VERIFICATION COMPLETE';
+        btnMeasure.disabled = false;
+        btnMeasure.textContent = 'RE-RUN BASELINE TEST';
+        currentStep = 1;
+      }
+    });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initMicVerification);
+  } else {
+    initMicVerification();
+  }
+</script>

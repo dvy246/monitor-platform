@@ -1,0 +1,92 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import EarpieceCleanerCanvas from '../../components/diagnostics/EarpieceCleanerCanvas.astro';
+import FAQSection from '../../components/ui/FAQSection.astro';
+
+const earpieceFaqs = [
+  {
+    q: 'How do I use the water eject sound ear speaker tool to fix my speaker?',
+    a: 'To fix my speaker when top call audio is muffled, turn your volume up to 100%, place the phone face down on a soft cloth, and play our 100% free water eject sound ear speaker tone. High-pass sound waves (250Hz–600Hz) vibrate the receiver capsule to clear trapped moisture.'
+  },
+  {
+    q: 'Why is my top ear speaker quieter than the bottom main speaker?',
+    a: 'Top ear speakers have a smaller driver diaphragm and finer acoustic mesh. They easily trap earwax, pocket lint, or water droplets after rain or showering, dampening voice call clarity.'
+  },
+  {
+    q: 'Is the water eject sound ear speaker utility free to use?',
+    a: 'Yes! Our water eject sound free online tool requires zero app downloads, subscriptions, or account sign-ups. Simply press start to generate high-precision Web Audio frequencies in your browser.'
+  },
+  {
+    q: 'Can I use toothpicks or pins to clean my earpiece speaker?',
+    a: 'No! Never insert sharp metal or wooden objects into your earpiece grille. Doing so will puncture the delicate water-resistant membrane and permanently destroy the acoustic driver.'
+  },
+  {
+    q: 'Is earpiece cleaning sound safe for all phone models?',
+    a: 'Yes, it is completely safe. The frequencies (250Hz–600Hz) are well within the standard voice frequency range (300Hz to 3.4kHz) handled by smartphone receiver capsules.'
+  },
+  {
+    q: 'How does the water eject sound ear speaker tone differ from main speaker cleaner?',
+    a: 'Main bottom speakers use low sub-bass tones (160Hz–250Hz) to displace large water droplets. Top ear speaker capsules require higher frequencies (250Hz–600Hz) to resonate the smaller driver diaphragm effectively.'
+  },
+  {
+    q: 'How long does earpiece water removal take?',
+    a: 'Running the earpiece clean tone for 30 to 60 seconds at max volume will clear light moisture. Repeat 2 to 3 times if call volume is still quiet.'
+  },
+  {
+    q: 'Does this water eject sound ear speaker tool work for iPhone and Android?',
+    a: 'Yes! Fully compatible with iPhone 16, 15, 14, 13, 12, 11 series, iPad, Samsung Galaxy S25, S24, Google Pixel, and all Android smartphones.'
+  },
+  {
+    q: 'What should I do if my call speaker still sounds distorted after cleaning?',
+    a: 'Allow your device to air dry in a well-ventilated spot for 24 hours. If phone calls remain completely silent or heavily distorted, contact an authorized repair center for hardware inspection.'
+  },
+  {
+    q: 'How often should I run the water eject sound ear speaker tool?',
+    a: 'Run the cleaner whenever call audio sounds quiet or muffled, or once a month as routine preventative maintenance to prevent wax and lint accumulation.'
+  }
+];
+---
+
+<Layout
+  title="Water Eject Sound Ear Speaker: Fix My Call Speaker Free | Display Test Online"
+  description="Fix my speaker with our 100% free water eject sound ear speaker tool. Clean top call speakers & earpiece capsules on iPhone & Android using 250Hz-600Hz sound waves."
+  faqs={earpieceFaqs.map(item => ({ question: item.q, answer: item.a }))}
+>
+  <main id="main-content" class="py-10 space-y-12">
+    <!-- Hero Header -->
+    <section class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-4">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-rose-500/10 border border-rose-500/30 font-mono text-xs text-rose-400 font-bold tracking-wider uppercase">
+        <span class="w-2 h-2 rounded-full bg-rose-400 animate-pulse"></span>
+        Top Call Speaker &amp; Ear Speaker Specialist
+      </div>
+
+      <h1 class="text-3xl sm:text-5xl font-extrabold text-text-primary tracking-tight font-mono">
+        Water Eject Sound Ear Speaker Tool
+      </h1>
+
+      <p class="text-sm sm:text-base text-text-secondary max-w-2xl mx-auto leading-relaxed">
+        Need to <strong class="text-text-primary">fix my speaker</strong> or clear a muffled phone call receiver? Run our <strong class="text-text-primary">water eject sound ear speaker</strong> utility to eject trapped liquid and restore top speaker volume instantly.
+      </p>
+    </section>
+
+    <!-- Main Diagnostic Component -->
+    <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <EarpieceCleanerCanvas />
+    </section>
+
+    <!-- Deep Technical Information -->
+    <section class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8 text-text-secondary text-sm leading-relaxed">
+      <div class="space-y-4">
+        <h2 class="text-2xl font-bold font-mono text-text-primary">Understanding Top Earpiece Speaker Architecture</h2>
+        <p>
+          Unlike bottom-firing main speakers designed for loud media playback, top earpiece speakers are tuned specifically for narrow band human voice frequencies. Because earpiece grilles feature extremely microscopic acoustic mesh ports, liquid droplets and earwax easily form a surface tension barrier, causing callers to sound distant or muffled.
+        </p>
+      </div>
+
+      <!-- FAQ Accordion UI -->
+      <div class="pt-8">
+        <FAQSection faqs={earpieceFaqs.map(item => ({ question: item.q, answer: item.a }))} />
+      </div>
+    </section>
+  </main>
+</Layout>

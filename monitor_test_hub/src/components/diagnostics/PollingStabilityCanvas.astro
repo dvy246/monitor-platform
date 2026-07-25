@@ -1,91 +1,259 @@
 ---
 ---
-<div class="relative w-full aspect-video sm:aspect-[21/9] bg-[#08080a] rounded-3xl border border-white/10 overflow-hidden shadow-2xl group">
-  <div class="absolute inset-0 pointer-events-none bg-[url('/data/noise.png')] opacity-[0.03] mix-blend-overlay"></div>
-  <canvas id="polling-canvas" class="w-full h-full block relative z-10"></canvas>
-  <div class="absolute inset-x-0 top-0 p-4 flex justify-between z-20 bg-gradient-to-b from-[#08080a] to-transparent">
-    <div class="flex items-center gap-3">
-      <div class="h-8 w-8 rounded-full bg-indigo-500/20 border border-indigo-500/40 flex items-center justify-center">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-indigo-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+<div class="relative w-full space-y-4">
+  <!-- Main Polling Stability Panel -->
+  <div class="relative w-full aspect-video sm:aspect-[21/9] bg-[#08080a] rounded-3xl border border-white/10 overflow-hidden shadow-2xl">
+    <!-- Canvas for jitter histogram -->
+    <canvas id="polling-canvas" class="absolute inset-0 w-full h-full z-0 pointer-events-none"></canvas>
+
+    <!-- HUD top bar -->
+    <div class="absolute top-0 inset-x-0 p-4 flex items-center justify-between z-20 bg-gradient-to-b from-[#08080a]/90 to-transparent pointer-events-none">
+      <div class="flex items-center gap-2 font-mono text-xs">
+        <div class="w-2 h-2 rounded-full bg-indigo-400" id="poll-led"></div>
+        <span class="text-indigo-400 font-bold tracking-widest" id="poll-status">IDLE — Move Mouse</span>
       </div>
-      <div>
-        <h3 class="text-white font-mono font-bold text-sm">HID Polling Engine</h3>
-        <p class="text-[10px] text-zinc-500 font-mono">Frame Pacing Variance</p>
+      <div class="flex gap-4 text-xs font-mono">
+        <div class="flex flex-col items-end">
+          <span class="text-zinc-500 text-[9px] tracking-widest">POLLING RATE</span>
+          <span class="text-indigo-400 font-bold text-2xl leading-tight" id="hz-display">0</span>
+          <span class="text-zinc-500 text-[9px]">Hz</span>
+        </div>
+        <div class="flex flex-col items-end">
+          <span class="text-zinc-500 text-[9px] tracking-widest">PEAK Hz</span>
+          <span class="text-white font-bold" id="peak-hz">0</span>
+        </div>
+        <div class="flex flex-col items-end">
+          <span class="text-zinc-500 text-[9px] tracking-widest">MIN INTERVAL</span>
+          <span class="text-white font-bold" id="min-interval">—</span>
+        </div>
+        <div class="flex flex-col items-end">
+          <span class="text-zinc-500 text-[9px] tracking-widest">JITTER σ</span>
+          <span class="text-white font-bold" id="jitter-sigma">—</span>
+        </div>
       </div>
     </div>
-    <div class="text-right">
-      <div class="text-3xl font-black font-mono text-white" id="hz-display">0 <span class="text-sm text-zinc-500">Hz</span></div>
+
+    <!-- Center: Mouse icon + prompt -->
+    <div class="absolute inset-0 z-10 flex flex-col items-center justify-center gap-4 pointer-events-none" id="poll-prompt">
+      <div class="w-16 h-16 rounded-full bg-indigo-500/10 border border-indigo-500/30 flex items-center justify-center">
+        <svg class="w-8 h-8 text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M15.042 21.672L13.684 16.6m0 0l-2.51 2.225.569-9.47 5.227 7.917-3.286-.672zM12 2.25V4.5m5.834.166l-1.591 1.591M20.25 10.5H18M7.757 14.743l-1.59 1.59M6 10.5H3.75m4.007-4.243l-1.59-1.59"/>
+        </svg>
+      </div>
+      <div class="text-center">
+        <div class="text-white font-mono font-bold text-lg">Move your mouse continuously</div>
+        <div class="text-zinc-400 text-sm mt-1">to measure HID polling rate and frame pacing jitter</div>
+      </div>
+    </div>
+
+    <!-- Bottom labels for waveform -->
+    <div class="absolute bottom-4 inset-x-0 flex items-center justify-between px-4 z-20 pointer-events-none">
+      <div class="font-mono text-[10px] text-zinc-600">← Older samples</div>
+      <div class="font-mono text-[10px] text-zinc-600">Latest →</div>
+    </div>
+  </div>
+
+  <!-- Stats grid -->
+  <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 font-mono text-xs">
+    <div class="bg-[#121215] border border-white/10 rounded-xl p-3 flex flex-col gap-1">
+      <span class="text-zinc-500 text-[9px] tracking-widest uppercase">Avg Interval</span>
+      <span class="text-white font-bold text-base" id="stat-avg-interval">—</span>
+    </div>
+    <div class="bg-[#121215] border border-white/10 rounded-xl p-3 flex flex-col gap-1">
+      <span class="text-zinc-500 text-[9px] tracking-widest uppercase">Jitter (P99)</span>
+      <span class="text-white font-bold text-base" id="stat-jitter-p99">—</span>
+    </div>
+    <div class="bg-[#121215] border border-white/10 rounded-xl p-3 flex flex-col gap-1">
+      <span class="text-zinc-500 text-[9px] tracking-widest uppercase">Stability</span>
+      <span class="text-emerald-400 font-bold text-base" id="stat-stability">—</span>
+    </div>
+    <div class="bg-[#121215] border border-white/10 rounded-xl p-3 flex flex-col gap-1">
+      <span class="text-zinc-500 text-[9px] tracking-widest uppercase">Grade</span>
+      <span class="text-white font-bold text-base" id="stat-grade">—</span>
+    </div>
+  </div>
+
+  <!-- Histogram panel -->
+  <div class="bg-[#121215] border border-white/10 rounded-2xl p-4">
+    <div class="text-zinc-500 text-[10px] tracking-widest mb-3 font-mono uppercase">Interval Distribution Histogram (ms between events)</div>
+    <div class="flex items-end gap-1 h-16" id="hist-container">
+      <!-- Bars added dynamically -->
+    </div>
+    <div class="flex justify-between text-zinc-600 text-[9px] font-mono mt-1">
+      <span>0ms</span>
+      <span>±Jitter→</span>
     </div>
   </div>
 </div>
 
 <script>
-  class PollingEngine {
+  class PollingStabilityEngine {
     private canvas: HTMLCanvasElement;
     private ctx: CanvasRenderingContext2D;
-    private lastTime = 0;
+    private dpr = window.devicePixelRatio || 1;
+    private intervals: number[] = [];
     private points: number[] = [];
-    private display: HTMLElement;
+    private lastMoveTime = 0;
     private count = 0;
-    private secTime = 0;
+    private secStart = 0;
+    private peakHz = 0;
+    private minInterval = Infinity;
+    private histBuckets: number[] = new Array(20).fill(0);
 
     constructor() {
       this.canvas = document.getElementById('polling-canvas') as HTMLCanvasElement;
-      this.display = document.getElementById('hz-display')!;
       this.ctx = this.canvas.getContext('2d')!;
       this.resize();
       window.addEventListener('resize', () => this.resize());
       window.addEventListener('mousemove', this.onMove);
       requestAnimationFrame(this.render);
+      this.buildHistogram();
     }
-    
+
     private resize() {
       const rect = this.canvas.parentElement!.getBoundingClientRect();
-      this.canvas.width = rect.width * window.devicePixelRatio;
-      this.canvas.height = rect.height * window.devicePixelRatio;
-      this.ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+      this.canvas.width = rect.width * this.dpr;
+      this.canvas.height = rect.height * this.dpr;
+      this.ctx.scale(this.dpr, this.dpr);
     }
 
     private onMove = () => {
       const now = performance.now();
-      if (this.lastTime === 0) { this.lastTime = now; return; }
-      
-      const delta = now - this.lastTime;
-      this.lastTime = now;
+      if (this.lastMoveTime === 0) {
+        this.lastMoveTime = now;
+        this.secStart = now;
+        return;
+      }
+      const delta = now - this.lastMoveTime;
+      this.lastMoveTime = now;
       this.count++;
+      this.intervals.push(delta);
+      if (this.intervals.length > 500) this.intervals.shift();
 
-      if (now - this.secTime > 1000) {
-        this.display.innerHTML = `${this.count} <span class="text-sm text-zinc-500">Hz</span>`;
-        this.count = 0;
-        this.secTime = now;
+      if (delta < this.minInterval) {
+        this.minInterval = delta;
+        document.getElementById('min-interval')!.textContent = delta.toFixed(2) + 'ms';
       }
 
-      const h = this.canvas.height / window.devicePixelRatio;
-      this.points.push(delta * (h / 4)); 
-      
-      const w = this.canvas.width / window.devicePixelRatio;
+      // Update Hz counter every second
+      if (now - this.secStart >= 1000) {
+        const hz = Math.round(this.count * 1000 / (now - this.secStart));
+        document.getElementById('hz-display')!.textContent = String(hz);
+        if (hz > this.peakHz) {
+          this.peakHz = hz;
+          document.getElementById('peak-hz')!.textContent = String(hz);
+        }
+        this.count = 0;
+        this.secStart = now;
+        document.getElementById('poll-status')!.textContent = `LIVE — ${hz} Hz Detected`;
+        document.getElementById('poll-led')!.className = 'w-2 h-2 rounded-full bg-indigo-400 animate-pulse shadow-[0_0_6px_rgba(99,102,241,0.8)]';
+        document.getElementById('poll-prompt')?.classList.add('opacity-0');
+
+        // Compute stats
+        this.updateStats();
+      }
+
+      // Histogram bucket
+      const bucketMs = 2.0; // 0–40ms spread over 20 buckets
+      const bucketIdx = Math.min(19, Math.floor(delta / bucketMs));
+      this.histBuckets[bucketIdx]++;
+      this.buildHistogram();
+
+      // Push to waveform
+      this.points.push(delta);
+      const w = this.canvas.width / this.dpr;
       if (this.points.length > w) this.points.shift();
     };
 
+    private updateStats() {
+      if (this.intervals.length < 2) return;
+      const avg = this.intervals.reduce((a,b) => a+b, 0) / this.intervals.length;
+      const sorted = [...this.intervals].sort((a,b) => a-b);
+      const p99 = sorted[Math.floor(sorted.length * 0.99)] ?? sorted[sorted.length-1];
+      const variance = this.intervals.reduce((a,b) => a + (b - avg) ** 2, 0) / this.intervals.length;
+      const sigma = Math.sqrt(variance);
+
+      document.getElementById('stat-avg-interval')!.textContent = avg.toFixed(2) + 'ms';
+      document.getElementById('stat-jitter-p99')!.textContent = p99.toFixed(2) + 'ms';
+      document.getElementById('jitter-sigma')!.textContent = sigma.toFixed(2) + 'ms';
+
+      const stability = Math.max(0, 100 - sigma * 10);
+      document.getElementById('stat-stability')!.textContent = stability.toFixed(0) + '%';
+      document.getElementById('stat-stability')!.className = stability > 90 ? 'text-emerald-400 font-bold text-base' :
+        stability > 70 ? 'text-amber-400 font-bold text-base' : 'text-rose-400 font-bold text-base';
+
+      let grade = 'A (8000Hz)';
+      if (avg > 8) grade = 'B (125Hz)';
+      if (avg > 4) grade = 'A (250Hz)';
+      if (avg > 2) grade = 'S (500Hz)';
+      if (avg < 0.2) grade = 'S+ (8kHz)';
+      document.getElementById('stat-grade')!.textContent = grade;
+    }
+
+    private buildHistogram() {
+      const container = document.getElementById('hist-container');
+      if (!container) return;
+      const maxVal = Math.max(1, ...this.histBuckets);
+      container.innerHTML = this.histBuckets.map((v, i) => {
+        const h = Math.max(2, (v / maxVal) * 100);
+        const color = i < 6 ? '#818cf8' : i < 12 ? '#a78bfa' : '#f472b6';
+        return `<div class="flex-1 flex flex-col items-center gap-0.5" title="${(i*2).toFixed(0)}-${((i+1)*2).toFixed(0)}ms: ${v}">
+          <div class="w-full rounded-t transition-all duration-300" style="height:${h}%;background:${color};opacity:0.7;"></div>
+        </div>`;
+      }).join('');
+    }
+
     private render = () => {
-      const width = this.canvas.width / window.devicePixelRatio;
-      const height = this.canvas.height / window.devicePixelRatio;
-      
-      this.ctx.clearRect(0, 0, width, height);
-      this.ctx.strokeStyle = '#818cf8';
-      this.ctx.lineWidth = 2;
-      
+      const w = this.canvas.width / this.dpr;
+      const h = this.canvas.height / this.dpr;
+      this.ctx.clearRect(0, 0, w, h);
+
+      if (this.points.length < 2) { requestAnimationFrame(this.render); return; }
+
+      // Ideal line at avg
+      const avg = this.points.reduce((a,b) => a+b, 0) / this.points.length;
+      const scale = h * 0.3 / Math.max(avg * 2, 1);
+
+      this.ctx.setLineDash([4, 4]);
+      this.ctx.strokeStyle = 'rgba(99,102,241,0.2)';
+      this.ctx.lineWidth = 1;
       this.ctx.beginPath();
+      const avgY = h * 0.6;
+      this.ctx.moveTo(0, avgY);
+      this.ctx.lineTo(w, avgY);
+      this.ctx.stroke();
+      this.ctx.setLineDash([]);
+
+      // Jitter waveform
+      this.ctx.beginPath();
+      this.ctx.strokeStyle = '#818cf8';
+      this.ctx.lineWidth = 1.5;
       for (let i = 0; i < this.points.length; i++) {
-        const x = i;
-        const y = height - this.points[i];
+        const x = (i / this.points.length) * w;
+        const y = h * 0.6 - (this.points[i] - avg) * scale;
         if (i === 0) this.ctx.moveTo(x, y);
         else this.ctx.lineTo(x, y);
       }
       this.ctx.stroke();
-      
+
+      // Fill below
+      this.ctx.globalAlpha = 0.05;
+      this.ctx.fillStyle = '#818cf8';
+      this.ctx.beginPath();
+      this.ctx.moveTo(0, avgY);
+      for (let i = 0; i < this.points.length; i++) {
+        const x = (i / this.points.length) * w;
+        const y = h * 0.6 - (this.points[i] - avg) * scale;
+        this.ctx.lineTo(x, y);
+      }
+      this.ctx.lineTo(w, avgY);
+      this.ctx.closePath();
+      this.ctx.fill();
+      this.ctx.globalAlpha = 1;
+
       requestAnimationFrame(this.render);
     };
   }
-  new PollingEngine();
+
+  new PollingStabilityEngine();
 </script>

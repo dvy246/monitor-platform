@@ -15,7 +15,7 @@ export interface Props {
 const {
   title,
   description,
-  canonicalUrl = Astro.url.href,
+  canonicalUrl: customCanonical,
   ogImage = 'https://displaytestonline.com/og-image.png',
   ogType = 'website',
   noindex = false,
@@ -35,6 +35,10 @@ const isLocalePrefix = currentLocale !== 'en';
 const rawPathSegments = isLocalePrefix ? pathSegments.slice(1) : pathSegments;
 const cleanPath = rawPathSegments.length > 0 ? `/${rawPathSegments.join('/')}/` : '/';
 
+// Normalize canonical URL to strictly enforce https://displaytestonline.com + cleanPath
+const normalizedCanonical = isLocalePrefix ? `${siteOrigin}/${currentLocale}${cleanPath}` : `${siteOrigin}${cleanPath}`;
+const canonicalUrl = customCanonical || normalizedCanonical;
+
 const hreflangs = supportedLocales.map((locale) => ({
   lang: locale,
   href: locale === 'en'
@@ -50,7 +54,7 @@ const hreflangs = supportedLocales.map((locale) => ({
 <meta name="apple-mobile-web-app-title" content="monitortest" />
 <link rel="manifest" href="/site.webmanifest" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-<meta name="theme-color" content="#08080a" />
+<meta name="theme-color" content="#07080f" />
 <meta name="generator" content={Astro.generator} />
 
 {noindex ? (

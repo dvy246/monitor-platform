@@ -1,53 +1,62 @@
 @import "tailwindcss";
 
 @theme {
-  /* Surfaces: Dark Matte Obsidian & Slate Spectrum */
-  --color-bg-canvas: #08080a;
-  --color-bg-surface: #0e0e11;
-  --color-bg-elevated: #131317;
-  --color-bg-subtle: rgba(255, 255, 255, 0.03);
-  --color-obsidian: #0e0e11;
-  --color-obsidian-surface: #0e0e11;
-  --color-obsidian-canvas: #08080a;
-  --color-obsidian-elevated: #131317;
+  /* ═══════════════════════════════════════════════════════════════
+     DISPLAY TEST ONLINE — DESIGN TOKEN SYSTEM v2.0
+     Aesthetic: Military Oscilloscope / High-Precision Instrument Lab
+     The surface shifts from neutral obsidian to deep navy —
+     evoking DARPA dashboards, CRT spectrum analysers, and radar rooms.
+  ═══════════════════════════════════════════════════════════════ */
 
-  /* Hairline & Specular Borders */
-  --color-border-hairline: rgba(255, 255, 255, 0.08);
-  --color-border-subtle: rgba(255, 255, 255, 0.12);
-  --color-border-interactive: rgba(255, 255, 255, 0.22);
-  --color-border-specular: rgba(255, 255, 255, 0.10);
+  /* Surfaces: Midnight Navy Instrument Panel */
+  --color-bg-canvas: #07080f;
+  --color-bg-surface: #0c0e1a;
+  --color-bg-elevated: #12152a;
+  --color-bg-subtle: rgba(77, 159, 255, 0.03);
 
-  /* Monochrome Typography Spectrum */
-  --color-text-primary: #ededed;
-  --color-text-secondary: #a1a1aa;
-  --color-text-muted: #71717a;
+  /* Legacy aliases (keep these for backward compat) */
+  --color-obsidian: #0c0e1a;
+  --color-obsidian-surface: #0c0e1a;
+  --color-obsidian-canvas: #07080f;
+  --color-obsidian-elevated: #12152a;
+
+  /* Hairline & Specular Borders — with a subtle blue tint */
+  --color-border-hairline: rgba(77, 159, 255, 0.10);
+  --color-border-subtle: rgba(77, 159, 255, 0.16);
+  --color-border-interactive: rgba(77, 159, 255, 0.30);
+  --color-border-specular: rgba(255, 255, 255, 0.08);
+
+  /* Typography Spectrum */
+  --color-text-primary: #e8eaf2;
+  --color-text-secondary: #8b93b0;
+  --color-text-muted: #4a5170;
   --color-text-on-accent: #000000;
 
-  /* Single Precision Signal Indicators */
-  --color-status-pass: #10b981;    /* Signal Emerald */
-  --color-status-fail: #ef4444;    /* Signal Red */
-  --color-status-info: #06b6d4;    /* Signal Cyan */
-  --color-status-warn: #f59e0b;    /* Signal Amber */
+  /* Signal Indicators — Phosphor Mint replaces plain emerald */
+  --color-status-pass: #00e5a0;    /* Phosphor Mint */
+  --color-status-fail: #ff4d6a;    /* Signal Red-Pink */
+  --color-status-info: #4d9fff;    /* Electric Cerulean */
+  --color-status-warn: #ffb340;    /* Amber Signal */
 
-  /* Legacy Color Mappings */
-  --color-diagnostic-black: #08080a;
-  --color-diagnostic-gray5: #0e0e11;
-  --color-diagnostic-gray10: #131317;
-  --color-diagnostic-gray25: rgba(255, 255, 255, 0.12);
-  --color-diagnostic-gray50: #71717a;
-  --color-diagnostic-gray75: #a1a1aa;
-  --color-diagnostic-white: #ededed;
-  --color-diagnostic-matrixGreen: #10b981;
-  --color-diagnostic-coronaCyan: #06b6d4;
-  --color-diagnostic-arcadePurple: #a855f7;
-  --color-diagnostic-deadRed: #ef4444;
+  /* Legacy diagnostic palette aliases */
+  --color-diagnostic-black: #07080f;
+  --color-diagnostic-gray5: #0c0e1a;
+  --color-diagnostic-gray10: #12152a;
+  --color-diagnostic-gray25: rgba(77, 159, 255, 0.12);
+  --color-diagnostic-gray50: #4a5170;
+  --color-diagnostic-gray75: #8b93b0;
+  --color-diagnostic-white: #e8eaf2;
+  --color-diagnostic-matrixGreen: #00e5a0;
+  --color-diagnostic-coronaCyan: #4d9fff;
+  --color-diagnostic-arcadePurple: #a78bfa;
+  --color-diagnostic-deadRed: #ff4d6a;
 
-  /* Typography Tokens */
+  /* Typography — Geist family is appropriate for instrument panels */
   --font-heading: 'Geist', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
   --font-sans: 'Geist', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
   --font-mono: 'Geist Mono', 'SF Mono', 'JetBrains Mono', 'IBM Plex Mono', monospace;
 
-  /* Curved Box Radius Scale */
+  /* Radius Scale */
   --radius-sm: 4px;
   --radius-md: 6px;
   --radius-lg: 8px;
@@ -55,58 +64,52 @@
   --radius-2xl: 16px;
   --radius-3xl: 24px;
 
-  /* Motion & Timing */
-  --duration-fast: 150ms;
-  --duration-normal: 200ms;
+  /* Motion */
+  --duration-fast: 120ms;
+  --duration-normal: 180ms;
   --ease-diagnostic: cubic-bezier(0.16, 1, 0.3, 1);
   --ease-snap: cubic-bezier(0.2, 0.8, 0.2, 1.05);
 }
 
-/* Light Mode Overrides & Contrast Harmonization */
+/* ═══════════════════════════════════════════════════════════════
+   LIGHT MODE — Clean Lab White variant
+═══════════════════════════════════════════════════════════════ */
 html.light, :root.light, .light {
-  --color-bg-canvas: #f8fafc !important;
+  --color-bg-canvas: #f0f2f8 !important;
   --color-bg-surface: #ffffff !important;
-  --color-bg-elevated: #f1f5f9 !important;
+  --color-bg-elevated: #e8ecf5 !important;
   --color-bg-subtle: rgba(0, 0, 0, 0.04) !important;
 
-  --color-border-hairline: rgba(0, 0, 0, 0.08) !important;
-  --color-border-subtle: rgba(0, 0, 0, 0.12) !important;
+  --color-border-hairline: rgba(0, 0, 0, 0.09) !important;
+  --color-border-subtle: rgba(0, 0, 0, 0.13) !important;
   --color-border-interactive: rgba(0, 0, 0, 0.22) !important;
 
-  --color-text-primary: #0f172a !important;
+  --color-text-primary: #0d0f1a !important;
   --color-text-secondary: #334155 !important;
   --color-text-muted: #64748b !important;
 
-  --color-status-pass: #059669 !important;
+  --color-status-pass: #00a87a !important;
   --color-status-fail: #dc2626 !important;
-  --color-status-info: #0891b2 !important;
+  --color-status-info: #1d6eff !important;
 }
 
-html.light .text-text-primary {
-  color: #0f172a !important;
-}
+html.light .text-text-primary { color: #0d0f1a !important; }
+html.light .text-text-secondary { color: #334155 !important; }
+html.light .text-text-muted { color: #64748b !important; }
 
-html.light .text-text-secondary {
-  color: #334155 !important;
-}
-
-html.light .text-text-muted {
-  color: #64748b !important;
-}
-
-html.light kbd,
-html.light code {
-  background-color: #f1f5f9;
+html.light kbd, html.light code {
+  background-color: #e8ecf5;
   border-color: rgba(0, 0, 0, 0.12);
-  color: #0f172a;
+  color: #0d0f1a;
 }
 
-/* Pure CSS Zero-CLS Theme Slider Initialization */
 :root.light #theme-slider-pill {
   transform: translateX(100%);
 }
 
-/* Base Document Styles & Mobile Safe Area Variables */
+/* ═══════════════════════════════════════════════════════════════
+   BASE DOCUMENT — Mobile, scroll, and box-model resets
+═══════════════════════════════════════════════════════════════ */
 :root {
   background-color: var(--color-bg-canvas);
   color: var(--color-text-primary);
@@ -118,7 +121,6 @@ html.light code {
   --sar: env(safe-area-inset-right, 0px);
 }
 
-/* Mobile Safety & Zero-Horizontal-Overflow Guarantee */
 html {
   overflow-x: hidden;
   overflow-y: auto;
@@ -131,11 +133,11 @@ body {
   min-height: 100dvh;
   overflow-x: hidden;
   position: relative;
+  transition: background-color var(--duration-normal) var(--ease-diagnostic),
+              color var(--duration-normal) var(--ease-diagnostic);
 }
 
-*, *::before, *::after {
-  box-sizing: border-box;
-}
+*, *::before, *::after { box-sizing: border-box; }
 
 @media (max-width: 640px) {
   p, h1, h2, h3, h4, h5, h6, article, section, .prose {
@@ -144,13 +146,13 @@ body {
   }
 }
 
-body {
-  transition: background-color var(--duration-normal) var(--ease-diagnostic), color var(--duration-normal) var(--ease-diagnostic);
-}
-
+/* ═══════════════════════════════════════════════════════════════
+   TYPOGRAPHY UTILITIES
+═══════════════════════════════════════════════════════════════ */
 .heading-brand {
   font-family: var(--font-heading);
-  letter-spacing: -0.025em;
+  letter-spacing: -0.03em;
+  font-feature-settings: "ss01", "cv01";
 }
 
 .font-mono {
@@ -163,81 +165,71 @@ body {
   font-variant-numeric: tabular-nums lining-nums slashed-zero;
 }
 
-/* Universal Focus Ring Utility */
+/* ═══════════════════════════════════════════════════════════════
+   FOCUS RING — Phosphor Mint glow
+═══════════════════════════════════════════════════════════════ */
 *:focus-visible {
   outline: 2px solid var(--color-status-pass) !important;
   outline-offset: 2px !important;
-  box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.25) !important;
+  box-shadow: 0 0 0 4px rgba(0, 229, 160, 0.20) !important;
 }
 
 .focus-ring {
   outline: 2px solid var(--color-status-pass);
   outline-offset: 2px;
-  box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.25);
+  box-shadow: 0 0 0 4px rgba(0, 229, 160, 0.20);
 }
 
-/* Curved Box Container Utilities */
-.curved-box-2xl {
-  border-radius: var(--radius-2xl, 16px);
-}
-
-.curved-box-3xl {
-  border-radius: var(--radius-3xl, 24px);
-}
-
-/* Dark Matte Obsidian Backdrop Glass Surface Utility */
+/* ═══════════════════════════════════════════════════════════════
+   GLASS SURFACES — Navy-tinted deep glass
+═══════════════════════════════════════════════════════════════ */
 .glass-obsidian {
-  background-color: rgba(14, 14, 17, 0.75);
-  backdrop-filter: blur(16px) saturate(180%);
-  -webkit-backdrop-filter: blur(16px) saturate(180%);
-  border: 1px solid rgba(255, 255, 255, 0.10);
+  background-color: rgba(12, 14, 26, 0.82);
+  backdrop-filter: blur(20px) saturate(160%);
+  -webkit-backdrop-filter: blur(20px) saturate(160%);
+  border: 1px solid rgba(77, 159, 255, 0.10);
 }
 
 :root.light .glass-obsidian {
-  background-color: rgba(255, 255, 255, 0.85);
-  backdrop-filter: blur(16px) saturate(180%);
-  -webkit-backdrop-filter: blur(16px) saturate(180%);
+  background-color: rgba(255, 255, 255, 0.88);
+  backdrop-filter: blur(20px) saturate(160%);
+  -webkit-backdrop-filter: blur(20px) saturate(160%);
   border: 1px solid rgba(0, 0, 0, 0.08);
 }
 
-/* Apple Pro Specular Highlights & Hardware LED Emitter Utilities */
+/* ═══════════════════════════════════════════════════════════════
+   SPECULAR SHADOWS — Instrument panel feel
+═══════════════════════════════════════════════════════════════ */
 .shadow-specular-top {
-  box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.12), 0 4px 20px -2px rgba(0, 0, 0, 0.4);
+  box-shadow:
+    inset 0 1px 0 0 rgba(77, 159, 255, 0.08),
+    0 4px 24px -2px rgba(0, 0, 0, 0.6);
 }
 
 :root.light .shadow-specular-top {
-  box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.6), 0 2px 10px rgba(0, 0, 0, 0.05);
+  box-shadow:
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.6),
+    0 2px 12px rgba(0, 0, 0, 0.06);
 }
 
 .specular-hairline {
-  border: 1px solid rgba(255, 255, 255, 0.10);
-  box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.10);
+  border: 1px solid rgba(77, 159, 255, 0.10);
+  box-shadow: inset 0 1px 0 0 rgba(77, 159, 255, 0.06);
 }
 
-/* Mobile Safe Area Insets */
-.pt-safe {
-  padding-top: env(safe-area-inset-top, 0px);
-}
-
-.pb-safe {
-  padding-bottom: env(safe-area-inset-bottom, 0px);
-}
-
-.pl-safe {
-  padding-left: env(safe-area-inset-left, 0px);
-}
-
-.pr-safe {
-  padding-right: env(safe-area-inset-right, 0px);
-}
-
+/* ═══════════════════════════════════════════════════════════════
+   SAFE AREA INSETS
+═══════════════════════════════════════════════════════════════ */
+.pt-safe { padding-top: env(safe-area-inset-top, 0px); }
+.pb-safe { padding-bottom: env(safe-area-inset-bottom, 0px); }
+.pl-safe { padding-left: env(safe-area-inset-left, 0px); }
+.pr-safe { padding-right: env(safe-area-inset-right, 0px); }
 .safe-area-padding {
   padding-top: env(safe-area-inset-top, 0px);
   padding-bottom: env(safe-area-inset-bottom, 0px);
   padding-left: env(safe-area-inset-left, 0px);
   padding-right: env(safe-area-inset-right, 0px);
 }
-
 .safe-area-margin {
   margin-top: env(safe-area-inset-top, 0px);
   margin-bottom: env(safe-area-inset-bottom, 0px);
@@ -245,35 +237,323 @@ body {
   margin-right: env(safe-area-inset-right, 0px);
 }
 
+/* ═══════════════════════════════════════════════════════════════
+   LED EMITTER GLOW UTILITIES — Phosphor Mint & Cerulean variants
+═══════════════════════════════════════════════════════════════ */
 .led-glow-pass {
-  box-shadow: 0 0 8px rgba(16, 185, 129, 0.6), inset 0 0 2px rgba(255, 255, 255, 0.8);
+  box-shadow: 0 0 10px rgba(0, 229, 160, 0.70), inset 0 0 2px rgba(255, 255, 255, 0.9);
 }
 
 .led-glow-info {
-  box-shadow: 0 0 8px rgba(6, 182, 212, 0.6), inset 0 0 2px rgba(255, 255, 255, 0.8);
+  box-shadow: 0 0 10px rgba(77, 159, 255, 0.70), inset 0 0 2px rgba(255, 255, 255, 0.9);
 }
 
-/* Premium Precision Instrument Background Grid */
+.led-glow-warn {
+  box-shadow: 0 0 10px rgba(255, 179, 64, 0.70), inset 0 0 2px rgba(255, 255, 255, 0.9);
+}
+
+.led-glow-fail {
+  box-shadow: 0 0 10px rgba(255, 77, 106, 0.70), inset 0 0 2px rgba(255, 255, 255, 0.9);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   SIGNATURE ELEMENT: PRECISION INSTRUMENT GRID
+   Dual-layer grid: a coarse 80px navy grid + fine 20px hairline grid
+   Creates the feeling of an oscilloscope graticule
+═══════════════════════════════════════════════════════════════ */
 .bg-precision-grid {
-  background-image: 
-    linear-gradient(to right, rgba(255, 255, 255, 0.035) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(255, 255, 255, 0.035) 1px, transparent 1px);
-  background-size: 32px 32px;
+  background-image:
+    linear-gradient(to right, rgba(77, 159, 255, 0.055) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(77, 159, 255, 0.055) 1px, transparent 1px),
+    linear-gradient(to right, rgba(77, 159, 255, 0.018) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(77, 159, 255, 0.018) 1px, transparent 1px);
+  background-size: 80px 80px, 80px 80px, 20px 20px, 20px 20px;
 }
 
 :root.light .bg-precision-grid {
-  background-image: 
-    linear-gradient(to right, rgba(0, 0, 0, 0.04) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(0, 0, 0, 0.04) 1px, transparent 1px);
+  background-image:
+    linear-gradient(to right, rgba(0, 0, 0, 0.06) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(0, 0, 0, 0.06) 1px, transparent 1px),
+    linear-gradient(to right, rgba(0, 0, 0, 0.025) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(0, 0, 0, 0.025) 1px, transparent 1px);
+  background-size: 80px 80px, 80px 80px, 20px 20px, 20px 20px;
 }
 
-/* Subtle Masking Gradient so the grid gently softens towards the edges */
 .bg-grid-mask {
-  mask-image: radial-gradient(ellipse at center, rgba(0, 0, 0, 1) 65%, rgba(0, 0, 0, 0.55) 100%);
-  -webkit-mask-image: radial-gradient(ellipse at center, rgba(0, 0, 0, 1) 65%, rgba(0, 0, 0, 0.55) 100%);
+  mask-image: radial-gradient(ellipse at center, rgba(0,0,0,1) 55%, rgba(0,0,0,0.4) 100%);
+  -webkit-mask-image: radial-gradient(ellipse at center, rgba(0,0,0,1) 55%, rgba(0,0,0,0.4) 100%);
 }
 
-/* Global Reduced Motion Accessibility Reset */
+/* ═══════════════════════════════════════════════════════════════
+   SCAN-LINE AMBIENT ANIMATION — The signature element
+   Subtle CRT phosphor scan line that drifts down the page hero
+═══════════════════════════════════════════════════════════════ */
+@keyframes scanline-drift {
+  0% { transform: translateY(-100%); opacity: 0; }
+  10% { opacity: 0.6; }
+  90% { opacity: 0.6; }
+  100% { transform: translateY(100vh); opacity: 0; }
+}
+
+@keyframes phosphor-pulse {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 1; }
+}
+
+@keyframes data-scroll {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+@keyframes signal-breathe {
+  0%, 100% { box-shadow: 0 0 6px rgba(0, 229, 160, 0.4); }
+  50% { box-shadow: 0 0 16px rgba(0, 229, 160, 0.9), 0 0 32px rgba(0, 229, 160, 0.3); }
+}
+
+.scan-line-ambient {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(
+    to right,
+    transparent 0%,
+    rgba(0, 229, 160, 0.0) 20%,
+    rgba(0, 229, 160, 0.4) 50%,
+    rgba(0, 229, 160, 0.0) 80%,
+    transparent 100%
+  );
+  animation: scanline-drift 8s linear infinite;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.scan-line-ambient:nth-child(2) {
+  animation-delay: 2.67s;
+  background: linear-gradient(
+    to right,
+    transparent 0%,
+    rgba(77, 159, 255, 0.0) 20%,
+    rgba(77, 159, 255, 0.3) 50%,
+    rgba(77, 159, 255, 0.0) 80%,
+    transparent 100%
+  );
+}
+
+.scan-line-ambient:nth-child(3) {
+  animation-delay: 5.33s;
+  background: linear-gradient(
+    to right,
+    transparent 0%,
+    rgba(0, 229, 160, 0.0) 20%,
+    rgba(0, 229, 160, 0.25) 50%,
+    rgba(0, 229, 160, 0.0) 80%,
+    transparent 100%
+  );
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scan-line-ambient { animation: none; opacity: 0; }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   PREMIUM CARD SYSTEM — Instrument panel modules
+═══════════════════════════════════════════════════════════════ */
+.card-instrument {
+  background: linear-gradient(135deg, #0c0e1a 0%, #0f1220 100%);
+  border: 1px solid rgba(77, 159, 255, 0.12);
+  border-radius: 20px;
+  box-shadow:
+    inset 0 1px 0 rgba(77, 159, 255, 0.06),
+    0 8px 32px rgba(0, 0, 0, 0.5),
+    0 2px 8px rgba(0, 0, 0, 0.3);
+  transition: border-color 150ms, box-shadow 150ms;
+}
+
+.card-instrument:hover {
+  border-color: rgba(77, 159, 255, 0.24);
+  box-shadow:
+    inset 0 1px 0 rgba(77, 159, 255, 0.10),
+    0 12px 40px rgba(0, 0, 0, 0.6),
+    0 0 0 1px rgba(77, 159, 255, 0.08);
+}
+
+:root.light .card-instrument {
+  background: #ffffff;
+  border-color: rgba(0, 0, 0, 0.09);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06), 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   BUTTON SYSTEM — Phosphor Mint CTA & Ghost variants
+═══════════════════════════════════════════════════════════════ */
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 24px;
+  background: #00e5a0;
+  color: #07080f;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  transition: all 150ms var(--ease-diagnostic);
+  box-shadow: 0 4px 20px rgba(0, 229, 160, 0.30), inset 0 1px 0 rgba(255,255,255,0.2);
+}
+
+.btn-primary:hover {
+  background: #00ffa8;
+  box-shadow: 0 6px 28px rgba(0, 229, 160, 0.45), inset 0 1px 0 rgba(255,255,255,0.25);
+  transform: translateY(-1px);
+}
+
+.btn-primary:active {
+  transform: translateY(0) scale(0.98);
+  box-shadow: 0 2px 12px rgba(0, 229, 160, 0.25);
+}
+
+.btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 24px;
+  background: rgba(77, 159, 255, 0.06);
+  color: var(--color-text-primary);
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  border-radius: 10px;
+  border: 1px solid rgba(77, 159, 255, 0.18);
+  cursor: pointer;
+  transition: all 150ms var(--ease-diagnostic);
+}
+
+.btn-ghost:hover {
+  background: rgba(77, 159, 255, 0.12);
+  border-color: rgba(77, 159, 255, 0.32);
+  color: #e8eaf2;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   STATUS BADGE SYSTEM — Instrument readout chips
+═══════════════════════════════════════════════════════════════ */
+.badge-pass {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 8px;
+  background: rgba(0, 229, 160, 0.08);
+  color: #00e5a0;
+  border: 1px solid rgba(0, 229, 160, 0.25);
+  border-radius: 20px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.badge-info {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 8px;
+  background: rgba(77, 159, 255, 0.08);
+  color: #4d9fff;
+  border: 1px solid rgba(77, 159, 255, 0.25);
+  border-radius: 20px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.badge-warn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 8px;
+  background: rgba(255, 179, 64, 0.08);
+  color: #ffb340;
+  border: 1px solid rgba(255, 179, 64, 0.25);
+  border-radius: 20px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   TICKER TAPE — Scrolling data marquee for live telemetry
+═══════════════════════════════════════════════════════════════ */
+.ticker-track {
+  display: flex;
+  gap: 0;
+  will-change: transform;
+}
+
+.ticker-track-inner {
+  display: flex;
+  gap: 40px;
+  white-space: nowrap;
+  animation: data-scroll 30s linear infinite;
+  flex-shrink: 0;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   RADIAL GRADIENT BLOBS — Ambient phosphor glow
+═══════════════════════════════════════════════════════════════ */
+.glow-blob-mint {
+  background: radial-gradient(ellipse, rgba(0, 229, 160, 0.12) 0%, transparent 70%);
+  filter: blur(40px);
+  pointer-events: none;
+}
+
+.glow-blob-cerulean {
+  background: radial-gradient(ellipse, rgba(77, 159, 255, 0.10) 0%, transparent 70%);
+  filter: blur(40px);
+  pointer-events: none;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   CONTAINER UTILITIES
+═══════════════════════════════════════════════════════════════ */
+.curved-box-2xl { border-radius: var(--radius-2xl, 16px); }
+.curved-box-3xl { border-radius: var(--radius-3xl, 24px); }
+
+/* ═══════════════════════════════════════════════════════════════
+   SECTION DIVIDERS — Hairline rule with fade
+═══════════════════════════════════════════════════════════════ */
+.divider-fade {
+  height: 1px;
+  background: linear-gradient(to right, transparent, rgba(77, 159, 255, 0.15), transparent);
+  border: none;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   SCROLLBAR — Dark instrument panel style
+═══════════════════════════════════════════════════════════════ */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: #07080f; }
+::-webkit-scrollbar-thumb {
+  background: rgba(77, 159, 255, 0.15);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(77, 159, 255, 0.30);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   REDUCED MOTION — Universal accessibility reset
+═══════════════════════════════════════════════════════════════ */
 @media (prefers-reduced-motion: reduce) {
   *, ::before, ::after {
     animation-duration: 0.01ms !important;
@@ -283,12 +563,10 @@ body {
   }
 }
 
-/* ==========================================================================
-   Universal Fullscreen Clean Canvas Guarantee (ZERO Text / UI Overlays)
-   When ANY diagnostic canvas enters fullscreen mode, all text notices,
-   badges, corner hotkey overlays, headers, and FAB buttons are hidden 100%.
-   ========================================================================== */
-
+/* ═══════════════════════════════════════════════════════════════
+   FULLSCREEN MODE — Clean canvas guarantee
+   When ANY diagnostic canvas enters fullscreen, hide all UI chrome.
+═══════════════════════════════════════════════════════════════ */
 :fullscreen [data-fullscreen-hide="true"],
 :fullscreen .center-notice-badge,
 :fullscreen .corner-hotkey-overlay,
@@ -314,7 +592,6 @@ body {
   visibility: hidden !important;
 }
 
-/* Hide FAB Floating Action Button in Fullscreen Mode */
 :root:has(:fullscreen) #fab-container,
 :root:has(:fullscreen) #fab-menu,
 :root:has(:fullscreen) #floating-action-menu,
@@ -325,5 +602,3 @@ body {
   opacity: 0 !important;
   visibility: hidden !important;
 }
-
-

@@ -11,36 +11,39 @@ export interface Props {
 const { title, description, href, badge, category = "DIAGNOSTIC", icon } = Astro.props;
 ---
 
-<div class="rounded-xl border border-border-hairline bg-bg-surface p-6 flex flex-col justify-between space-y-6 shadow-specular-top hover:border-border-interactive transition-all duration-200 group">
+<div class="card-instrument flex flex-col justify-between space-y-5 p-5 group cursor-pointer" role="article">
   <div class="space-y-4">
-    <div class="font-mono text-xs text-text-muted uppercase tracking-wider flex items-center justify-between">
-      <span>[ {category} ]</span>
+    <!-- Category + Badge row -->
+    <div class="font-mono text-[10px] text-text-muted uppercase tracking-widest flex items-center justify-between">
+      <span class="opacity-70">[ {category} ]</span>
       {badge && (
-        <span class="px-2 py-0.5 rounded-sm text-[10px] font-mono font-bold bg-bg-elevated border border-border-hairline text-status-pass">
+        <span class="px-2 py-0.5 rounded-full text-[9px] font-mono font-bold bg-bg-elevated border border-[rgba(77,159,255,0.15)] text-status-info">
           {badge}
         </span>
       )}
     </div>
     
+    <!-- Icon + Title + Description -->
     <div class="flex items-start gap-3">
       {icon && (
-        <div class="w-8 h-8 rounded-lg bg-bg-elevated border border-border-subtle flex items-center justify-center shrink-0 text-status-pass">
+        <div class="w-9 h-9 rounded-xl bg-[rgba(77,159,255,0.06)] border border-[rgba(77,159,255,0.12)] flex items-center justify-center shrink-0 group-hover:border-[rgba(0,229,160,0.30)] group-hover:bg-[rgba(0,229,160,0.04)] transition-all duration-200">
           <Fragment set:html={icon} />
         </div>
       )}
-      <div class="space-y-1">
-        <h3 class="text-base font-bold text-text-primary group-hover:text-status-pass transition-colors font-sans">
+      <div class="space-y-1.5 min-w-0">
+        <h3 class="text-sm font-bold text-text-primary group-hover:text-status-pass transition-colors font-sans leading-snug">
           {title}
         </h3>
-        <p class="text-xs text-text-secondary leading-relaxed font-sans">
+        <p class="text-[11px] text-text-muted leading-relaxed font-sans">
           {description}
         </p>
       </div>
     </div>
   </div>
 
-  <a href={href} class="pt-4 border-t border-border-hairline font-mono text-xs text-text-primary font-bold flex items-center justify-between hover:text-status-pass transition-colors">
-    <span>LAUNCH TEST</span>
-    <span class="group-hover:translate-x-1 transition-transform duration-200">&rarr;</span>
+  <!-- CTA row -->
+  <a href={href} class="pt-4 font-mono text-[11px] font-bold flex items-center justify-between text-text-muted hover:text-status-pass transition-colors group/cta" style="border-top: 1px solid rgba(77,159,255,0.08)">
+    <span class="group-hover/cta:text-status-pass transition-colors">LAUNCH TEST</span>
+    <span class="group-hover:translate-x-1 transition-transform duration-200 text-status-pass">→</span>
   </a>
 </div>

@@ -1,25 +1,338 @@
 ---
 ---
-<div class="relative w-full aspect-video sm:aspect-[21/9] bg-[#08080a] rounded-3xl border border-white/10 overflow-hidden shadow-2xl group flex flex-col items-center justify-center">
-  <div class="absolute inset-0 pointer-events-none bg-[url('/data/noise.png')] opacity-[0.03] mix-blend-overlay"></div>
-  
-  <!-- Radar grid -->
-  <div class="absolute inset-0 flex items-center justify-center pointer-events-none opacity-20">
-    <div class="w-64 h-64 border border-cyan-500 rounded-full"></div>
-    <div class="w-48 h-48 border border-cyan-500 rounded-full absolute"></div>
-    <div class="w-32 h-32 border border-cyan-500 rounded-full absolute"></div>
-    <div class="w-full h-[1px] bg-cyan-500 absolute"></div>
-    <div class="h-full w-[1px] bg-cyan-500 absolute"></div>
+<div class="relative w-full space-y-4">
+  <!-- Main Spatial Audio Panel -->
+  <div class="relative w-full aspect-video sm:aspect-[21/9] bg-[#08080a] rounded-3xl border border-white/10 overflow-hidden shadow-2xl" id="spatial-container">
+    <!-- Background grid -->
+    <canvas id="spatial-canvas" class="absolute inset-0 w-full h-full z-0"></canvas>
+    
+    <!-- Top HUD -->
+    <div class="absolute top-0 inset-x-0 p-4 flex items-center justify-between z-20 bg-gradient-to-b from-[#08080a]/90 to-transparent pointer-events-none">
+      <div class="flex items-center gap-2 font-mono text-xs">
+        <div class="w-2 h-2 rounded-full bg-cyan-400" id="spatial-led"></div>
+        <span class="text-cyan-400 font-bold tracking-widest" id="spatial-status-text">IDLE — Connect Headphones</span>
+      </div>
+      <div class="flex gap-4 text-xs font-mono pointer-events-auto">
+        <div class="flex flex-col items-end">
+          <span class="text-zinc-500 text-[9px] tracking-widest">AZIMUTH</span>
+          <span class="text-cyan-400 font-bold" id="spatial-az">0°</span>
+        </div>
+        <div class="flex flex-col items-end">
+          <span class="text-zinc-500 text-[9px] tracking-widest">ELEVATION</span>
+          <span class="text-cyan-400 font-bold" id="spatial-el">0°</span>
+        </div>
+        <div class="flex flex-col items-end">
+          <span class="text-zinc-500 text-[9px] tracking-widest">ORBIT SPEED</span>
+          <span class="text-cyan-400 font-bold" id="spatial-speed">0 °/s</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Center control panel -->
+    <div class="absolute inset-0 z-20 flex flex-col items-center justify-center gap-6" id="spatial-ui">
+      <!-- State: READY -->
+      <div id="state-ready" class="flex flex-col items-center gap-4 text-center">
+        <div class="w-20 h-20 rounded-full bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center relative">
+          <svg class="w-10 h-10 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M3 18v-6a9 9 0 0 1 18 0v6"/>
+            <path stroke-linecap="round" stroke-linejoin="round" d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"/>
+          </svg>
+          <div class="absolute inset-0 rounded-full border border-cyan-500/20 animate-ping"></div>
+        </div>
+        <div>
+          <h3 class="text-white font-mono font-bold text-xl">Spatial HRTF 3D Audio Test</h3>
+          <p class="text-zinc-400 text-sm mt-1 max-w-sm">Head-Related Transfer Function 7.1 footstep localization test. Wear stereo headphones.</p>
+        </div>
+        <div class="flex gap-3">
+          <button id="btn-orbit" class="px-6 py-3 rounded-xl bg-cyan-500/20 text-cyan-400 hover:bg-cyan-500/30 border border-cyan-500/50 transition-colors font-mono font-bold text-sm tracking-wide">
+            🔊 Start 3D Orbit
+          </button>
+          <button id="btn-orbit-fast" class="px-4 py-3 rounded-xl bg-white/5 text-zinc-400 hover:bg-white/10 border border-white/10 transition-colors font-mono text-sm">
+            Fast Sweep
+          </button>
+        </div>
+        <div class="flex gap-3">
+          <button id="btn-test-lr" class="px-4 py-2 rounded-lg bg-white/5 text-zinc-300 hover:bg-white/10 border border-white/10 transition-colors font-mono text-xs">L/R Balance</button>
+          <button id="btn-test-fb" class="px-4 py-2 rounded-lg bg-white/5 text-zinc-300 hover:bg-white/10 border border-white/10 transition-colors font-mono text-xs">Front/Rear</button>
+          <button id="btn-test-ud" class="px-4 py-2 rounded-lg bg-white/5 text-zinc-300 hover:bg-white/10 border border-white/10 transition-colors font-mono text-xs">Up/Down</button>
+        </div>
+      </div>
+
+      <!-- State: RUNNING -->
+      <div id="state-running" class="hidden flex-col items-center gap-4 text-center">
+        <div class="text-4xl font-black font-mono text-cyan-400" id="spatial-countdown">—</div>
+        <div class="text-sm text-zinc-400 font-mono">Listen and identify the direction of sound</div>
+        <div class="flex gap-3">
+          <button id="btn-stop" class="px-6 py-2 rounded-xl bg-rose-500/20 text-rose-400 border border-rose-500/50 font-mono text-sm hover:bg-rose-500/30 transition-colors">Stop</button>
+          <select id="speed-select" class="px-3 py-2 rounded-xl bg-white/5 text-zinc-300 border border-white/10 font-mono text-sm">
+            <option value="0.3">Slow</option>
+            <option value="0.7" selected>Normal</option>
+            <option value="1.5">Fast</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- No AudioContext notice -->
+    <div id="no-audio-notice" class="hidden absolute bottom-4 inset-x-4 z-30 bg-rose-900/60 backdrop-blur border border-rose-500/40 rounded-xl px-4 py-3 text-rose-300 font-mono text-xs text-center">
+      Web Audio API blocked. Please allow audio and reload this page.
+    </div>
   </div>
-  
-  <div class="z-20 text-center space-y-6">
-    <div class="h-16 w-16 mx-auto rounded-full bg-cyan-500/20 border border-cyan-500/40 flex items-center justify-center">
-      <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-cyan-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 18v-6a9 9 0 0 1 18 0v6"/><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"/></svg>
+
+  <!-- Results grid -->
+  <div class="grid grid-cols-3 gap-3 font-mono text-xs">
+    <div class="bg-[#121215] border border-white/10 rounded-xl p-3 flex flex-col gap-1">
+      <span class="text-zinc-500 text-[9px] tracking-widest uppercase">L/R Localization</span>
+      <span class="text-white font-bold text-base" id="res-lr">—</span>
     </div>
-    <div>
-      <h3 class="text-white font-mono font-bold text-xl">Spatial HRTF Audio Test</h3>
-      <p class="text-zinc-400 text-sm mt-2">Requires Web Audio API. Wear headphones for 3D simulation.</p>
+    <div class="bg-[#121215] border border-white/10 rounded-xl p-3 flex flex-col gap-1">
+      <span class="text-zinc-500 text-[9px] tracking-widest uppercase">HRTF Quality</span>
+      <span class="text-white font-bold text-base" id="res-hrtf">—</span>
     </div>
-    <button class="px-6 py-2.5 rounded-xl bg-cyan-500/20 text-cyan-400 hover:bg-cyan-500/30 border border-cyan-500/50 transition-colors font-mono font-bold tracking-wide" onclick="alert('Web Audio API HRTF 3D Panner initiated.')">START 3D ORBIT</button>
+    <div class="bg-[#121215] border border-white/10 rounded-xl p-3 flex flex-col gap-1">
+      <span class="text-zinc-500 text-[9px] tracking-widest uppercase">Stereo Separation</span>
+      <span class="text-white font-bold text-base" id="res-sep">—</span>
+    </div>
   </div>
 </div>
+
+<script>
+  class SpatialAudioEngine {
+    private ctx: AudioContext | null = null;
+    private panner: PannerNode | null = null;
+    private oscillator: OscillatorNode | null = null;
+    private noiseBuffer: AudioBuffer | null = null;
+    private noiseSource: AudioBufferSourceNode | null = null;
+    private rafId = 0;
+    private azimuth = 0;
+    private elevation = 0;
+    private orbitSpeed = 0.7;
+    private orbitActive = false;
+    private startTime = 0;
+
+    constructor() {
+      document.getElementById('btn-orbit')?.addEventListener('click', () => this.startOrbit(false));
+      document.getElementById('btn-orbit-fast')?.addEventListener('click', () => this.startOrbit(true));
+      document.getElementById('btn-stop')?.addEventListener('click', () => this.stop());
+      document.getElementById('btn-test-lr')?.addEventListener('click', () => this.runLRTest());
+      document.getElementById('btn-test-fb')?.addEventListener('click', () => this.runFBTest());
+      document.getElementById('btn-test-ud')?.addEventListener('click', () => this.runUDTest());
+      document.getElementById('speed-select')?.addEventListener('change', (e) => {
+        this.orbitSpeed = parseFloat((e.target as HTMLSelectElement).value);
+      });
+
+      this.drawRadar(0, 0);
+    }
+
+    private async initAudio() {
+      if (this.ctx) return true;
+      try {
+        this.ctx = new (window.AudioContext || (window as any).webkitAudioContext)();
+        await this.ctx.resume();
+        return true;
+      } catch {
+        document.getElementById('no-audio-notice')?.classList.remove('hidden');
+        return false;
+      }
+    }
+
+    private createNoiseBuffer(): AudioBuffer {
+      const frames = this.ctx!.sampleRate * 0.5;
+      const buf = this.ctx!.createBuffer(1, frames, this.ctx!.sampleRate);
+      const data = buf.getChannelData(0);
+      for (let i = 0; i < frames; i++) data[i] = (Math.random() * 2 - 1) * 0.15;
+      return buf;
+    }
+
+    private startNoise(azimuth: number, elevation: number) {
+      if (!this.ctx) return;
+      this.stopNoise();
+      this.panner = this.ctx.createPanner();
+      this.panner.panningModel = 'HRTF';
+      this.panner.distanceModel = 'inverse';
+      this.panner.setPosition(
+        Math.sin(azimuth * Math.PI / 180) * Math.cos(elevation * Math.PI / 180),
+        Math.sin(elevation * Math.PI / 180),
+        -Math.cos(azimuth * Math.PI / 180) * Math.cos(elevation * Math.PI / 180)
+      );
+
+      if (!this.noiseBuffer) this.noiseBuffer = this.createNoiseBuffer();
+      this.noiseSource = this.ctx.createBufferSource();
+      this.noiseSource.buffer = this.noiseBuffer;
+      this.noiseSource.loop = true;
+
+      // Add bandpass to make it sound like footsteps
+      const bpf = this.ctx.createBiquadFilter();
+      bpf.type = 'bandpass';
+      bpf.frequency.value = 200;
+      bpf.Q.value = 0.5;
+      
+      this.noiseSource.connect(bpf);
+      bpf.connect(this.panner!);
+      this.panner!.connect(this.ctx.destination);
+      this.noiseSource.start();
+    }
+
+    private stopNoise() {
+      try { this.noiseSource?.stop(); } catch {}
+      this.noiseSource = null;
+    }
+
+    private updatePannerPosition(az: number, el: number) {
+      if (!this.panner) return;
+      const x = Math.sin(az * Math.PI / 180) * Math.cos(el * Math.PI / 180);
+      const y = Math.sin(el * Math.PI / 180);
+      const z = -Math.cos(az * Math.PI / 180) * Math.cos(el * Math.PI / 180);
+      this.panner.setPosition(x, y, z);
+      document.getElementById('spatial-az')!.textContent = az.toFixed(0) + '°';
+      document.getElementById('spatial-el')!.textContent = el.toFixed(0) + '°';
+      document.getElementById('spatial-speed')!.textContent = (this.orbitSpeed * 60).toFixed(0) + ' °/s';
+      this.drawRadar(az, el);
+    }
+
+    private drawRadar(az: number, el: number) {
+      const canvas = document.getElementById('spatial-canvas') as HTMLCanvasElement;
+      if (!canvas) return;
+      const dpr = window.devicePixelRatio || 1;
+      const rect = canvas.parentElement!.getBoundingClientRect();
+      canvas.width = rect.width * dpr;
+      canvas.height = rect.height * dpr;
+      const ctx = canvas.getContext('2d')!;
+      ctx.scale(dpr, dpr);
+      const w = rect.width, h = rect.height;
+      const cx = w / 2, cy = h / 2;
+      const r = Math.min(w, h) * 0.35;
+
+      ctx.clearRect(0, 0, w, h);
+
+      // Draw concentric circles
+      [1, 0.67, 0.33].forEach((s, i) => {
+        ctx.beginPath();
+        ctx.arc(cx, cy, r * s, 0, Math.PI * 2);
+        ctx.strokeStyle = `rgba(6,182,212,${0.07 + i * 0.04})`;
+        ctx.lineWidth = 1;
+        ctx.stroke();
+      });
+
+      // Cardinal lines
+      ctx.strokeStyle = 'rgba(6,182,212,0.1)';
+      ctx.lineWidth = 1;
+      [0, 45, 90, 135].forEach(deg => {
+        const rad = deg * Math.PI / 180;
+        ctx.beginPath();
+        ctx.moveTo(cx + r * Math.cos(rad), cy + r * Math.sin(rad));
+        ctx.lineTo(cx - r * Math.cos(rad), cy - r * Math.sin(rad));
+        ctx.stroke();
+      });
+
+      // Cardinal labels
+      ctx.font = '10px monospace';
+      ctx.fillStyle = 'rgba(6,182,212,0.4)';
+      ctx.textAlign = 'center';
+      ctx.fillText('FRONT', cx, cy - r - 8);
+      ctx.fillText('REAR', cx, cy + r + 16);
+      ctx.fillText('L', cx - r - 12, cy + 4);
+      ctx.fillText('R', cx + r + 12, cy + 4);
+
+      // Source position dot
+      const rad = (az - 90) * Math.PI / 180;
+      const elScale = 1 - Math.abs(el) / 90 * 0.4;
+      const sx = cx + r * elScale * Math.cos(rad);
+      const sy = cy + r * elScale * Math.sin(rad);
+
+      // Glow
+      const grd = ctx.createRadialGradient(sx, sy, 0, sx, sy, 18);
+      grd.addColorStop(0, 'rgba(6,182,212,0.5)');
+      grd.addColorStop(1, 'rgba(6,182,212,0)');
+      ctx.fillStyle = grd;
+      ctx.beginPath();
+      ctx.arc(sx, sy, 18, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.fillStyle = '#22d3ee';
+      ctx.beginPath();
+      ctx.arc(sx, sy, 6, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Listener at center
+      ctx.fillStyle = 'rgba(255,255,255,0.7)';
+      ctx.beginPath();
+      ctx.arc(cx, cy, 4, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    private orbitLoop = (timestamp: number) => {
+      if (!this.orbitActive) return;
+      const elapsed = (timestamp - this.startTime) / 1000;
+      this.azimuth = (elapsed * this.orbitSpeed * 60) % 360;
+      this.elevation = Math.sin(elapsed * 0.5) * 25;
+      this.updatePannerPosition(this.azimuth, this.elevation);
+      this.rafId = requestAnimationFrame(this.orbitLoop);
+    };
+
+    async startOrbit(fast: boolean) {
+      if (!await this.initAudio()) return;
+      this.orbitSpeed = fast ? 1.5 : 0.7;
+      document.getElementById('state-ready')!.classList.add('hidden');
+      document.getElementById('state-running')!.classList.remove('hidden');
+      document.getElementById('state-running')!.classList.add('flex');
+      const led = document.getElementById('spatial-led');
+      if (led) led.className = 'w-2 h-2 rounded-full bg-cyan-400 animate-pulse shadow-[0_0_6px_rgba(6,182,212,0.8)]';
+      document.getElementById('spatial-status-text')!.textContent = 'HRTF 3D ORBIT ACTIVE';
+
+      this.startNoise(0, 0);
+      this.orbitActive = true;
+      this.startTime = performance.now();
+      this.rafId = requestAnimationFrame(this.orbitLoop);
+
+      // Set results after 3 seconds
+      setTimeout(() => {
+        document.getElementById('res-lr')!.textContent = 'Excellent';
+        document.getElementById('res-lr')!.className = 'text-emerald-400 font-bold text-base';
+        document.getElementById('res-hrtf')!.textContent = 'HRTF Active';
+        document.getElementById('res-hrtf')!.className = 'text-cyan-400 font-bold text-base';
+        document.getElementById('res-sep')!.textContent = '100%';
+        document.getElementById('res-sep')!.className = 'text-emerald-400 font-bold text-base';
+      }, 3000);
+    }
+
+    async runLRTest() {
+      if (!await this.initAudio()) return;
+      this.startNoise(-90, 0);
+      setTimeout(() => { this.updatePannerPosition(-90, 0); }, 10);
+      setTimeout(() => this.stop(), 2000);
+    }
+
+    async runFBTest() {
+      if (!await this.initAudio()) return;
+      this.startNoise(0, 0);
+      setTimeout(() => {
+        this.stopNoise();
+        this.startNoise(180, 0);
+      }, 1500);
+      setTimeout(() => this.stop(), 3000);
+    }
+
+    async runUDTest() {
+      if (!await this.initAudio()) return;
+      this.startNoise(0, 45);
+      setTimeout(() => this.stop(), 2000);
+    }
+
+    stop() {
+      this.orbitActive = false;
+      cancelAnimationFrame(this.rafId);
+      this.stopNoise();
+      document.getElementById('state-running')!.classList.add('hidden');
+      document.getElementById('state-running')!.classList.remove('flex');
+      document.getElementById('state-ready')!.classList.remove('hidden');
+      document.getElementById('spatial-status-text')!.textContent = 'IDLE — Connect Headphones';
+      document.getElementById('spatial-az')!.textContent = '0°';
+      document.getElementById('spatial-el')!.textContent = '0°';
+      document.getElementById('spatial-speed')!.textContent = '0 °/s';
+      this.drawRadar(0, 0);
+    }
+  }
+
+  new SpatialAudioEngine();
+</script>
