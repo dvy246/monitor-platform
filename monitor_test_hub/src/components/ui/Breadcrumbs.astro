@@ -10,6 +10,7 @@ export interface Props {
 }
 
 const { items, class: className = '' } = Astro.props;
+const currentUrl = Astro.url.href;
 ---
 
 <nav aria-label="Breadcrumb navigation" class:list={["font-mono text-xs text-text-secondary py-2 min-w-0 w-full", className]}>
@@ -31,9 +32,12 @@ const { items, class: className = '' } = Astro.props;
             <span itemprop="name" class="break-words min-w-0">{item.label}</span>
           </a>
         ) : (
-          <span itemprop="name" class="text-text-primary font-semibold break-words min-w-0" aria-current="page">
-            {item.label}
-          </span>
+          <>
+            <span itemprop="name" class="text-text-primary font-semibold break-words min-w-0" aria-current="page">
+              {item.label}
+            </span>
+            <meta itemprop="item" content={currentUrl} />
+          </>
         )}
         <meta itemprop="position" content={String(index + 2)} />
       </li>
