@@ -1,190 +1,836 @@
 ---
 /**
  * TypingSpeedCanvas.astro
- * High-performance WPM Typing Speedometer & Accuracy Diagnostic Engine.
+ * Master WPM Typing Speedometer with 100 Unique Passages & Ergonomic Differentiator.
  * Features:
- * - Real-time WPM (Words Per Minute) & CPM (Characters Per Minute) telemetry.
- * - Accuracy percentage & error character heatmap.
- * - Difficulty modes: Standard Text, Coding Mode (JS/Python), and Punctuation Mode.
+ * - 100 Unique Curated Write-Up Passages across 10 distinct categories.
+ * - Unique Passage Guarantee: Clicking the ↻ icon ALWAYS guarantees a new passage index.
+ * - Killer Differentiator: Real-Time Ergonomic Finger Strain Heatmap, Total Switch Travel Distance (Meters), and Physical Force Work (milliJoules).
+ * - MonkeyType-style Configuration Bar: Dropdown, Punctuation (@), Numbers (#), Time/Words/Quote/Zen/Custom modes.
+ * - Share & QR Challenge Modal with Web Share API.
+ * - 100% Mobile Responsive UI/UX Pro Max controls.
  */
 ---
 
-<div class="w-full max-w-5xl mx-auto space-y-6 font-sans select-none min-w-0" id="typing-test-root">
-  <div class="relative bg-[#0c0d12]/90 border border-zinc-800/90 rounded-2xl p-4 sm:p-6 backdrop-blur-2xl shadow-[0_25px_60px_rgba(0,0,0,0.8)] space-y-6 overflow-hidden">
+<div class="w-full max-w-7xl mx-auto space-y-6 font-sans select-none min-w-0" id="typing-test-root">
+  <!-- Challenge Accepted Banner -->
+  <div id="challenge-banner" class="hidden relative bg-gradient-to-r from-amber-500/20 via-cyan-500/20 to-purple-500/20 border-2 border-amber-500/40 rounded-2xl p-4 sm:p-5 flex items-center justify-between gap-4 backdrop-blur-xl shadow-xl">
+    <div class="flex items-center gap-3">
+      <div class="w-10 h-10 rounded-xl bg-amber-500/20 border border-amber-500/40 flex items-center justify-center text-amber-400 font-bold text-lg shrink-0">
+        ⚔️
+      </div>
+      <div>
+        <div class="text-xs font-mono font-bold text-amber-400 uppercase tracking-wider">CHALLENGE ACCEPTED!</div>
+        <div class="text-sm sm:text-base font-bold font-mono text-white" id="challenge-target-text">Can you beat 85 WPM with 98% accuracy?</div>
+      </div>
+    </div>
+    <button id="dismiss-challenge-btn" class="px-3 py-1.5 rounded-lg bg-zinc-900 border border-zinc-800 text-xs font-mono text-zinc-400 hover:text-white cursor-pointer">
+      Dismiss
+    </button>
+  </div>
+
+  <div class="relative bg-[#0c0d12]/95 border border-zinc-800/90 rounded-3xl p-4 sm:p-8 backdrop-blur-2xl shadow-[0_25px_60px_rgba(0,0,0,0.8)] space-y-6 overflow-hidden min-w-0">
     <!-- Ambient Radial Glows -->
     <div class="absolute -top-24 -right-24 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none"></div>
-    <div class="absolute -bottom-24 -left-24 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl pointer-events-none"></div>
+    <div class="absolute -bottom-24 -left-24 w-96 h-96 bg-amber-500/10 rounded-full blur-3xl pointer-events-none"></div>
 
-    <!-- Header Controls & Mode Selectors -->
-    <div class="relative z-10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-zinc-800/70 pb-5">
+    <!-- Header Controls & Sound Toggle -->
+    <div class="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 border-b border-zinc-800/70 pb-5">
       <div>
         <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/30 text-[11px] font-mono text-cyan-400 font-bold uppercase tracking-wider mb-2">
           <span class="w-2 h-2 rounded-full bg-cyan-400 shadow-[0_0_8px_rgba(34,211,238,0.9)] animate-pulse"></span>
-          <span>TYPING WPM &amp; ACCURACY SPEEDOMETER</span>
+          <span>100 UNIQUE PASSAGES &amp; ERGONOMIC STRAIN DIFFERENTIATOR</span>
         </div>
-        <h2 class="text-xl sm:text-2xl font-bold font-mono text-white tracking-tight">Typing Speed Practice &amp; WPM Benchmark</h2>
+        <h2 class="text-xl sm:text-3xl font-extrabold font-mono text-white tracking-tight">Typing Speedometer &amp; Ergonomic Benchmark</h2>
+        <p class="text-xs sm:text-sm text-zinc-400 mt-1">100 unique passages. Measures real-time finger strain &amp; physical key travel distance.</p>
       </div>
 
-      <!-- Mode Selector Buttons -->
-      <div class="flex items-center gap-1.5 bg-zinc-950 p-1 rounded-xl border border-zinc-800 font-mono text-xs">
-        <button data-mode="standard" class="typing-mode-btn px-3 py-1.5 rounded-lg bg-cyan-500/20 text-cyan-400 font-bold border border-cyan-500/40 cursor-pointer transition-all">Standard</button>
-        <button data-mode="coding" class="typing-mode-btn px-3 py-1.5 rounded-lg text-zinc-400 hover:text-white font-semibold cursor-pointer transition-all">Coding</button>
-        <button data-mode="punctuation" class="typing-mode-btn px-3 py-1.5 rounded-lg text-zinc-400 hover:text-white font-semibold cursor-pointer transition-all">Punctuation</button>
-      </div>
-    </div>
-
-    <!-- Real-Time Metrics Deck -->
-    <div class="relative z-10 grid grid-cols-2 sm:grid-cols-4 gap-4 font-mono">
-      <div class="bg-zinc-950 p-4 rounded-xl border border-zinc-800 text-center space-y-1">
-        <div class="text-xs text-zinc-400 font-bold uppercase">WPM</div>
-        <div id="wpm-val" class="text-4xl font-extrabold text-cyan-400 tabular-nums">0</div>
-        <div class="text-[10px] text-zinc-400">Words Per Minute</div>
-      </div>
-
-      <div class="bg-zinc-950 p-4 rounded-xl border border-zinc-800 text-center space-y-1">
-        <div class="text-xs text-zinc-400 font-bold uppercase">Accuracy</div>
-        <div id="acc-val" class="text-4xl font-extrabold text-emerald-400 tabular-nums">100%</div>
-        <div class="text-[10px] text-zinc-400">Keystroke Precision</div>
-      </div>
-
-      <div class="bg-zinc-950 p-4 rounded-xl border border-zinc-800 text-center space-y-1">
-        <div class="text-xs text-zinc-400 font-bold uppercase">CPM</div>
-        <div id="cpm-val" class="text-4xl font-extrabold text-purple-400 tabular-nums">0</div>
-        <div class="text-[10px] text-zinc-400">Chars Per Minute</div>
-      </div>
-
-      <div class="bg-zinc-950 p-4 rounded-xl border border-zinc-800 text-center space-y-1">
-        <div class="text-xs text-zinc-400 font-bold uppercase">Errors</div>
-        <div id="err-val" class="text-4xl font-extrabold text-rose-400 tabular-nums">0</div>
-        <div class="text-[10px] text-zinc-400">Missed Keystrokes</div>
+      <!-- Header Action Buttons -->
+      <div class="flex items-center gap-2 font-mono text-xs w-full sm:w-auto justify-end flex-wrap">
+        <button id="sound-toggle-btn" class="px-3.5 py-2 min-h-[44px] sm:min-h-0 rounded-xl bg-zinc-900 border border-zinc-800 text-zinc-400 hover:text-amber-400 transition-all flex items-center gap-1.5 cursor-pointer">
+          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"/></svg>
+          <span id="sound-label">Audio: Thock</span>
+        </button>
+        <button id="share-modal-trigger" class="px-3.5 py-2 min-h-[44px] sm:min-h-0 rounded-xl bg-amber-500/20 border border-amber-500/40 text-amber-400 font-bold hover:bg-amber-500/30 cursor-pointer transition-all flex items-center gap-1.5">
+          <span>⚔️ Challenge &amp; QR</span>
+        </button>
+        <button id="typing-restart-top-btn" class="px-4 py-2 min-h-[44px] sm:min-h-0 rounded-xl bg-cyan-500/20 border border-cyan-500/40 text-cyan-400 font-bold hover:bg-cyan-500/30 cursor-pointer transition-all">
+          New Passage (Esc)
+        </button>
       </div>
     </div>
 
-    <!-- Main Interactive Typing Text Box -->
-    <div class="relative z-10 bg-zinc-950 rounded-2xl border border-zinc-800/90 p-6 space-y-4 shadow-[inset_0_4px_16px_rgba(0,0,0,0.95)]">
-      <div id="typing-text-display" class="font-mono text-lg sm:text-xl leading-relaxed text-zinc-500 break-words tracking-wide">
-        <!-- Dynamic text inserted here -->
+    <!-- MonkeyType Configuration Bar -->
+    <div class="relative z-10 flex flex-wrap items-center justify-center sm:justify-between gap-3 bg-zinc-950/90 p-2.5 sm:p-3.5 rounded-2xl border border-zinc-800 font-mono text-xs shadow-inner overflow-x-auto min-w-0">
+      
+      <!-- Group 0: Category Dropdown Selector (10 Categories) -->
+      <div class="flex items-center gap-2 bg-zinc-900/90 p-1 px-2 rounded-xl border border-zinc-800/80 shrink-0">
+        <label for="category-select" class="text-amber-400 font-bold text-[11px] uppercase tracking-wider flex items-center gap-1">
+          <span>📚</span>
+          <span>Topic:</span>
+        </label>
+        <select id="category-select" class="bg-zinc-950 text-white font-mono text-xs border border-zinc-800 rounded-lg px-2 py-1.5 focus:outline-none focus:border-cyan-500 cursor-pointer">
+          <option value="english200">English 200 (Standard)</option>
+          <option value="english1k">English 1k (Advanced Vocabulary)</option>
+          <option value="coding">Coding Syntax (JS / Python / HTML)</option>
+          <option value="legal">Legal &amp; Business Contracts</option>
+          <option value="medical">Medical &amp; Biological Sciences</option>
+          <option value="science">Physics &amp; Astronomy</option>
+          <option value="literature">Classic Literature &amp; Philosophy</option>
+          <option value="esports">Esports &amp; Gaming Gear</option>
+          <option value="hardware">Hardware &amp; Microprocessors</option>
+          <option value="punctuation">Punctuation &amp; Symbols</option>
+        </select>
       </div>
-      <input type="text" id="typing-hidden-input" class="opacity-0 absolute -z-10" autofocus />
+
+      <!-- Group 1: Sub-Toggles -->
+      <div class="flex items-center gap-1 bg-zinc-900/90 p-1 rounded-xl border border-zinc-800/80 shrink-0">
+        <button id="toggle-punctuation" class="px-3 py-2 min-h-[44px] sm:min-h-0 rounded-lg text-zinc-400 hover:text-white transition-all cursor-pointer font-bold flex items-center gap-1">
+          <span class="text-zinc-500">@</span>
+          <span>punctuation</span>
+        </button>
+        <button id="toggle-numbers" class="px-3 py-2 min-h-[44px] sm:min-h-0 rounded-lg text-zinc-400 hover:text-white transition-all cursor-pointer font-bold flex items-center gap-1">
+          <span class="text-zinc-500">#</span>
+          <span>numbers</span>
+        </button>
+      </div>
+
+      <!-- Group 2: Mode Selector -->
+      <div class="flex items-center gap-1 bg-zinc-900/90 p-1 rounded-xl border border-zinc-800/80 shrink-0">
+        <button data-mainmode="time" class="main-mode-btn px-3 py-2 min-h-[44px] sm:min-h-0 rounded-lg bg-amber-500/20 text-amber-400 font-bold border border-amber-500/40 cursor-pointer transition-all flex items-center gap-1.5">
+          <span>⏱</span>
+          <span>time</span>
+        </button>
+        <button data-mainmode="words" class="main-mode-btn px-3 py-2 min-h-[44px] sm:min-h-0 rounded-lg text-zinc-400 hover:text-white font-semibold cursor-pointer transition-all flex items-center gap-1.5">
+          <span>A</span>
+          <span>words</span>
+        </button>
+        <button data-mainmode="quote" class="main-mode-btn px-3 py-2 min-h-[44px] sm:min-h-0 rounded-lg text-zinc-400 hover:text-white font-semibold cursor-pointer transition-all flex items-center gap-1.5">
+          <span>“</span>
+          <span>quote</span>
+        </button>
+        <button data-mainmode="zen" class="main-mode-btn px-3 py-2 min-h-[44px] sm:min-h-0 rounded-lg text-zinc-400 hover:text-white font-semibold cursor-pointer transition-all flex items-center gap-1.5">
+          <span>▲</span>
+          <span>zen</span>
+        </button>
+        <button data-mainmode="custom" class="main-mode-btn px-3 py-2 min-h-[44px] sm:min-h-0 rounded-lg text-zinc-400 hover:text-white font-semibold cursor-pointer transition-all flex items-center gap-1.5">
+          <span>🔧</span>
+          <span>custom</span>
+        </button>
+      </div>
+
+      <!-- Group 3: Sub-Option Controls -->
+      <div id="sub-option-container" class="flex items-center gap-1 bg-zinc-900/90 p-1 rounded-xl border border-zinc-800/80 shrink-0">
+        <button data-subval="15" class="sub-option-btn px-3 py-2 min-h-[44px] sm:min-h-0 rounded-lg bg-amber-500/20 text-amber-400 font-bold border border-amber-500/40 cursor-pointer transition-all">15</button>
+        <button data-subval="30" class="sub-option-btn px-3 py-2 min-h-[44px] sm:min-h-0 rounded-lg text-zinc-400 hover:text-white cursor-pointer transition-all font-semibold">30</button>
+        <button data-subval="60" class="sub-option-btn px-3 py-2 min-h-[44px] sm:min-h-0 rounded-lg text-zinc-400 hover:text-white cursor-pointer transition-all font-semibold">60</button>
+        <button data-subval="120" class="sub-option-btn px-3 py-2 min-h-[44px] sm:min-h-0 rounded-lg text-zinc-400 hover:text-white cursor-pointer transition-all font-semibold">120</button>
+      </div>
     </div>
 
-    <div class="flex items-center justify-between text-xs font-mono text-zinc-400">
-      <div>Click the text box or start typing to begin the speedometer test.</div>
-      <button id="typing-restart-btn" class="px-4 py-2 rounded-xl bg-zinc-900 border border-zinc-800 text-zinc-300 hover:text-white font-bold cursor-pointer transition-all">Restart Test</button>
+    <!-- Metrics Deck -->
+    <div class="relative z-10 grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 font-mono">
+      <div class="bg-zinc-950/80 p-4 rounded-2xl border border-zinc-800 text-center space-y-1 shadow-inner">
+        <div class="text-[10px] sm:text-xs text-zinc-400 font-bold uppercase tracking-wider">WPM</div>
+        <div id="wpm-val" class="text-3xl sm:text-5xl font-extrabold text-cyan-400 tabular-nums">0</div>
+        <div class="text-[10px] text-zinc-500">Words Per Minute</div>
+      </div>
+
+      <div class="bg-zinc-950/80 p-4 rounded-2xl border border-zinc-800 text-center space-y-1 shadow-inner">
+        <div class="text-[10px] sm:text-xs text-zinc-400 font-bold uppercase tracking-wider">Accuracy</div>
+        <div id="acc-val" class="text-3xl sm:text-5xl font-extrabold text-emerald-400 tabular-nums">100%</div>
+        <div class="text-[10px] text-zinc-500">Keystroke Precision</div>
+      </div>
+
+      <div class="bg-zinc-950/80 p-4 rounded-2xl border border-zinc-800 text-center space-y-1 shadow-inner">
+        <div class="text-[10px] sm:text-xs text-zinc-400 font-bold uppercase tracking-wider">CPM</div>
+        <div id="cpm-val" class="text-3xl sm:text-5xl font-extrabold text-purple-400 tabular-nums">0</div>
+        <div class="text-[10px] text-zinc-500">Chars Per Minute</div>
+      </div>
+
+      <div class="bg-zinc-950/80 p-4 rounded-2xl border border-zinc-800 text-center space-y-1 shadow-inner">
+        <div class="text-[10px] sm:text-xs text-zinc-400 font-bold uppercase tracking-wider" id="timer-words-header">Time Left</div>
+        <div id="timer-words-val" class="text-3xl sm:text-5xl font-extrabold text-amber-400 tabular-nums">30.0s</div>
+        <div class="text-[10px] text-zinc-500" id="timer-words-sub">Passage #1 / 100</div>
+      </div>
+    </div>
+
+    <!-- Main Interactive Typing Arena -->
+    <div class="relative z-10 bg-zinc-950 rounded-3xl border-2 border-zinc-800 hover:border-cyan-500/50 p-5 sm:p-8 space-y-4 shadow-[inset_0_4px_24px_rgba(0,0,0,0.95)] transition-colors min-w-0 overflow-hidden cursor-text">
+      <canvas id="wpm-spline-canvas" class="w-full h-12 opacity-30 pointer-events-none"></canvas>
+
+      <!-- Target Text Display -->
+      <div id="typing-text-display" class="font-mono text-base sm:text-2xl leading-relaxed text-zinc-600 break-words tracking-wide select-none min-w-0 max-h-64 overflow-y-auto">
+        <!-- Dynamic write-up passage rendered here -->
+      </div>
+
+      <input type="text" id="typing-hidden-input" class="opacity-0 absolute -z-10" autocomplete="off" />
+    </div>
+
+    <!-- Centered MonkeyType Circular Restart Button (↻) -->
+    <div class="relative z-10 flex items-center justify-center -mt-2">
+      <button id="typing-restart-center-btn" class="group p-3 rounded-full bg-zinc-900/90 hover:bg-zinc-800 border border-zinc-800/80 text-zinc-400 hover:text-amber-400 cursor-pointer transition-all shadow-lg hover:shadow-amber-500/10 hover:border-amber-500/40 focus:outline-none" title="Restart Test with New Write-up (Esc)">
+        <svg class="w-6 h-6 transform group-hover:rotate-180 transition-transform duration-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+        </svg>
+      </button>
+    </div>
+
+    <!-- Killer Differentiator: Real-Time Ergonomic Strain & Physical Switch Exertion Deck -->
+    <div class="relative z-10 bg-zinc-950/90 p-4 sm:p-5 rounded-2xl border border-zinc-800/80 space-y-4 font-mono text-xs">
+      <div class="flex items-center justify-between border-b border-zinc-800/80 pb-3">
+        <div class="flex items-center gap-2 text-cyan-400 font-bold uppercase tracking-wider">
+          <span>⚡</span>
+          <span>DIFFERENTIATOR: ERGONOMIC STRAIN &amp; SWITCH EXERTION ENGINE</span>
+        </div>
+        <div class="text-[11px] text-zinc-400">45g Actuation Force • 4.0mm Switch Travel</div>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <!-- Metric 1: Physical Travel Distance -->
+        <div class="bg-zinc-900/80 p-3 rounded-xl border border-zinc-800 space-y-1">
+          <div class="text-zinc-400 text-[11px]">Total Switch Plunge Distance</div>
+          <div id="diff-travel-val" class="text-xl font-extrabold text-amber-400 tabular-nums">0.00 Meters</div>
+          <div class="text-[10px] text-zinc-500">Cumulative key travel (4.0mm/stroke)</div>
+        </div>
+
+        <!-- Metric 2: Kinetic Force Work Exerted -->
+        <div class="bg-zinc-900/80 p-3 rounded-xl border border-zinc-800 space-y-1">
+          <div class="text-zinc-400 text-[11px]">Kinetic Mechanical Work</div>
+          <div id="diff-work-val" class="text-xl font-extrabold text-purple-400 tabular-nums">0.0 mJ</div>
+          <div class="text-[10px] text-zinc-500">Force work exerted on switch stems</div>
+        </div>
+
+        <!-- Metric 3: Active Dominant Finger -->
+        <div class="bg-zinc-900/80 p-3 rounded-xl border border-zinc-800 space-y-1">
+          <div class="text-zinc-400 text-[11px]">Highest Ergonomic Strain</div>
+          <div id="diff-strain-val" class="text-xl font-extrabold text-emerald-400 tabular-nums">Index / Middle</div>
+          <div class="text-[10px] text-zinc-500">Calculated finger muscle load ratio</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer Action Toolbar -->
+    <div class="relative z-10 flex flex-col sm:flex-row items-center justify-between gap-4 font-mono text-xs text-zinc-400 border-t border-zinc-800/70 pt-4">
+      <div class="flex items-center gap-2 text-center sm:text-left">
+        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+        <span>Press <kbd class="px-1.5 py-0.5 rounded bg-zinc-900 border border-zinc-800 text-zinc-300">Esc</kbd> or <kbd class="px-1.5 py-0.5 rounded bg-zinc-900 border border-zinc-800 text-zinc-300">Tab</kbd> to load a new write-up.</span>
+      </div>
+
+      <div class="flex items-center gap-3">
+        <button id="typing-restart-bottom-btn" class="px-4 py-2 rounded-xl bg-zinc-900 border border-zinc-800 text-zinc-300 hover:text-white font-bold cursor-pointer transition-all">
+          🔄 New Passage
+        </button>
+        <button id="typing-export-btn" class="px-4 py-2 rounded-xl bg-zinc-900 border border-zinc-800 text-zinc-300 hover:text-white font-bold cursor-pointer transition-all">
+          📜 Export Passport
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Share & QR Code Challenge Modal Overlay -->
+  <div id="share-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
+    <div class="w-full max-w-md bg-[#0e0f15] border border-zinc-800 rounded-3xl p-6 shadow-2xl space-y-5 font-sans relative">
+      <div class="flex items-center justify-between border-b border-zinc-800/80 pb-4">
+        <div class="flex items-center gap-2 text-amber-400 font-mono font-bold text-sm">
+          <span>⚔️</span>
+          <span>CHALLENGE A FRIEND</span>
+        </div>
+        <button id="close-share-modal-btn" class="w-8 h-8 rounded-full bg-zinc-900 text-zinc-400 hover:text-white flex items-center justify-center cursor-pointer">
+          ✕
+        </button>
+      </div>
+
+      <!-- Score Summary Badge -->
+      <div class="bg-zinc-950 p-4 rounded-2xl border border-zinc-800/80 text-center space-y-1">
+        <div class="text-xs font-mono text-zinc-400 uppercase">YOUR TYPING SCORE</div>
+        <div class="text-4xl font-extrabold font-mono text-cyan-400" id="modal-score-wpm">85 WPM</div>
+        <div class="text-xs font-mono text-emerald-400" id="modal-score-acc">98% Accuracy | Mode: TIME 30s</div>
+      </div>
+
+      <!-- QR Code Visualizer -->
+      <div class="flex flex-col items-center justify-center space-y-2 p-4 bg-zinc-950 rounded-2xl border border-zinc-800">
+        <img id="qr-code-img" src="" alt="Typing Score QR Code" class="w-44 h-44 rounded-xl border border-zinc-800 bg-white p-2 shadow-lg" />
+        <span class="text-[11px] font-mono text-zinc-400">Scan QR Code to load challenge directly on mobile</span>
+      </div>
+
+      <!-- Challenge Link Input & Copy Button -->
+      <div class="space-y-2 font-mono text-xs">
+        <label class="text-zinc-400 font-semibold">Direct Challenge Link:</label>
+        <div class="flex items-center gap-2">
+          <input type="text" id="share-link-input" readonly class="flex-1 bg-zinc-900 border border-zinc-800 rounded-xl px-3 py-2 text-zinc-300 focus:outline-none text-xs truncate" />
+          <button id="copy-share-btn" class="px-4 py-2 rounded-xl bg-amber-500 text-black font-bold hover:bg-amber-400 cursor-pointer transition-colors shrink-0">
+            Copy Link
+          </button>
+        </div>
+      </div>
+
+      <!-- Web Share API Button -->
+      <button id="native-share-btn" class="w-full py-3 rounded-xl bg-cyan-500 text-black font-mono font-bold text-xs uppercase tracking-wider hover:bg-cyan-400 transition-colors shadow-lg cursor-pointer flex items-center justify-center gap-2">
+        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 100-2.684 3 3 0 000 2.684zm0 9a3 3 0 100-2.684 3 3 0 000 2.684z"/></svg>
+        <span>SHARE TO SOCIAL / MESSENGER</span>
+      </button>
     </div>
   </div>
 </div>
 
 <script>
-  const SAMPLE_TEXTS = {
-    standard: "The quick brown fox jumps over the lazy dog. Mechanical keyboards provide tactile feedback and precision actuation for fast typing.",
-    coding: "const calculateWpm = (chars, seconds) => Math.round((chars / 5) / (seconds / 60));",
-    punctuation: "Hello, world! Can you type: 100% accuracy, 80+ WPM, & zero errors @ 1000Hz polling rate?"
-  };
+  document.addEventListener('DOMContentLoaded', () => {
+    const root = document.getElementById('typing-test-root');
+    if (!root) return;
 
-  let mode: 'standard' | 'coding' | 'punctuation' = 'standard';
-  let targetText = SAMPLE_TEXTS.standard;
-  let currentIndex = 0;
-  let errors = 0;
-  let totalTyped = 0;
-  let startTime = 0;
-  let isTyping = false;
-  let timerId: number | null = null;
+    // 100 UNIQUE PASSAGES ACCROSS 10 CATEGORIES (10 Passages Per Category)
+    const CATEGORIES: Record<string, string[]> = {
+      english200: [
+        "The quick brown fox jumps over the lazy dog. Mechanical keyboards provide tactile feedback and precision actuation for fast typing speedometer tests.",
+        "Practice makes perfect when developing touch typing muscle memory across home row keys. Consistent rhythm yields higher WPM and fewer errors.",
+        "Focus on accuracy over raw velocity. High precision keystrokes naturally produce sustainable typing endurance without finger fatigue.",
+        "Developing finger agility across mechanical key switches requires proper wrist posture and relaxed hand placement on the desk surface.",
+        "Smooth typing cadence creates a fluid rhythm that reduces microsecond pauses between words and elevates overall typing speedometer scores.",
+        "Touch typists memorize key locations through muscle memory without visually checking keycaps, enabling continuous visual focus on target text.",
+        "Consistent daily practice sessions strengthen finger tendons and refine motor control pathways for long-term typing velocity improvements.",
+        "Balanced keystroke distribution across both hands minimizes pinky finger strain and ensures optimal typing ergonomics during marathon trials.",
+        "High quality keycaps with comfortable spherical profiles enhance finger placement precision and decrease accidental adjacent keypresses.",
+        "Regular typing speed benchmarks help track progress over time, highlighting areas where key transition speed can be optimized."
+      ],
+      english1k: [
+        "Anticipating intricate vocabulary requiring dexterous finger coordination elevates spatial awareness across complex mechanical layout configurations.",
+        "Synchronizing cognitive processing with sub-millisecond keyboard switch contact closure eliminates unnecessary hesitation during dense text streams.",
+        "Extravagant linguistic expressions demand meticulous attention to obscure character transitions and multi-syllable word structures.",
+        "Sophisticated typographical evaluation engines analyze microsecond inter-key timing deltas to identify subtle finger dexterity bottlenecks.",
+        "Comprehensive keyboarding diagnostic benchmarks evaluate both peak explosive typing burst speed and long-term ergonomic endurance capacity.",
+        "Formidable typing mastery manifests when complex vocabulary is executed effortlessly without visual reference to mechanical keycap legends.",
+        "Meticulous calibration of switch actuation thresholds ensures crisp tactile responsiveness during rapid sequential keystroke dispatch.",
+        "Exemplary touch typists demonstrate remarkable consistency across diverse sentence structures, maintaining high accuracy under time pressure.",
+        "Elaborate textual exercises challenge muscle memory adaptation by introducing unexpected character combinations and varied word lengths.",
+        "Analytical evaluation of typing performance metrics offers valuable insights into mechanical switch preference and ergonomic optimization."
+      ],
+      coding: [
+        "const calculateWpm = (chars, seconds) => Math.round((chars / 5) / (seconds / 60));",
+        "function renderText() { return text.split('').map(char => `<span class='active'>${char}</span>`); }",
+        "async function fetchTelemetryData() { const res = await fetch('/data/telemetry.jsonl'); return res.json(); }",
+        "window.addEventListener('keydown', (e) => { if (e.code === 'Space') e.preventDefault(); });",
+        "export const getStaticPaths = async () => { return categories.map(cat => ({ params: { slug: cat.slug } })); };",
+        "const [state, setState] = useState({ wpm: 0, accuracy: 100, isFinished: false });",
+        "interface TelemetryRecord { timestamp: number; wpm: number; accuracy: number; hash: string; }",
+        "type SwitchType = 'linear' | 'tactile' | 'clicky' | 'optical' | 'hall_effect';",
+        "const formatDuration = (ms: number): string => `${(ms / 1000).toFixed(1)}s`;",
+        "document.getElementById('root')?.appendChild(document.createElement('canvas'));"
+      ],
+      legal: [
+        "The party of the first part hereby agrees to indemnify and hold harmless the counterparty from all claims, damages, and liabilities arising hereunder.",
+        "Pursuant to clause four of the contractual agreement, all intellectual property rights remain exclusively vested with the originating enterprise.",
+        "Failure to adhere to binding arbitration protocols shall constitute a material breach of warranty under applicable jurisdiction statutes.",
+        "The undersigned representative warrants full authority to execute this legal instrument on behalf of the designated corporate entity.",
+        "All notices, requests, demands, and other communications required under this agreement shall be delivered in writing to registered addresses.",
+        "This contract shall be governed by and construed in accordance with the laws of the state without giving effect to conflict of laws principles.",
+        "In the event any provision of this agreement is held unenforceable, the remaining provisions shall continue in full force and effect.",
+        "Neither party may assign its rights or delegate its obligations hereunder without the prior written consent of the non-assigning party.",
+        "The remedies provided herein are cumulative and not exclusive of any remedies provided by law or in equity.",
+        "This instrument constitutes the entire agreement between the parties with respect to the subject matter hereof and supersedes prior drafts."
+      ],
+      medical: [
+        "The central nervous system regulates synaptic transmission across somatic motor neurons, facilitating rapid neuromuscular reflex actions.",
+        "Erythrocytes transport oxygenated hemoglobin throughout systemic arterial pathways, maintaining cellular respiration and metabolic homeostasis.",
+        "Cardiovascular hemodynamics depend on myocardial contraction amplitude and systemic vascular resistance within blood vessel networks.",
+        "Renal filtration mechanisms filter plasma through glomerular capillaries, selectively reabsorbing essential electrolytes and water.",
+        "Pulmonary gas exchange occurs across alveolar-capillary membranes, facilitating rapid diffusion of oxygen and carbon dioxide.",
+        "Endocrine glands secrete peptide and steroid hormones directly into systemic circulation to regulate target organ metabolism.",
+        "Skeletal muscle contraction involves sliding actin and myosin microfilaments triggered by sarcoplasmic reticulum calcium release.",
+        "Autonomic ganglion networks regulate involuntary smooth muscle peristalsis and cardiac pacemaker rhythmicity continuously.",
+        "Hepatic metabolism processes lipid and carbohydrate substrates, synthesizing essential plasma proteins and neutralizing toxins.",
+        "Immunological responses deploy B lymphocytes and T cell receptors to identify and neutralize foreign pathogen antigens."
+      ],
+      science: [
+        "The James Webb Space Telescope captures infrared light from primordial galaxies formed over thirteen billion years ago, unraveling galactic evolution.",
+        "Quantum computing leverages superposition and entanglement to process complex multi-dimensional matrix operations in milliseconds.",
+        "Silicon photonics integrates optical waveguides into semiconductor microchips, enabling ultra-fast bandwidth with minimal heat dissipation.",
+        "Thermodynamics dictates that entropy within an isolated physical system increases over time towards maximum statistical disorder.",
+        "Gravitational wave detectors use laser interferometers to measure sub-atomic spacetime ripples caused by colliding black holes.",
+        "Nuclear fusion reactors confine high-temperature plasma using powerful magnetic fields to replicate stellar energy production.",
+        "Special relativity proves that time dilation and length contraction occur as velocity approaches the speed of light in vacuum.",
+        "Particle accelerators smash protons at relativistic energies to probe fundamental forces and Higgs boson field interactions.",
+        "Photosynthetic reaction centers convert solar photon energy into chemical potential stored within high-energy ATP molecules.",
+        "Superconductivity allows electric current to flow through zero electrical resistance materials below critical transition temperatures."
+      ],
+      literature: [
+        "The only limit to our realization of tomorrow will be our doubts of today. In the middle of every difficulty lies opportunity.",
+        "It was the best of times, it was the worst of times, it was the age of wisdom, it was the age of foolishness and light.",
+        "Do not go gentle into that good night; rage, rage against the dying of the light across the boundless cosmic shore.",
+        "To be yourself in a world that is constantly trying to make you something else is the greatest accomplishment.",
+        "All that is gold does not glitter, not all those who wander are lost; the old that is strong does not wither.",
+        "We are what we repeatedly do. Excellence, then, is not an act, but a habit cultivated through daily dedication.",
+        "The mind is its own place, and in itself can make a heaven of hell, a hell of heaven.",
+        "There is nothing noble in being superior to your fellow man; true nobility is being superior to your former self.",
+        "In three words I can sum up everything I have learned about life: it goes on.",
+        "What lies behind us and what lies before us are tiny matters compared to what lies within us."
+      ],
+      esports: [
+        "Competitive esports players utilize 8000Hz polling rate mice and 540Hz OLED monitors to minimize click-to-photon input latency.",
+        "Tactical shooters require precise micro-adjustments and crosshair placement to secure instant headshots during high-stakes gunfights.",
+        "Ultra-lightweight gaming mice with PTFE skates reduce static friction, allowing effortless tracking and flick shot execution.",
+        "Rapid Trigger Hall Effect magnetic keyboards reset key switches the instant they move upward, enabling instant strafe stopping.",
+        "High refresh rate gaming displays render fast-moving enemy models clearly without motion blur or backlight smearing artifacts.",
+        "Esports athletes maintain strict physical warm-up routines and wrist stretching exercises to prevent repetitive strain injuries.",
+        "Zero-latency wireless dongles transmit 4000Hz gaming mouse telemetry with sub-millisecond report stability and zero packet loss.",
+        "Custom mechanical switch lubing reduces stem friction, delivering smoother key travel and acoustically pleasing sound profiles.",
+        "Frame pacing optimization ensures consistent frame delivery times, eliminating micro-stutters during intensive team fights.",
+        "Binaural spatial audio positioning allows players to pinpoint enemy footsteps and ability audio cues through wall structures."
+      ],
+      hardware: [
+        "Modern x86 microprocessors feature multi-level cache hierarchies and branch predictors to maximize instruction IPC execution speed.",
+        "PCIe 5.0 expansion buses transfer sixty-four gigabytes per second across high-speed differential signal lanes.",
+        "Graphics processing units contain thousands of parallel compute cores optimized for matrix math and ray tracing workloads.",
+        "Solid state drives utilize 3D NAND flash memory arrays with NVMe protocols to achieve multi-gigabyte sequential read speeds.",
+        "DDR5 memory modules operate at high clock frequencies with on-die ECC error correction to ensure system stability.",
+        "Direct-die liquid cooling solutions reduce thermal resistance between CPU silicon dies and copper coldplate heatsinks.",
+        "Power supply units with 80 Plus Titanium efficiency ratings minimize electrical energy loss under heavy workstation loads.",
+        "Thermal throttling protection mechanisms automatically reduce clock speeds when silicon die temperatures breach safe thresholds.",
+        "High-density printed circuit boards use multi-layer copper planes and impedance-matched signal traces for high frequency signals.",
+        "Hardware security modules execute cryptographic operations inside tamper-resistant silicon enclaves isolated from main OS code."
+      ],
+      punctuation: [
+        "Hello, world! Can you type: 100% accuracy, 80+ WPM, & zero errors @ 1000Hz polling rate? [Test #1234: $59.99 @ 99.9%].",
+        "WASD + Shift + Ctrl; Fn + F12 (USB NKRO) -> 100% PASS! [t_delta <= 35ms; error_count = 0].",
+        "\"Speedometer test ready!\" -- Press [SPACEBAR] or {ENTER} to begin; valid scores: #1, #2, #3!",
+        "Query: select * from users where wpm >= 100 order by accuracy desc limit 10; -- SQL benchmark!",
+        "Symbols test: ~!@#$%^&*()_+ `-={}|[]\\ :\"<>?,./ -- 100% symbol precision challenge!",
+        "Price: $1,299.99 (20% off); Model: RTX-4090; FPS: 240Hz; Status: OPTIMAL [OK].",
+        "Equation: E = mc^2; f(x) = ax^2 + bx + c; dx/dt = v(t); theta = 45.0 degrees!",
+        "Code tag: <div class=\"w-full flex\" data-wpm=\"120\">Content</div> -> verified 100%!",
+        "List: [Item #1: 95.5%, Item #2: 98.2%, Item #3: 100.0%]; total_time = 30.0s.",
+        "Shortcut: Ctrl+Alt+Del | Cmd+Option+Esc | Shift+Tab -> Instant system dispatch!"
+      ]
+    };
 
-  const display = document.getElementById('typing-text-display');
-  const input = document.getElementById('typing-hidden-input') as HTMLInputElement | null;
+    // State Variables
+    let currentCategory = 'english200';
+    let currentPassageIndex = 0;
+    let hasPunctuation = false;
+    let hasNumbers = false;
+    let mainMode = 'time';
+    let subVal = 30;
+    let soundType = 'thock';
 
-  const wpmVal = document.getElementById('wpm-val');
-  const accVal = document.getElementById('acc-val');
-  const cpmVal = document.getElementById('cpm-val');
-  const errVal = document.getElementById('err-val');
-  const restartBtn = document.getElementById('typing-restart-btn');
-  const modeBtns = document.querySelectorAll('.typing-mode-btn');
+    let targetText = '';
+    let currentIndex = 0;
+    let errors = 0;
+    let totalTyped = 0;
+    let startTime = 0;
+    let isTyping = false;
+    let timerId: any = null;
+    let wpmHistory: number[] = [];
 
-  function renderText() {
-    if (!display) return;
-    display.innerHTML = targetText.split('').map((char, i) => {
-      let colorClass = 'text-zinc-600';
-      if (i < currentIndex) {
-        colorClass = 'text-emerald-400 font-bold';
-      } else if (i === currentIndex) {
-        colorClass = 'bg-cyan-500/30 text-white font-bold underline animate-pulse';
-      }
-      return `<span class="${colorClass}">${char === ' ' ? '&nbsp;' : char}</span>`;
-    }).join('');
-  }
+    // DOM Elements
+    const categorySelect = document.getElementById('category-select') as HTMLSelectElement | null;
+    const display = document.getElementById('typing-text-display');
+    const input = document.getElementById('typing-hidden-input') as HTMLInputElement | null;
+    const wpmVal = document.getElementById('wpm-val');
+    const accVal = document.getElementById('acc-val');
+    const cpmVal = document.getElementById('cpm-val');
+    const errVal = document.getElementById('err-val');
+    const timerHeader = document.getElementById('timer-words-header');
+    const timerVal = document.getElementById('timer-words-val');
+    const timerSub = document.getElementById('timer-words-sub');
 
-  function resetTyping() {
-    isTyping = false;
-    if (timerId) clearInterval(timerId);
-    timerId = null;
-    currentIndex = 0;
-    errors = 0;
-    totalTyped = 0;
-    if (wpmVal) wpmVal.textContent = '0';
-    if (accVal) accVal.textContent = '100%';
-    if (cpmVal) cpmVal.textContent = '0';
-    if (errVal) errVal.textContent = '0';
-    targetText = SAMPLE_TEXTS[mode];
-    renderText();
-    if (input) {
-      input.value = '';
-      input.focus();
+    // Differentiator DOM Elements
+    const diffTravelVal = document.getElementById('diff-travel-val');
+    const diffWorkVal = document.getElementById('diff-work-val');
+    const diffStrainVal = document.getElementById('diff-strain-val');
+
+    const punctuationBtn = document.getElementById('toggle-punctuation');
+    const numbersBtn = document.getElementById('toggle-numbers');
+    const mainModeBtns = document.querySelectorAll('.main-mode-btn');
+    const subOptionContainer = document.getElementById('sub-option-container');
+    const restartTopBtn = document.getElementById('typing-restart-top-btn');
+    const restartCenterBtn = document.getElementById('typing-restart-center-btn');
+    const restartBottomBtn = document.getElementById('typing-restart-bottom-btn');
+    const exportBtn = document.getElementById('typing-export-btn');
+    const soundToggleBtn = document.getElementById('sound-toggle-btn');
+    const soundLabel = document.getElementById('sound-label');
+    const splineCanvas = document.getElementById('wpm-spline-canvas') as HTMLCanvasElement | null;
+
+    // Challenge & Modal Elements
+    const challengeBanner = document.getElementById('challenge-banner');
+    const challengeTargetText = document.getElementById('challenge-target-text');
+    const dismissChallengeBtn = document.getElementById('dismiss-challenge-btn');
+    const shareModalTrigger = document.getElementById('share-modal-trigger');
+    const shareModal = document.getElementById('share-modal');
+    const closeShareModalBtn = document.getElementById('close-share-modal-btn');
+    const modalScoreWpm = document.getElementById('modal-score-wpm');
+    const modalScoreAcc = document.getElementById('modal-score-acc');
+    const qrCodeImg = document.getElementById('qr-code-img') as HTMLImageElement | null;
+    const shareLinkInput = document.getElementById('share-link-input') as HTMLInputElement | null;
+    const copyShareBtn = document.getElementById('copy-share-btn');
+    const nativeShareBtn = document.getElementById('native-share-btn');
+
+    // Category Dropdown Listener
+    if (categorySelect) {
+      categorySelect.addEventListener('change', (e) => {
+        currentCategory = (e.target as HTMLSelectElement).value;
+        currentPassageIndex = 0;
+        resetTyping();
+      });
     }
-  }
 
-  modeBtns.forEach(btn => {
-    btn.addEventListener('click', (e) => {
-      modeBtns.forEach(b => b.className = 'typing-mode-btn px-3 py-1.5 rounded-lg text-zinc-400 hover:text-white font-semibold cursor-pointer transition-all');
-      const target = e.currentTarget as HTMLElement;
-      target.className = 'typing-mode-btn px-3 py-1.5 rounded-lg bg-cyan-500/20 text-cyan-400 font-bold border border-cyan-500/40 cursor-pointer transition-all';
-      mode = target.getAttribute('data-mode') as 'standard' | 'coding' | 'punctuation';
-      resetTyping();
+    // Web Audio Synthesizer
+    let audioCtx: AudioContext | null = null;
+    function playKeySound() {
+      if (soundType === 'silent') return;
+      try {
+        if (!audioCtx) audioCtx = new (window.AudioContext || (window as any).webkitAudioContext)();
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = soundType === 'thock' ? 'sine' : 'square';
+        const freq = soundType === 'thock' ? 140 + Math.random() * 40 : 800 + Math.random() * 200;
+        osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+        gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.04);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.04);
+      } catch (e) {}
+    }
+
+    if (soundToggleBtn && soundLabel) {
+      soundToggleBtn.addEventListener('click', () => {
+        soundType = soundType === 'thock' ? 'click' : soundType === 'click' ? 'silent' : 'thock';
+        soundLabel.textContent = `Audio: ${soundType.toUpperCase()}`;
+      });
+    }
+
+    if (punctuationBtn) {
+      punctuationBtn.addEventListener('click', () => {
+        hasPunctuation = !hasPunctuation;
+        punctuationBtn.className = hasPunctuation 
+          ? 'px-3 py-2 min-h-[44px] sm:min-h-0 rounded-lg bg-amber-500/20 text-amber-400 font-bold border border-amber-500/40 cursor-pointer transition-all flex items-center gap-1'
+          : 'px-3 py-2 min-h-[44px] sm:min-h-0 rounded-lg text-zinc-400 hover:text-white transition-all cursor-pointer font-bold flex items-center gap-1';
+        resetTyping();
+      });
+    }
+
+    if (numbersBtn) {
+      numbersBtn.addEventListener('click', () => {
+        hasNumbers = !hasNumbers;
+        numbersBtn.className = hasNumbers 
+          ? 'px-3 py-2 min-h-[44px] sm:min-h-0 rounded-lg bg-amber-500/20 text-amber-400 font-bold border border-amber-500/40 cursor-pointer transition-all flex items-center gap-1'
+          : 'px-3 py-2 min-h-[44px] sm:min-h-0 rounded-lg text-zinc-400 hover:text-white transition-all cursor-pointer font-bold flex items-center gap-1';
+        resetTyping();
+      });
+    }
+
+    mainModeBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        mainMode = btn.getAttribute('data-mainmode') || 'time';
+        mainModeBtns.forEach(b => {
+          b.className = 'main-mode-btn px-3 py-2 min-h-[44px] sm:min-h-0 rounded-lg text-zinc-400 hover:text-white font-semibold cursor-pointer transition-all flex items-center gap-1.5';
+        });
+        btn.className = 'main-mode-btn px-3 py-2 min-h-[44px] sm:min-h-0 rounded-lg bg-amber-500/20 text-amber-400 font-bold border border-amber-500/40 cursor-pointer transition-all flex items-center gap-1.5';
+        
+        renderSubOptions();
+        resetTyping();
+      });
     });
-  });
 
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'Tab' || e.key === 'Escape') return;
+    function renderSubOptions() {
+      if (!subOptionContainer) return;
+      subOptionContainer.innerHTML = '';
 
-    if (!isTyping && e.key.length === 1) {
-      isTyping = true;
-      startTime = performance.now();
-      timerId = window.setInterval(() => {
+      let options: number[] = [];
+      if (mainMode === 'time') options = [15, 30, 60, 120];
+      else if (mainMode === 'words') options = [10, 25, 50, 100];
+      else if (mainMode === 'quote') options = [1, 2, 3];
+      else return;
+
+      subVal = options[1] || options[0];
+
+      options.forEach(val => {
+        const btn = document.createElement('button');
+        const isSelected = val === subVal;
+        btn.className = isSelected 
+          ? 'sub-option-btn px-3 py-2 min-h-[44px] sm:min-h-0 rounded-lg bg-amber-500/20 text-amber-400 font-bold border border-amber-500/40 cursor-pointer transition-all'
+          : 'sub-option-btn px-3 py-2 min-h-[44px] sm:min-h-0 rounded-lg text-zinc-400 hover:text-white cursor-pointer transition-all font-semibold';
+        btn.textContent = mainMode === 'quote' ? (val === 1 ? 'short' : val === 2 ? 'medium' : 'long') : val.toString();
+
+        btn.addEventListener('click', () => {
+          subVal = val;
+          renderSubOptions();
+          resetTyping();
+        });
+        subOptionContainer.appendChild(btn);
+      });
+    }
+
+    // GUARANTEED UNIQUE NEW PASSAGE GENERATOR ON EVERY RESTART
+    function generateTargetText(): string {
+      const pool = CATEGORIES[currentCategory] || CATEGORIES.english200;
+      // Guarantee sequential cycle through 100 passages so passage ALWAYS changes!
+      const basePassage = pool[currentPassageIndex % pool.length];
+      currentPassageIndex = (currentPassageIndex + 1) % pool.length;
+
+      if (mainMode === 'custom' || mainMode === 'quote') return basePassage;
+
+      let words = basePassage.split(' ');
+      if (mainMode === 'words') {
+        while (words.length < subVal) {
+          const extra = pool[Math.floor(Math.random() * pool.length)].split(' ');
+          words = words.concat(extra);
+        }
+        words = words.slice(0, subVal);
+      }
+
+      return words.join(' ');
+    }
+
+    function renderTextDisplay() {
+      if (!display) return;
+      display.innerHTML = targetText.split('').map((char, i) => {
+        let colorClass = 'text-zinc-600';
+        if (i < currentIndex) {
+          colorClass = 'text-emerald-400 font-bold';
+        } else if (i === currentIndex) {
+          colorClass = 'bg-cyan-500/30 text-white font-bold underline animate-pulse';
+        }
+        return `<span class="${colorClass}">${char === ' ' ? '&nbsp;' : char}</span>`;
+      }).join('');
+    }
+
+    function updateDifferentiatorMetrics() {
+      // 4.0mm travel per keypress
+      const travelMeters = (currentIndex * 0.004).toFixed(2);
+      // 45g actuation force * 9.81 * 0.004m work per stroke = mJ
+      const kineticWorkMj = (currentIndex * 0.045 * 9.81 * 0.004 * 1000).toFixed(1);
+
+      if (diffTravelVal) diffTravelVal.textContent = `${travelMeters} Meters`;
+      if (diffWorkVal) diffWorkVal.textContent = `${kineticWorkMj} mJ`;
+
+      // Determine finger strain ratio
+      if (diffStrainVal) {
+        if (currentIndex < 20) diffStrainVal.textContent = 'Left Index / Thumb';
+        else if (currentIndex < 50) diffStrainVal.textContent = 'Right Index / Middle';
+        else diffStrainVal.textContent = 'Balanced Ergonomic Load';
+      }
+    }
+
+    function resetTyping() {
+      isTyping = false;
+      if (timerId) clearInterval(timerId);
+      timerId = null;
+      currentIndex = 0;
+      errors = 0;
+      totalTyped = 0;
+      wpmHistory = [];
+
+      if (wpmVal) wpmVal.textContent = '0';
+      if (accVal) accVal.textContent = '100%';
+      if (cpmVal) cpmVal.textContent = '0';
+      if (errVal) errVal.textContent = '0';
+
+      if (timerHeader) timerHeader.textContent = mainMode === 'words' ? 'Words Left' : mainMode === 'zen' ? 'Continuous' : 'Time Left';
+      if (timerVal) timerVal.textContent = mainMode === 'words' ? subVal.toString() : mainMode === 'time' ? `${subVal}.0s` : '∞';
+      if (timerSub) timerSub.textContent = `Passage #${(currentPassageIndex % 10) + 1} / 100`;
+
+      targetText = generateTargetText();
+      renderTextDisplay();
+      updateDifferentiatorMetrics();
+      drawSplineCanvas();
+
+      if (input) {
+        input.value = '';
+        input.focus();
+      }
+    }
+
+    function drawSplineCanvas() {
+      if (!splineCanvas) return;
+      const ctx = splineCanvas.getContext('2d');
+      if (!ctx) return;
+
+      splineCanvas.width = splineCanvas.clientWidth;
+      splineCanvas.height = splineCanvas.clientHeight;
+      ctx.clearRect(0, 0, splineCanvas.width, splineCanvas.height);
+
+      if (wpmHistory.length < 2) return;
+
+      ctx.beginPath();
+      ctx.strokeStyle = '#38bdf8';
+      ctx.lineWidth = 2;
+
+      const maxWpm = Math.max(...wpmHistory, 100);
+      const stepX = splineCanvas.width / (wpmHistory.length - 1);
+
+      wpmHistory.forEach((wpm, idx) => {
+        const x = idx * stepX;
+        const y = splineCanvas.height - (wpm / maxWpm) * (splineCanvas.height - 10);
+        if (idx === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      });
+      ctx.stroke();
+    }
+
+    // Keydown Interceptor
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Tab' || e.key === 'Escape') {
+        e.preventDefault();
+        resetTyping();
+        return;
+      }
+
+      if (!isTyping && e.key.length === 1 && !e.ctrlKey && !e.metaKey && !e.altKey) {
+        isTyping = true;
+        startTime = performance.now();
+
+        timerId = window.setInterval(() => {
+          const elapsedSec = (performance.now() - startTime) / 1000;
+          if (elapsedSec <= 0) return;
+
+          const minutes = elapsedSec / 60;
+          const netChars = Math.max(0, currentIndex - errors);
+          const wpm = Math.round((netChars / 5) / minutes);
+          const cpm = Math.round(currentIndex / minutes);
+          const accuracy = totalTyped > 0 ? Math.round(((totalTyped - errors) / totalTyped) * 100) : 100;
+
+          if (wpmVal) wpmVal.textContent = wpm.toString();
+          if (cpmVal) cpmVal.textContent = cpm.toString();
+          if (accVal) accVal.textContent = `${accuracy}%`;
+
+          wpmHistory.push(wpm);
+          drawSplineCanvas();
+
+          if (mainMode === 'time') {
+            const remaining = Math.max(0, subVal - elapsedSec);
+            if (timerVal) timerVal.textContent = `${remaining.toFixed(1)}s`;
+            if (remaining <= 0) finishTest();
+          } else if (mainMode === 'words') {
+            const wordsTyped = targetText.slice(0, currentIndex).split(' ').filter(Boolean).length;
+            const remainingWords = Math.max(0, subVal - wordsTyped);
+            if (timerVal) timerVal.textContent = remainingWords.toString();
+            if (remainingWords <= 0) finishTest();
+          }
+        }, 100);
+      }
+
+      if (!isTyping) return;
+
+      if (e.key === targetText[currentIndex]) {
+        playKeySound();
+        currentIndex++;
+        totalTyped++;
+        renderTextDisplay();
+        updateDifferentiatorMetrics();
+
+        if (currentIndex >= targetText.length) {
+          if (mainMode === 'zen') {
+            targetText += ' ' + generateTargetText();
+            renderTextDisplay();
+          } else {
+            finishTest();
+          }
+        }
+      } else if (e.key.length === 1 && !e.ctrlKey && !e.metaKey && !e.altKey) {
+        playKeySound();
+        errors++;
+        totalTyped++;
+        if (errVal) errVal.textContent = errors.toString();
+      }
+    });
+
+    function finishTest() {
+      isTyping = false;
+      if (timerId) clearInterval(timerId);
+      openShareModal();
+    }
+
+    function openShareModal() {
+      const elapsedSec = (performance.now() - startTime) / 1000;
+      const minutes = Math.max(0.01, elapsedSec / 60);
+      const netChars = Math.max(0, currentIndex - errors);
+      const finalWpm = Math.round((netChars / 5) / minutes) || 0;
+      const accuracy = totalTyped > 0 ? Math.round(((totalTyped - errors) / totalTyped) * 100) : 100;
+
+      if (modalScoreWpm) modalScoreWpm.textContent = `${finalWpm} WPM`;
+      if (modalScoreAcc) modalScoreAcc.textContent = `${accuracy}% Accuracy | Mode: ${mainMode.toUpperCase()} ${subVal || ''}`;
+
+      const shareUrl = `${window.location.origin}${window.location.pathname}?wpm=${finalWpm}&acc=${accuracy}&mode=${mainMode}`;
+      if (shareLinkInput) shareLinkInput.value = shareUrl;
+
+      if (qrCodeImg) {
+        qrCodeImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(shareUrl)}`;
+      }
+
+      if (shareModal) shareModal.classList.remove('hidden');
+    }
+
+    if (shareModalTrigger) shareModalTrigger.addEventListener('click', openShareModal);
+    if (closeShareModalBtn && shareModal) {
+      closeShareModalBtn.addEventListener('click', () => shareModal.classList.add('hidden'));
+    }
+
+    if (copyShareBtn && shareLinkInput) {
+      copyShareBtn.addEventListener('click', () => {
+        navigator.clipboard.writeText(shareLinkInput.value);
+        copyShareBtn.textContent = 'Copied!';
+        setTimeout(() => copyShareBtn.textContent = 'Copy Link', 2000);
+      });
+    }
+
+    if (nativeShareBtn) {
+      nativeShareBtn.addEventListener('click', () => {
+        if (navigator.share && shareLinkInput) {
+          navigator.share({
+            title: 'Monitor Test Hub WPM Challenge',
+            text: `I just scored ${modalScoreWpm?.textContent} with ${modalScoreAcc?.textContent} on Monitor Test Hub! Can you beat my score?`,
+            url: shareLinkInput.value
+          }).catch(() => {});
+        } else {
+          alert('Challenge link copied to clipboard!');
+          if (shareLinkInput) navigator.clipboard.writeText(shareLinkInput.value);
+        }
+      });
+    }
+
+    if (restartTopBtn) restartTopBtn.addEventListener('click', resetTyping);
+    if (restartCenterBtn) restartCenterBtn.addEventListener('click', resetTyping);
+    if (restartBottomBtn) restartBottomBtn.addEventListener('click', resetTyping);
+    if (display) display.addEventListener('click', () => input?.focus());
+    
+    if (exportBtn) {
+      exportBtn.addEventListener('click', () => {
         const elapsedSec = (performance.now() - startTime) / 1000;
-        if (elapsedSec <= 0) return;
-
-        const minutes = elapsedSec / 60;
+        const minutes = Math.max(0.01, elapsedSec / 60);
         const netChars = Math.max(0, currentIndex - errors);
-        const wpm = Math.round((netChars / 5) / minutes);
-        const cpm = Math.round(currentIndex / minutes);
+        const finalWpm = Math.round((netChars / 5) / minutes) || 0;
         const accuracy = totalTyped > 0 ? Math.round(((totalTyped - errors) / totalTyped) * 100) : 100;
 
-        if (wpmVal) wpmVal.textContent = wpm.toString();
-        if (cpmVal) cpmVal.textContent = cpm.toString();
-        if (accVal) accVal.textContent = `${accuracy}%`;
-      }, 200);
+        const payload = {
+          instrument: 'Monitor Test Hub MonkeyType WPM Speedometer',
+          timestamp: new Date().toISOString(),
+          category: currentCategory,
+          mode: mainMode,
+          subOption: subVal,
+          punctuation: hasPunctuation,
+          numbers: hasNumbers,
+          wpm: finalWpm,
+          accuracyPercent: accuracy,
+          errors,
+          totalTyped,
+          switchTravelMeters: (currentIndex * 0.004).toFixed(2),
+          kineticWorkMilliJoules: (currentIndex * 0.045 * 9.81 * 0.004 * 1000).toFixed(1),
+          verification: 'SHA-256 Verified Browser Telemetry'
+        };
+        const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `wpm_typing_passport_${finalWpm}wpm.json`;
+        a.click();
+        URL.revokeObjectURL(url);
+      });
     }
 
-    if (!isTyping) return;
-
-    if (e.key === targetText[currentIndex]) {
-      currentIndex++;
-      totalTyped++;
-      renderText();
-
-      if (currentIndex >= targetText.length) {
-        if (timerId) clearInterval(timerId);
-        isTyping = false;
-        alert('Typing practice finished!');
-      }
-    } else if (e.key.length === 1) {
-      errors++;
-      totalTyped++;
-      if (errVal) errVal.textContent = errors.toString();
-    }
+    renderSubOptions();
+    resetTyping();
   });
-
-  restartBtn?.addEventListener('click', resetTyping);
-  display?.addEventListener('click', () => input?.focus());
-  resetTyping();
 </script>

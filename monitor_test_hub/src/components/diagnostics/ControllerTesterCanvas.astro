@@ -103,8 +103,8 @@
       </div>
 
       <!-- Vector Graphic Shell of Controller -->
-      <div class="relative w-full h-72 py-4 flex items-center justify-center select-none">
-        <svg class="w-full h-full max-w-lg text-zinc-700" viewBox="0 0 320 220" fill="none">
+      <div class="relative w-full h-80 sm:h-[380px] py-4 flex items-center justify-center select-none">
+        <svg class="w-full h-full max-w-xl text-zinc-700" viewBox="0 0 320 240" fill="none">
           <!-- Controller Outer Shell Body -->
           <path d="M 70 50 C 95 38 225 38 250 50 C 290 70 310 160 280 200 C 255 225 220 175 190 150 C 170 135 150 135 130 150 C 100 175 65 225 40 200 C 10 160 30 70 70 50 Z" fill="#090a0f" stroke="currentColor" stroke-width="3.5"/>
 
@@ -488,7 +488,7 @@
         if (statusLed) {
           statusLed.className = 'w-2.5 h-2.5 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.9)] animate-pulse';
         }
-        if (statusText) statusText.textContent = `CONNECTED: ${found.id}`;
+        if (statusText) statusText.textContent = `CONNECTED: ${found.id} — Press buttons or move sticks to test`;
         if (indexBadge) indexBadge.textContent = `Index: ${found.index}`;
         if (modelName) modelName.textContent = found.id.length > 32 ? found.id.slice(0, 32) + '...' : found.id;
 

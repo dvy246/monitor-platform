@@ -3,6 +3,8 @@ import FAQSection from '../../components/ui/FAQSection.astro';
 import Layout from '../../layouts/Layout.astro';
 import KeyboardTesterCanvas from '../../components/diagnostics/KeyboardTesterCanvas.astro';
 import { useTranslations, localizeLink } from '../../utils/i18n';
+import StepWorkflowSection from '../../components/ui/StepWorkflowSection.astro';
+import PanelTypeBreakdownSection from '../../components/ui/PanelTypeBreakdownSection.astro';
 
 import StatusCard from '../../components/ui/sidebar/StatusCard.astro';
 import PaletteCard from '../../components/ui/sidebar/PaletteCard.astro';
@@ -78,126 +80,68 @@ const faqs = [
   }
 ];
 
-const seoTitle = "Keyboard Tester Online | Switch Chatter & NKRO Test";
-const seoDescription = "Test mechanical & membrane keyboards for key ghosting, N-Key Rollover (NKRO), switch chatter double-typing, and APM speed. Free, 100% private browser test.";
+const seoTitle = "Keyboard Tester - Free Online Key & Switch Chatter Test";
+const seoDescription = "Free online Keyboard Tester. Test all keys, detect switch chatter double-typing, test N-Key Rollover (NKRO), and check Mac & Windows key layouts.";
 ---
 
 <Layout title={seoTitle} description={seoDescription} faqs={faqs} canonicalUrl={canonicalUrl}>
-  <div class="max-w-7xl mx-auto px-4 py-6 sm:py-8 min-w-0 w-full overflow-hidden font-sans">
+  <div class="max-w-7xl mx-auto px-4 py-6 sm:py-8 min-w-0 w-full overflow-hidden font-sans space-y-12">
 
-    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 mt-6">
-      
-      <!-- Left Primary Diagnostic Canvas (lg:col-span-8) -->
-      <div class="lg:col-span-8 space-y-8 min-w-0">
-        <section class="max-w-4xl mx-auto text-center space-y-4">
-          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-xs font-mono text-emerald-400 font-bold">
-            <span>KEYBOARD DIAGNOSTIC SUITE</span>
-          </div>
-          <h1 class="text-3xl sm:text-4xl font-extrabold font-mono tracking-tight text-white">
-            Online Keyboard Tester &amp; Switch Chatter Matrix
-          </h1>
-          <p class="text-sm sm:text-base text-zinc-400 leading-relaxed max-w-2xl mx-auto">
-            Is your mechanical keyboard skipping letters or double-typing words? Press any key to verify switch responsiveness, detect microsecond switch chatter bounce faults, and test N-Key Rollover (NKRO) gaming combinations.
-          </p>
-        </section>
+    <section class="max-w-4xl mx-auto text-center space-y-4">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-xs font-mono text-emerald-400 font-bold">
+        <span>ONLINE KEYBOARD TESTER</span>
+      </div>
+      <h1 class="text-3xl sm:text-5xl font-extrabold font-sans tracking-tight text-white">
+        Keyboard Tester
+      </h1>
+      <p class="text-sm sm:text-base text-zinc-400 leading-relaxed max-w-2xl mx-auto font-sans">
+        Is your mechanical keyboard skipping letters or double-typing words? Press any key to verify switch responsiveness, detect microsecond switch chatter bounce faults, and test N-Key Rollover (NKRO) gaming combinations.
+      </p>
+    </section>
 
-        <!-- Main Visual Diagnostic Engine Component -->
-        <KeyboardTesterCanvas />
+    <!-- Main Visual Diagnostic Engine Component (Full Width 12 Columns) -->
+    <KeyboardTesterCanvas />
 
-        <!-- Keyboard Diagnostic Tools Directory -->
-        <section class="max-w-5xl mx-auto space-y-6 bg-[#121215] border border-white/10 rounded-3xl p-6 sm:p-8 backdrop-blur-xl shadow-2xl">
-          <div class="border-b border-white/10 pb-4">
-            <h2 class="text-2xl font-bold text-white font-mono">Keyboard Diagnostics &amp; Matrix Directory</h2>
-            <p class="text-zinc-400 text-sm mt-1">Explore device-tailored keyboard inspection utilities, chatter analyzers, and layout rollover benchmarks.</p>
-          </div>
-
-          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 font-mono text-xs">
-            {keyboardTools.map(tool => {
-              const href = localizeLink(`/keyboard-tester/${tool.slug}`, lang);
-              return (
-                <a
-                  href={href}
-                  class="p-3.5 rounded-2xl bg-[#08080a] border border-white/10 hover:border-emerald-500/50 hover:bg-[#1a1a24] text-zinc-400 hover:text-white transition-colors duration-200 flex items-center justify-between group font-sans cursor-pointer"
-                >
-                  <div class="space-y-1 truncate pr-2">
-                    <div class="font-bold text-emerald-400 text-xs">{tool.name}</div>
-                    <div class="text-[11px] text-zinc-500 group-hover:text-zinc-400 truncate">{tool.desc}</div>
-                  </div>
-                  <span class="text-emerald-400 transition-colors text-xs shrink-0 font-mono">&rarr;</span>
-                </a>
-              );
-            })}
-          </div>
-        </section>
-
-        <!-- Articles & Technical Guide -->
-        <article class="max-w-5xl mx-auto space-y-6 bg-[#121215] border border-white/10 rounded-3xl p-6 sm:p-8 backdrop-blur-xl text-sm text-zinc-300 leading-relaxed shadow-2xl">
-          <div class="border-b border-white/10 pb-4">
-            <h2 class="text-xl font-bold font-mono text-white">Mechanical Keyboard Switch Chatter &amp; Diode Matrix Architecture</h2>
-            <p class="mt-2 text-zinc-400">
-              Modern keyboards arrange physical key switches in an intersecting grid of rows and columns polled by an onboard microcontroller unit (MCU). Standard membrane keyboards share electrical traces across key groups, leading to key ghosting or blocking when three or more adjacent keys are pressed. Mechanical keyboards resolve this by installing individual isolated diodes on every switch circuit, enabling N-Key Rollover (NKRO).
-            </p>
-          </div>
-        </article>
-
-        <!-- Single FAQSection -->
-        <FAQSection faqs={faqs} />
+    <!-- Keyboard Diagnostic Tools Directory -->
+    <section class="max-w-7xl mx-auto space-y-6 bg-[#121215] border border-white/10 rounded-3xl p-6 sm:p-8 backdrop-blur-xl shadow-2xl">
+      <div class="border-b border-white/10 pb-4">
+        <h2 class="text-2xl font-bold text-white font-mono">Keyboard Diagnostics &amp; Matrix Directory</h2>
+        <p class="text-zinc-400 text-sm mt-1">Explore device-tailored keyboard inspection utilities, chatter analyzers, and layout rollover benchmarks.</p>
       </div>
 
-      <!-- Right Modular Control & Telemetry Sidebar (lg:col-span-4) -->
-      <div class="lg:col-span-4 space-y-6 sticky top-24 self-start min-w-0">
-        <StatusCard
-          status="pass"
-          label="100% MATRIX HEALTH"
-          subtitle="Keystroke Actuation Status"
-          score="104"
-          maxScore="104"
-          details={[
-            { label: 'Tested Keys', value: '104 / 104' },
-            { label: 'Switch Chatter', value: '0 Alerts' }
-          ]}
-        />
-
-        <PaletteCard
-          title="Keyboard Layout"
-          subtitle="Preset Matrix Geometry"
-          layoutPresets={[
-            { id: 'ansi-104', name: 'ANSI 104 Full', keyCount: 104 },
-            { id: 'iso-105', name: 'ISO 105 EU', keyCount: 105 },
-            { id: 'tkl-80', name: 'TKL 80% Compact', keyCount: 87 },
-            { id: 'mini-60', name: '60% Mini', keyCount: 61 }
-          ]}
-          activePresetId="ansi-104"
-        />
-
-        <MetricCard
-          title="Keystroke Metrics"
-          subtitle="Matrix & Debounce Telemetry"
-          badgeText="NKRO Matrix"
-          metrics={[
-            { id: 'pressedCount', label: 'Pressed Key Count', value: '0', target: '104', unit: 'keys', status: 'pass' },
-            { id: 'peakNkro', label: 'Peak NKRO Rollover', value: '10', unit: 'keys', status: 'pass' },
-            { id: 'chatterAlerts', label: 'Switch Chatter Bounce', value: '0', unit: 'alerts', status: 'pass' },
-            { id: 'wpmSpeed', label: 'Typing Speed', value: '78', unit: 'WPM', status: 'neutral' }
-          ]}
-        />
-
-        <TelemetryCard
-          title="Keystroke Stream"
-          subtitle="W3C KeyboardEvent Log"
-          type="event-log"
-          badgeText="Keyboard HID"
-        />
-
-        <ShortcutCard
-          shortcuts={[
-            { keys: ['Esc'], label: 'Reset Keyboard Matrix' },
-            { keys: ['Tab'], label: 'Toggle Layout Presets' }
-          ]}
-        />
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 font-mono text-xs">
+        {keyboardTools.map(tool => {
+          const href = localizeLink(`/keyboard-tester/${tool.slug}`, lang);
+          return (
+            <a
+              href={href}
+              class="p-3.5 rounded-2xl bg-[#08080a] border border-white/10 hover:border-emerald-500/50 hover:bg-[#1a1a24] text-zinc-400 hover:text-white transition-colors duration-200 flex items-center justify-between group font-sans cursor-pointer"
+            >
+              <div class="space-y-1 truncate pr-2">
+                <div class="font-bold text-emerald-400 text-xs">{tool.name}</div>
+                <div class="text-[11px] text-zinc-500 group-hover:text-zinc-400 truncate">{tool.desc}</div>
+              </div>
+              <span class="text-emerald-400 transition-colors text-xs shrink-0 font-mono">&rarr;</span>
+            </a>
+          );
+        })}
       </div>
+    </section>
 
-    </div>
+    <!-- Articles & Technical Guide -->
+    <article class="max-w-7xl mx-auto space-y-6 bg-[#121215] border border-white/10 rounded-3xl p-6 sm:p-8 backdrop-blur-xl text-sm text-zinc-300 leading-relaxed shadow-2xl font-sans">
+      <div class="border-b border-white/10 pb-4">
+        <h2 class="text-xl font-bold font-mono text-white">Mechanical Keyboard Switch Chatter &amp; Diode Matrix Architecture</h2>
+        <p class="mt-2 text-zinc-400">
+          Modern keyboards arrange physical key switches in an intersecting grid of rows and columns polled by an onboard microcontroller unit (MCU). Standard membrane keyboards share electrical traces across key groups, leading to key ghosting or blocking when three or more adjacent keys are pressed. Mechanical keyboards resolve this by installing individual isolated diodes on every switch circuit, enabling N-Key Rollover (NKRO).
+        </p>
+      </div>
+    </article>
+
+    <!-- Single FAQSection -->
+    <StepWorkflowSection />
+    <PanelTypeBreakdownSection />
+    <FAQSection faqs={faqs} title="Keyboard Tester FAQs" />
   </div>
 </Layout>
 

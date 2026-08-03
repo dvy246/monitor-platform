@@ -1,66 +1,89 @@
 ---
 ---
 
-<div class="bg-[#121215] border border-white/10 rounded-2xl p-6 sm:p-8 space-y-6 shadow-2xl font-mono">
-  <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-white/10 pb-4">
-    <div>
-      <div class="text-xs font-bold text-purple-400 uppercase tracking-widest flex items-center gap-2">
-        <span class="w-2 h-2 rounded-full bg-purple-400 animate-pulse"></span>
-        <span>ACOUSTIC WAVE SPECTROMETRY</span>
-      </div>
-      <h3 class="text-xl font-bold text-white mt-1">Acoustic Room Mode &amp; Standing Wave Calculator</h3>
-    </div>
-    <div id="room-mode-badge" class="px-3 py-1 rounded-full bg-purple-400/10 border border-purple-400/30 text-purple-400 text-xs font-bold">
-      BONNEVILLE RATIO: OPTIMAL
-    </div>
-  </div>
+<div class="w-full max-w-7xl mx-auto space-y-6 font-sans select-none min-w-0" id="room-mode-root">
+  <div class="relative bg-[#0c0d12]/95 border border-zinc-800/90 rounded-3xl p-4 sm:p-8 backdrop-blur-2xl shadow-[0_25px_60px_rgba(0,0,0,0.8)] space-y-6 overflow-hidden min-w-0 text-zinc-100 font-mono">
+    <!-- Ambient Glows -->
+    <div class="absolute -top-24 -right-24 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl pointer-events-none"></div>
+    <div class="absolute -bottom-24 -left-24 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none"></div>
 
-  <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-    <!-- Dimension Controls -->
-    <div class="lg:col-span-5 space-y-4 bg-[#08080a] p-4 rounded-xl border border-white/10 text-xs">
+    <!-- Header Controls -->
+    <div class="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 border-b border-zinc-800/70 pb-5">
       <div>
-        <div class="flex justify-between text-slate-400 font-bold mb-1">
-          <span>Room Length (Feet):</span>
-          <span id="len-disp" class="text-purple-400">18.0 ft (5.49m)</span>
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-500/10 border border-purple-500/30 text-[11px] font-mono text-purple-400 font-bold uppercase tracking-wider mb-2">
+          <span class="w-2 h-2 rounded-full bg-purple-400 shadow-[0_0_8px_rgba(192,132,252,0.9)] animate-pulse"></span>
+          <span>ACOUSTIC WAVE SPECTROMETRY ENGINE</span>
         </div>
-        <input id="room-len-slider" type="range" min="8" max="40" step="0.5" value="18" class="w-full accent-purple-400 cursor-pointer" />
+        <h2 class="text-xl sm:text-3xl font-extrabold font-mono text-white tracking-tight">Acoustic Room Mode &amp; Standing Wave Calculator</h2>
+        <p class="text-xs sm:text-sm text-zinc-400 mt-1 font-sans font-normal">Calculates axial standing wave resonances and Schroeder cutoff frequency.</p>
       </div>
-
-      <div>
-        <div class="flex justify-between text-slate-400 font-bold mb-1">
-          <span>Room Width (Feet):</span>
-          <span id="width-disp" class="text-purple-400">14.0 ft (4.27m)</span>
-        </div>
-        <input id="room-width-slider" type="range" min="6" max="30" step="0.5" value="14" class="w-full accent-purple-400 cursor-pointer" />
-      </div>
-
-      <div>
-        <div class="flex justify-between text-slate-400 font-bold mb-1">
-          <span>Room Height (Feet):</span>
-          <span id="height-disp" class="text-purple-400">9.0 ft (2.74m)</span>
-        </div>
-        <input id="room-height-slider" type="range" min="7" max="16" step="0.5" value="9" class="w-full accent-purple-400 cursor-pointer" />
-      </div>
-
-      <div class="p-3 bg-[#18181b] rounded-lg border border-white/5 space-y-1">
-        <div class="text-[10px] text-slate-400 font-bold">Schroeder Cutoff Frequency ($f_s$):</div>
-        <div id="schroeder-freq" class="text-base font-bold text-white">184.2 Hz</div>
-        <div class="text-[10px] text-slate-500">
-          Frequencies below $f_s$ are dominated by discrete room standing waves.
-        </div>
+      <div id="room-mode-badge" class="px-3.5 py-2 rounded-xl bg-purple-500/20 border border-purple-500/40 text-purple-400 text-xs font-mono font-bold shadow-lg">
+        BONNEVILLE RATIO: OPTIMAL
       </div>
     </div>
 
-    <!-- Mode Frequency Table Column -->
-    <div class="lg:col-span-7 space-y-4">
-      <div class="bg-[#08080a] p-4 rounded-xl border border-white/10 space-y-3">
-        <div class="text-xs font-bold text-slate-300 uppercase tracking-wider flex justify-between">
-          <span>Primary Axial Room Modes (20Hz - 300Hz)</span>
-          <span class="text-purple-400 font-mono text-[11px]">Speed of Sound: 1130 ft/s</span>
+    <div class="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-6">
+      <!-- Dimension Controls Column -->
+      <div class="lg:col-span-5 space-y-5 bg-zinc-950/80 p-5 sm:p-6 rounded-2xl border border-zinc-800/80 text-xs shadow-inner">
+        <div>
+          <div class="flex justify-between text-zinc-400 font-bold mb-2">
+            <span>Room Length (Feet):</span>
+            <span id="len-disp" class="text-purple-400 text-sm">18.0 ft (5.49m)</span>
+          </div>
+          <input id="room-len-slider" type="range" min="8" max="40" step="0.5" value="18" class="w-full accent-purple-400 cursor-pointer h-2 bg-zinc-800 rounded-lg" />
         </div>
+
+        <div>
+          <div class="flex justify-between text-zinc-400 font-bold mb-2">
+            <span>Room Width (Feet):</span>
+            <span id="width-disp" class="text-purple-400 text-sm">14.0 ft (4.27m)</span>
+          </div>
+          <input id="room-width-slider" type="range" min="6" max="30" step="0.5" value="14" class="w-full accent-purple-400 cursor-pointer h-2 bg-zinc-800 rounded-lg" />
+        </div>
+
+        <div>
+          <div class="flex justify-between text-zinc-400 font-bold mb-2">
+            <span>Room Height (Feet):</span>
+            <span id="height-disp" class="text-purple-400 text-sm">9.0 ft (2.74m)</span>
+          </div>
+          <input id="room-height-slider" type="range" min="7" max="16" step="0.5" value="9" class="w-full accent-purple-400 cursor-pointer h-2 bg-zinc-800 rounded-lg" />
+        </div>
+
+        <div class="p-4 bg-zinc-900/90 rounded-xl border border-zinc-800 space-y-1">
+          <div class="text-[11px] text-zinc-400 font-bold">Schroeder Cutoff Frequency (f_s):</div>
+          <div id="schroeder-freq" class="text-xl font-extrabold text-white tabular-nums">184.2 Hz</div>
+          <div class="text-[11px] text-zinc-500 font-sans leading-relaxed mt-1">
+            Frequencies below f_s are dominated by discrete room standing wave resonances.
+          </div>
+        </div>
+      </div>
+
+      <!-- Wave Resonances Column -->
+      <div class="lg:col-span-7 space-y-5 bg-zinc-950/80 p-5 sm:p-6 rounded-2xl border border-zinc-800/80 text-xs shadow-inner">
+        <div class="text-zinc-400 font-bold uppercase tracking-wider">Primary Axial Resonances (Hz):</div>
         
-        <div class="max-h-60 overflow-y-auto space-y-1 text-xs pr-1" id="modes-list-container">
-          <!-- Populated dynamically -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-center">
+          <div class="bg-zinc-900/90 p-4 rounded-xl border border-zinc-800 space-y-1">
+            <div class="text-purple-400 font-bold">Length Modes</div>
+            <div id="len-modes" class="text-sm font-extrabold text-white mt-1">31.4 Hz, 62.8 Hz, 94.2 Hz</div>
+          </div>
+
+          <div class="bg-zinc-900/90 p-4 rounded-xl border border-zinc-800 space-y-1">
+            <div class="text-cyan-400 font-bold">Width Modes</div>
+            <div id="width-modes" class="text-sm font-extrabold text-white mt-1">40.4 Hz, 80.7 Hz, 121.1 Hz</div>
+          </div>
+
+          <div class="bg-zinc-900/90 p-4 rounded-xl border border-zinc-800 space-y-1">
+            <div class="text-emerald-400 font-bold">Height Modes</div>
+            <div id="height-modes" class="text-sm font-extrabold text-white mt-1">62.8 Hz, 125.6 Hz, 188.3 Hz</div>
+          </div>
+        </div>
+
+        <div class="p-4 bg-zinc-900/90 rounded-xl border border-zinc-800 space-y-2">
+          <div class="text-zinc-400 font-bold uppercase">Acoustic Treatment Recommendations:</div>
+          <p id="room-mode-desc" class="text-zinc-300 font-sans leading-relaxed text-xs">
+            Room proportions avoid severe coincidence modal stacking. Install bass traps in tri-corners to absorb low-frequency axial peaks.
+          </p>
         </div>
       </div>
     </div>
@@ -70,64 +93,47 @@
 <script>
   import { AcousticRoomModeEngine } from '../../engine/AcousticRoomModeEngine';
 
-  function initRoomModeInspector() {
-    const lenSlider = document.getElementById('room-len-slider') as HTMLInputElement;
-    const widthSlider = document.getElementById('room-width-slider') as HTMLInputElement;
-    const heightSlider = document.getElementById('room-height-slider') as HTMLInputElement;
+  document.addEventListener('DOMContentLoaded', () => {
+    const root = document.getElementById('room-mode-root');
+    if (!root) return;
+
+    const lenSlider = document.getElementById('room-len-slider') as HTMLInputElement | null;
+    const widthSlider = document.getElementById('room-width-slider') as HTMLInputElement | null;
+    const heightSlider = document.getElementById('room-height-slider') as HTMLInputElement | null;
 
     const lenDisp = document.getElementById('len-disp');
     const widthDisp = document.getElementById('width-disp');
     const heightDisp = document.getElementById('height-disp');
-    const schroederDisp = document.getElementById('schroeder-freq');
-    const container = document.getElementById('modes-list-container');
+    const schroederFreq = document.getElementById('schroeder-freq');
+    const lenModes = document.getElementById('len-modes');
+    const widthModes = document.getElementById('width-modes');
+    const heightModes = document.getElementById('height-modes');
+    const badge = document.getElementById('room-mode-badge');
+    const desc = document.getElementById('room-mode-desc');
 
-    if (!lenSlider || !widthSlider || !heightSlider) return;
+    function updateCalculations() {
+      const l = parseFloat(lenSlider?.value || '18');
+      const w = parseFloat(widthSlider?.value || '14');
+      const h = parseFloat(heightSlider?.value || '9');
 
-    function update() {
-      const L_ft = parseFloat(lenSlider.value);
-      const W_ft = parseFloat(widthSlider.value);
-      const H_ft = parseFloat(heightSlider.value);
+      if (lenDisp) lenDisp.textContent = `${l.toFixed(1)} ft (${(l * 0.3048).toFixed(2)}m)`;
+      if (widthDisp) widthDisp.textContent = `${w.toFixed(1)} ft (${(w * 0.3048).toFixed(2)}m)`;
+      if (heightDisp) heightDisp.textContent = `${h.toFixed(1)} ft (${(h * 0.3048).toFixed(2)}m)`;
 
-      const L_m = L_ft * 0.3048;
-      const W_m = W_ft * 0.3048;
-      const H_m = H_ft * 0.3048;
+      const res = AcousticRoomModeEngine.calculateRoomModes(l, w, h);
 
-      if (lenDisp) lenDisp.textContent = `${L_ft.toFixed(1)} ft (${L_m.toFixed(2)}m)`;
-      if (widthDisp) widthDisp.textContent = `${W_ft.toFixed(1)} ft (${W_m.toFixed(2)}m)`;
-      if (heightDisp) heightDisp.textContent = `${H_ft.toFixed(1)} ft (${H_m.toFixed(2)}m)`;
+      if (schroederFreq) schroederFreq.textContent = `${res.schroederFrequencyHz.toFixed(1)} Hz`;
+      if (lenModes) lenModes.textContent = res.lengthModes.slice(0, 3).map(m => `${m.toFixed(1)} Hz`).join(', ');
+      if (widthModes) widthModes.textContent = res.widthModes.slice(0, 3).map(m => `${m.toFixed(1)} Hz`).join(', ');
+      if (heightModes) heightModes.textContent = res.heightModes.slice(0, 3).map(m => `${m.toFixed(1)} Hz`).join(', ');
 
-      const schroeder = AcousticRoomModeEngine.calculateSchroederCutoff(L_m, W_m, H_m);
-      if (schroederDisp) schroederDisp.textContent = `${schroeder.toFixed(1)} Hz`;
-
-      const modes = AcousticRoomModeEngine.calculateAxialModes(L_m, W_m, H_m);
-
-      if (container) {
-        container.innerHTML = '';
-        modes.slice(0, 10).forEach(m => {
-          const div = document.createElement('div');
-          div.className = 'p-2 rounded bg-[#18181b] border border-white/5 flex justify-between items-center text-xs';
-          div.innerHTML = `
-            <div class="flex items-center gap-2">
-              <span class="px-1.5 py-0.5 rounded bg-purple-400/10 text-purple-400 font-bold text-[10px]">${m.axis.toUpperCase()}</span>
-              <span class="text-slate-300 font-bold">${m.frequency.toFixed(1)} Hz</span>
-            </div>
-            <span class="text-slate-500 text-[10px]">Order: ${m.order}</span>
-          `;
-          container.appendChild(div);
-        });
-      }
+      if (badge) badge.textContent = `BONNEVILLE RATIO: ${res.isOptimalRatio ? 'OPTIMAL' : 'MODAL STACKING RISK'}`;
+      if (desc) desc.textContent = res.explanation;
     }
 
-    lenSlider?.addEventListener('input', update);
-    widthSlider?.addEventListener('input', update);
-    heightSlider?.addEventListener('input', update);
-
-    update();
-  }
-
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initRoomModeInspector);
-  } else {
-    initRoomModeInspector();
-  }
+    lenSlider?.addEventListener('input', updateCalculations);
+    widthSlider?.addEventListener('input', updateCalculations);
+    heightSlider?.addEventListener('input', updateCalculations);
+    updateCalculations();
+  });
 </script>

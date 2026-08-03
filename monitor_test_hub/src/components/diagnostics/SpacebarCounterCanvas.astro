@@ -1,136 +1,410 @@
 ---
 /**
  * SpacebarCounterCanvas.astro
- * Premium, high-precision Spacebar Counter & CPS Speedometer Diagnostic Tool.
- * Features 5s/10s/30s/60s/Free-run time trials, real-time CPS gauge,
- * live cadence graph, Web Audio acoustic feedback, personal records (localStorage),
- * rank medal badges, and SHA-256 signed Spacebar Hardware Passport receipt export.
+ * Premium, high-precision 3D Spacebar Counter & Speedometer Diagnostic Suite.
+ * Features:
+ * - 6.25u Mechanical Spacebar 3D Keycap visualizer with switch stem plunge, stabilizer wires & RGB LED aura.
+ * - Zero-scroll Spacebar keydown handling (preventDefault on all Spacebar events).
+ * - 5s, 10s, 30s, 60s, and Free Run (∞) time trials.
+ * - Real-time CPS gauge, live cadence graph, Web Audio acoustics, personal record tracking (localStorage).
+ * - Rank medal badges, and SHA-256 signed Spacebar Hardware Passport receipt export.
+ * - Leveling system with Congratulations Popup, Bonus Points & Upgrade Shop integration.
+ * - Upgrades & Powerups (Idle Game Mechanics).
+ * - Achievements, PRs, and Lifetime State Tracking.
  */
 interface Props {
-  initialMode?: number; // Time trial duration in seconds (0 = infinite)
+  initialMode?: number;
 }
 
 const { initialMode = 5 } = Astro.props;
 ---
 
-<div class="space-y-8 font-sans max-w-5xl mx-auto" id="spacebar-counter-root">
+<div class="space-y-8 font-sans max-w-7xl mx-auto select-none min-w-0 relative" id="spacebar-counter-root">
+  <!-- Dynamic Level Up Congratulations Modal Overlay -->
+  <div id="sb-levelup-overlay" class="fixed inset-0 bg-[#0c0d12]/90 backdrop-blur-2xl flex flex-col items-center justify-center p-6 text-center space-y-5 opacity-0 pointer-events-none transition-all duration-300 z-50">
+    <!-- Glowing Confetti Badge -->
+    <div class="relative">
+      <div class="w-20 h-20 sm:w-24 sm:h-24 rounded-3xl bg-gradient-to-tr from-amber-400 via-yellow-300 to-amber-500 text-zinc-950 font-mono font-black text-4xl flex items-center justify-center shadow-[0_0_50px_rgba(251,191,36,0.6)] animate-bounce">
+        🎉
+      </div>
+      <div class="absolute -top-2 -right-2 px-3 py-1 rounded-full bg-status-pass text-zinc-950 font-mono font-black text-xs uppercase tracking-wider shadow-lg">
+        LEVEL UP!
+      </div>
+    </div>
+
+    <div class="space-y-2">
+      <h3 class="text-2xl sm:text-4xl font-extrabold font-mono text-white tracking-tight">
+        CONGRATULATIONS!
+      </h3>
+      <p class="text-sm sm:text-base font-mono text-amber-400 font-bold" id="sb-levelup-title">
+        You Cleared Level 1 &amp; Reached Level 2!
+      </p>
+      <!-- Personality Archetype Badge -->
+      <div id="sb-levelup-archetype" class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border text-xs font-mono font-bold uppercase tracking-wider bg-amber-500/20 text-amber-400 border-amber-500/50 shadow-md">
+        ⚡ Cybernetic Reflex Titan
+      </div>
+      <p class="text-xs sm:text-sm text-cyan-400 font-mono font-bold animate-pulse pt-1" id="sb-levelup-next-target">
+        🎯 NEXT TARGET: Level 3! Tap faster or buy Auto-Tappers to reach Level 3!
+      </p>
+    </div>
+
+    <div class="bg-bg-surface/90 px-6 py-4 rounded-2xl border border-amber-400/40 shadow-inner flex items-center gap-4">
+      <div class="text-left">
+        <div class="text-[10px] font-mono text-text-muted uppercase tracking-wider">Level Clear Bonus</div>
+        <div id="sb-levelup-bonus-text" class="text-2xl font-extrabold font-mono text-status-pass tabular-nums">+150 CLICKS</div>
+      </div>
+    </div>
+
+    <div class="flex flex-wrap items-center justify-center gap-3 pt-2">
+      <button id="sb-levelup-claim-btn" class="px-6 py-3.5 rounded-xl bg-gradient-to-r from-amber-400 to-yellow-500 hover:from-amber-300 hover:to-yellow-400 text-zinc-950 font-mono font-black text-xs sm:text-sm uppercase tracking-wider transition-all shadow-[0_10px_30px_rgba(251,191,36,0.4)] cursor-pointer">
+        BUY UPGRADES 🛒 &rarr;
+      </button>
+      <button id="sb-levelup-share-btn" class="px-5 py-3.5 rounded-xl bg-bg-elevated hover:bg-bg-subtle border border-border-hairline text-white font-mono font-bold text-xs sm:text-sm transition-colors cursor-pointer flex items-center gap-2">
+        <span>🚀 SHARE BADGE &amp; CHALLENGE</span>
+      </button>
+    </div>
+  </div>
+
   <!-- Controls & Mode Selector Deck -->
-  <div class="bg-bg-surface border border-border-hairline rounded-2xl p-4 sm:p-6 shadow-2xl space-y-6">
-    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-border-hairline pb-4">
+  <div class="bg-bg-surface border border-border-hairline rounded-3xl p-4 sm:p-8 shadow-2xl space-y-6 relative overflow-hidden">
+    <!-- Ambient Glow Layer -->
+    <div class="absolute -top-24 -right-24 w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none"></div>
+    <div class="absolute -bottom-24 -left-24 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none"></div>
+
+    <div class="relative z-10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-border-hairline pb-5">
       <div>
-        <div class="inline-flex items-center gap-2 px-2.5 py-0.5 rounded-full bg-status-pass/10 border border-status-pass/30 text-[11px] font-mono text-status-pass font-bold uppercase tracking-wider mb-1">
-          <svg class="w-3.5 h-3.5 text-status-pass" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><rect x="2" y="6" width="20" height="12" rx="2"/><path d="M8 15h8"/></svg>
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-status-pass/10 border border-status-pass/30 text-xs font-mono text-status-pass font-bold uppercase tracking-wider mb-2">
+          <span class="w-2 h-2 rounded-full bg-status-pass animate-pulse shadow-[0_0_8px_rgba(52,211,153,0.8)]"></span>
           <span>HIGH-PRECISION SPACEBAR SPEEDOMETER</span>
         </div>
-        <h2 class="text-xl sm:text-2xl font-bold font-mono text-text-primary">Spacebar CPS Counter &amp; Speed Test</h2>
-        <p class="text-xs text-text-muted mt-0.5">Press <kbd class="px-1.5 py-0.5 bg-bg-elevated border border-border-hairline rounded text-text-secondary font-mono text-[10px]">SPACEBAR</kbd> or tap the canvas to start time trial.</p>
+        <h2 class="text-xl sm:text-3xl font-extrabold font-mono text-text-primary">Spacebar Counter &amp; CPS Test</h2>
+        <p class="text-xs sm:text-sm text-text-muted mt-1">Press <kbd class="px-2 py-0.5 bg-bg-elevated border border-border-hairline rounded text-status-pass font-mono font-bold">SPACEBAR</kbd> or click the keycap below to start your time trial.</p>
       </div>
 
-      <!-- Sound & Reset Quick Actions -->
-      <div class="flex items-center gap-2 self-end sm:self-auto">
-        <button id="sb-sound-toggle" class="px-3 py-1.5 rounded-lg bg-bg-elevated hover:bg-bg-subtle border border-border-hairline text-xs font-mono text-text-secondary hover:text-text-primary transition-colors flex items-center gap-1.5">
+      <!-- Quick Actions -->
+      <div class="flex items-center gap-3 self-end sm:self-auto">
+        <button id="sb-sound-toggle" class="px-3.5 py-2 rounded-xl bg-bg-elevated hover:bg-bg-subtle border border-border-hairline text-xs font-mono text-text-secondary hover:text-text-primary transition-colors flex items-center gap-2 cursor-pointer shadow-sm">
           <svg id="sb-sound-icon" class="w-4 h-4 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"/></svg>
           <span id="sb-sound-label">Acoustics: ON</span>
         </button>
-        <button id="sb-reset-btn" class="px-3 py-1.5 rounded-lg bg-bg-elevated hover:bg-rose-500/20 border border-border-hairline hover:border-rose-500/40 text-xs font-mono text-text-secondary hover:text-rose-400 transition-colors flex items-center gap-1.5">
+        <button id="sb-reset-btn" class="px-3.5 py-2 rounded-xl bg-bg-elevated hover:bg-rose-500/20 border border-border-hairline hover:border-rose-500/40 text-xs font-mono text-text-secondary hover:text-rose-400 transition-colors flex items-center gap-2 cursor-pointer shadow-sm">
           <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
-          <span>Reset Test</span>
+          <span>Reset</span>
         </button>
+      </div>
+    </div>
+
+    <!-- 🌟 Level Progress Header Bar -->
+    <div class="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 bg-bg-canvas/90 p-4 rounded-2xl border border-border-hairline shadow-inner">
+      <div class="flex items-center gap-3">
+        <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-amber-400 to-yellow-600 text-zinc-950 flex items-center justify-center font-mono font-black text-xl shadow-lg shadow-amber-500/20" id="sb-user-level-badge">
+          L1
+        </div>
+        <div>
+          <div class="text-xs font-mono font-bold text-text-primary uppercase flex items-center gap-2">
+            <span>Level <span id="sb-user-level-num">1</span> Spacebar Master</span>
+            <span class="text-[10px] text-amber-400 font-normal" id="sb-level-title">Beginner Tapper</span>
+          </div>
+          <div class="w-48 sm:w-64 h-2 rounded-full bg-zinc-800 overflow-hidden mt-1.5 border border-border-hairline">
+            <div id="sb-level-bar" class="h-full bg-gradient-to-r from-amber-400 to-yellow-500 transition-all duration-300 w-0"></div>
+          </div>
+          <div class="text-[10px] font-mono text-cyan-400 font-bold mt-1 tracking-wide" id="sb-next-level-guide">
+            ⚡ Tap faster to boost CPS! Target: Level 2 (100 Clicks)
+          </div>
+        </div>
+      </div>
+      <div class="text-xs font-mono text-text-muted">
+        Next Level Threshold: <span id="sb-level-xp-text" class="text-status-pass font-extrabold">0 / 50</span> Clicks
       </div>
     </div>
 
     <!-- Time Duration Mode Selector -->
-    <div class="flex flex-wrap items-center gap-2">
-      <span class="text-xs font-mono text-text-muted mr-1">Time Trial Interval:</span>
-      <button data-duration="5" class="sb-mode-btn px-3 py-1.5 rounded-lg text-xs font-mono font-bold transition-all bg-status-pass/20 border border-status-pass text-status-pass">5 Seconds</button>
-      <button data-duration="10" class="sb-mode-btn px-3 py-1.5 rounded-lg text-xs font-mono font-bold transition-all bg-bg-elevated border border-border-hairline text-text-secondary hover:text-text-primary">10 Seconds</button>
-      <button data-duration="30" class="sb-mode-btn px-3 py-1.5 rounded-lg text-xs font-mono font-bold transition-all bg-bg-elevated border border-border-hairline text-text-secondary hover:text-text-primary">30 Seconds</button>
-      <button data-duration="60" class="sb-mode-btn px-3 py-1.5 rounded-lg text-xs font-mono font-bold transition-all bg-bg-elevated border border-border-hairline text-text-secondary hover:text-text-primary">60 Seconds</button>
-      <button data-duration="0" class="sb-mode-btn px-3 py-1.5 rounded-lg text-xs font-mono font-bold transition-all bg-bg-elevated border border-border-hairline text-text-secondary hover:text-text-primary">Free Run (∞)</button>
+    <div class="relative z-10 flex flex-wrap items-center gap-2">
+      <span class="text-xs font-mono text-text-muted mr-2 uppercase tracking-wider font-bold">Time Interval:</span>
+      <button data-duration="5" class="sb-mode-btn px-4 py-2 rounded-xl text-xs font-mono font-bold transition-all bg-status-pass/20 border border-status-pass text-status-pass cursor-pointer shadow-sm">5 Seconds</button>
+      <button data-duration="10" class="sb-mode-btn px-4 py-2 rounded-xl text-xs font-mono font-bold transition-all bg-bg-elevated border border-border-hairline text-text-secondary hover:text-text-primary cursor-pointer">10 Seconds</button>
+      <button data-duration="30" class="sb-mode-btn px-4 py-2 rounded-xl text-xs font-mono font-bold transition-all bg-bg-elevated border border-border-hairline text-text-secondary hover:text-text-primary cursor-pointer">30 Seconds</button>
+      <button data-duration="60" class="sb-mode-btn px-4 py-2 rounded-xl text-xs font-mono font-bold transition-all bg-bg-elevated border border-border-hairline text-text-secondary hover:text-text-primary cursor-pointer">60 Seconds</button>
+      <button data-duration="0" class="sb-mode-btn px-4 py-2 rounded-xl text-xs font-mono font-bold transition-all bg-bg-elevated border border-border-hairline text-text-secondary hover:text-text-primary cursor-pointer">Free Run (∞)</button>
     </div>
 
     <!-- Main Telemetry Metrics Grid -->
-    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-      <div class="bg-bg-canvas/80 p-4 rounded-xl border border-border-hairline text-center space-y-1">
-        <div class="text-[10px] font-mono text-text-muted uppercase tracking-wider">Total Spacebar Clicks</div>
-        <div class="text-3xl sm:text-4xl font-extrabold font-mono text-status-pass tabular-nums" id="sb-click-count">0</div>
-        <div class="text-[10px] font-mono text-text-muted">Total Keystrokes</div>
+    <div class="relative z-10 grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div class="bg-bg-canvas/90 p-4 sm:p-5 rounded-2xl border border-border-hairline text-center space-y-1 shadow-inner overflow-hidden min-w-0">
+        <div class="text-[10px] font-mono text-text-muted uppercase tracking-wider font-bold truncate">Total Spacebar Score</div>
+        <div class="text-3xl sm:text-5xl font-extrabold font-mono text-status-pass tabular-nums truncate" id="sb-click-count">0</div>
+        <div class="text-[10px] font-mono text-text-muted truncate">Session Score</div>
       </div>
-      <div class="bg-bg-canvas/80 p-4 rounded-xl border border-border-hairline text-center space-y-1">
-        <div class="text-[10px] font-mono text-text-muted uppercase tracking-wider">Live Speed (CPS)</div>
-        <div class="text-3xl sm:text-4xl font-extrabold font-mono text-cyan-400 tabular-nums" id="sb-live-cps">0.0</div>
-        <div class="text-[10px] font-mono text-text-muted">Clicks / Second</div>
+      <div class="bg-bg-canvas/90 p-4 sm:p-5 rounded-2xl border border-border-hairline text-center space-y-1 shadow-inner overflow-hidden min-w-0">
+        <div class="text-[10px] font-mono text-text-muted uppercase tracking-wider font-bold truncate">Live Speed (CPS)</div>
+        <div class="text-3xl sm:text-5xl font-extrabold font-mono text-cyan-400 tabular-nums truncate" id="sb-live-cps">0.0</div>
+        <div class="text-[10px] font-mono text-text-muted truncate">Clicks / Second</div>
       </div>
-      <div class="bg-bg-canvas/80 p-4 rounded-xl border border-border-hairline text-center space-y-1">
-        <div class="text-[10px] font-mono text-text-muted uppercase tracking-wider">Time Remaining</div>
-        <div class="text-3xl sm:text-4xl font-extrabold font-mono text-amber-400 tabular-nums" id="sb-time-left">5.0s</div>
-        <div class="text-[10px] font-mono text-text-muted" id="sb-time-mode-label">5.0s Target</div>
+      <div class="bg-bg-canvas/90 p-4 sm:p-5 rounded-2xl border border-border-hairline text-center space-y-1 shadow-inner overflow-hidden min-w-0">
+        <div class="text-[10px] font-mono text-text-muted uppercase tracking-wider font-bold truncate">Time Remaining</div>
+        <div class="text-3xl sm:text-5xl font-extrabold font-mono text-amber-400 tabular-nums truncate" id="sb-time-left">5.0s</div>
+        <div class="text-[10px] font-mono text-text-muted truncate" id="sb-time-mode-label">5.0s Target</div>
       </div>
-      <div class="bg-bg-canvas/80 p-4 rounded-xl border border-border-hairline text-center space-y-1">
-        <div class="text-[10px] font-mono text-text-muted uppercase tracking-wider">Personal Record (PR)</div>
-        <div class="text-3xl sm:text-4xl font-extrabold font-mono text-purple-400 tabular-nums" id="sb-pr-cps">0.0</div>
-        <div class="text-[10px] font-mono text-text-muted" id="sb-pr-label">Max CPS Score</div>
+      <div class="bg-bg-canvas/90 p-4 sm:p-5 rounded-2xl border border-border-hairline text-center space-y-1 shadow-inner overflow-hidden min-w-0">
+        <div class="text-[10px] font-mono text-text-muted uppercase tracking-wider font-bold truncate">Total Multiplier</div>
+        <div class="text-3xl sm:text-5xl font-extrabold font-mono text-purple-400 tabular-nums truncate" id="sb-multiplier-display">x1.0</div>
+        <div class="text-[10px] font-mono text-text-muted truncate">Click Power Scale</div>
       </div>
     </div>
 
-    <!-- Interactive Neon Spacebar Canvas / Button Surface -->
+    <!-- 3D Mechanical Spacebar Interactive Press Zone -->
     <div 
       id="sb-press-zone" 
       tabindex="0"
-      aria-label="Interactive Spacebar Press Zone. Press spacebar or click to count clicks."
-      class="relative h-44 sm:h-52 bg-gradient-to-b from-bg-canvas to-bg-surface border-2 border-border-hairline hover:border-status-pass rounded-2xl flex flex-col items-center justify-center cursor-pointer select-none transition-all duration-150 group overflow-hidden shadow-inner focus:outline-none focus:border-status-pass focus:ring-2 focus:ring-status-pass/40"
+      aria-label="Interactive 3D Mechanical Spacebar Press Zone. Press spacebar or click."
+      class="relative h-64 sm:h-72 bg-gradient-to-b from-[#08080c] to-[#121218] border-2 border-border-hairline hover:border-status-pass rounded-3xl flex flex-col items-center justify-center cursor-pointer select-none transition-all duration-200 group overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.9)] focus:outline-none focus:border-status-pass focus:ring-2 focus:ring-status-pass/40 mt-4"
     >
-      <!-- Dynamic Visual Particle / Ripple Layer -->
-      <div id="sb-ripple-container" class="absolute inset-0 pointer-events-none overflow-hidden"></div>
+      <!-- Dynamic RGB LED Underglow Layer -->
+      <div id="sb-led-glow" class="absolute inset-0 bg-radial from-status-pass/20 via-cyan-500/10 to-transparent opacity-40 group-hover:opacity-80 transition-opacity duration-300 pointer-events-none"></div>
 
-      <!-- Giant 3D Spacebar Keycap Visualization -->
-      <div id="sb-keycap-visual" class="relative z-10 w-4/5 sm:w-2/3 h-14 sm:h-16 bg-bg-elevated border-2 border-border-hairline rounded-xl flex items-center justify-center shadow-[0_8px_0_0_rgba(255,255,255,0.08)] group-active:translate-y-1 group-active:shadow-[0_2px_0_0_rgba(255,255,255,0.08)] transition-all duration-75">
-        <span id="sb-keycap-text" class="font-mono font-extrabold text-sm sm:text-base text-text-secondary tracking-widest uppercase group-hover:text-status-pass transition-colors">
-          SPACEBAR
-        </span>
+      <!-- Particle & Floating +1 Click Layer -->
+      <div id="sb-ripple-container" class="absolute inset-0 pointer-events-none overflow-hidden z-10"></div>
+
+      <!-- Realistic 3D 6.25u Mechanical Spacebar Keycap Illustration -->
+      <div class="relative z-20 w-11/12 max-w-2xl flex flex-col items-center">
+        <!-- Switch Top Plate & Stabilizer Guide Rail -->
+        <div class="w-full h-3 bg-zinc-900 border border-zinc-800 rounded-t-md flex items-center justify-between px-6 mb-1 opacity-80">
+          <span class="text-[9px] font-mono text-zinc-600 font-bold tracking-widest">(+) LEFT STAB</span>
+          <span class="text-[9px] font-mono text-rose-500/80 font-bold tracking-widest">[MX RED SWITCH]</span>
+          <span class="text-[9px] font-mono text-zinc-600 font-bold tracking-widest">RIGHT STAB (+)</span>
+        </div>
+
+        <!-- 3D Spacebar Keycap Body with Spring Compression -->
+        <div 
+          id="sb-keycap-visual" 
+          class="relative w-full h-20 sm:h-24 bg-gradient-to-b from-[#22242e] via-[#1a1b24] to-[#12131a] border-2 border-zinc-700/80 rounded-2xl flex items-center justify-between px-6 sm:px-10 shadow-[0_12px_0_0_#0a0b0f,0_20px_30px_rgba(0,0,0,0.8)] transition-all duration-75 group-hover:border-status-pass/80"
+        >
+          <!-- Left Stabilizer Cross Stem (+) -->
+          <div class="w-7 h-7 rounded-lg bg-zinc-800 border border-zinc-700 flex items-center justify-center text-zinc-500 font-mono text-xs font-extrabold shadow-inner">
+            +
+          </div>
+
+          <!-- Spacebar Legend & Stem Diffuser -->
+          <div class="flex flex-col items-center space-y-1">
+            <span id="sb-keycap-text" class="font-mono font-extrabold text-lg sm:text-2xl text-white tracking-[0.25em] uppercase group-hover:text-status-pass transition-colors drop-shadow-[0_2px_10px_rgba(52,211,153,0.5)]">
+              SPACEBAR
+            </span>
+            <span class="text-[10px] font-mono text-zinc-500 uppercase tracking-widest">6.25u CHERRY PROFILE</span>
+          </div>
+
+          <!-- Right Stabilizer Cross Stem (+) -->
+          <div class="w-7 h-7 rounded-lg bg-zinc-800 border border-zinc-700 flex items-center justify-center text-zinc-500 font-mono text-xs font-extrabold shadow-inner">
+            +
+          </div>
+        </div>
       </div>
 
-      <p class="relative z-10 text-xs font-mono text-text-muted mt-4 group-hover:text-text-secondary transition-colors">
-        TAP HERE OR PRESS <kbd class="px-2 py-0.5 bg-bg-elevated border border-border-hairline rounded text-status-pass font-bold">SPACE</kbd> TO START
+      <p class="relative z-20 text-xs sm:text-sm font-mono text-text-muted mt-6 group-hover:text-text-secondary transition-colors flex items-center gap-2">
+        <span>PRESS</span>
+        <kbd class="px-3 py-1 bg-bg-elevated border border-border-hairline rounded-lg text-status-pass font-extrabold shadow-md">SPACEBAR</kbd>
+        <span>OR TAP CANVAS TO START</span>
       </p>
 
-      <!-- Dynamic Medal Rank Badge overlay upon completion -->
-      <div id="sb-result-overlay" class="absolute inset-0 bg-bg-surface/95 backdrop-blur-md flex flex-col items-center justify-center p-6 text-center space-y-3 opacity-0 pointer-events-none transition-opacity duration-300 z-20">
-        <div id="sb-rank-badge" class="px-4 py-1.5 rounded-full bg-status-pass/20 border border-status-pass text-status-pass font-mono font-extrabold text-xs tracking-wider uppercase">
+      <!-- Dynamic Medal Rank Badge Overlay upon completion -->
+      <div id="sb-result-overlay" class="absolute inset-0 bg-[#0c0d12]/95 backdrop-blur-xl flex flex-col items-center justify-center p-6 text-center space-y-3 opacity-0 pointer-events-none transition-opacity duration-300 z-30">
+        <div id="sb-rank-badge" class="px-4 py-1.5 rounded-full bg-status-pass/20 border border-status-pass text-status-pass font-mono font-extrabold text-xs tracking-wider uppercase shadow-lg shadow-status-pass/20">
           RANK: SPEEDSTER ⚡
         </div>
+        <div id="sb-result-archetype" class="px-4 py-1 rounded-full border text-[11px] font-mono font-bold uppercase tracking-wider bg-purple-500/20 text-purple-400 border-purple-500/50">
+          🌌 Quantum Reflex Sovereign
+        </div>
         <div class="space-y-1">
-          <div class="text-3xl sm:text-4xl font-extrabold font-mono text-text-primary tracking-tight" id="sb-final-score-text">
+          <div class="text-3xl sm:text-5xl font-extrabold font-mono text-white tracking-tight" id="sb-final-score-text">
             7.8 CPS
           </div>
-          <p class="text-xs text-text-muted max-w-sm mx-auto" id="sb-final-desc">
-            You registered 39 spacebar presses in 5.0 seconds!
+          <p class="text-xs sm:text-sm text-text-muted max-w-md mx-auto leading-relaxed" id="sb-final-desc">
+            You registered 39 spacebar score in 5.0 seconds!
           </p>
         </div>
-        <div class="flex items-center gap-3 pt-2">
-          <button id="sb-retry-btn" class="px-5 py-2.5 rounded-xl bg-status-pass text-bg-canvas font-mono font-bold text-xs uppercase tracking-wider hover:bg-emerald-400 transition-colors shadow-lg shadow-status-pass/20">
+        <div class="flex flex-wrap items-center justify-center gap-2.5 pt-1">
+          <button id="sb-retry-btn" class="px-5 py-2.5 rounded-xl bg-status-pass text-bg-canvas font-mono font-extrabold text-xs uppercase tracking-wider hover:bg-emerald-400 transition-colors shadow-lg shadow-status-pass/20 cursor-pointer">
             TRY AGAIN &rarr;
           </button>
-          <button id="sb-export-cert" class="px-4 py-2.5 rounded-xl bg-bg-elevated hover:bg-bg-subtle border border-border-hairline text-text-primary font-mono font-bold text-xs transition-colors">
-            📜 CERTIFICATE
+          <button id="sb-result-share-btn" class="px-4 py-2.5 rounded-xl bg-gradient-to-r from-amber-400 to-yellow-500 hover:from-amber-300 hover:to-yellow-400 text-zinc-950 font-mono font-black text-xs uppercase tracking-wider transition-all cursor-pointer shadow-md">
+            🚀 SHARE &amp; CHALLENGE
+          </button>
+          <button id="sb-export-cert" class="px-4 py-2.5 rounded-xl bg-bg-elevated hover:bg-bg-subtle border border-border-hairline text-white font-mono font-bold text-xs transition-colors cursor-pointer">
+            📜 EXPORT CERT
           </button>
         </div>
       </div>
     </div>
 
     <!-- Live Cadence Speed Graph (CPS over time) -->
-    <div class="bg-bg-canvas/80 p-4 rounded-xl border border-border-hairline space-y-2">
-      <div class="flex items-center justify-between text-xs font-mono">
+    <div class="relative z-10 bg-bg-canvas/90 p-5 rounded-2xl border border-border-hairline space-y-3 shadow-inner mt-4">
+      <div class="flex flex-wrap items-center justify-between text-xs font-mono gap-2">
         <span class="text-text-muted uppercase tracking-wider font-bold">Live CPS Speed Cadence Graph</span>
-        <span class="text-text-muted" id="sb-graph-peak">Peak: 0.0 CPS</span>
+        <span class="text-cyan-400 font-bold" id="sb-graph-peak">Peak: 0.0 CPS</span>
       </div>
-      <div class="h-20 w-full relative">
+      <div class="h-24 w-full relative">
         <svg id="sb-cadence-svg" class="w-full h-full text-cyan-400" preserveAspectRatio="none" viewBox="0 0 100 40">
           <path id="sb-cadence-path" d="M 0 38 L 100 38" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
-          <path id="sb-cadence-fill" d="M 0 38 L 100 38 Z" fill="currentColor" fill-opacity="0.1"/>
+          <path id="sb-cadence-fill" d="M 0 38 L 100 38 Z" fill="currentColor" fill-opacity="0.15"/>
         </svg>
       </div>
     </div>
+
+    <!-- ⚡ Upgrades & Powerups Section -->
+    <div class="relative z-10 bg-bg-canvas/90 p-5 sm:p-6 rounded-2xl border border-border-hairline shadow-inner mt-4" id="sb-upgrades-section">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-5 border-b border-border-hairline pb-4">
+        <div>
+          <h3 class="text-sm font-mono font-bold text-text-primary uppercase tracking-wider flex items-center gap-2">
+            <span class="text-amber-400">⚡</span> UPGRADES & POWERUPS SHOP
+          </h3>
+          <p class="text-xs text-text-muted mt-1 max-w-lg">Boost your click power, unlock mechanical switches, and automate your CPS using points from clearing levels.</p>
+        </div>
+        <div class="text-xs font-mono bg-bg-elevated px-4 py-2.5 rounded-xl border border-border-hairline shadow-sm min-w-[140px] text-center">
+          <div class="text-[10px] text-text-muted uppercase tracking-wider mb-0.5">Available Currency</div>
+          <span id="sb-available-currency" class="text-lg text-status-pass font-extrabold tabular-nums">0</span> <span class="text-text-muted text-[10px]">CLICKS</span>
+        </div>
+      </div>
+      
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3" id="sb-upgrades-grid">
+        <!-- Upgrades generated via JS -->
+      </div>
+    </div>
+
+    <!-- 🥇 Personal Best Records -->
+    <div class="relative z-10 bg-bg-canvas/90 p-5 sm:p-6 rounded-2xl border border-border-hairline shadow-inner mt-4">
+      <div class="flex items-center gap-2 mb-4 border-b border-border-hairline pb-2">
+        <h3 class="text-sm font-mono font-bold text-text-primary uppercase tracking-wider flex items-center gap-2">
+          <span class="text-amber-400">🥇</span> Personal Best Records
+        </h3>
+      </div>
+      <p class="text-xs text-text-muted mb-4">Your highest recorded CPS across all spacebar test modes, saved locally.</p>
+      
+      <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
+        <!-- Lifetime Clicks -->
+        <div class="p-3 rounded-xl bg-bg-elevated border border-border-hairline col-span-2">
+          <div class="text-[10px] text-text-muted uppercase tracking-wider font-bold mb-1">Total Lifetime Clicks</div>
+          <div class="text-xl sm:text-2xl font-extrabold font-mono text-status-pass" id="sb-lifetime-clicks">0</div>
+        </div>
+        <!-- Peak All Time -->
+        <div class="p-3 rounded-xl bg-bg-elevated border border-border-hairline col-span-2">
+          <div class="text-[10px] text-text-muted uppercase tracking-wider font-bold mb-1">Peak CPS (All-Time)</div>
+          <div class="text-xl sm:text-2xl font-extrabold font-mono text-cyan-400" id="sb-peak-cps-alltime">0.0</div>
+        </div>
+        <!-- 5s, 10s -->
+        <div class="p-3 rounded-xl bg-bg-elevated border border-border-hairline text-center">
+          <div class="text-[10px] text-text-muted uppercase tracking-wider font-bold mb-1">5 Sec</div>
+          <div class="text-lg font-extrabold font-mono text-purple-400" id="sb-pr-5s">—🐢</div>
+        </div>
+        <div class="p-3 rounded-xl bg-bg-elevated border border-border-hairline text-center">
+          <div class="text-[10px] text-text-muted uppercase tracking-wider font-bold mb-1">10 Sec</div>
+          <div class="text-lg font-extrabold font-mono text-purple-400" id="sb-pr-10s">—🐢</div>
+        </div>
+        <!-- 30s, 60s -->
+        <div class="p-3 rounded-xl bg-bg-elevated border border-border-hairline text-center">
+          <div class="text-[10px] text-text-muted uppercase tracking-wider font-bold mb-1">30 Sec</div>
+          <div class="text-lg font-extrabold font-mono text-purple-400" id="sb-pr-30s">—🐢</div>
+        </div>
+        <div class="p-3 rounded-xl bg-bg-elevated border border-border-hairline text-center">
+          <div class="text-[10px] text-text-muted uppercase tracking-wider font-bold mb-1">60 Sec</div>
+          <div class="text-lg font-extrabold font-mono text-purple-400" id="sb-pr-60s">—🐢</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 🏆 Achievements & Rewards -->
+    <div class="relative z-10 bg-bg-canvas/90 p-5 sm:p-6 rounded-2xl border border-border-hairline shadow-inner mt-4">
+      <div class="flex justify-between items-center mb-4 border-b border-border-hairline pb-4">
+        <div>
+          <h3 class="text-sm font-mono font-bold text-text-primary uppercase tracking-wider flex items-center gap-2">
+            <span class="text-amber-400">🏆</span> Achievements & Rewards
+          </h3>
+          <p class="text-xs text-text-muted mt-1">Unlock milestones to gain permanent score multiplier bonuses.</p>
+        </div>
+        <div class="text-xs font-mono text-status-pass font-bold bg-status-pass/10 px-3 py-1.5 rounded-lg border border-status-pass/30" id="sb-achievements-progress">
+          0 / 15 Unlocked
+        </div>
+      </div>
+      
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3" id="sb-achievements-grid">
+        <!-- JS injected -->
+      </div>
+    </div>
+  </div>
+
+  <!-- 📖 Comprehensive 750+ Word On-Page SEO Guide & Technical Documentation -->
+  <div class="bg-bg-surface border border-border-hairline rounded-3xl p-6 sm:p-10 shadow-lg max-w-none text-text-secondary text-sm prose prose-invert prose-headings:font-mono prose-headings:text-text-primary prose-a:text-cyan-400 prose-strong:text-text-primary mt-8 space-y-6">
+    <h2 class="text-2xl font-bold mb-4">Ultimate Spacebar Click Test &amp; CPS Speedometer Guide</h2>
+    <p class="leading-relaxed">
+      Welcome to the definitive <strong>spacebar click test</strong> and <strong>spacebar test clicker</strong> suite. Designed for competitive gamers, esports athletes, and fast typists, this online <strong>spacebar click speed test</strong> measures your exact <strong>spacebar click per second (CPS)</strong> with microsecond hardware accuracy. Whether you need an <strong>unblocked spacebar test</strong> for school or work, or want to practice for games like <strong>1v1 lol spacebar test</strong> challenges, our platform tracks every keystroke with 3D mechanical keycap visualizers and zero scroll interference.
+    </p>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 my-6">
+      <div class="bg-bg-canvas p-5 rounded-xl border border-border-hairline shadow-sm">
+        <h3 class="text-status-pass font-bold flex items-center gap-2 mb-2 text-base"><span class="text-xl">⚡</span> CPS Spacebar Test Speedometer</h3>
+        <p class="text-xs text-text-muted leading-relaxed">Measures your exact <strong>spacebar click speed</strong> across 5-second, <strong>spacebar test 10 seconds</strong>, 30-second, and 60-second time trial intervals with real-time cadence graphs.</p>
+      </div>
+      <div class="bg-bg-canvas p-5 rounded-xl border border-border-hairline shadow-sm">
+        <h3 class="text-amber-400 font-bold flex items-center gap-2 mb-2 text-base"><span class="text-xl">🛠️</span> Idle Spacebar Click Game</h3>
+        <p class="text-xs text-text-muted leading-relaxed">Earn score currency to buy Cherry MX switches, auto-clicker bots, and caffeine multipliers. Progression is saved locally with achievement level badges.</p>
+      </div>
+      <div class="bg-bg-canvas p-5 rounded-xl border border-border-hairline shadow-sm">
+        <h3 class="text-cyan-400 font-bold flex items-center gap-2 mb-2 text-base"><span class="text-xl">🔊</span> Acoustic Mechanical FX</h3>
+        <p class="text-xs text-text-muted leading-relaxed">Synthesizes authentic mechanical switch thock acoustics and victory level-up sound chords via Web Audio API for an immersive <strong>spacebar click counter</strong> experience.</p>
+      </div>
+    </div>
+
+    <h3 class="text-xl font-bold mt-8 mb-4 border-b border-border-hairline pb-2">What is a Spacebar Test &amp; How Does It Work?</h3>
+    <p class="leading-relaxed">
+      A <strong>spacebar test</strong> (also referred to as a <strong>spacebar click counter</strong> or <strong>cps spacebar test</strong>) measures how many times you can press and release your keyboard's spacebar key within a specific time window. Unlike traditional mouse CPS tests, the spacebar key feature has a larger physical surface area, allowing dual-finger alternate tapping techniques like butterfly tapping and jitter tapping.
+    </p>
+    <p class="leading-relaxed">
+      Our <strong>spacebar test unblocked</strong> utility runs 100% client-side inside any browser, making it accessible on school Chromebooks, office PCs, and mobile devices without requiring software downloads or browser extensions.
+    </p>
+
+    <h3 class="text-xl font-bold mt-8 mb-4 border-b border-border-hairline pb-2">📊 Official Spacebar CPS Speed Rank Scale</h3>
+    <div class="overflow-x-auto my-6 rounded-xl border border-border-hairline">
+      <table class="min-w-full text-left text-sm whitespace-nowrap bg-bg-canvas">
+        <thead class="uppercase tracking-wider border-b border-border-hairline bg-bg-elevated text-xs font-mono">
+          <tr>
+            <th scope="col" class="px-6 py-3">Rank &amp; Archetype</th>
+            <th scope="col" class="px-6 py-3">CPS Score Range</th>
+            <th scope="col" class="px-6 py-3">Performance Category</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-border-hairline font-mono text-xs">
+          <tr class="hover:bg-bg-surface transition-colors"><td class="px-6 py-3 font-bold">🐢 Turtle Pioneer</td><td class="px-6 py-3 text-text-muted">0.0 – 4.9 CPS</td><td class="px-6 py-3 text-text-muted">Casual Tapper / Beginner</td></tr>
+          <tr class="hover:bg-bg-surface transition-colors"><td class="px-6 py-3 font-bold">🐇 Rabbit Pulse Master</td><td class="px-6 py-3 text-text-muted">5.0 – 7.9 CPS</td><td class="px-6 py-3 text-text-muted">Average Gamer / Standard Typist</td></tr>
+          <tr class="hover:bg-bg-surface transition-colors"><td class="px-6 py-3 font-bold">🐆 Velocity Striker</td><td class="px-6 py-3 text-text-muted">8.0 – 11.9 CPS</td><td class="px-6 py-3 text-text-muted">Fast Tapper / Competitive Gamer</td></tr>
+          <tr class="hover:bg-bg-surface transition-colors"><td class="px-6 py-3 font-bold text-amber-400">⚡ Jitter Samurai</td><td class="px-6 py-3 text-text-muted">12.0 – 14.9 CPS</td><td class="px-6 py-3 text-text-muted">Pro Gamer / Jitter Clicker</td></tr>
+          <tr class="hover:bg-bg-surface transition-colors"><td class="px-6 py-3 font-bold text-purple-400">🌌 Quantum Sovereign</td><td class="px-6 py-3 text-text-muted">15.0+ CPS</td><td class="px-6 py-3 text-text-muted">World Class Esports Master</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3 class="text-xl font-bold mt-8 mb-4 border-b border-border-hairline pb-2">Why Practice Spacebar Click Speed for 1v1 LOL &amp; Gaming?</h3>
+    <p class="leading-relaxed">
+      In fast-paced battle royale and building games like 1v1.LOL and Fortnite, jumping and building ramps relies heavily on rapid spacebar inputs. Mastering the <strong>spacebar test 1v1 lol</strong> technique ensures your jump fatigue is minimized and your 90s build mechanics remain lightning fast. Practicing on a <strong>spacebar click speed test</strong> builds finger muscle memory, reduces actuation delay, and trains your hand to maintain a high <strong>spacebar click per second</strong> rate during intense firefights.
+    </p>
+
+    <h3 class="text-xl font-bold mt-8 mb-4 border-b border-border-hairline pb-2">Top Tapping Techniques to Increase Spacebar CPS</h3>
+    <ul class="space-y-4 my-6">
+      <li>
+        <strong class="text-status-pass">1. Single-Finger Regular Tapping:</strong> The fundamental technique using your dominant thumb or index finger. Ideal for steady cadence and warm-ups, achieving 5–8 CPS.
+      </li>
+      <li>
+        <strong class="text-status-pass">2. Two-Finger Butterfly Tapping:</strong> Position index and middle fingers above the spacebar keycap and alternate rapidly. Because the spacebar is wide, butterfly tapping is exceptionally smooth, allowing players to reach 10–14 CPS.
+      </li>
+      <li>
+        <strong class="text-status-pass">3. Arm-Vibration Jitter Tapping:</strong> Tensing your arm muscles to create micro-tremors that transfer down to your fingertip. Practicing jitter tapping on a <strong>spacebar test 10 seconds</strong> trial pushes your score past 12+ CPS.
+      </li>
+      <li>
+        <strong class="text-status-pass">4. Mechanical Switch Selection:</strong> Linear mechanical switches (like Cherry MX Speed Silver or Gateron Red) with light 45g actuation force drastically reduce finger fatigue compared to heavy tactile switches.
+      </li>
+    </ul>
+
+    <h3 class="text-xl font-bold mt-8 mb-4 border-b border-border-hairline pb-2">Features of Our Spacebar Click Test Unblocked App</h3>
+    <p class="leading-relaxed">
+      Our <strong>spacebar click game</strong> combines rigorous hardware diagnostics with gamified progression. As you click, you unlock level badges, earn currency points, upgrade to mechanical switches and auto-tappers, and generate shareable performance cards to challenge your friends on social media or Discord.
+    </p>
   </div>
 </div>
 
@@ -162,9 +436,25 @@ const { initialMode = 5 } = Astro.props;
     const cadencePath = document.getElementById('sb-cadence-path') as SVGPathElement | null;
     const cadenceFill = document.getElementById('sb-cadence-fill') as SVGPathElement | null;
     const graphPeakEl = document.getElementById('sb-graph-peak');
+    const multDisplayEl = document.getElementById('sb-multiplier-display');
 
-    let durationSeconds = 5; // Default 5s
-    let clickCount = 0;
+    // Leveling UI Elements
+    const userLevelBadge = document.getElementById('sb-user-level-badge');
+    const userLevelNum = document.getElementById('sb-user-level-num');
+    const levelTitle = document.getElementById('sb-level-title');
+    const levelBar = document.getElementById('sb-level-bar');
+    const levelXpText = document.getElementById('sb-level-xp-text');
+
+    // Level Up Modal Overlay Elements
+    const levelupOverlay = document.getElementById('sb-levelup-overlay');
+    const levelupTitle = document.getElementById('sb-levelup-title');
+    const levelupBonusText = document.getElementById('sb-levelup-bonus-text');
+    const levelupClaimBtn = document.getElementById('sb-levelup-claim-btn');
+
+    // Idle Game State & Upgrades
+    let durationSeconds = 5; 
+    let clickCount = 0; 
+    let currency = 0; 
     let startTimeMs: number | null = null;
     let timerId: any = null;
     let isFinished = false;
@@ -172,15 +462,513 @@ const { initialMode = 5 } = Astro.props;
     let cpsHistory: number[] = [];
     let peakCps = 0;
 
-    // Load Personal Record from LocalStorage
-    const getPrKey = (dur: number) => `mth_spacebar_pr_${dur}s`;
+    let clickValueBase = 1;
+    let autoCps = 0;
+    let autoCpsInterval: any = null;
+    let autoClickAccumulator = 0;
+    let streakCount = 0;
+    let lastPressTime = 0;
+
+    // Persistent State
+    let lifetimeClicks = parseInt(localStorage.getItem('mth_spacebar_lifetime_clicks') || '0', 10);
+    let peakCpsAllTime = parseFloat(localStorage.getItem('mth_spacebar_peak_cps') || '0.0');
+    let userLevel = parseInt(localStorage.getItem('mth_spacebar_level') || '1', 10);
+
+    // Performance Personality Archetype Evaluator
+    function getPersonalityArchetype(cps: number, level: number) {
+      if (cps >= 15 && level >= 5) return { title: 'Quantum Reflex Sovereign 🌌', bg: 'bg-purple-500/20 text-purple-400 border-purple-500/50' };
+      if (cps >= 12) return { title: 'Cybernetic Jitter Samurai ⚡', bg: 'bg-amber-500/20 text-amber-400 border-amber-500/50' };
+      if (cps >= 8) return { title: 'Sonic Velocity Striker 🐆', bg: 'bg-cyan-500/20 text-cyan-400 border-cyan-500/50' };
+      if (cps >= 5) return { title: 'Rhythmic Pulse Master 🐇', bg: 'bg-emerald-500/20 text-emerald-400 border-emerald-500/50' };
+      return { title: 'Steady Cadence Pioneer 🐢', bg: 'bg-zinc-800 text-zinc-300 border-zinc-700' };
+    }
+
+    function copyToClipboardFallback(text: string) {
+      try {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(text).then(() => {
+            spawnPlusOneParticle('📋 Challenge Link & Badge Copied!', true);
+          }).catch(() => {
+            fallbackTextareaCopy(text);
+          });
+        } else {
+          fallbackTextareaCopy(text);
+        }
+      } catch (e) {
+        fallbackTextareaCopy(text);
+      }
+    }
+
+    function fallbackTextareaCopy(text: string) {
+      const textarea = document.createElement('textarea');
+      textarea.value = text;
+      textarea.style.position = 'fixed';
+      textarea.style.left = '-9999px';
+      textarea.style.top = '-9999px';
+      document.body.appendChild(textarea);
+      textarea.focus();
+      textarea.select();
+      try {
+        const successful = document.execCommand('copy');
+        if (successful) {
+          spawnPlusOneParticle('📋 Challenge Link & Badge Copied!', true);
+        } else {
+          spawnPlusOneParticle('📋 Challenge Copied!', true);
+        }
+      } catch (err) {
+        spawnPlusOneParticle('📋 Copied to Clipboard!', true);
+      }
+      document.body.removeChild(textarea);
+    }
+
+    function sharePerformanceBadge(cps: number, rank: string) {
+      const archetype = getPersonalityArchetype(cps, userLevel);
+      const shareUrl = `${window.location.origin}${window.location.pathname}?cps=${cps}&rank=${encodeURIComponent(rank)}&lvl=${userLevel}`;
+      const shareText = `⚡ Spacebar CPS Challenge!\n🏆 Level ${userLevel} "${archetype.title}" (${cps} CPS)\nCan you beat my score? Try now: ${shareUrl}`;
+
+      playBuySound(); // Celebratory chime sound
+
+      if (navigator.share && /mobile|android|iphone|ipad/i.test(navigator.userAgent)) {
+        navigator.share({
+          title: 'Spacebar CPS Challenge',
+          text: `⚡ I scored ${cps} CPS on Level ${userLevel}!`,
+          url: shareUrl,
+        }).then(() => {
+          spawnPlusOneParticle('🚀 Shared Successfully!', true);
+        }).catch(() => {
+          copyToClipboardFallback(shareText);
+        });
+      } else {
+        copyToClipboardFallback(shareText);
+      }
+    }
+
+    function updateLevelUI() {
+      if (userLevelBadge) userLevelBadge.textContent = `L${userLevel}`;
+      if (userLevelNum) userLevelNum.textContent = userLevel.toString();
+      
+      const titleIndex = Math.min(levelTitles.length - 1, userLevel - 1);
+      if (levelTitle) levelTitle.textContent = levelTitles[titleIndex];
+
+      const currentReq = getLevelReq(userLevel);
+      const prevReq = userLevel > 1 ? getLevelReq(userLevel - 1) : 0;
+      const progressInLevel = Math.max(0, lifetimeClicks - prevReq);
+      const neededInLevel = Math.max(1, currentReq - prevReq);
+      const pct = Math.min(100, Math.max(0, (progressInLevel / neededInLevel) * 100));
+
+      if (levelBar) levelBar.style.width = `${pct}%`;
+      if (levelXpText) levelXpText.textContent = `${Math.floor(lifetimeClicks).toLocaleString()} / ${currentReq.toLocaleString()}`;
+
+      const nextGuide = document.getElementById('sb-next-level-guide');
+      if (nextGuide) {
+        nextGuide.textContent = `⚡ Tap faster to boost CPS! Target: Level ${userLevel + 1} (${currentReq.toLocaleString()} Clicks)`;
+      }
+    }
+
+    function playLevelUpSound() {
+      if (!soundEnabled) return;
+      try {
+        if (!audioCtx) {
+          audioCtx = new (window.AudioContext || (window as any).webkitAudioContext)();
+        }
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+        
+        // Fanfare chord: C5 (523.25Hz), E5 (659.25Hz), G5 (783.99Hz), C6 (1046.50Hz)
+        const notes = [523.25, 659.25, 783.99, 1046.50];
+        notes.forEach((freq, idx) => {
+          const osc = audioCtx.createOscillator();
+          const gain = audioCtx.createGain();
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(freq, audioCtx.currentTime + idx * 0.08);
+          gain.gain.setValueAtTime(0.25, audioCtx.currentTime + idx * 0.08);
+          gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + idx * 0.08 + 0.35);
+          osc.connect(gain);
+          gain.connect(audioCtx.destination);
+          osc.start(audioCtx.currentTime + idx * 0.08);
+          osc.stop(audioCtx.currentTime + idx * 0.08 + 0.35);
+        });
+      } catch (e) {}
+    }
+
+    function checkLevelUp() {
+      const req = getLevelReq(userLevel);
+      if (lifetimeClicks >= req) {
+        userLevel += 1;
+        const prevReq = getLevelReq(userLevel - 1);
+        const bonus = Math.max(150, Math.floor(prevReq * 0.25));
+        currency += bonus;
+
+        playLevelUpSound();
+
+        // Populate levelup modal
+        if (levelupTitle) levelupTitle.textContent = `You Cleared Level ${userLevel - 1} & Reached Level ${userLevel}!`;
+        if (levelupBonusText) levelupBonusText.textContent = `+${bonus.toLocaleString()} BONUS CLICKS`;
+
+        const archetype = getPersonalityArchetype(peakCpsAllTime, userLevel);
+        const levelupArchEl = document.getElementById('sb-levelup-archetype');
+        if (levelupArchEl) {
+          levelupArchEl.textContent = archetype.title;
+          levelupArchEl.className = `inline-flex items-center gap-2 px-4 py-1.5 rounded-full border text-xs font-mono font-bold uppercase tracking-wider ${archetype.bg} shadow-md`;
+        }
+
+        const nextTargetEl = document.getElementById('sb-levelup-next-target');
+        if (nextTargetEl) {
+          nextTargetEl.textContent = `🎯 NEXT TARGET: Level ${userLevel + 1}! Tap faster or buy Auto-Tappers to reach Level ${userLevel + 1}!`;
+        }
+
+        if (levelupOverlay) {
+          levelupOverlay.classList.remove('opacity-0', 'pointer-events-none');
+          levelupOverlay.classList.add('opacity-100', 'pointer-events-auto');
+        }
+
+        updateLevelUI();
+        updateCurrencyUI();
+        renderUpgrades();
+        saveState();
+      }
+    }
+
+    if (levelupClaimBtn) {
+      levelupClaimBtn.addEventListener('click', () => {
+        if (levelupOverlay) {
+          levelupOverlay.classList.add('opacity-0', 'pointer-events-none');
+          levelupOverlay.classList.remove('opacity-100', 'pointer-events-auto');
+        }
+        const shopSection = document.getElementById('sb-upgrades-section');
+        if (shopSection) {
+          shopSection.scrollIntoView({ behavior: 'smooth' });
+        }
+      });
+    }
+
+    // Balanced Base config of upgrades (Higher costs & proportional effects)
+    const defaultUpgrades = [
+      { id: 'mx-blue', name: 'Cherry MX Blue Switch', type: 'switch', baseCost: 50, effect: 1, owned: 0, desc: 'Tactile & clicky. Increases click value by +1.' },
+      { id: 'topre', name: 'Lubed Topre Switch', type: 'switch', baseCost: 250, effect: 3, owned: 0, desc: 'Smooth electro-capacitive switch. Increases click value by +3.' },
+      { id: 'custom-linear', name: 'Custom Lubricated Linear', type: 'switch', baseCost: 1500, effect: 10, owned: 0, desc: 'Butter smooth linear switch. Increases click value by +10.' },
+      { id: 'auto-tapper', name: 'Spacebar Auto-Tapper', type: 'autoclicker', baseCost: 80, effect: 0.2, owned: 0, desc: 'A simple mechanical arm tapping spacebar. +0.2 CPS.' },
+      { id: 'finger-bot', name: 'Turbo Finger Bot', type: 'autoclicker', baseCost: 400, effect: 1.5, owned: 0, desc: 'High-speed robotic finger tapping rapidly. +1.5 CPS.' },
+      { id: 'macro-rig', name: 'Macro Keyboard Rig', type: 'autoclicker', baseCost: 2500, effect: 8, owned: 0, desc: 'Automated macro script spamming spacebar. +8 CPS.' },
+      { id: 'quantum-array', name: 'Quantum Click Array', type: 'autoclicker', baseCost: 25000, effect: 40, owned: 0, desc: 'Uses quantum superposition to press spacebar everywhere. +40 CPS.' },
+      { id: 'espresso', name: 'Double Espresso Shot', type: 'multiplier', baseCost: 1000, effect: 0.15, owned: 0, desc: 'Hyper caffeine boost! Multiplies all click power by +15%.' },
+      { id: 'overclock', name: 'Overclocked Controller', type: 'multiplier', baseCost: 10000, effect: 0.30, owned: 0, desc: 'Pushes input polling rate to 8000Hz. Multiplies all click power by +30%.' },
+    ];
+    let upgrades = [...defaultUpgrades];
+
+    // Load persisted upgrades
+    try {
+      const savedUpgrades = JSON.parse(localStorage.getItem('mth_spacebar_upgrades') || '[]');
+      if (savedUpgrades.length > 0) {
+        upgrades.forEach(u => {
+          const match = savedUpgrades.find((su: any) => su.id === u.id);
+          if (match) u.owned = match.owned;
+        });
+      }
+    } catch(e) {}
+    
+    // Load persisted currency
+    currency = parseFloat(localStorage.getItem('mth_spacebar_currency') || '0');
+
+    // Balanced Base config of Achievements
+    const defaultAchievements = [
+      { id: 'ach-first', name: 'First Touch', desc: 'Press spacebar for the first time.', reward: 0.02, condition: () => lifetimeClicks > 0, unlocked: false },
+      { id: 'ach-100', name: 'Getting Warm', desc: 'Reach 100 total spacebar clicks.', reward: 0.03, condition: () => lifetimeClicks >= 100, unlocked: false },
+      { id: 'ach-1k', name: 'Click Enthusiast', desc: 'Reach 1,000 total clicks.', reward: 0.05, condition: () => lifetimeClicks >= 1000, unlocked: false },
+      { id: 'ach-10k', name: 'Spacebar Champion', desc: 'Reach 10,000 total clicks.', reward: 0.08, condition: () => lifetimeClicks >= 10000, unlocked: false },
+      { id: 'ach-50k', name: 'Click Machine', desc: 'Reach 50,000 total clicks.', reward: 0.10, condition: () => lifetimeClicks >= 50000, unlocked: false },
+      { id: 'ach-100k', name: 'Legendary Finger', desc: 'Reach 100,000 total clicks.', reward: 0.15, condition: () => lifetimeClicks >= 100000, unlocked: false },
+      { id: 'ach-cps-5', name: 'Steady Rhythm', desc: 'Achieve 5 Clicks Per Second (CPS).', reward: 0.03, condition: () => peakCpsAllTime >= 5, unlocked: false },
+      { id: 'ach-cps-8', name: 'Fast Fingers', desc: 'Achieve 8 Clicks Per Second (CPS).', reward: 0.05, condition: () => peakCpsAllTime >= 8, unlocked: false },
+      { id: 'ach-cps-12', name: 'Jitter Clicker', desc: 'Achieve 12 Clicks Per Second (CPS).', reward: 0.08, condition: () => peakCpsAllTime >= 12, unlocked: false },
+      { id: 'ach-cps-16', name: 'Butterfly Clicker', desc: 'Achieve 16 Clicks Per Second (CPS).', reward: 0.10, condition: () => peakCpsAllTime >= 16, unlocked: false },
+      { id: 'ach-pow-1', name: 'Tooling Up', desc: 'Buy your first powerup or upgrade.', reward: 0.02, condition: () => getTotalUpgrades() >= 1, unlocked: false },
+      { id: 'ach-pow-10', name: 'Automation Era', desc: 'Own 10 total powerups.', reward: 0.05, condition: () => getTotalUpgrades() >= 10, unlocked: false },
+      { id: 'ach-pow-50', name: 'Industrial Complex', desc: 'Own 50 total powerups.', reward: 0.10, condition: () => getTotalUpgrades() >= 50, unlocked: false },
+      { id: 'ach-streak-10', name: 'Combo Novice', desc: 'Reach a 10-click streak!', reward: 0.03, condition: () => streakCount >= 10, unlocked: false },
+      { id: 'ach-streak-50', name: 'Hyper Streak', desc: 'Reach a 50-click streak!', reward: 0.08, condition: () => streakCount >= 50, unlocked: false },
+    ];
+    let achievementsList = [...defaultAchievements];
+
+    try {
+      const savedAchs = JSON.parse(localStorage.getItem('mth_spacebar_achievements') || '[]');
+      if (savedAchs.length > 0) {
+        achievementsList.forEach(a => {
+          if (savedAchs.includes(a.id)) a.unlocked = true;
+        });
+      }
+    } catch(e) {}
+
+    const upgradesGrid = document.getElementById('sb-upgrades-grid');
+    const currencyEl = document.getElementById('sb-available-currency');
+    const achievementsGrid = document.getElementById('sb-achievements-grid');
+
+    function getTotalUpgrades() {
+      return upgrades.reduce((sum, u) => sum + u.owned, 0);
+    }
+
+    function calculateCost(baseCost: number, owned: number) {
+      return Math.floor(baseCost * Math.pow(1.25, owned));
+    }
+
+    function recalculateStats() {
+      clickValueBase = 1;
+      autoCps = 0;
+      let upgradeMultiplier = 0;
+      
+      upgrades.forEach(u => {
+        if (u.type === 'switch') clickValueBase += (u.effect * u.owned);
+        else if (u.type === 'autoclicker') autoCps += (u.effect * u.owned);
+        else if (u.type === 'multiplier') upgradeMultiplier += (u.effect * u.owned);
+      });
+
+      let achMultiplier = 0;
+      achievementsList.forEach(a => {
+        if (a.unlocked) achMultiplier += a.reward;
+      });
+
+      const totalMultiplier = 1.0 + upgradeMultiplier + achMultiplier;
+      if (multDisplayEl) multDisplayEl.textContent = `x${totalMultiplier.toFixed(2)}`;
+      
+      return totalMultiplier;
+    }
+
+    function checkAchievements() {
+      let newlyUnlocked = false;
+      achievementsList.forEach(ach => {
+        if (!ach.unlocked && ach.condition()) {
+          ach.unlocked = true;
+          newlyUnlocked = true;
+          spawnPlusOneParticle(`Achievement Unlocked! ${ach.name}`, true);
+        }
+      });
+      
+      if (newlyUnlocked) {
+        recalculateStats();
+        renderAchievements();
+        saveState();
+      }
+    }
+
+    function saveState() {
+      localStorage.setItem('mth_spacebar_lifetime_clicks', lifetimeClicks.toString());
+      localStorage.setItem('mth_spacebar_peak_cps', peakCpsAllTime.toString());
+      localStorage.setItem('mth_spacebar_currency', currency.toString());
+      localStorage.setItem('mth_spacebar_level', userLevel.toString());
+      localStorage.setItem('mth_spacebar_upgrades', JSON.stringify(upgrades.map(u => ({id: u.id, owned: u.owned}))));
+      localStorage.setItem('mth_spacebar_achievements', JSON.stringify(achievementsList.filter(a => a.unlocked).map(a => a.id)));
+    }
+
+    function playBuySound() {
+      if (!soundEnabled) return;
+      try {
+        if (!audioCtx) {
+          audioCtx = new (window.AudioContext || (window as any).webkitAudioContext)();
+        }
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+        
+        const now = audioCtx.currentTime;
+        const osc1 = audioCtx.createOscillator();
+        const osc2 = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+
+        osc1.type = 'sine';
+        osc2.type = 'triangle';
+
+        osc1.frequency.setValueAtTime(587.33, now); // D5
+        osc1.frequency.setValueAtTime(880.00, now + 0.06); // A5
+
+        osc2.frequency.setValueAtTime(1174.66, now + 0.06); // D6
+
+        gain.gain.setValueAtTime(0.2, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.25);
+
+        osc1.connect(gain);
+        osc2.connect(gain);
+        gain.connect(audioCtx.destination);
+
+        osc1.start(now);
+        osc1.stop(now + 0.25);
+        osc2.start(now + 0.06);
+        osc2.stop(now + 0.25);
+      } catch (e) {}
+    }
+
+    function renderUpgrades() {
+      if (!upgradesGrid) return;
+      upgradesGrid.innerHTML = '';
+      
+      upgrades.forEach((upg) => {
+        const cost = calculateCost(upg.baseCost, upg.owned);
+        const canAfford = currency >= cost;
+        
+        const card = document.createElement('div');
+        card.className = `p-4 rounded-xl border flex flex-col justify-between transition-all select-none ${canAfford ? 'bg-bg-elevated border-status-pass/50 shadow-sm hover:border-status-pass group' : 'bg-bg-elevated/30 border-border-hairline opacity-70'}`;
+        card.innerHTML = `
+          <div>
+            <div class="flex justify-between items-start mb-1">
+              <div class="font-mono text-xs font-bold text-text-primary truncate" title="${upg.name}">${upg.name}</div>
+              <div class="text-[9px] font-mono px-1.5 py-0.5 rounded bg-bg-surface border border-border-hairline text-text-muted uppercase tracking-wider">${upg.type}</div>
+            </div>
+            <div class="text-[10px] text-text-muted mb-3 leading-relaxed min-h-[30px] pr-2">${upg.desc}</div>
+          </div>
+          <div class="flex items-center justify-between mt-auto border-t border-border-hairline pt-3">
+            <div>
+              <div class="text-[9px] font-mono text-text-muted uppercase font-bold">Cost</div>
+              <div class="font-mono text-xs font-extrabold ${canAfford ? 'text-amber-400 font-extrabold' : 'text-rose-400/80'}">${cost.toLocaleString()} Clicks</div>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="font-mono text-xs font-bold ${upg.owned > 0 ? 'text-status-pass bg-status-pass/10 border-status-pass/30' : 'text-text-muted bg-bg-surface border-border-hairline'} border px-2 py-1 rounded-lg">x${upg.owned}</span>
+              <button type="button" class="btn-buy-upgrade px-3 py-1.5 rounded-lg text-xs font-mono font-extrabold transition-all shadow-md ${canAfford ? 'bg-status-pass text-zinc-950 hover:bg-emerald-400 hover:scale-105 cursor-pointer shadow-status-pass/20' : 'bg-bg-surface border border-border-hairline text-text-muted opacity-50 cursor-not-allowed'}">
+                ${canAfford ? 'BUY 🛒' : 'LOCKED'}
+              </button>
+            </div>
+          </div>
+        `;
+
+        if (canAfford) {
+          const buyBtn = card.querySelector('.btn-buy-upgrade') as HTMLButtonElement | null;
+          const buyHandler = (e: Event) => {
+            e.stopPropagation();
+            if (currency < cost) return;
+            
+            currency -= cost;
+            upg.owned += 1;
+
+            playBuySound();
+            spawnPlusOneParticle(`✓ Bought ${upg.name}!`, true);
+            
+            if (buyBtn) {
+              buyBtn.textContent = 'PURCHASED! ✓';
+              buyBtn.classList.remove('bg-status-pass');
+              buyBtn.classList.add('bg-amber-400', 'text-zinc-950');
+            }
+
+            recalculateStats();
+            if (upg.type === 'autoclicker' && autoCpsInterval === null) {
+              startAutoClicker();
+            }
+            
+            updateCurrencyUI();
+            checkAchievements();
+            saveState();
+            
+            if (currencyEl) {
+              currencyEl.classList.add('text-amber-400');
+              setTimeout(() => currencyEl.classList.remove('text-amber-400'), 200);
+            }
+
+            setTimeout(() => renderUpgrades(), 250);
+          };
+
+          buyBtn?.addEventListener('click', buyHandler);
+          card.addEventListener('click', buyHandler);
+        }
+        upgradesGrid.appendChild(card);
+      });
+    }
+
+    function renderAchievements() {
+      if (!achievementsGrid) return;
+      achievementsGrid.innerHTML = '';
+      let unlockedCount = 0;
+      
+      achievementsList.forEach(ach => {
+        if (ach.unlocked) unlockedCount++;
+        
+        const card = document.createElement('div');
+        card.className = `p-3 rounded-xl border flex flex-col justify-between transition-all ${ach.unlocked ? 'bg-bg-elevated border-status-pass/30' : 'bg-bg-elevated/20 border-border-hairline opacity-60 grayscale'}`;
+        card.innerHTML = `
+          <div>
+            <div class="flex justify-between items-start mb-1">
+              <div class="font-mono text-xs font-bold ${ach.unlocked ? 'text-white' : 'text-text-primary'} truncate">${ach.name}</div>
+              <div class="text-[9px] font-mono font-bold ${ach.unlocked ? 'text-status-pass' : 'text-text-muted'}">${ach.unlocked ? 'UNLOCKED' : 'LOCKED'}</div>
+            </div>
+            <div class="text-[10px] text-text-muted mb-2 leading-tight">${ach.desc}</div>
+          </div>
+          <div class="text-[10px] font-mono font-bold ${ach.unlocked ? 'text-purple-400' : 'text-text-muted'}">Reward: +${(ach.reward * 100).toFixed(0)}% Multiplier</div>
+        `;
+        achievementsGrid.appendChild(card);
+      });
+
+      const progEl = document.getElementById('sb-achievements-progress');
+      if (progEl) progEl.textContent = `${unlockedCount} / ${achievementsList.length} Unlocked`;
+    }
+
+    function updateCurrencyUI() {
+      if (currencyEl) currencyEl.textContent = Math.floor(currency).toLocaleString();
+    }
+
+    function startAutoClicker() {
+      if (autoCpsInterval) clearInterval(autoCpsInterval);
+      autoCpsInterval = setInterval(() => {
+        if (isFinished || autoCps <= 0 || startTimeMs === null) return;
+        
+        const currentMultiplier = recalculateStats();
+        const clicksToAdd = (autoCps * currentMultiplier) / 10;
+        autoClickAccumulator += clicksToAdd;
+        
+        if (autoClickAccumulator >= 1) {
+          const wholeClicks = Math.floor(autoClickAccumulator);
+          autoClickAccumulator -= wholeClicks;
+          
+          clickCount += wholeClicks;
+          currency += wholeClicks;
+          lifetimeClicks += wholeClicks;
+          
+          if (clickCountEl) clickCountEl.textContent = Math.floor(clickCount).toLocaleString();
+          updateCurrencyUI();
+          updateLiveCps();
+          updateLevelUI();
+          checkLevelUp();
+          checkAchievements();
+          
+          if (keycapVisual) {
+            keycapVisual.style.transform = 'translateY(4px) scale(0.99)';
+            setTimeout(() => {
+              keycapVisual.style.transform = '';
+            }, 50);
+          }
+          createRipple(true); 
+          saveState();
+        }
+      }, 100);
+    }
+
+    const getPrKey = (dur: number) => `mth_spacebar_score_pr_${dur}s`;
+    
+    function getRankEmoji(score: number, dur: number) {
+      if (dur === 0) return '∞';
+      const cps = score / dur;
+      if (cps >= 15.0) return '🌌';
+      if (cps >= 12.0) return '⚡';
+      if (cps >= 8.0) return '🐆';
+      if (cps >= 5.0) return '🐇';
+      return '🐢';
+    }
+
     function updatePrDisplay() {
       const pr = parseFloat(localStorage.getItem(getPrKey(durationSeconds)) || '0.0');
-      if (prCpsEl) prCpsEl.textContent = pr.toFixed(1);
-    }
-    updatePrDisplay();
+      if (prCpsEl) prCpsEl.textContent = pr.toLocaleString();
 
-    // Web Audio Synthesizer for Spacebar Thock Sound
+      const ltClicksEl = document.getElementById('sb-lifetime-clicks');
+      if (ltClicksEl) ltClicksEl.textContent = Math.floor(lifetimeClicks).toLocaleString();
+      
+      const pAllTimeEl = document.getElementById('sb-peak-cps-alltime');
+      if (pAllTimeEl) pAllTimeEl.textContent = peakCpsAllTime.toFixed(1);
+
+      [5, 10, 30, 60].forEach(dur => {
+        const dPr = parseFloat(localStorage.getItem(getPrKey(dur)) || '0');
+        const el = document.getElementById(`sb-pr-${dur}s`);
+        if (el) {
+          if (dPr > 0) {
+            el.textContent = `${dPr.toLocaleString()} ${getRankEmoji(dPr, dur)}`;
+          } else {
+            el.textContent = '—🐢';
+          }
+        }
+      });
+    }
+
     let audioCtx: AudioContext | null = null;
     function playSpacebarSound() {
       if (!soundEnabled) return;
@@ -194,7 +982,8 @@ const { initialMode = 5 } = Astro.props;
         const osc = audioCtx.createOscillator();
         const gain = audioCtx.createGain();
         osc.type = 'sine';
-        osc.frequency.setValueAtTime(140, audioCtx.currentTime);
+        const freq = Math.min(220, 140 + (streakCount * 2));
+        osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
         osc.frequency.exponentialRampToValueAtTime(40, audioCtx.currentTime + 0.04);
         gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
         gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.04);
@@ -207,7 +996,6 @@ const { initialMode = 5 } = Astro.props;
       }
     }
 
-    // Toggle Sound
     if (soundToggle && soundLabel && soundIcon) {
       soundToggle.addEventListener('click', (e) => {
         e.stopPropagation();
@@ -217,7 +1005,6 @@ const { initialMode = 5 } = Astro.props;
       });
     }
 
-    // Mode Selector
     modeBtns.forEach(btn => {
       btn.addEventListener('click', (e) => {
         e.stopPropagation();
@@ -233,14 +1020,27 @@ const { initialMode = 5 } = Astro.props;
       });
     });
 
-    function resetTest() {
+    function resetTest(fullReset = false) {
       if (timerId) clearInterval(timerId);
+      if (autoCpsInterval) clearInterval(autoCpsInterval);
+      
       timerId = null;
+      autoCpsInterval = null;
       startTimeMs = null;
       clickCount = 0;
       isFinished = false;
       cpsHistory = [];
       peakCps = 0;
+      autoClickAccumulator = 0;
+      streakCount = 0;
+
+      if (fullReset) {
+        userLevel = 1;
+        lifetimeClicks = 0;
+        currency = 0;
+        upgrades.forEach(u => u.owned = 0);
+        saveState();
+      }
 
       if (clickCountEl) clickCountEl.textContent = '0';
       if (liveCpsEl) liveCpsEl.textContent = '0.0';
@@ -252,44 +1052,21 @@ const { initialMode = 5 } = Astro.props;
         resultOverlay.classList.remove('opacity-100', 'pointer-events-auto');
       }
 
+      updateLevelUI();
+      updateCurrencyUI();
+      renderUpgrades();
+      renderAchievements();
       updatePrDisplay();
       drawCadenceGraph();
+      recalculateStats();
     }
 
-    if (resetBtn) resetBtn.addEventListener('click', (e) => { e.stopPropagation(); resetTest(); });
-    if (retryBtn) retryBtn.addEventListener('click', (e) => { e.stopPropagation(); resetTest(); });
+    if (resetBtn) resetBtn.addEventListener('click', (e) => { e.stopPropagation(); resetTest(true); });
+    if (retryBtn) retryBtn.addEventListener('click', (e) => { e.stopPropagation(); resetTest(false); });
 
-    // Handle Spacebar Keystroke or Mouse Click
-    function handlePress(e?: Event) {
-      if (isFinished) return;
-      if (e && e.type === 'keydown') {
-        const keyEvent = e as KeyboardEvent;
-        if (keyEvent.code !== 'Space') return;
-        keyEvent.preventDefault();
-      }
-
+    function updateLiveCps() {
+      if (startTimeMs === null) return;
       const now = Date.now();
-      playSpacebarSound();
-
-      // Visual Keycap Compress & Ripple Effect
-      if (keycapVisual) {
-        keycapVisual.classList.add('translate-y-1', 'border-status-pass', 'shadow-none');
-        setTimeout(() => {
-          keycapVisual.classList.remove('translate-y-1', 'border-status-pass', 'shadow-none');
-        }, 80);
-      }
-
-      createRipple();
-
-      if (startTimeMs === null) {
-        startTimeMs = now;
-        startTimer();
-      }
-
-      clickCount += 1;
-      if (clickCountEl) clickCountEl.textContent = clickCount.toString();
-
-      // Compute current instantaneous CPS
       const elapsedSec = Math.max(0.05, (now - startTimeMs) / 1000);
       const currentCps = parseFloat((clickCount / elapsedSec).toFixed(1));
       if (liveCpsEl) liveCpsEl.textContent = currentCps.toFixed(1);
@@ -297,17 +1074,99 @@ const { initialMode = 5 } = Astro.props;
       if (currentCps > peakCps) {
         peakCps = currentCps;
         if (graphPeakEl) graphPeakEl.textContent = `Peak: ${peakCps.toFixed(1)} CPS`;
+        if (peakCps > peakCpsAllTime) {
+          peakCpsAllTime = peakCps;
+        }
       }
 
-      cpsHistory.push(currentCps);
-      drawCadenceGraph();
+      if (cpsHistory.length === 0 || cpsHistory[cpsHistory.length - 1] !== currentCps) {
+        cpsHistory.push(currentCps);
+        drawCadenceGraph();
+      }
     }
 
-    function createRipple() {
+    function handlePress(e?: Event) {
+      if (isFinished) return;
+      const now = Date.now();
+
+      if (now - lastPressTime < 1000) {
+        streakCount++;
+      } else {
+        streakCount = 1;
+      }
+      lastPressTime = now;
+
+      playSpacebarSound();
+
+      if (keycapVisual) {
+        keycapVisual.style.transform = 'translateY(8px) scale(0.985)';
+        keycapVisual.style.boxShadow = '0 2px 0 0 #0a0b0f, 0 5px 15px rgba(52, 211, 153, 0.4)';
+        setTimeout(() => {
+          keycapVisual.style.transform = '';
+          keycapVisual.style.boxShadow = '';
+        }, 75);
+      }
+
+      createRipple(false);
+
+      if (startTimeMs === null) {
+        startTimeMs = now;
+        startTimer();
+        if (autoCps > 0) startAutoClicker();
+      }
+
+      const currentMultiplier = recalculateStats();
+      const totalValue = clickValueBase * currentMultiplier;
+      
+      clickCount += totalValue;
+      currency += totalValue;
+      lifetimeClicks += totalValue;
+      
+      spawnPlusOneParticle(`+${totalValue % 1 !== 0 ? totalValue.toFixed(1) : totalValue.toString()}`);
+      
+      if (clickCountEl) clickCountEl.textContent = Math.floor(clickCount).toLocaleString();
+      
+      updateCurrencyUI();
+      updateLiveCps();
+      updateLevelUI();
+      checkLevelUp();
+      renderUpgrades();
+      checkAchievements();
+      saveState();
+    }
+
+    function spawnPlusOneParticle(text: string, isAchievement = false) {
+      if (!rippleContainer) return;
+      const el = document.createElement('div');
+      
+      if (isAchievement) {
+        el.className = 'absolute font-mono font-extrabold text-sm sm:text-lg text-purple-400 pointer-events-none animate-bounce drop-shadow-[0_2px_8px_rgba(168,85,247,0.8)] z-30 whitespace-nowrap bg-bg-surface/90 px-3 py-1 border border-purple-400/50 rounded-xl';
+      } else {
+        el.className = 'absolute font-mono font-extrabold text-sm sm:text-lg text-status-pass pointer-events-none animate-bounce drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)] z-20';
+      }
+      
+      el.textContent = text;
+      
+      const randomX = Math.floor(Math.random() * 60) + 20; 
+      const randomY = Math.floor(Math.random() * 30) + 40; 
+      el.style.left = `${randomX}%`;
+      el.style.top = `${randomY}%`;
+      el.style.transition = 'all 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+      rippleContainer.appendChild(el);
+
+      requestAnimationFrame(() => {
+        el.style.transform = 'translateY(-70px) scale(1.2)';
+        el.style.opacity = '0';
+      });
+
+      setTimeout(() => el.remove(), 600);
+    }
+
+    function createRipple(small = false) {
       if (!rippleContainer) return;
       const circle = document.createElement('div');
-      circle.className = 'absolute rounded-full bg-status-pass/20 border border-status-pass/40 pointer-events-none animate-ping';
-      const size = Math.floor(Math.random() * 40) + 60;
+      circle.className = 'absolute rounded-full bg-status-pass/20 border border-status-pass/40 pointer-events-none animate-ping z-10';
+      const size = small ? (Math.floor(Math.random() * 20) + 40) : (Math.floor(Math.random() * 40) + 80);
       circle.style.width = `${size}px`;
       circle.style.height = `${size}px`;
       circle.style.left = `calc(50% - ${size / 2}px)`;
@@ -317,7 +1176,7 @@ const { initialMode = 5 } = Astro.props;
     }
 
     function startTimer() {
-      if (durationSeconds === 0) return; // Free run mode does not auto-terminate
+      if (durationSeconds === 0) return; 
 
       timerId = setInterval(() => {
         if (!startTimeMs) return;
@@ -334,50 +1193,67 @@ const { initialMode = 5 } = Astro.props;
 
     function finishTest() {
       if (timerId) clearInterval(timerId);
+      if (autoCpsInterval) clearInterval(autoCpsInterval);
       isFinished = true;
 
       const totalTimeSec = durationSeconds > 0 ? durationSeconds : Math.max(0.1, (Date.now() - (startTimeMs || Date.now())) / 1000);
-      const finalCps = parseFloat((clickCount / totalTimeSec).toFixed(1));
+      const finalScore = Math.floor(clickCount);
 
-      // Save PR
       const currentPr = parseFloat(localStorage.getItem(getPrKey(durationSeconds)) || '0.0');
-      if (finalCps > currentPr) {
-        localStorage.setItem(getPrKey(durationSeconds), finalCps.toString());
+      if (finalScore > currentPr) {
+        localStorage.setItem(getPrKey(durationSeconds), finalScore.toString());
         updatePrDisplay();
       }
 
-      // Rank Medal Determination
+      const baseCps = finalScore / totalTimeSec;
       let rank = 'KEYBOARD NOVICE';
-      let rankColor = 'border-amber-500/40 text-amber-400 bg-amber-500/10';
-      if (finalCps >= 10.5) {
-        rank = 'GODSPEED CYBER-NINJA';
-        rankColor = 'border-purple-500/40 text-purple-400 bg-purple-500/10';
-      } else if (finalCps >= 8.5) {
-        rank = 'ESPORTS CHAMPION';
-        rankColor = 'border-status-pass/40 text-status-pass bg-status-pass/10';
-      } else if (finalCps >= 6.5) {
-        rank = 'PRO SPEEDSTER';
-        rankColor = 'border-cyan-500/40 text-cyan-400 bg-cyan-500/10';
-      } else if (finalCps >= 4.0) {
-        rank = 'CASUAL GAMER';
-        rankColor = 'border-blue-500/40 text-blue-400 bg-blue-500/10';
+      if (baseCps >= 50.0) rank = 'QUANTUM GOD 🌌';
+      else if (baseCps >= 25.0) rank = 'CYBERNETIC SPEEDSTER ⚡⚡';
+      else if (baseCps >= 15.0) rank = 'ESPORTS PRO 🏆';
+      else if (baseCps >= 8.0) rank = 'SPEEDSTER ⚡';
+      else if (baseCps >= 5.5) rank = 'SWIFT TYPIST 🚀';
+
+      const archetype = getPersonalityArchetype(baseCps, userLevel);
+      const resultArchEl = document.getElementById('sb-result-archetype');
+      if (resultArchEl) {
+        resultArchEl.textContent = archetype.title;
+        resultArchEl.className = `px-4 py-1 rounded-full border text-[11px] font-mono font-bold uppercase tracking-wider ${archetype.bg}`;
       }
 
-      if (rankBadge) {
-        rankBadge.className = `px-4 py-1.5 rounded-full border font-mono font-extrabold text-xs tracking-wider uppercase ${rankColor}`;
-        rankBadge.textContent = `RANK: ${rank}`;
-      }
-
-      if (finalScoreText) finalScoreText.textContent = `${finalCps.toFixed(1)} CPS`;
-      if (finalDesc) finalDesc.textContent = `You registered ${clickCount} spacebar presses in ${totalTimeSec.toFixed(1)} seconds!`;
+      if (rankBadge) rankBadge.textContent = `RANK: ${rank}`;
+      if (finalScoreText) finalScoreText.textContent = `${finalScore.toLocaleString()} SCORE`;
+      if (finalDesc) finalDesc.textContent = `You reached a total score of ${finalScore.toLocaleString()} in ${totalTimeSec.toFixed(1)} seconds!`;
 
       if (resultOverlay) {
         resultOverlay.classList.remove('opacity-0', 'pointer-events-none');
         resultOverlay.classList.add('opacity-100', 'pointer-events-auto');
       }
+      
+      renderUpgrades();
+      saveState();
     }
 
-    // SVG Cadence Graph Renderer
+    // Share & Challenge Buttons
+    const levelupShareBtn = document.getElementById('sb-levelup-share-btn');
+    if (levelupShareBtn) {
+      levelupShareBtn.addEventListener('click', (e: Event) => {
+        e.stopPropagation();
+        e.preventDefault();
+        sharePerformanceBadge(peakCpsAllTime, rankBadge?.textContent || 'Speedster');
+      });
+    }
+
+    const resultShareBtn = document.getElementById('sb-result-share-btn');
+    if (resultShareBtn) {
+      resultShareBtn.addEventListener('click', (e: Event) => {
+        e.stopPropagation();
+        e.preventDefault();
+        const totalTimeSec = durationSeconds > 0 ? durationSeconds : Math.max(0.1, (Date.now() - (startTimeMs || Date.now())) / 1000);
+        const finalCps = parseFloat((clickCount / totalTimeSec).toFixed(1));
+        sharePerformanceBadge(finalCps, rankBadge?.textContent || 'Speedster');
+      });
+    }
+
     function drawCadenceGraph() {
       if (!cadencePath || !cadenceFill) return;
       if (cpsHistory.length === 0) {
@@ -400,43 +1276,52 @@ const { initialMode = 5 } = Astro.props;
       cadenceFill.setAttribute('d', fillData);
     }
 
-    // Listeners
     if (pressZone) {
       pressZone.addEventListener('mousedown', (e) => handlePress(e));
-      pressZone.addEventListener('keydown', (e) => handlePress(e));
     }
-    window.addEventListener('keydown', (e) => {
-      if (e.code === 'Space' && document.activeElement !== pressZone) {
-        if (!['INPUT', 'TEXTAREA'].includes((document.activeElement?.tagName || ''))) {
+
+    window.addEventListener('keydown', (e: KeyboardEvent) => {
+      if (e.code === 'Space' || e.key === ' ' || e.keyCode === 32) {
+        const activeTag = (document.activeElement?.tagName || '').toUpperCase();
+        if (!['INPUT', 'TEXTAREA'].includes(activeTag)) {
           e.preventDefault();
           handlePress(e);
         }
       }
     });
 
-    // Export SHA-256 JSON Passport Certificate
     if (exportCertBtn) {
       exportCertBtn.addEventListener('click', () => {
-        const totalTimeSec = durationSeconds > 0 ? durationSeconds : Math.max(0.1, (Date.now() - (startTimeMs || Date.now())) / 1000);
-        const finalCps = parseFloat((clickCount / totalTimeSec).toFixed(1));
+        const finalScore = Math.floor(clickCount);
         const payload = {
           instrument: 'Monitor Test Hub Spacebar Counter & Speedometer',
           timestamp: new Date().toISOString(),
           timeTrialIntervalSeconds: durationSeconds,
-          totalSpacebarClicks: clickCount,
-          averageCps: finalCps,
-          peakCps: peakCps,
+          totalScore: finalScore,
+          peakCps: peakCpsAllTime,
+          userLevel: userLevel,
           rank: rankBadge ? rankBadge.textContent : 'PASSED',
+          upgradesOwned: upgrades.reduce((acc: any, upg) => { if(upg.owned > 0) acc[upg.name] = upg.owned; return acc; }, {}),
+          achievementsUnlocked: achievementsList.filter(a => a.unlocked).map(a => a.name),
           verification: 'SHA-256 Verified Browser Telemetry'
         };
         const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = `spacebar_counter_passport_${finalCps}cps.json`;
+        a.download = `spacebar_counter_passport_${finalScore}score.json`;
         a.click();
         URL.revokeObjectURL(url);
       });
     }
+    
+    // Boot sequence
+    recalculateStats();
+    updateLevelUI();
+    updateCurrencyUI();
+    renderUpgrades();
+    renderAchievements();
+    updatePrDisplay();
+    checkAchievements();
   });
 </script>

@@ -5,20 +5,25 @@
  */
 ---
 
-<div class="w-full max-w-5xl mx-auto space-y-6">
-  <div class="bg-bg-surface/90 border border-border-hairline rounded-2xl p-6 backdrop-blur-xl shadow-2xl space-y-6">
-    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-border-hairline/60 pb-4">
+<div class="w-full max-w-7xl mx-auto space-y-6 font-sans select-none min-w-0" id="motion-blur-root">
+  <div class="relative bg-[#0c0d12]/95 border border-zinc-800/90 rounded-3xl p-4 sm:p-8 backdrop-blur-2xl shadow-[0_25px_60px_rgba(0,0,0,0.8)] space-y-6 overflow-hidden min-w-0 text-zinc-100">
+    <!-- Ambient Glows -->
+    <div class="absolute -top-24 -right-24 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none"></div>
+    <div class="absolute -bottom-24 -left-24 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl pointer-events-none"></div>
+
+    <div class="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-zinc-800/70 pb-5">
       <div>
-        <div class="flex items-center gap-2">
-          <span class="w-2.5 h-2.5 rounded-full bg-status-pass shadow-[0_0_8px_rgba(5,150,105,0.8)]"></span>
-          <h2 class="text-lg font-bold font-mono text-text-primary tracking-wide">Motion Blur &amp; Overdrive Ghosting Analyzer</h2>
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/30 text-[11px] font-mono text-cyan-400 font-bold uppercase tracking-wider mb-2">
+          <span class="w-2 h-2 rounded-full bg-cyan-400 shadow-[0_0_8px_rgba(34,211,238,0.9)] animate-pulse"></span>
+          <span>ISO 9241-305 PURSUIT RESPONSE SPEC</span>
         </div>
-        <p class="text-xs text-text-muted mt-1">Pursuit velocity tracking and MPRT sample-and-hold response metrics (ISO 9241-305).</p>
+        <h2 class="text-xl sm:text-3xl font-extrabold font-mono text-white tracking-tight">Motion Blur &amp; Overdrive Ghosting Analyzer</h2>
+        <p class="text-xs sm:text-sm text-zinc-400 mt-1 font-sans font-normal">Pursuit velocity tracking and MPRT sample-and-hold response metrics (ISO 9241-305).</p>
       </div>
 
-      <div class="flex items-center gap-3">
-        <label class="text-xs font-mono text-text-muted">Speed:</label>
-        <select id="speed-select" class="bg-bg-canvas border border-border-subtle text-text-primary text-xs font-mono rounded-lg px-3 py-1.5 focus:border-status-pass">
+      <div class="flex items-center gap-3 font-mono text-xs">
+        <label class="text-zinc-400 font-bold">Speed:</label>
+        <select id="speed-select" class="bg-zinc-900 border border-zinc-700/80 text-white text-xs font-mono rounded-xl px-3 py-2 focus:border-cyan-500 focus:outline-none cursor-pointer">
           <option value="480">480 px/sec</option>
           <option value="960" selected>960 px/sec</option>
           <option value="1920">1920 px/sec</option>
@@ -27,68 +32,86 @@
     </div>
 
     <!-- Moving Pursuit Pattern Canvas -->
-    <div class="relative w-full h-64 rounded-xl bg-bg-canvas border border-border-subtle overflow-hidden">
+    <div class="relative z-10 w-full h-64 sm:h-80 rounded-2xl bg-zinc-950 border border-zinc-800 overflow-hidden shadow-inner">
       <canvas id="motion-canvas" class="w-full h-full block"></canvas>
     </div>
 
-    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 pt-2">
-      <div class="bg-bg-elevated p-3.5 rounded-xl border border-border-hairline">
-        <div class="text-[10px] font-mono text-text-muted uppercase">Pursuit Velocity</div>
-        <div id="metric-speed" class="text-sm font-mono font-bold text-text-primary mt-1">960 px/s</div>
+    <!-- Metrics Deck -->
+    <div class="relative z-10 grid grid-cols-2 md:grid-cols-4 gap-4 pt-2 font-mono">
+      <div class="bg-zinc-950/80 p-4 rounded-2xl border border-zinc-800/80 text-center space-y-1 shadow-inner">
+        <div class="text-[10px] sm:text-xs text-zinc-400 uppercase font-bold">Pursuit Velocity</div>
+        <div id="metric-speed" class="text-base sm:text-2xl font-extrabold text-white mt-1 tabular-nums">960 px/s</div>
       </div>
-      <div class="bg-bg-elevated p-3.5 rounded-xl border border-border-hairline">
-        <div class="text-[10px] font-mono text-text-muted uppercase">Pixels / Frame</div>
-        <div id="metric-ppf" class="text-sm font-mono font-bold text-status-pass mt-1">6.67 px</div>
+      <div class="bg-zinc-950/80 p-4 rounded-2xl border border-zinc-800/80 text-center space-y-1 shadow-inner">
+        <div class="text-[10px] sm:text-xs text-zinc-400 uppercase font-bold">Pixels / Frame</div>
+        <div id="metric-ppf" class="text-base sm:text-2xl font-extrabold text-cyan-400 mt-1 tabular-nums">6.67 px</div>
       </div>
-      <div class="bg-bg-elevated p-3.5 rounded-xl border border-border-hairline">
-        <div class="text-[10px] font-mono text-text-muted uppercase">Estimated MPRT</div>
-        <div id="metric-mprt" class="text-sm font-mono font-bold text-text-primary mt-1">6.94 ms</div>
+      <div class="bg-zinc-950/80 p-4 rounded-2xl border border-zinc-800/80 text-center space-y-1 shadow-inner">
+        <div class="text-[10px] sm:text-xs text-zinc-400 uppercase font-bold">Estimated MPRT</div>
+        <div id="metric-mprt" class="text-base sm:text-2xl font-extrabold text-purple-400 mt-1 tabular-nums">6.94 ms</div>
       </div>
-      <div class="bg-bg-elevated p-3.5 rounded-xl border border-border-hairline">
-        <div class="text-[10px] font-mono text-text-muted uppercase">Overshoot Status</div>
-        <div id="metric-overshoot" class="text-sm font-mono font-bold text-status-pass mt-1">NO CORONA</div>
+      <div class="bg-zinc-950/80 p-4 rounded-2xl border border-zinc-800/80 text-center space-y-1 shadow-inner">
+        <div class="text-[10px] sm:text-xs text-zinc-400 uppercase font-bold">Overshoot Status</div>
+        <div id="metric-overshoot" class="text-xs sm:text-sm font-extrabold text-emerald-400 mt-1">NO CORONA</div>
       </div>
     </div>
   </div>
 </div>
 
 <script>
-  import { calculateMotionMetrics, calculatePursuitPosition } from '../../engine/MotionBlurEngine';
+  import { calculateMotionMetrics } from '../../engine/MotionBlurEngine';
 
-  const canvas = document.getElementById('motion-canvas') as HTMLCanvasElement | null;
-  const speedSelect = document.getElementById('speed-select') as HTMLSelectElement | null;
+  const canvas = document.getElementById('motion-canvas') as HTMLCanvasElement;
+  const speedSelect = document.getElementById('speed-select') as HTMLSelectElement;
 
-  if (canvas) {
-    const ctx = canvas.getContext('2d');
-    let speedPx = 960;
-    let startTime = performance.now();
+  const metricSpeed = document.getElementById('metric-speed');
+  const metricPpf = document.getElementById('metric-ppf');
+  const metricMprt = document.getElementById('metric-mprt');
 
-    function resize() {
-      if (!canvas) return;
-      canvas.width = canvas.clientWidth;
-      canvas.height = canvas.clientHeight;
+  let speedPxSec = 960;
+  let posX = 0;
+  let lastTime = performance.now();
+
+  function resizeCanvas() {
+    if (!canvas) return;
+    canvas.width = canvas.parentElement?.clientWidth || 800;
+    canvas.height = canvas.parentElement?.clientHeight || 256;
+  }
+  window.addEventListener('resize', resizeCanvas);
+  resizeCanvas();
+
+  speedSelect?.addEventListener('change', (e) => {
+    speedPxSec = parseInt((e.target as HTMLSelectElement).value, 10);
+    if (metricSpeed) metricSpeed.textContent = `${speedPxSec} px/s`;
+  });
+
+  function render(time: number) {
+    const dt = (time - lastTime) / 1000;
+    lastTime = time;
+
+    if (canvas) {
+      const ctx = canvas.getContext('2d');
+      if (ctx) {
+        ctx.fillStyle = '#08080a';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        posX = (posX + speedPxSec * dt) % canvas.width;
+
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(posX, canvas.height / 2 - 30, 60, 60);
+
+        ctx.fillStyle = '#38bdf8';
+        ctx.fillRect((posX - 80 + canvas.width) % canvas.width, canvas.height / 2 - 20, 40, 40);
+      }
     }
-    window.addEventListener('resize', resize);
-    resize();
 
-    speedSelect?.addEventListener('change', (e) => {
-      speedPx = parseInt((e.target as HTMLSelectElement).value, 10);
-      document.getElementById('metric-speed')!.textContent = `${speedPx} px/s`;
-    });
+    const currentFps = 144;
+    const res = calculateMotionMetrics(currentFps, speedPxSec);
+    if (metricPpf) metricPpf.textContent = `${res.pixelsPerFrame} px`;
+    if (metricMprt) metricMprt.textContent = `${res.estimatedMprtMs} ms`;
 
-    function render(now: number) {
-      if (!ctx || !canvas) return;
-      const elapsed = now - startTime;
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-      const posX = calculatePursuitPosition(elapsed, speedPx, canvas.width, 80);
-
-      // Render pursuit block
-      ctx.fillStyle = '#059669';
-      ctx.fillRect(posX, canvas.height / 2 - 30, 80, 60);
-
-      requestAnimationFrame(render);
-    }
     requestAnimationFrame(render);
   }
+
+  requestAnimationFrame(render);
 </script>

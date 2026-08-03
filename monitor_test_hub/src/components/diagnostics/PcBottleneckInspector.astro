@@ -14,127 +14,134 @@ const cpus = PcBottleneckEngine.CPUS;
 const gpus = PcBottleneckEngine.GPUS;
 ---
 
-<div class="w-full max-w-5xl mx-auto p-4 md:p-6 bg-[#121215] border border-white/10 rounded-2xl shadow-2xl text-slate-100 font-sans">
-  <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 border-b border-white/10">
-    <div>
-      <div class="flex items-center gap-2 text-emerald-400 text-xs font-mono uppercase tracking-widest mb-1">
-        <svg class="w-4 h-4 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M9 3v2m6-2v2M9 19v2m6-2v2M3 9h2m-2 6h2m14-6h2m-2 6h2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z" />
-        </svg>
-        <span>Hardware Diagnostic Engine</span>
-      </div>
-      <h2 class="text-2xl md:text-3xl font-black text-white tracking-tight">PC Bottleneck &amp; FPS Estimator</h2>
-      <p class="text-sm text-slate-400 mt-1">Resolution-aware CPU &amp; GPU balance calculator with transparent benchmark scoring.</p>
-    </div>
-    <div class="flex items-center gap-2 bg-black/40 p-1.5 rounded-lg border border-white/5 self-start">
-      <button data-res="1080p" class={`px-3 py-1.5 rounded-md text-xs font-semibold transition ${initialResolution === '1080p' ? 'bg-emerald-500 text-black shadow' : 'text-slate-400 hover:text-white'}`}>1080p</button>
-      <button data-res="1440p" class={`px-3 py-1.5 rounded-md text-xs font-semibold transition ${initialResolution === '1440p' ? 'bg-emerald-500 text-black shadow' : 'text-slate-400 hover:text-white'}`}>1440p</button>
-      <button data-res="4K" class={`px-3 py-1.5 rounded-md text-xs font-semibold transition ${initialResolution === '4K' ? 'bg-emerald-500 text-black shadow' : 'text-slate-400 hover:text-white'}`}>4K UHD</button>
-    </div>
-  </div>
+<div class="w-full max-w-7xl mx-auto space-y-6 font-sans select-none min-w-0" id="pc-bottleneck-root">
+  <div class="relative bg-[#0c0d12]/95 border border-zinc-800/90 rounded-3xl p-4 sm:p-8 backdrop-blur-2xl shadow-[0_25px_60px_rgba(0,0,0,0.8)] space-y-6 overflow-hidden min-w-0 text-zinc-100">
+    <!-- Ambient Radial Glows -->
+    <div class="absolute -top-24 -right-24 w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none"></div>
+    <div class="absolute -bottom-24 -left-24 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none"></div>
 
-  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-6">
-    <!-- Component Selectors -->
-    <div class="space-y-4 bg-black/30 p-5 rounded-xl border border-white/5">
+    <!-- Header Controls -->
+    <div class="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 border-b border-zinc-800/70 pb-5">
       <div>
-        <label class="flex items-center gap-1.5 text-xs font-mono uppercase text-slate-400 mb-2">
-          <svg class="w-4 h-4 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M9 3v2m6-2v2M9 19v2m6-2v2M3 9h2m-2 6h2m14-6h2m-2 6h2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z" />
-          </svg>
-          <span>Select Processor (CPU)</span>
-        </label>
-        <select id="cpu-select" class="w-full bg-[#18181b] border border-white/10 rounded-lg p-2.5 text-sm text-white focus:border-emerald-500 focus:outline-none cursor-pointer">
-          {cpus.map(cpu => (
-            <option value={cpu.id} selected={cpu.id === initialCpuId}>
-              {cpu.name} ({cpu.brand})
-            </option>
-          ))}
-        </select>
-      </div>
-
-      <div>
-        <label class="flex items-center gap-1.5 text-xs font-mono uppercase text-slate-400 mb-2">
-          <svg class="w-4 h-4 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
-          </svg>
-          <span>Select Graphics Card (GPU)</span>
-        </label>
-        <select id="gpu-select" class="w-full bg-[#18181b] border border-white/10 rounded-lg p-2.5 text-sm text-white focus:border-emerald-500 focus:outline-none cursor-pointer">
-          {gpus.map(gpu => (
-            <option value={gpu.id} selected={gpu.id === initialGpuId}>
-              {gpu.name} ({gpu.vramGb}GB VRAM)
-            </option>
-          ))}
-        </select>
-      </div>
-
-      <div class="pt-4 border-t border-white/10">
-        <div class="text-xs text-slate-400 font-mono uppercase mb-2">Current System Balance</div>
-        <div id="severity-badge" class={`inline-block max-w-full break-words whitespace-normal leading-normal px-3 py-1 rounded-xl text-xs font-bold ${initialResult.severity === 'Severe' ? 'bg-rose-500/20 text-rose-400 border border-rose-500/30' : initialResult.severity === 'Moderate' ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30' : 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'}`}>
-          {initialResult.severity} {initialResult.primaryBottleneck} Bottleneck ({initialResult.bottleneckPercentage}%)
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-[11px] font-mono text-emerald-400 font-bold uppercase tracking-wider mb-2">
+          <span class="w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.9)] animate-pulse"></span>
+          <span>RESOLUTION-AWARE BOTTLENECK ENGINE</span>
         </div>
+        <h2 class="text-xl sm:text-3xl font-extrabold font-mono text-white tracking-tight">PC Bottleneck &amp; FPS Calculator</h2>
+        <p class="text-xs sm:text-sm text-zinc-400 mt-1">Resolution-aware CPU &amp; GPU balance evaluator with transparent benchmark scoring.</p>
+      </div>
+
+      <!-- Resolution Mode Pills -->
+      <div class="flex items-center gap-1.5 bg-zinc-950 p-1.5 rounded-2xl border border-zinc-800 font-mono text-xs shadow-inner">
+        <button data-res="1080p" class={`px-4 py-2 min-h-[44px] sm:min-h-0 rounded-xl font-bold transition cursor-pointer ${initialResolution === '1080p' ? 'bg-emerald-500 text-black shadow-lg shadow-emerald-500/20' : 'text-zinc-400 hover:text-white'}`}>1080p FHD</button>
+        <button data-res="1440p" class={`px-4 py-2 min-h-[44px] sm:min-h-0 rounded-xl font-bold transition cursor-pointer ${initialResolution === '1440p' ? 'bg-emerald-500 text-black shadow-lg shadow-emerald-500/20' : 'text-zinc-400 hover:text-white'}`}>1440p QHD</button>
+        <button data-res="4K" class={`px-4 py-2 min-h-[44px] sm:min-h-0 rounded-xl font-bold transition cursor-pointer ${initialResolution === '4K' ? 'bg-emerald-500 text-black shadow-lg shadow-emerald-500/20' : 'text-zinc-400 hover:text-white'}`}>4K UHD</button>
       </div>
     </div>
 
-    <!-- Bottleneck Gauge & Utilization Metrics -->
-    <div class="lg:col-span-2 space-y-6">
-      <div class="bg-black/40 p-6 rounded-xl border border-white/5 flex flex-col justify-between">
-        <div class="flex items-center justify-between mb-4">
-          <span class="text-xs font-mono uppercase text-slate-400 flex items-center gap-1.5">
-            <svg class="w-4 h-4 text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
+    <div class="relative z-10 grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <!-- Component Selectors Deck -->
+      <div class="space-y-5 bg-zinc-950/80 p-5 sm:p-6 rounded-2xl border border-zinc-800/80 shadow-inner">
+        <div>
+          <label class="flex items-center gap-1.5 text-xs font-mono font-bold uppercase text-zinc-400 mb-2.5">
+            <svg class="w-4 h-4 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9 3v2m6-2v2M9 19v2m6-2v2M3 9h2m-2 6h2m14-6h2m-2 6h2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z" />
             </svg>
-            Bottleneck Intensity
-          </span>
-          <span id="bottleneck-pct" class="text-3xl font-black text-emerald-400">{initialResult.bottleneckPercentage}%</span>
+            <span>Processor (CPU)</span>
+          </label>
+          <select id="cpu-select" class="w-full bg-zinc-900 border border-zinc-700/80 rounded-xl p-3 text-xs sm:text-sm text-white font-mono focus:border-emerald-500 focus:outline-none cursor-pointer">
+            {cpus.map(cpu => (
+              <option value={cpu.id} selected={cpu.id === initialCpuId}>
+                {cpu.name} ({cpu.brand})
+              </option>
+            ))}
+          </select>
         </div>
 
-        <!-- Progress Bar -->
-        <div class="w-full bg-slate-800 h-3 rounded-full overflow-hidden mb-6">
-          <div id="bottleneck-bar" class="h-full bg-emerald-400 transition-all duration-500" style={`width: ${Math.min(100, initialResult.bottleneckPercentage * 2.5)}%`}></div>
+        <div>
+          <label class="flex items-center gap-1.5 text-xs font-mono font-bold uppercase text-zinc-400 mb-2.5">
+            <svg class="w-4 h-4 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
+            </svg>
+            <span>Graphics Card (GPU)</span>
+          </label>
+          <select id="gpu-select" class="w-full bg-zinc-900 border border-zinc-700/80 rounded-xl p-3 text-xs sm:text-sm text-white font-mono focus:border-emerald-500 focus:outline-none cursor-pointer">
+            {gpus.map(gpu => (
+              <option value={gpu.id} selected={gpu.id === initialGpuId}>
+                {gpu.name} ({gpu.vramGb}GB VRAM)
+              </option>
+            ))}
+          </select>
         </div>
 
-        <div class="grid grid-cols-2 gap-4 text-center">
-          <div class="bg-[#18181b] p-3 rounded-lg border border-white/5">
-            <span class="text-xs text-slate-400 font-mono block mb-1">CPU Load</span>
-            <span id="cpu-util" class="text-xl font-bold text-white">{initialResult.cpuUtilizationEst}%</span>
+        <div class="pt-4 border-t border-zinc-800">
+          <div class="text-[11px] text-zinc-400 font-mono uppercase mb-2 font-bold">System Balance Evaluation</div>
+          <div id="severity-badge" class={`inline-block max-w-full break-words whitespace-normal leading-normal px-3.5 py-2 rounded-xl text-xs font-mono font-bold ${initialResult.severity === 'Severe' ? 'bg-rose-500/20 text-rose-400 border border-rose-500/30' : initialResult.severity === 'Moderate' ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30' : 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'}`}>
+            {initialResult.severity} {initialResult.primaryBottleneck} Bottleneck ({initialResult.bottleneckPercentage}%)
           </div>
-          <div class="bg-[#18181b] p-3 rounded-lg border border-white/5">
-            <span class="text-xs text-slate-400 font-mono block mb-1">GPU Load</span>
-            <span id="gpu-util" class="text-xl font-bold text-white">{initialResult.gpuUtilizationEst}%</span>
-          </div>
         </div>
-
-        <p id="bottleneck-desc" class="text-xs text-slate-300 mt-4 leading-relaxed bg-black/20 p-3 rounded border border-white/5">
-          {initialResult.explanation}
-        </p>
       </div>
 
-      <!-- Game FPS Estimates -->
-      <div class="bg-black/30 p-5 rounded-xl border border-white/5">
-        <h3 class="text-xs font-mono uppercase text-slate-400 mb-3 tracking-wider flex items-center gap-1.5">
-          <svg class="w-4 h-4 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
-            <path stroke-linecap="round" stroke-linejoin="round" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-          </svg>
-          <span>Estimated Gaming FPS ({initialResolution})</span>
-        </h3>
-        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center">
-          <div class="p-3 bg-[#18181b] rounded-lg border border-white/5">
-            <div class="text-xs text-slate-400">Cyberpunk 2077</div>
-            <div id="fps-cp" class="text-lg font-bold text-emerald-400 mt-1">{initialResult.estimatedFps.cyberpunk2077} FPS</div>
+      <!-- Bottleneck Gauge & Utilization Deck -->
+      <div class="lg:col-span-2 space-y-5">
+        <div class="bg-zinc-950/80 p-5 sm:p-6 rounded-2xl border border-zinc-800/80 flex flex-col justify-between shadow-inner space-y-4">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-mono uppercase text-zinc-400 font-bold flex items-center gap-1.5">
+              <svg class="w-4 h-4 text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
+              </svg>
+              <span>Bottleneck Intensity</span>
+            </span>
+            <span id="bottleneck-pct" class="text-3xl sm:text-4xl font-extrabold font-mono text-emerald-400 tabular-nums">{initialResult.bottleneckPercentage}%</span>
           </div>
-          <div class="p-3 bg-[#18181b] rounded-lg border border-white/5">
-            <div class="text-xs text-slate-400">Counter-Strike 2</div>
-            <div id="fps-cs" class="text-lg font-bold text-emerald-400 mt-1">{initialResult.estimatedFps.cs2} FPS</div>
+
+          <!-- Progress Bar -->
+          <div class="w-full bg-zinc-900 h-3.5 rounded-full overflow-hidden border border-zinc-800">
+            <div id="bottleneck-bar" class="h-full bg-gradient-to-r from-emerald-400 via-amber-400 to-rose-500 transition-all duration-500 rounded-full" style={`width: ${Math.min(100, initialResult.bottleneckPercentage * 2.5)}%`}></div>
           </div>
-          <div class="p-3 bg-[#18181b] rounded-lg border border-white/5">
-            <div class="text-xs text-slate-400">Call of Duty</div>
-            <div id="fps-cod" class="text-lg font-bold text-emerald-400 mt-1">{initialResult.estimatedFps.callOfDuty} FPS</div>
+
+          <div class="grid grid-cols-2 gap-4 text-center font-mono">
+            <div class="bg-zinc-900/90 p-3.5 rounded-xl border border-zinc-800 space-y-1">
+              <span class="text-xs text-zinc-400 uppercase font-bold block">CPU Utilization</span>
+              <span id="cpu-util" class="text-2xl font-extrabold text-white tabular-nums">{initialResult.cpuUtilizationEst}%</span>
+            </div>
+            <div class="bg-zinc-900/90 p-3.5 rounded-xl border border-zinc-800 space-y-1">
+              <span class="text-xs text-zinc-400 uppercase font-bold block">GPU Utilization</span>
+              <span id="gpu-util" class="text-2xl font-extrabold text-white tabular-nums">{initialResult.gpuUtilizationEst}%</span>
+            </div>
           </div>
-          <div class="p-3 bg-[#18181b] rounded-lg border border-white/5">
-            <div class="text-xs text-slate-400">Fortnite</div>
-            <div id="fps-fn" class="text-lg font-bold text-emerald-400 mt-1">{initialResult.estimatedFps.fortnite} FPS</div>
+
+          <p id="bottleneck-desc" class="text-xs text-zinc-300 leading-relaxed bg-zinc-900/60 p-4 rounded-xl border border-zinc-800/80 font-sans">
+            {initialResult.explanation}
+          </p>
+        </div>
+
+        <!-- Game FPS Estimates -->
+        <div class="bg-zinc-950/80 p-5 sm:p-6 rounded-2xl border border-zinc-800/80 space-y-3 shadow-inner">
+          <h3 class="text-xs font-mono uppercase text-zinc-400 font-bold tracking-wider flex items-center gap-1.5">
+            <svg class="w-4 h-4 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+              <path stroke-linecap="round" stroke-linejoin="round" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <span>Estimated Gaming Performance ({initialResolution})</span>
+          </h3>
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center font-mono">
+            <div class="p-3 bg-zinc-900/90 rounded-xl border border-zinc-800">
+              <div class="text-[11px] text-zinc-400">Cyberpunk 2077</div>
+              <div id="fps-cp" class="text-base sm:text-lg font-extrabold text-emerald-400 mt-1 tabular-nums">{initialResult.estimatedFps.cyberpunk2077} FPS</div>
+            </div>
+            <div class="p-3 bg-zinc-900/90 rounded-xl border border-zinc-800">
+              <div class="text-[11px] text-zinc-400">Counter-Strike 2</div>
+              <div id="fps-cs" class="text-base sm:text-lg font-extrabold text-emerald-400 mt-1 tabular-nums">{initialResult.estimatedFps.cs2} FPS</div>
+            </div>
+            <div class="p-3 bg-zinc-900/90 rounded-xl border border-zinc-800">
+              <div class="text-[11px] text-zinc-400">Call of Duty</div>
+              <div id="fps-cod" class="text-base sm:text-lg font-extrabold text-emerald-400 mt-1 tabular-nums">{initialResult.estimatedFps.callOfDuty} FPS</div>
+            </div>
+            <div class="p-3 bg-zinc-900/90 rounded-xl border border-zinc-800">
+              <div class="text-[11px] text-zinc-400">Fortnite</div>
+              <div id="fps-fn" class="text-base sm:text-lg font-extrabold text-emerald-400 mt-1 tabular-nums">{initialResult.estimatedFps.fortnite} FPS</div>
+            </div>
           </div>
         </div>
       </div>

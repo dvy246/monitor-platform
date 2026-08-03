@@ -71,125 +71,59 @@ const seoDescription = "Inspect switch chatter, actuation force, debounce delays
 ---
 
 <Layout title={seoTitle} description={seoDescription} faqs={faqs}>
-  <div class="max-w-7xl mx-auto px-4 py-6 sm:py-8 min-w-0 w-full overflow-hidden font-sans">
-    
-    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 mt-6">
-      
-      <!-- Left Primary Diagnostic Canvas (lg:col-span-8) -->
-      <div class="lg:col-span-8 space-y-8 min-w-0 font-mono">
-        <!-- Breadcrumbs -->
-        <div class="flex items-center space-x-2 text-xs text-zinc-400 mb-6">
-          <a href={localizeLink("/", lang)} class="hover:text-white transition-colors duration-200 cursor-pointer">Home</a>
-          <span>/</span>
-          <a href={localizeLink("/keyboard-tester", lang)} class="hover:text-white transition-colors duration-200 cursor-pointer">Keyboard Tester</a>
-          <span>/</span>
-          <span class="text-emerald-400 font-bold">Switches Directory</span>
-        </div>
-
-        <!-- Direct Answer Block for AEO -->
-        <div itemScope itemType="https://schema.org/Answer" class="bg-[#121215] border border-white/10 rounded-3xl p-6 shadow-2xl backdrop-blur-xl">
-          <h1 class="text-2xl font-bold text-white mb-3 font-sans">Mechanical Key Switch Chatter &amp; Bounce Database</h1>
-          <p itemProp="text" class="text-sm text-zinc-300 leading-relaxed font-sans">
-            Mechanical switch chatter (key bounce) occurs when physical copper contacts vibrate upon impact, triggering redundant keypress dispatches within 1ms to 30ms. Monitor Test Hub's switch directory maps exact manufacturer actuation forces, travel distances, and debounce thresholds across 120+ switches to diagnose double-typing faults.
-          </p>
-        </div>
-
-        <!-- Switches Grid -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {switchesList.map(item => (
-            <a href={localizeLink(`/keyboard-tester/switches/${item.slug}`, lang)} class="block p-5 bg-[#121215] border border-white/10 hover:border-emerald-500/50 rounded-2xl transition-colors duration-200 group cursor-pointer shadow-xl">
-              <div class="flex justify-between items-start mb-2">
-                <span class="text-xs font-bold text-emerald-400 uppercase tracking-wider">{item.brand}</span>
-                <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-300 border border-emerald-500/30">{item.type}</span>
-              </div>
-              <h2 class="text-base font-bold text-white group-hover:text-emerald-400 transition-colors duration-200 font-sans">{item.name}</h2>
-              <div class="mt-4 grid grid-cols-3 gap-2 text-center text-xs border-t border-white/10 pt-3 text-zinc-400">
-                <div>
-                  <span class="block text-[10px] uppercase">Force</span>
-                  <span class="font-bold text-white">{item.force}</span>
-                </div>
-                <div>
-                  <span class="block text-[10px] uppercase">Travel</span>
-                  <span class="font-bold text-white">{item.travel}</span>
-                </div>
-                <div>
-                  <span class="block text-[10px] uppercase">Debounce</span>
-                  <span class="font-bold text-rose-400">{item.bounceMs}</span>
-                </div>
-              </div>
-            </a>
-          ))}
-        </div>
-
-        <FAQSection faqs={faqs} />
-      </div>
-
-      <!-- Right Modular Control & Telemetry Sidebar (lg:col-span-4) -->
-      <div class="lg:col-span-4 space-y-6 sticky top-24 self-start min-w-0">
-        <InfoCard
-          title="Switch Calibration Theory"
-          subtitle="Mechanical Actuation Physics"
-          badgeText="Switch Specs"
-          citations={[
-            { standard: "ISO/IEC 9995-1 Keyboard Layouts", clause: "Actuation Geometry", description: "Standardized mechanical switch actuation travel distances and force displacement curves." }
-          ]}
-          osdTips={[
-            "Clean switch leaf contacts with 99% isopropyl alcohol if chatter occurs.",
-            "Increase firmware debounce time in QMK/VIA to suppress mechanical leaf bounce."
-          ]}
-        />
-
-        <ConfigurationCard
-          title="Switch Directory Filters"
-          subtitle="Brand & Type Selection"
-          controls={[
-            {
-              id: 'brandFilter',
-              label: 'Switch Brand',
-              type: 'select',
-              value: 'all',
-              options: [
-                { value: 'all', label: 'All Brands (Cherry, Gateron, Kailh)' },
-                { value: 'cherry', label: 'Cherry MX' },
-                { value: 'gateron', label: 'Gateron' },
-                { value: 'kailh', label: 'Kailh' },
-                { value: 'wooting', label: 'Wooting Hall Effect' }
-              ]
-            },
-            {
-              id: 'typeFilter',
-              label: 'Actuation Type',
-              type: 'presets',
-              value: 'all',
-              options: [
-                { value: 'all', label: 'All Types' },
-                { value: 'linear', label: 'Linear' },
-                { value: 'tactile', label: 'Tactile' },
-                { value: 'clicky', label: 'Clicky' }
-              ]
-            }
-          ]}
-        />
-
-        <MetricCard
-          title="Directory Overview"
-          subtitle="Switch Catalog Telemetry"
-          badgeText="120+ Switches"
-          metrics={[
-            { id: 'totalSwitches', label: 'Cataloged Switches', value: '10', unit: 'types', status: 'pass' },
-            { id: 'avgForce', label: 'Avg Actuation Force', value: '55.4', unit: 'g', status: 'neutral' },
-            { id: 'minDebounce', label: 'Min Debounce Time', value: '0', unit: 'ms', status: 'pass' }
-          ]}
-        />
-
-        <ShortcutCard
-          shortcuts={[
-            { keys: ['/'], label: 'Focus Search Filter' },
-            { keys: ['C'], label: 'Clear Filters' }
-          ]}
-        />
-      </div>
-
+  <div class="max-w-7xl mx-auto px-4 py-6 sm:py-8 min-w-0 w-full overflow-hidden font-sans space-y-12">
+    <!-- Breadcrumbs -->
+    <div class="flex items-center space-x-2 text-xs text-zinc-400 font-mono">
+      <a href={localizeLink("/", lang)} class="hover:text-white transition-colors duration-200 cursor-pointer">Home</a>
+      <span>/</span>
+      <a href={localizeLink("/keyboard-tester", lang)} class="hover:text-white transition-colors duration-200 cursor-pointer">Keyboard Tester</a>
+      <span>/</span>
+      <span class="text-emerald-400 font-bold">Switches Directory</span>
     </div>
+
+    <!-- Direct Answer Block for AEO -->
+    <div itemScope itemType="https://schema.org/Answer" class="bg-[#121215] border border-white/10 rounded-3xl p-6 sm:p-8 shadow-2xl backdrop-blur-xl space-y-3 font-sans">
+      <h1 class="text-2xl sm:text-4xl font-extrabold text-white font-sans">Mechanical Key Switch Chatter &amp; Bounce Database</h1>
+      <p itemProp="text" class="text-sm sm:text-base text-zinc-300 leading-relaxed font-sans">
+        Mechanical switch chatter (key bounce) occurs when physical copper contacts vibrate upon impact, triggering redundant keypress dispatches within 1ms to 30ms. Monitor Test Hub's switch directory maps exact manufacturer actuation forces, travel distances, and debounce thresholds across 120+ switches to diagnose double-typing faults.
+      </p>
+    </div>
+
+    <!-- Switches Grid (Full Width 12 Columns) -->
+    <section class="space-y-4 font-mono">
+      <div class="flex items-center justify-between border-b border-white/10 pb-3">
+        <h2 class="text-xl font-bold text-white font-sans">Cataloged Mechanical Switches ({switchesList.length} Models)</h2>
+        <span class="text-xs text-emerald-400 font-bold bg-emerald-500/10 border border-emerald-500/30 px-3 py-1 rounded-full">Chatter &amp; Force Telemetry</span>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {switchesList.map(item => (
+          <a href={localizeLink(`/keyboard-tester/switches/${item.slug}`, lang)} class="block p-6 bg-[#121215] border border-white/10 hover:border-emerald-500/50 rounded-2xl transition-all duration-200 group cursor-pointer shadow-xl space-y-3">
+            <div class="flex justify-between items-start">
+              <span class="text-xs font-bold text-emerald-400 uppercase tracking-wider">{item.brand}</span>
+              <span class="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-300 border border-emerald-500/30">{item.type}</span>
+            </div>
+            <h3 class="text-lg font-bold text-white group-hover:text-emerald-400 transition-colors duration-200 font-sans">{item.name}</h3>
+            <div class="grid grid-cols-3 gap-2 text-center text-xs border-t border-white/10 pt-4 text-zinc-400">
+              <div>
+                <span class="block text-[10px] uppercase font-sans">Force</span>
+                <span class="font-bold text-white">{item.force}</span>
+              </div>
+              <div>
+                <span class="block text-[10px] uppercase font-sans">Travel</span>
+                <span class="font-bold text-white">{item.travel}</span>
+              </div>
+              <div>
+                <span class="block text-[10px] uppercase font-sans">Debounce</span>
+                <span class="font-bold text-rose-400">{item.bounceMs}</span>
+              </div>
+            </div>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <FAQSection faqs={faqs} title="Mechanical Switch FAQs" />
   </div>
 </Layout>

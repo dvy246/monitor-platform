@@ -232,13 +232,17 @@ const { t, lang } = useTranslations(Astro.url.pathname);
                       <span class="truncate flex-1 min-w-0 font-sans">Full Keyboard Test</span>
                       <span class="shrink-0 text-[9px] font-mono font-bold text-amber-400 bg-amber-400/20 px-1.5 py-0.5 rounded border border-amber-400/40 whitespace-nowrap">All Keys</span>
                     </a>
+                    <a href={localizeLink("/keyboard-tester/spacebar-counter", lang)} class="flex items-center justify-between gap-2 p-2 rounded-lg hover:bg-bg-elevated text-xs font-bold text-text-primary bg-status-pass/10 border border-status-pass/30 transition-colors group/item">
+                      <span class="truncate flex-1 min-w-0 font-sans">3D Spacebar Clicker</span>
+                      <span class="shrink-0 text-[9px] font-mono font-bold text-status-pass bg-status-pass/20 px-1.5 py-0.5 rounded border border-status-pass/40 whitespace-nowrap">3D Keycap</span>
+                    </a>
+                    <a href={localizeLink("/keyboard-tester/typing-speed-test", lang)} class="flex items-center justify-between gap-2 p-2 rounded-lg hover:bg-bg-elevated text-xs font-medium text-text-secondary hover:text-text-primary transition-colors group/item">
+                      <span class="truncate flex-1 min-w-0 font-sans group-hover/item:text-text-primary">WPM Typing Speedometer</span>
+                      <span class="shrink-0 text-[9px] font-mono font-bold text-cyan-400 bg-cyan-400/10 px-1.5 py-0.5 rounded border border-cyan-400/30 whitespace-nowrap">WPM</span>
+                    </a>
                     <a href={localizeLink("/keyboard-tester/key-chatter-test", lang)} class="flex items-center justify-between gap-2 p-2 rounded-lg hover:bg-bg-elevated text-xs font-medium text-text-secondary hover:text-text-primary transition-colors group/item">
                       <span class="truncate flex-1 min-w-0 font-sans group-hover/item:text-text-primary">Double Typing Test</span>
                       <span class="shrink-0 text-[9px] font-mono font-bold text-rose-400 bg-rose-400/10 px-1.5 py-0.5 rounded border border-rose-400/30 whitespace-nowrap">Chatter</span>
-                    </a>
-                    <a href={localizeLink("/keyboard-tester/spacebar-counter", lang)} class="flex items-center justify-between gap-2 p-2 rounded-lg hover:bg-bg-elevated text-xs font-medium text-text-secondary hover:text-text-primary transition-colors group/item">
-                      <span class="truncate flex-1 min-w-0 font-sans group-hover/item:text-text-primary">Spacebar Speed Test</span>
-                      <span class="shrink-0 text-[9px] font-mono font-bold text-amber-400 bg-amber-400/10 px-1.5 py-0.5 rounded border border-amber-400/30 whitespace-nowrap">CPS</span>
                     </a>
                     <a href={localizeLink("/keyboard-tester/switches", lang)} class="flex items-center justify-between gap-2 p-2 rounded-lg hover:bg-bg-elevated text-xs font-medium text-text-secondary hover:text-text-primary transition-colors group/item">
                       <span class="truncate flex-1 min-w-0 font-sans group-hover/item:text-text-primary">Key Switch Directory</span>
@@ -248,18 +252,22 @@ const { t, lang } = useTranslations(Astro.url.pathname);
                       <span class="truncate flex-1 min-w-0 font-sans group-hover/item:text-text-primary">Multi-Key Rollover</span>
                       <span class="shrink-0 text-[9px] font-mono font-bold text-amber-400 bg-amber-400/10 px-1.5 py-0.5 rounded border border-amber-400/30 whitespace-nowrap">NKRO</span>
                     </a>
-                    <a href={localizeLink("/keyboard-tester/mac-keyboard-test", lang)} class="flex items-center justify-between gap-2 p-2 rounded-lg hover:bg-bg-elevated text-xs font-medium text-text-secondary hover:text-text-primary transition-colors group/item">
-                      <span class="truncate flex-1 min-w-0 font-sans group-hover/item:text-text-primary">Mac Keyboard Test</span>
-                      <span class="shrink-0 text-[9px] font-mono font-bold text-text-muted bg-bg-elevated px-1.5 py-0.5 rounded border border-border-hairline whitespace-nowrap">macOS</span>
-                    </a>
                   </div>
 
                   <!-- Mouse Tests -->
                   <div class="space-y-1">
-                    <div class="text-[10px] font-bold text-amber-400 uppercase tracking-wider px-1 mb-1">Mouse Tests</div>
-                    <a href={localizeLink("/mouse-test", lang)} class="flex items-center justify-between gap-2 p-2 rounded-lg hover:bg-bg-elevated text-xs font-bold text-text-primary bg-status-pass/10 border border-status-pass/30 transition-colors group/item">
+                    <div class="text-[10px] font-bold text-amber-400 uppercase tracking-wider px-1 mb-1">Mouse &amp; Aim Tests</div>
+                    <a href={localizeLink("/aim-trainer", lang)} class="flex items-center justify-between gap-2 p-2 rounded-lg hover:bg-bg-elevated text-xs font-bold text-text-primary bg-red-500/10 border border-red-500/30 transition-colors group/item">
+                      <span class="truncate flex-1 min-w-0 font-sans">3D Precision Aim Trainer</span>
+                      <span class="shrink-0 text-[9px] font-mono font-bold text-red-400 bg-red-500/20 px-1.5 py-0.5 rounded border border-red-500/40 whitespace-nowrap">Aim 3D</span>
+                    </a>
+                    <a href={localizeLink("/mouse-test/cps-test", lang)} class="flex items-center justify-between gap-2 p-2 rounded-lg hover:bg-bg-elevated text-xs font-bold text-text-primary bg-status-pass/10 border border-status-pass/30 transition-colors group/item">
+                      <span class="truncate flex-1 min-w-0 font-sans">Mouse CPS Speed Test</span>
+                      <span class="shrink-0 text-[9px] font-mono font-bold text-status-pass bg-status-pass/20 px-1.5 py-0.5 rounded border border-status-pass/40 whitespace-nowrap">CPS</span>
+                    </a>
+                    <a href={localizeLink("/mouse-test", lang)} class="flex items-center justify-between gap-2 p-2 rounded-lg hover:bg-bg-elevated text-xs font-medium text-text-secondary hover:text-text-primary transition-colors group/item">
                       <span class="truncate flex-1 min-w-0 font-sans">Mouse Test (5-Button)</span>
-                      <span class="shrink-0 text-[9px] font-mono font-bold text-status-pass bg-status-pass/20 px-1.5 py-0.5 rounded border border-status-pass/40 whitespace-nowrap">Clicks</span>
+                      <span class="shrink-0 text-[9px] font-mono font-bold text-status-pass bg-status-pass/10 px-1.5 py-0.5 rounded border border-status-pass/30 whitespace-nowrap">Clicks</span>
                     </a>
                     <a href={localizeLink("/mouse-test/polling-rate", lang)} class="flex items-center justify-between gap-2 p-2 rounded-lg hover:bg-bg-elevated text-xs font-medium text-text-secondary hover:text-text-primary transition-colors group/item">
                       <span class="truncate flex-1 min-w-0 font-sans group-hover/item:text-text-primary">Mouse Polling Rate</span>
@@ -272,14 +280,6 @@ const { t, lang } = useTranslations(Astro.url.pathname);
                     <a href={localizeLink("/mouse-test/dpi-calculator", lang)} class="flex items-center justify-between gap-2 p-2 rounded-lg hover:bg-bg-elevated text-xs font-medium text-text-secondary hover:text-text-primary transition-colors group/item">
                       <span class="truncate flex-1 min-w-0 font-sans group-hover/item:text-text-primary">Mouse DPI Calculator</span>
                       <span class="shrink-0 text-[9px] font-mono font-bold text-status-pass bg-status-pass/10 px-1.5 py-0.5 rounded border border-status-pass/30 whitespace-nowrap">DPI</span>
-                    </a>
-                    <a href={localizeLink("/mouse-test/sensitivity-converter", lang)} class="flex items-center justify-between gap-2 p-2 rounded-lg hover:bg-bg-elevated text-xs font-medium text-text-secondary hover:text-text-primary transition-colors group/item">
-                      <span class="truncate flex-1 min-w-0 font-sans group-hover/item:text-text-primary">Game Sensitivity</span>
-                      <span class="shrink-0 text-[9px] font-mono font-bold text-cyan-400 bg-cyan-400/10 px-1.5 py-0.5 rounded border border-cyan-400/30 whitespace-nowrap">Aim</span>
-                    </a>
-                    <a href={localizeLink("/mouse-test/edpi-calculator", lang)} class="flex items-center justify-between gap-2 p-2 rounded-lg hover:bg-bg-elevated text-xs font-medium text-text-secondary hover:text-text-primary transition-colors group/item">
-                      <span class="truncate flex-1 min-w-0 font-sans group-hover/item:text-text-primary">eDPI &amp; Pro Player</span>
-                      <span class="shrink-0 text-[9px] font-mono font-bold text-cyan-400 bg-cyan-400/10 px-1.5 py-0.5 rounded border border-cyan-400/30 whitespace-nowrap">eDPI</span>
                     </a>
                   </div>
                 </div>
@@ -720,10 +720,34 @@ const { t, lang } = useTranslations(Astro.url.pathname);
                   <span class="text-[10px] font-mono text-amber-400 font-bold">NKRO</span>
                 </a>
 
-                <a href={localizeLink("/keyboard-tester/spacebar-counter", lang)} data-keywords="spacebar counter spacebar clicker spacebar clicker hooda math hooda math spacebar clicker spacebar cps test spacebar clicker test spacebar speed test 5s 10s 30s 60s" class="search-item flex items-center justify-between px-4 py-2.5 hover:bg-bg-elevated text-sm text-text-secondary hover:text-text-primary transition-colors">
+                <a href={localizeLink("/keyboard-tester/typing-speed-test", lang)} data-keywords="typing speed test typing test wpm calculator wpm typing speedometer words per minute 15s typing 30s typing 60s typing 120s typing typing speed" class="search-item flex items-center justify-between px-4 py-2.5 hover:bg-bg-elevated text-sm text-text-secondary hover:text-text-primary transition-colors">
+                  <div class="flex items-center gap-3">
+                    <span class="w-2 h-2 rounded-full bg-cyan-400 shrink-0"></span>
+                    <span>WPM Typing Speedometer &amp; Typing Test</span>
+                  </div>
+                  <span class="text-[10px] font-mono text-cyan-400 font-bold">WPM</span>
+                </a>
+
+                <a href={localizeLink("/aim-trainer", lang)} data-keywords="aim trainer aim test aim practice precision aim reflex speed classic 30s aim fps aim target tracking mouse aim" class="search-item flex items-center justify-between px-4 py-2.5 hover:bg-bg-elevated text-sm text-text-secondary hover:text-text-primary transition-colors">
+                  <div class="flex items-center gap-3">
+                    <span class="w-2 h-2 rounded-full bg-red-400 shrink-0"></span>
+                    <span>3D Precision Aim Trainer &amp; Reflex Speed Test</span>
+                  </div>
+                  <span class="text-[10px] font-mono text-red-400 font-bold">3D Aim</span>
+                </a>
+
+                <a href={localizeLink("/mouse-test/cps-test", lang)} data-keywords="mouse cps speed test cps test cps challenge 1s cps 5s cps 10s cps 30s cps 60s cps 100 clicks speedrun mouse speed click test" class="search-item flex items-center justify-between px-4 py-2.5 hover:bg-bg-elevated text-sm text-text-secondary hover:text-text-primary transition-colors">
+                  <div class="flex items-center gap-3">
+                    <span class="w-2 h-2 rounded-full bg-status-pass shrink-0"></span>
+                    <span>Mouse CPS Speed Test &amp; 100 Clicks Speedrun</span>
+                  </div>
+                  <span class="text-[10px] font-mono text-status-pass font-bold">CPS</span>
+                </a>
+
+                <a href={localizeLink("/keyboard-tester/spacebar-counter", lang)} data-keywords="spacebar counter spacebar clicker spacebar clicker idle game spacebar 5s 10s 30s 60s test spacebar speed test spacebar cps" class="search-item flex items-center justify-between px-4 py-2.5 hover:bg-bg-elevated text-sm text-text-secondary hover:text-text-primary transition-colors">
                   <div class="flex items-center gap-3">
                     <span class="w-2 h-2 rounded-full bg-amber-400 shrink-0"></span>
-                    <span>Spacebar Counter / Clicker (Hooda Math / CPS Speed)</span>
+                    <span>3D Spacebar Clicker &amp; Speedometer (5s/10s/30s/60s)</span>
                   </div>
                   <span class="text-[10px] font-mono text-amber-400 font-bold">Spacebar</span>
                 </a>

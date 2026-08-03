@@ -31,57 +31,32 @@ const seoDescription = "Test your analog Hall Effect keyboard's Rapid Trigger ac
 ---
 
 <Layout title={seoTitle} description={seoDescription} faqs={faqs} canonicalUrl={canonicalUrl}>
-  <div class="max-w-7xl mx-auto px-4 py-6 sm:py-8 min-w-0 w-full overflow-hidden font-sans">
-    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 mt-6">
-      
-      <div class="lg:col-span-8 space-y-8 min-w-0">
-        <section class="max-w-4xl mx-auto text-center space-y-4">
-          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-rose-500/10 border border-rose-500/30 text-xs font-mono text-rose-400 font-bold">
-            <span>HALL EFFECT SENSOR ANALYSIS</span>
-          </div>
-          <h1 class="text-3xl sm:text-4xl font-extrabold font-mono tracking-tight text-white">
-            Rapid Trigger Actuation Tester
-          </h1>
-          <p class="text-sm sm:text-base text-zinc-400 leading-relaxed max-w-2xl mx-auto">
-            Test the dynamic actuation and reset points of magnetic Hall Effect switches. Perfect for calibrating Wooting, Razer, and SteelSeries gaming keyboards.
-          </p>
-        </section>
-
-        <RapidTriggerCanvas />
-
-        <article class="max-w-5xl mx-auto space-y-6 bg-[#121215] border border-white/10 rounded-3xl p-6 sm:p-8 backdrop-blur-xl text-sm text-zinc-300 leading-relaxed shadow-2xl">
-          <div class="border-b border-white/10 pb-4">
-            <h2 class="text-xl font-bold font-mono text-white">Continuous Analog Matrix</h2>
-            <p class="mt-2 text-zinc-400">
-              Unlike traditional binary switches, Hall Effect switches measure the exact magnetic flux of the stem's descent. This allows for 'Rapid Trigger'—a feature that breaks the circuit the instant the key is lifted, completely eliminating mechanical reset deadzones.
-            </p>
-          </div>
-        </article>
-
-        <FAQSection faqs={faqs} />
+  <div class="max-w-7xl mx-auto px-4 py-6 sm:py-8 min-w-0 w-full overflow-hidden font-sans space-y-12">
+    <section class="max-w-4xl mx-auto text-center space-y-4">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-xs font-mono text-emerald-400 font-bold">
+        <span>ANALOG SENSOR MATRIX</span>
       </div>
+      <h1 class="text-3xl sm:text-4xl font-extrabold font-mono tracking-tight text-white">
+        Rapid Trigger Test
+      </h1>
+      <p class="text-sm sm:text-base text-zinc-400 leading-relaxed max-w-2xl mx-auto font-sans">
+        Audit magnetic Hall Effect switches and analog key actuation depth in real-time. Benchmark resetting travel and rapid trigger responsiveness.
+      </p>
+    </section>
 
-      <div class="lg:col-span-4 space-y-6 sticky top-24 self-start min-w-0">
-        <StatusCard
-          status="pass"
-          label="SYSTEM READY"
-          subtitle="Sensor Status"
-          score="100"
-          maxScore="100"
-          details={[
-            { label: 'Keys', value: 'Ready' }
-          ]}
-        />
-        <MetricCard
-          title="Switch Telemetry"
-          subtitle="Analog Depth Matrix"
-          badgeText="Real-time"
-          metrics={[
-            { id: 'actuation', label: 'Actuation Point', value: '0.0', unit: 'mm', status: 'neutral' }
-          ]}
-        />
+    <!-- Main Visual Diagnostic Engine Component (Full Width 12 Columns) -->
+    <RapidTriggerCanvas />
+
+    <!-- Educational Article Section -->
+    <article class="max-w-7xl mx-auto space-y-6 bg-[#121215] border border-white/10 rounded-3xl p-6 sm:p-8 backdrop-blur-xl text-sm text-zinc-300 leading-relaxed shadow-2xl font-sans">
+      <div class="border-b border-white/10 pb-4">
+        <h2 class="text-xl font-bold font-mono text-white">Continuous Analog Matrix</h2>
+        <p class="mt-2 text-zinc-400">
+          Unlike traditional binary switches, Hall Effect switches measure the exact magnetic flux of the stem's descent. This allows for 'Rapid Trigger'—a feature that breaks the circuit the instant the key is lifted, completely eliminating mechanical reset deadzones.
+        </p>
       </div>
+    </article>
 
-    </div>
+    <FAQSection faqs={faqs} title="Rapid Trigger FAQs" />
   </div>
 </Layout>

@@ -1,352 +1,246 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import AudioTesterCanvas from '../components/diagnostics/AudioTesterCanvas.astro';
-import FAQSection from '../components/ui/FAQSection.astro';
 import Breadcrumbs from '../components/ui/Breadcrumbs.astro';
 import SEOHead from '../components/seo/SEOHead.astro';
+import AudioTesterCanvas from '../components/diagnostics/AudioTesterCanvas.astro';
 import StepWorkflowSection from '../components/ui/StepWorkflowSection.astro';
 import PanelTypeBreakdownSection from '../components/ui/PanelTypeBreakdownSection.astro';
+import FAQSection from '../components/ui/FAQSection.astro';
 
-import StatusCard from '../components/ui/sidebar/StatusCard.astro';
-import MetricCard from '../components/ui/sidebar/MetricCard.astro';
-import ConfigurationCard from '../components/ui/sidebar/ConfigurationCard.astro';
-import TelemetryCard from '../components/ui/sidebar/TelemetryCard.astro';
-import ShortcutCard from '../components/ui/sidebar/ShortcutCard.astro';
-
-const title = "Sound Test";
-const description = "Professional web-native audio diagnostic suite for testing speakers, headphones, microphones, and latency.";
+const title = "Sound & Speaker Test - Free Online Audio Diagnostic Suite";
+const description = "Free online Sound & Speaker Test. Test left/right speaker balance, 20Hz-20kHz frequency sweeps, microphone noise floor, and speaker water eject pulses.";
 
 const faqs = [
   {
-    question: "What is the AES17 audio standard?",
-    answer: "AES17 is a standard by the Audio Engineering Society that defines methods for measuring digital audio equipment. It sets guidelines for test signals, sweeps, and filters to ensure accurate evaluation of digital-to-analog converters and amplifiers."
+    question: "How do I test if my left and right speakers are working properly?",
+    answer: "Click the 'Test Left Speaker' and 'Test Right Speaker' buttons in our Audio Diagnostic Suite. You should hear a clear 1kHz sine wave sound coming exclusively from the left ear/channel, then exclusively from the right ear/channel. If sound comes from both or the wrong side, your audio channels are reversed or set to mono playback."
   },
   {
-    question: "How do I test my Left/Right channel balance?",
-    answer: "Our stereo balance test plays an isolated tone or white noise exclusively on the left, then the right channel. If the perceived center shifts or one side sounds louder, you may need to adjust your OS balance settings or check your cable connections."
+    question: "How do I eject water from my phone speaker?",
+    answer: "If your smartphone speaker sounds muffled after being exposed to liquid, launch our Water Eject Sound tool under specialized tools. It emits a 165Hz low-frequency kinetic pressure wave that creates physical air vibrations to dislodge water droplets from phone speaker grills."
   },
   {
-    question: "What is a 20Hz to 20kHz frequency sweep?",
-    answer: "This sweep covers the generally accepted limits of human hearing. Starting at deep sub-bass (20Hz) and rising to ultra-high treble (20kHz), it helps identify dead zones in your speaker's crossover or limitations in your headphones' driver response."
+    question: "What is speaker frequency response and why sweep from 20Hz to 20kHz?",
+    answer: "Human hearing ranges from roughly 20Hz (deep sub-bass) to 20,000Hz (high treble). Running a logarithmic 20Hz–20kHz frequency sweep tests if your speakers or headphones can accurately reproduce all audible frequencies without cabinet rattle, distortion, or dead frequency ranges."
   },
   {
-    question: "Why does my microphone have a high noise floor?",
-    answer: "A high noise floor (constant hissing or humming) can be caused by unshielded cables, ground loops, poor preamp quality, or excessive digital gain. Our noise floor inspector visualizes this ambient noise level in decibels (dB)."
+    question: "How do I test my microphone for background static noise?",
+    answer: "Use our Microphone Verification Engine or Decibel Meter tool. Speak into your microphone to record ambient room noise level in quiet conditions, then test active speech levels. High background noise indicates a low signal-to-noise ratio (SNR) or gain staging issues."
   },
   {
-    question: "How do I detect Bluetooth audio latency?",
-    answer: "Our lip-sync and audio latency test plays a visual flash synchronized precisely with an audio ping. By observing the delay between the visual cue and the sound, you can estimate the latency introduced by codecs like SBC, AAC, aptX, or LDAC."
+    question: "What causes speaker crackling or distortion?",
+    answer: "Speaker crackling is usually caused by physical voice coil damage (blown speaker cone), dust build-up, loose audio cables, or digital audio buffer underruns. Use our Speaker Crackling Test to pinpoint mechanical distortion vs software buffer issues."
   },
   {
-    question: "What is speaker phase alignment?",
-    answer: "Phase alignment refers to both speakers pushing out air at the same time. If one is wired backwards (out of phase), soundwaves will cancel out, especially low frequencies, resulting in a hollow, bass-less sound with a confusing stereo image."
-  },
-  {
-    question: "How do I test my subwoofer crossover?",
-    answer: "Our bass sweep transitions from mid-bass down to sub-audible frequencies (e.g., 100Hz down to 10Hz). You can listen for the point where your main speakers hand off to the subwoofer and ensure the transition is smooth without volume dips."
-  },
-  {
-    question: "Can I test 5.1 and 7.1 surround sound in the browser?",
-    answer: "Yes, using the modern Web Audio API's multichannel capabilities. Our tool routes distinct channel signals (Center, LFE, Surround L/R, Rear L/R) allowing you to verify physical speaker placement and OS audio configuration."
-  },
-  {
-    question: "Why use a Web Audio tone generator?",
-    answer: "A web-based tone generator creates pure sine, square, triangle, or sawtooth waves using perfect mathematical algorithms directly in your browser. This eliminates the compression artifacts found in YouTube audio test videos."
-  },
-  {
-    question: "Does sample rate affect these tests?",
-    answer: "Yes, standard audio tests run at 44.1kHz or 48kHz, which is sufficient for reproducing up to 20kHz or 24kHz (Nyquist frequency). High-res audio systems at 96kHz or 192kHz allow for higher frequency testing, though beyond human hearing limits."
+    question: "Can I test surround sound (5.1 / 7.1) using this online sound test?",
+    answer: "Yes! Our Surround Sound Test routes distinct channel audio signals across multi-channel audio interfaces to test spatial positioning in 5.1 and 7.1 speaker systems."
   }
 ];
 
 const breadcrumbs = [
   { label: 'Home', href: '/' },
-  { label: 'Sound Test', href: '/sound-test' },
-  { label: title, href: '#' }
+  { label: 'Sound Test', href: '/sound-test' }
 ];
 ---
 
 <Layout title={title} description={description} faqs={faqs}>
   <SEOHead slot="head" title={title} description={description} />
   
-  <div class="max-w-7xl mx-auto px-4 py-6 sm:py-8 min-w-0 w-full overflow-hidden font-sans">
+  <div class="max-w-7xl mx-auto px-4 py-6 sm:py-8 min-w-0 w-full overflow-hidden font-sans space-y-12">
     <Breadcrumbs items={breadcrumbs} />
-    
-    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 mt-6">
-      
-      <!-- Left Primary Diagnostic Canvas (lg:col-span-8) -->
-      <div class="lg:col-span-8 space-y-8 min-w-0">
-        <!-- Hero Diagnostic Header Deck -->
-        <div class="relative w-full rounded-3xl border border-white/10 bg-[#121215] backdrop-blur-xl p-6 sm:p-8 md:p-10 shadow-2xl text-center space-y-4 overflow-hidden group select-none">
-          <div class="absolute -top-24 -left-24 w-72 h-72 bg-blue-500/10 rounded-full blur-3xl pointer-events-none group-hover:bg-blue-500/15 transition-all duration-500"></div>
-          <div class="absolute -bottom-24 -right-24 w-72 h-72 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none group-hover:bg-cyan-500/15 transition-all duration-500"></div>
 
-          <div class="relative z-10 space-y-4 max-w-3xl mx-auto min-w-0 w-full">
-            <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#08080a] border border-white/10 text-cyan-400 text-xs font-mono font-bold tracking-wide flex-wrap justify-center shadow-inner">
-              <span class="w-2 h-2 rounded-full bg-cyan-400 animate-pulse shrink-0"></span>
-              <span class="break-words min-w-0">WEB AUDIO API DIAGNOSTICS &amp; AES17 METRICS</span>
-            </div>
-            <h1 class="text-3xl sm:text-5xl font-extrabold text-white tracking-tight font-sans break-words min-w-0">{title}</h1>
-            <p class="text-sm sm:text-lg text-zinc-400 font-sans leading-relaxed min-w-0">High-fidelity web audio diagnostic instruments for precision calibration, L/R balance, phase alignment, and 20Hz–20kHz sweeps.</p>
-          </div>
-        </div>
+    <!-- Hero Diagnostic Header Deck -->
+    <header class="relative w-full rounded-3xl border border-white/10 bg-[#121215] backdrop-blur-xl p-6 sm:p-8 md:p-10 shadow-2xl text-center space-y-4 overflow-hidden group select-none">
+      <div class="absolute -top-24 -left-24 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none group-hover:bg-cyan-500/20 transition-all duration-700"></div>
+      <div class="absolute -bottom-24 -right-24 w-96 h-96 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none group-hover:bg-indigo-500/20 transition-all duration-700"></div>
 
-        <!-- Master Bento Diagnostic Suite -->
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/30 text-xs font-mono text-cyan-400 font-bold uppercase tracking-wider flex-wrap min-w-0 justify-center">
+        <span class="w-2 h-2 rounded-full bg-cyan-400 shadow-[0_0_8px_rgba(34,211,238,0.9)] animate-pulse"></span>
+        <span class="break-words min-w-0">WEB AUDIO 64-BIT DSP SYNTHESIZER</span>
+      </div>
+
+      <h1 class="text-2xl sm:text-5xl font-extrabold text-white tracking-tight font-sans break-words min-w-0">
+        Sound &amp; Speaker Test
+      </h1>
+      <p class="text-sm sm:text-base text-zinc-400 max-w-3xl mx-auto leading-relaxed font-sans min-w-0">
+        Professional web-native audio diagnostic suite for testing left/right speaker balance, frequency sweeps (20Hz–20kHz), microphone noise levels, and speaker water eject pulses.
+      </p>
+    </header>
+
+    <!-- Master Interactive Component (Full Width 12 Columns) -->
+    <AudioTesterCanvas />
+
+    <!-- Specialized Sound & Audio Diagnostic Instruments Section -->
+    <section class="space-y-6 pt-4">
+      <div class="border-b border-white/10 pb-4 flex items-center justify-between">
         <div>
-          <AudioTesterCanvas />
+          <h2 class="text-xl sm:text-2xl font-bold font-mono text-white">Specialized Sound &amp; Audio Instruments (14 Tools)</h2>
+          <p class="text-xs text-zinc-400 mt-1">Direct-access single-purpose Web Audio API diagnostic suites for headphones, speakers, and microphones.</p>
         </div>
-
-        <article class="bg-[#121215] border border-white/10 rounded-3xl p-6 sm:p-10 space-y-6 text-zinc-300 font-sans leading-relaxed shadow-2xl">
-          <h2 class="text-2xl font-semibold text-white font-mono flex items-center gap-2">
-            <svg class="w-6 h-6 text-cyan-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
-            </svg>
-            <span>Comprehensive Audio Diagnostics &amp; Engineering Standards</span>
-          </h2>
-          <p>
-            Ensuring high-fidelity audio reproduction requires more than just listening to your favorite track. It demands clinical, uncompressed test signals generated by precision mathematical algorithms. Our suite leverages the modern Web Audio API to bypass typical browser compression, delivering pure sine waves, white noise, and exact channel routing directly to your DAC (Digital-to-Analog Converter).
-          </p>
-          
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-6 my-6 text-xs font-mono">
-            <div class="bg-[#08080a] p-5 rounded-2xl border border-white/10 space-y-2">
-              <div class="text-cyan-400 font-bold uppercase tracking-wider">L/R Channel &amp; Phase Alignment</div>
-              <p class="text-zinc-400 font-sans leading-relaxed">
-                Accurate stereo imaging is the foundation of high-quality audio. Our L/R separation tests ensure that no crosstalk bleeds between your channels, vital for competitive gaming audio cues and spatial mixing. Out-of-phase speakers suffer from destructive interference, completely nullifying bass response.
-              </p>
-            </div>
-
-            <div class="bg-[#08080a] p-5 rounded-2xl border border-white/10 space-y-2">
-              <div class="text-emerald-400 font-bold uppercase tracking-wider">AES17 &amp; 20Hz-20kHz Sweeps</div>
-              <p class="text-zinc-400 font-sans leading-relaxed">
-                Continuous logarithmic sweeps from 20Hz (human sub-bass limit) to 20kHz allow mapping frequency response curves for headphones and studio monitors, revealing crossover nulls and room resonance peaks.
-              </p>
-            </div>
-          </div>
-
-          <h3 class="text-xl font-semibold text-white font-mono mt-8">Microphone Noise Floor &amp; Preamp Gain Staging</h3>
-          <p>
-            A silent room shouldn't register on your microphone. If your input signal shows constant activity, you are dealing with a high noise floor. This can stem from cheap motherboard audio isolation, USB ground loops, or over-cranked digital gain compensation. Our real-time visualizer helps you establish proper gain staging, maximizing your Signal-to-Noise Ratio (SNR) for crystal-clear voice comms and podcast recording.
-          </p>
-          
-          <h3 class="text-xl font-semibold text-white font-mono mt-8">Bluetooth Audio Latency: AAC, aptX, and LDAC</h3>
-          <p>
-            Wireless convenience often comes at the cost of latency. While wired setups typically exhibit &lt;20ms of delay, standard Bluetooth SBC or AAC codecs can introduce 150ms to 250ms of audio lag, resulting in noticeable lip-sync issues in movies and severe disadvantages in gaming. Advanced codecs like aptX Low Latency or LDAC reduce this overhead. Our audio-visual synchronization test provides empirical telemetry to quantify exactly how many milliseconds your wireless connection is lagging behind the video frame.
-          </p>
-        </article>
-
-        <div class="space-y-8">
-          <StepWorkflowSection />
-          <PanelTypeBreakdownSection />
-        
-          <article class="bg-[#121215] border border-white/10 rounded-3xl p-6 sm:p-10 space-y-6 text-zinc-300 font-sans leading-relaxed shadow-2xl">
-            <h2 class="text-2xl font-semibold text-white font-mono flex items-center gap-2">
-              <svg class="w-6 h-6 text-emerald-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
-              </svg>
-              <span>E-E-A-T Technical Hardware Analysis &amp; Standards</span>
-            </h2>
-            <p>
-              In accordance with strict Experience, Expertise, Authoritativeness, and Trustworthiness (E-E-A-T) guidelines, this diagnostic test utilizes direct hardware-level APIs. By bypassing software abstraction layers, we deliver clinical metrics that professionals rely on for hardware validation.
-            </p>
-            
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 my-6 text-xs font-mono">
-              <div class="bg-[#08080a] p-5 rounded-2xl border border-white/10 space-y-2">
-                <div class="text-cyan-400 font-bold uppercase tracking-wider">Methodology &amp; Precision</div>
-                <p class="text-zinc-400 font-sans leading-relaxed">
-                  Our polling engines operate on microsecond timers, evaluating input jitter, signal degradation, and electrical contact bouncing with maximum precision. Every reading reflects the true capabilities of your device.
-                </p>
-              </div>
-
-              <div class="bg-[#08080a] p-5 rounded-2xl border border-white/10 space-y-2">
-                <div class="text-emerald-400 font-bold uppercase tracking-wider">Industry Standards</div>
-                <p class="text-zinc-400 font-sans leading-relaxed">
-                  We continuously benchmark against established engineering standards, guaranteeing that the telemetry displayed matches laboratory conditions. Our tools are built by experts to ensure flawless hardware testing.
-                </p>
-              </div>
-            </div>
-
-            <h3 class="text-xl font-semibold text-white font-mono mt-8">Reliability You Can Trust</h3>
-            <p>
-              Understanding hardware bottlenecks requires transparent, bias-free telemetry. This platform is recognized by IT professionals and competitive esports players alike as the definitive standard for local-machine diagnostics. We guarantee no background data harvesting or hidden processes will skew your results.
-            </p>
-          </article>
-
-          <!-- Sound Tools Suite Grid -->
-          <div class="space-y-4">
-            <h2 class="text-xl font-bold font-mono text-white flex items-center gap-2">
-              <span class="w-2.5 h-2.5 rounded-full bg-purple-400 animate-pulse"></span>
-              <span>All Specialized Sound Diagnostic Tools</span>
-            </h2>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <a href="/sound-test/water-eject" class="p-5 rounded-2xl border border-emerald-500/30 bg-[#121215]/90 hover:border-emerald-500 hover:bg-emerald-500/10 transition-all group space-y-2">
-                <div class="flex items-center justify-between">
-                  <span class="px-2.5 py-0.5 rounded bg-emerald-500/20 text-emerald-400 text-[10px] font-mono font-bold border border-emerald-500/30">WATER REMOVAL</span>
-                  <span class="text-xs text-emerald-400 group-hover:text-white font-mono font-bold">Open Tool &rarr;</span>
-                </div>
-                <h3 class="text-lg font-bold text-white group-hover:text-emerald-400 transition-colors">Water Eject Sound</h3>
-                <p class="text-xs text-zinc-400 leading-relaxed">Remove trapped water from phone and laptop speakers using 165Hz acoustic frequency sweeps.</p>
-              </a>
-
-              <a href="/sound-test/speaker-cleaner" class="p-5 rounded-2xl border border-cyan-500/30 bg-[#121215]/90 hover:border-cyan-500 hover:bg-cyan-500/10 transition-all group space-y-2">
-                <div class="flex items-center justify-between">
-                  <span class="px-2.5 py-0.5 rounded bg-cyan-500/20 text-cyan-400 text-[10px] font-mono font-bold border border-cyan-500/30">DUST CLEANER</span>
-                  <span class="text-xs text-cyan-400 group-hover:text-white font-mono font-bold">Open Tool &rarr;</span>
-                </div>
-                <h3 class="text-lg font-bold text-white group-hover:text-cyan-400 transition-colors">Speaker Cleaner Tool</h3>
-                <p class="text-xs text-zinc-400 leading-relaxed">Dislodge dust, dirt, and pocket lint from mobile speaker meshes using high-energy sawtooth waves.</p>
-              </a>
-
-              <a href="/sound-test/speaker-crackle-test" class="p-5 rounded-2xl border border-amber-500/30 bg-[#121215]/90 hover:border-amber-500 hover:bg-amber-500/10 transition-all group space-y-2">
-                <div class="flex items-center justify-between">
-                  <span class="px-2.5 py-0.5 rounded bg-amber-500/20 text-amber-400 text-[10px] font-mono font-bold border border-amber-500/30">DISTORTION CHECK</span>
-                  <span class="text-xs text-amber-400 group-hover:text-white font-mono font-bold">Open Tool &rarr;</span>
-                </div>
-                <h3 class="text-lg font-bold text-white group-hover:text-amber-400 transition-colors">Speaker Crackling Test</h3>
-                <p class="text-xs text-zinc-400 leading-relaxed">Diagnose mechanical buzzing, physical distortion, and blown speaker cones using triangle sweeps.</p>
-              </a>
-
-              <a href="/sound-test/speaker-test-music" class="p-5 rounded-2xl border border-indigo-500/30 bg-[#121215]/90 hover:border-indigo-500 hover:bg-indigo-500/10 transition-all group space-y-2">
-                <div class="flex items-center justify-between">
-                  <span class="px-2.5 py-0.5 rounded bg-indigo-500/20 text-indigo-400 text-[10px] font-mono font-bold border border-indigo-500/30">HIGH-RES SAMPLES</span>
-                  <span class="text-xs text-indigo-400 group-hover:text-white font-mono font-bold">Open Tool &rarr;</span>
-                </div>
-                <h3 class="text-lg font-bold text-white group-hover:text-indigo-400 transition-colors">Test Music Samples</h3>
-                <p class="text-xs text-zinc-400 leading-relaxed">High-resolution audio samples to evaluate dynamic range, sub-bass, and soundstage.</p>
-              </a>
-
-              <a href="/sound-test/decibel-meter" class="p-5 rounded-2xl border border-white/10 bg-[#121215]/90 hover:border-emerald-500/40 hover:bg-emerald-500/5 transition-all group space-y-2">
-                <div class="flex items-center justify-between">
-                  <span class="px-2.5 py-0.5 rounded bg-emerald-500/20 text-emerald-400 text-[10px] font-mono font-bold border border-emerald-500/30">REAL-TIME dB</span>
-                  <span class="text-xs text-zinc-400 group-hover:text-white font-mono">Open Tool &rarr;</span>
-                </div>
-                <h3 class="text-lg font-bold text-white group-hover:text-emerald-400 transition-colors">Decibel Meter</h3>
-                <p class="text-xs text-zinc-400 leading-relaxed">Measure ambient room noise and microphone sound levels in real-time dBA SPL with peak hold.</p>
-              </a>
-
-              <a href="/sound-test/audio-latency" class="p-5 rounded-2xl border border-white/10 bg-[#121215]/90 hover:border-rose-500/40 hover:bg-rose-500/5 transition-all group space-y-2">
-                <div class="flex items-center justify-between">
-                  <span class="px-2.5 py-0.5 rounded bg-rose-500/20 text-rose-400 text-[10px] font-mono font-bold border border-rose-500/30">ms-ACCURATE</span>
-                  <span class="text-xs text-zinc-400 group-hover:text-white font-mono">Open Tool &rarr;</span>
-                </div>
-                <h3 class="text-lg font-bold text-white group-hover:text-rose-400 transition-colors">Audio Latency Test</h3>
-                <p class="text-xs text-zinc-400 leading-relaxed">Measure Bluetooth and wireless headphone delay in milliseconds using reaction or tap-on-beat.</p>
-              </a>
-
-              <a href="/sound-test/bass-test" class="p-5 rounded-2xl border border-white/10 bg-[#121215]/90 hover:border-amber-500/40 hover:bg-amber-500/5 transition-all group space-y-2">
-                <div class="flex items-center justify-between">
-                  <span class="px-2.5 py-0.5 rounded bg-amber-500/20 text-amber-400 text-[10px] font-mono font-bold border border-amber-500/30">20Hz - 150Hz</span>
-                  <span class="text-xs text-zinc-400 group-hover:text-white font-mono">Open Tool &rarr;</span>
-                </div>
-                <h3 class="text-lg font-bold text-white group-hover:text-amber-400 transition-colors">Subwoofer Bass Test</h3>
-                <p class="text-xs text-zinc-400 leading-relaxed">Hit deep low frequencies from 20Hz to 150Hz to check subwoofer extension and cabinet rattle.</p>
-              </a>
-
-              <a href="/sound-test/surround-sound" class="p-5 rounded-2xl border border-white/10 bg-[#121215]/90 hover:border-purple-500/40 hover:bg-purple-500/5 transition-all group space-y-2">
-                <div class="flex items-center justify-between">
-                  <span class="px-2.5 py-0.5 rounded bg-purple-500/20 text-purple-400 text-[10px] font-mono font-bold border border-purple-500/30">3D SPATIAL AUDIO</span>
-                  <span class="text-xs text-zinc-400 group-hover:text-white font-mono">Open Tool &rarr;</span>
-                </div>
-                <h3 class="text-lg font-bold text-white group-hover:text-purple-400 transition-colors">Surround Sound Test</h3>
-                <p class="text-xs text-zinc-400 leading-relaxed">Hear virtual 3D positioning to validate spatial audio, HRTF, and 5.1 / 7.1 surround speaker setups.</p>
-              </a>
-
-              <a href="/sound-test/spectrum-analyzer" class="p-5 rounded-2xl border border-white/10 bg-[#121215]/90 hover:border-cyan-500/40 hover:bg-cyan-500/5 transition-all group space-y-2">
-                <div class="flex items-center justify-between">
-                  <span class="px-2.5 py-0.5 rounded bg-cyan-500/20 text-cyan-400 text-[10px] font-mono font-bold border border-cyan-500/30">FFT 2048</span>
-                  <span class="text-xs text-zinc-400 group-hover:text-white font-mono">Open Tool &rarr;</span>
-                </div>
-                <h3 class="text-lg font-bold text-white group-hover:text-cyan-400 transition-colors">Spectrum Analyzer</h3>
-                <p class="text-xs text-zinc-400 leading-relaxed">Real-time FFT frequency visualizer with 128-band bars, oscilloscope waveform, and spectrogram modes.</p>
-              </a>
-
-              <a href="/sound-test/microphone-test" class="p-5 rounded-2xl border border-white/10 bg-[#121215]/90 hover:border-emerald-500/40 hover:bg-emerald-500/5 transition-all group space-y-2">
-                <div class="flex items-center justify-between">
-                  <span class="px-2.5 py-0.5 rounded bg-emerald-500/20 text-emerald-400 text-[10px] font-mono font-bold border border-emerald-500/30">PLAYBACK LOOP</span>
-                  <span class="text-xs text-zinc-400 group-hover:text-white font-mono">Open Tool &rarr;</span>
-                </div>
-                <h3 class="text-lg font-bold text-white group-hover:text-emerald-400 transition-colors">Microphone Test Online</h3>
-                <p class="text-xs text-zinc-400 leading-relaxed">Live decibel meter (dBFS), waveform analyzer, and 3-second instant voice loopback playback.</p>
-              </a>
-            </div>
-          </div>
-
-          <FAQSection faqs={faqs} />
-        </div>
+        <span class="text-xs font-mono text-cyan-400 font-bold bg-cyan-500/10 border border-cyan-500/30 px-3 py-1 rounded-full">Web Audio API</span>
       </div>
 
-      <!-- Right Modular Control & Telemetry Sidebar (lg:col-span-4) -->
-      <div class="lg:col-span-4 space-y-6 sticky top-24 self-start min-w-0">
-        <StatusCard
-          status="pass"
-          label="WEB AUDIO ACTIVE"
-          subtitle="DAC & Audio Engine Status"
-          score="48.0"
-          maxScore="kHz"
-          details={[
-            { label: 'Sample Rate', value: '48,000 Hz' },
-            { label: 'Buffer Latency', value: '10.0 ms' }
-          ]}
-        />
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <a href="/sound-test/tone-generator" class="p-5 rounded-2xl border border-white/10 bg-[#121215]/90 hover:border-cyan-500/40 hover:bg-cyan-500/5 transition-all group space-y-2">
+          <div class="flex items-center justify-between">
+            <span class="px-2.5 py-0.5 rounded bg-cyan-500/20 text-cyan-400 text-[10px] font-mono font-bold border border-cyan-500/30">64-BIT SYNTH</span>
+            <span class="text-xs text-zinc-400 group-hover:text-white font-mono">Open Tool &rarr;</span>
+          </div>
+          <h3 class="text-lg font-bold text-white group-hover:text-cyan-400 transition-colors">Tone Generator</h3>
+          <p class="text-xs text-zinc-400 leading-relaxed">Web Audio 64-bit pure frequency sound maker (1Hz to 20kHz) with oscilloscope.</p>
+        </a>
 
-        <MetricCard
-          title="Audio Metrics"
-          subtitle="Web Audio API Telemetry"
-          badgeText="AES17 Standard"
-          metrics={[
-            { id: 'frequencyHz', label: 'Generator Frequency', value: '1000', unit: 'Hz', status: 'pass' },
-            { id: 'balanceLr', label: 'Stereo Balance L/R', value: '0.0', unit: 'dB', status: 'pass' },
-            { id: 'noiseFloorDb', label: 'Mic Noise Floor', value: '-64.2', unit: 'dBFS', status: 'pass' },
-            { id: 'audioLatencyMs', label: 'Output Latency', value: '12.4', unit: 'ms', status: 'pass' }
-          ]}
-        />
+        <a href="/sound-test/water-eject" class="p-5 rounded-2xl border border-cyan-500/30 bg-[#121215]/90 hover:border-cyan-400 hover:bg-cyan-500/10 transition-all group space-y-2">
+          <div class="flex items-center justify-between">
+            <span class="px-2.5 py-0.5 rounded bg-cyan-500/20 text-cyan-400 text-[10px] font-mono font-bold border border-cyan-500/30">165Hz PRESSURE PULSE</span>
+            <span class="text-xs text-cyan-400 group-hover:text-white font-mono font-bold">Open Tool &rarr;</span>
+          </div>
+          <h3 class="text-lg font-bold text-white group-hover:text-cyan-400 transition-colors">Water Eject Sound Tool</h3>
+          <p class="text-xs text-zinc-400 leading-relaxed">Fix muffled speaker sound on iPhone &amp; Android phones using 165Hz kinetic water ejection pulses.</p>
+        </a>
 
-        <ConfigurationCard
-          title="Audio Signal Tuning"
-          subtitle="Waveform & Output Routing"
-          controls={[
-            {
-              id: 'outputDevice',
-              label: 'Audio Output Stream',
-              type: 'select',
-              value: 'default',
-              options: [
-                { value: 'default', label: 'Default System Output (DAC)' },
-                { value: 'headphones', label: 'Stereo Headphones' },
-                { value: 'speakers', label: '2.0/2.1 Speaker System' },
-                { value: 'surround', label: '5.1/7.1 Multi-channel' }
-              ]
-            },
-            {
-              id: 'signalType',
-              label: 'Test Signal Waveform',
-              type: 'presets',
-              value: 'sine',
-              options: [
-                { value: 'sine', label: 'Sine 1kHz' },
-                { value: 'sweep', label: '20-20k Sweep' },
-                { value: 'pink', label: 'Pink Noise' },
-                { value: 'white', label: 'White Noise' }
-              ]
-            }
-          ]}
-        />
+        <a href="/sound-test/earpiece-cleaner" class="p-5 rounded-2xl border border-emerald-500/30 bg-[#121215]/90 hover:border-emerald-400 hover:bg-emerald-500/10 transition-all group space-y-2">
+          <div class="flex items-center justify-between">
+            <span class="px-2.5 py-0.5 rounded bg-emerald-500/20 text-emerald-400 text-[10px] font-mono font-bold border border-emerald-500/30">250Hz - 600Hz SWEEP</span>
+            <span class="text-xs text-emerald-400 group-hover:text-white font-mono font-bold">Open Tool &rarr;</span>
+          </div>
+          <h3 class="text-lg font-bold text-white group-hover:text-emerald-400 transition-colors">Phone Earpiece Cleaner</h3>
+          <p class="text-xs text-zinc-400 leading-relaxed">Specialized high-pass frequency sweep for delicate top call receivers and earpieces.</p>
+        </a>
 
-        <TelemetryCard
-          title="FFT Spectrum Analyser"
-          subtitle="20Hz - 20kHz Realtime FFT"
-          type="event-log"
-          badgeText="FFT 2048"
-        />
+        <a href="/sound-test/mic-verification" class="p-5 rounded-2xl border border-purple-500/30 bg-[#121215]/90 hover:border-purple-400 hover:bg-purple-500/10 transition-all group space-y-2">
+          <div class="flex items-center justify-between">
+            <span class="px-2.5 py-0.5 rounded bg-purple-500/20 text-purple-400 text-[10px] font-mono font-bold border border-purple-500/30">3-STEP DECIBEL GAIN</span>
+            <span class="text-xs text-purple-400 group-hover:text-white font-mono font-bold">Open Tool &rarr;</span>
+          </div>
+          <h3 class="text-lg font-bold text-white group-hover:text-purple-400 transition-colors">Microphone Verification Engine</h3>
+          <p class="text-xs text-zinc-400 leading-relaxed">Evaluate real-time dB gain boost and static floor levels across 3 quiet &amp; speech phases.</p>
+        </a>
 
-        <ShortcutCard
-          shortcuts={[
-            { keys: ['Space'], label: 'Play / Pause Audio Signal' },
-            { keys: ['M'], label: 'Mute Audio Engine' }
-          ]}
-        />
+        <a href="/sound-test/speaker-test" class="p-5 rounded-2xl border border-white/10 bg-[#121215]/90 hover:border-cyan-500/40 hover:bg-cyan-500/5 transition-all group space-y-2">
+          <div class="flex items-center justify-between">
+            <span class="px-2.5 py-0.5 rounded bg-cyan-500/20 text-cyan-400 text-[10px] font-mono border border-cyan-500/30">STEREO L/R</span>
+            <span class="text-xs text-zinc-400 group-hover:text-white font-mono">Open Tool &rarr;</span>
+          </div>
+          <h3 class="text-lg font-bold text-white group-hover:text-cyan-400 transition-colors">Speaker Test Online</h3>
+          <p class="text-xs text-zinc-400 leading-relaxed">Audit Left and Right speaker channel separation, balance, and volume levels.</p>
+        </a>
+
+        <a href="/sound-test/headphone-test" class="p-5 rounded-2xl border border-white/10 bg-[#121215]/90 hover:border-indigo-500/40 hover:bg-indigo-500/5 transition-all group space-y-2">
+          <div class="flex items-center justify-between">
+            <span class="px-2.5 py-0.5 rounded bg-indigo-500/20 text-indigo-400 text-[10px] font-mono font-bold border border-indigo-500/30">BINAURAL 3D</span>
+            <span class="text-xs text-zinc-400 group-hover:text-white font-mono">Open Tool &rarr;</span>
+          </div>
+          <h3 class="text-lg font-bold text-white group-hover:text-indigo-400 transition-colors">Headphone Test Suite</h3>
+          <p class="text-xs text-zinc-400 leading-relaxed">Check stereo imaging, driver matching, bass extension, and high-frequency limits.</p>
+        </a>
+
+        <a href="/sound-test/speaker-crackle-test" class="p-5 rounded-2xl border border-amber-500/30 bg-[#121215]/90 hover:border-amber-500 hover:bg-amber-500/10 transition-all group space-y-2">
+          <div class="flex items-center justify-between">
+            <span class="px-2.5 py-0.5 rounded bg-amber-500/20 text-amber-400 text-[10px] font-mono font-bold border border-amber-500/30">DISTORTION CHECK</span>
+            <span class="text-xs text-amber-400 group-hover:text-white font-mono font-bold">Open Tool &rarr;</span>
+          </div>
+          <h3 class="text-lg font-bold text-white group-hover:text-amber-400 transition-colors">Speaker Crackling Test</h3>
+          <p class="text-xs text-zinc-400 leading-relaxed">Diagnose mechanical buzzing, physical distortion, and blown speaker cones using triangle sweeps.</p>
+        </a>
+
+        <a href="/sound-test/speaker-test-music" class="p-5 rounded-2xl border border-indigo-500/30 bg-[#121215]/90 hover:border-indigo-500 hover:bg-indigo-500/10 transition-all group space-y-2">
+          <div class="flex items-center justify-between">
+            <span class="px-2.5 py-0.5 rounded bg-indigo-500/20 text-indigo-400 text-[10px] font-mono font-bold border border-indigo-500/30">HIGH-RES SAMPLES</span>
+            <span class="text-xs text-indigo-400 group-hover:text-white font-mono font-bold">Open Tool &rarr;</span>
+          </div>
+          <h3 class="text-lg font-bold text-white group-hover:text-indigo-400 transition-colors">Test Music Samples</h3>
+          <p class="text-xs text-zinc-400 leading-relaxed">High-resolution audio samples to evaluate dynamic range, sub-bass, and soundstage.</p>
+        </a>
+
+        <a href="/sound-test/decibel-meter" class="p-5 rounded-2xl border border-white/10 bg-[#121215]/90 hover:border-emerald-500/40 hover:bg-emerald-500/5 transition-all group space-y-2">
+          <div class="flex items-center justify-between">
+            <span class="px-2.5 py-0.5 rounded bg-emerald-500/20 text-emerald-400 text-[10px] font-mono font-bold border border-emerald-500/30">REAL-TIME dB</span>
+            <span class="text-xs text-zinc-400 group-hover:text-white font-mono">Open Tool &rarr;</span>
+          </div>
+          <h3 class="text-lg font-bold text-white group-hover:text-emerald-400 transition-colors">Decibel Meter</h3>
+          <p class="text-xs text-zinc-400 leading-relaxed">Measure ambient room noise and microphone sound levels in real-time dBA SPL with peak hold.</p>
+        </a>
+
+        <a href="/sound-test/audio-latency" class="p-5 rounded-2xl border border-white/10 bg-[#121215]/90 hover:border-rose-500/40 hover:bg-rose-500/5 transition-all group space-y-2">
+          <div class="flex items-center justify-between">
+            <span class="px-2.5 py-0.5 rounded bg-rose-500/20 text-rose-400 text-[10px] font-mono font-bold border border-rose-500/30">ms-ACCURATE</span>
+            <span class="text-xs text-zinc-400 group-hover:text-white font-mono">Open Tool &rarr;</span>
+          </div>
+          <h3 class="text-lg font-bold text-white group-hover:text-rose-400 transition-colors">Audio Latency Test</h3>
+          <p class="text-xs text-zinc-400 leading-relaxed">Measure Bluetooth and wireless headphone delay in milliseconds using reaction or tap-on-beat.</p>
+        </a>
+
+        <a href="/sound-test/bass-test" class="p-5 rounded-2xl border border-white/10 bg-[#121215]/90 hover:border-amber-500/40 hover:bg-amber-500/5 transition-all group space-y-2">
+          <div class="flex items-center justify-between">
+            <span class="px-2.5 py-0.5 rounded bg-amber-500/20 text-amber-400 text-[10px] font-mono font-bold border border-amber-500/30">20Hz - 150Hz</span>
+            <span class="text-xs text-zinc-400 group-hover:text-white font-mono">Open Tool &rarr;</span>
+          </div>
+          <h3 class="text-lg font-bold text-white group-hover:text-amber-400 transition-colors">Subwoofer Bass Test</h3>
+          <p class="text-xs text-zinc-400 leading-relaxed">Hit deep low frequencies from 20Hz to 150Hz to check subwoofer extension and cabinet rattle.</p>
+        </a>
+
+        <a href="/sound-test/surround-sound" class="p-5 rounded-2xl border border-white/10 bg-[#121215]/90 hover:border-purple-500/40 hover:bg-purple-500/5 transition-all group space-y-2">
+          <div class="flex items-center justify-between">
+            <span class="px-2.5 py-0.5 rounded bg-purple-500/20 text-purple-400 text-[10px] font-mono font-bold border border-purple-500/30">3D SPATIAL AUDIO</span>
+            <span class="text-xs text-zinc-400 group-hover:text-white font-mono">Open Tool &rarr;</span>
+          </div>
+          <h3 class="text-lg font-bold text-white group-hover:text-purple-400 transition-colors">Surround Sound Test</h3>
+          <p class="text-xs text-zinc-400 leading-relaxed">Hear virtual 3D positioning to validate spatial audio, HRTF, and 5.1 / 7.1 surround speaker setups.</p>
+        </a>
+
+        <a href="/sound-test/spectrum-analyzer" class="p-5 rounded-2xl border border-white/10 bg-[#121215]/90 hover:border-cyan-500/40 hover:bg-cyan-500/5 transition-all group space-y-2">
+          <div class="flex items-center justify-between">
+            <span class="px-2.5 py-0.5 rounded bg-cyan-500/20 text-cyan-400 text-[10px] font-mono font-bold border border-cyan-500/30">FFT 2048</span>
+            <span class="text-xs text-zinc-400 group-hover:text-white font-mono">Open Tool &rarr;</span>
+          </div>
+          <h3 class="text-lg font-bold text-white group-hover:text-cyan-400 transition-colors">Spectrum Analyzer</h3>
+          <p class="text-xs text-zinc-400 leading-relaxed">Real-time FFT frequency visualizer with 128-band bars, oscilloscope waveform, and spectrogram modes.</p>
+        </a>
+
+        <a href="/sound-test/microphone-test" class="p-5 rounded-2xl border border-white/10 bg-[#121215]/90 hover:border-emerald-500/40 hover:bg-emerald-500/5 transition-all group space-y-2">
+          <div class="flex items-center justify-between">
+            <span class="px-2.5 py-0.5 rounded bg-emerald-500/20 text-emerald-400 text-[10px] font-mono font-bold border border-emerald-500/30">PLAYBACK LOOP</span>
+            <span class="text-xs text-zinc-400 group-hover:text-white font-mono">Open Tool &rarr;</span>
+          </div>
+          <h3 class="text-lg font-bold text-white group-hover:text-emerald-400 transition-colors">Microphone Test Online</h3>
+          <p class="text-xs text-zinc-400 leading-relaxed">Live decibel meter (dBFS), waveform analyzer, and 3-second instant voice loopback playback.</p>
+        </a>
       </div>
+    </section>
 
-    </div>
+    <!-- Technical Hardware Standards Article -->
+    <article class="bg-[#121215] border border-white/10 rounded-3xl p-6 sm:p-10 space-y-6 text-zinc-300 font-sans leading-relaxed shadow-2xl">
+      <h2 class="text-2xl font-semibold text-white font-mono flex items-center gap-2">
+        <svg class="w-6 h-6 text-cyan-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
+        </svg>
+        <span>Technical Audio Analysis &amp; Engineering Standards</span>
+      </h2>
+      <p>
+        Ensuring high-fidelity audio reproduction requires more than just listening to your favorite track. It demands clinical, uncompressed test signals generated by precision mathematical algorithms. Our suite leverages the modern Web Audio API to bypass typical browser compression, delivering pure sine waves, white noise, and exact channel routing directly to your DAC.
+      </p>
+      
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 my-6 text-xs font-mono">
+        <div class="bg-[#08080a] p-5 rounded-2xl border border-white/10 space-y-2">
+          <div class="text-cyan-400 font-bold uppercase tracking-wider">L/R Channel &amp; Phase Alignment</div>
+          <p class="text-zinc-400 font-sans leading-relaxed">
+            Accurate stereo imaging is the foundation of high-quality audio. Our L/R separation tests ensure that no crosstalk bleeds between your channels, vital for competitive gaming audio cues and spatial mixing.
+          </p>
+        </div>
+
+        <div class="bg-[#08080a] p-5 rounded-2xl border border-white/10 space-y-2">
+          <div class="text-emerald-400 font-bold uppercase tracking-wider">AES17 &amp; 20Hz-20kHz Sweeps</div>
+          <p class="text-zinc-400 font-sans leading-relaxed">
+            Continuous logarithmic sweeps from 20Hz (human sub-bass limit) to 20kHz allow mapping frequency response curves for headphones and studio monitors.
+          </p>
+        </div>
+      </div>
+    </article>
+
+    <!-- FAQ Section -->
+    <StepWorkflowSection />
+    <PanelTypeBreakdownSection />
+    <FAQSection faqs={faqs} title="Sound &amp; Speaker Test FAQs" />
   </div>
 </Layout>

@@ -1,0 +1,89 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import AimTrainerCanvas from '../../components/diagnostics/AimTrainerCanvas.astro';
+import StepWorkflowSection from '../../components/ui/StepWorkflowSection.astro';
+import PanelTypeBreakdownSection from '../../components/ui/PanelTypeBreakdownSection.astro';
+import FAQSection from '../../components/ui/FAQSection.astro';
+
+export function getStaticPaths() {
+  const modes = [
+    {
+      slug: 'classic',
+      title: 'Classic 30s Aim Trainer | Target Speed Benchmark',
+      h1: 'Classic 30-Second Aim Trainer Benchmark',
+      description: 'Test your 30-second target clicking speed and accuracy. Benchmark hits per minute, target destruction rate, and click latency.',
+      mode: 'classic',
+      faqs: [
+        { question: "What is Classic 30s Aim Trainer mode?", answer: "Classic 30s tests how many target spheres you can destroy in a 30-second time trial interval." },
+        { question: "What is a good score in Classic 30s mode?", answer: "Beginners hit 30-40 targets; intermediate players hit 50-65 targets; esports pros achieve 75+ targets." }
+      ]
+    },
+    {
+      slug: 'precision',
+      title: 'Precision Aim Trainer | Small Target Hitbox Challenge',
+      h1: 'Precision Aim Trainer & Micro-Adjustment Benchmark',
+      description: 'Benchmark your precision mouse aim with small 24px target hitboxes. Train micro-adjustments for Valorant and CS2 headshots.',
+      mode: 'precision',
+      faqs: [
+        { question: "What is Precision Aim mode?", answer: "Precision mode spawns small 24px target hitboxes, punishing crosshair overshoots and testing pixel-precise control." },
+        { question: "How does Precision Aim help in tactical shooters?", answer: "Tactical shooters like Valorant require first-bullet headshot precision; small targets train exact crosshair placement." }
+      ]
+    },
+    {
+      slug: 'reflex',
+      title: 'Reflex Speed Aim Trainer | Rapid Target Decay Reaction Test',
+      h1: 'Reflex Speed Aim Trainer & Reaction Latency Test',
+      description: 'Test your reflex reaction speed with rapid 700ms decaying targets. Measure click latencies in milliseconds.',
+      mode: 'reflex',
+      faqs: [
+        { question: "What is Reflex Aim mode?", answer: "Reflex mode spawns rapid targets that decay and disappear after 700ms if not eliminated instantly." },
+        { question: "What is average human reaction time?", answer: "Average visual reaction time is 200ms-250ms; elite gamers achieve sub-180ms reflex reaction times." }
+      ]
+    },
+    {
+      slug: 'endless',
+      title: 'Endless Aim Trainer | Continuous Target Practice Mode',
+      h1: 'Endless Aim Practice Arena',
+      description: 'Practice continuous target tracking with zero time limits. Warm up your mouse aim and muscle memory before ranked matches.',
+      mode: 'endless',
+      faqs: [
+        { question: "What is Endless Aim Practice mode?", answer: "Endless mode has no time limits, allowing continuous target tracking for pre-game warmups." }
+      ]
+    }
+  ];
+
+  return modes.map(m => ({
+    params: { slug: m.slug },
+    props: { modeData: m }
+  }));
+}
+
+const { modeData } = Astro.props;
+const canonicalUrl = `https://displaytestonline.com/aim-trainer/${modeData.slug}`;
+---
+
+<Layout title={modeData.title} description={modeData.description} faqs={modeData.faqs} canonicalUrl={canonicalUrl}>
+  <div class="max-w-7xl mx-auto px-4 py-6 sm:py-8 min-w-0 w-full overflow-hidden font-sans space-y-12">
+    <section class="max-w-4xl mx-auto text-center space-y-4">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-red-500/10 border border-red-500/30 text-xs font-mono text-red-400 font-bold uppercase tracking-wider">
+        <span>{modeData.title.toUpperCase()}</span>
+      </div>
+      <h1 class="text-3xl sm:text-5xl font-extrabold font-mono tracking-tight text-white">
+        {modeData.h1}
+      </h1>
+      <p class="text-sm sm:text-base text-zinc-400 leading-relaxed max-w-2xl mx-auto font-sans">
+        {modeData.description}
+      </p>
+    </section>
+
+    <!-- Aim Trainer Canvas Component -->
+    <AimTrainerCanvas initialMode={modeData.mode} />
+
+    <!-- Step Workflow & Panel Breakdown -->
+    <StepWorkflowSection />
+    <PanelTypeBreakdownSection />
+
+    <!-- FAQ Section -->
+    <FAQSection faqs={modeData.faqs} title={`Frequently Asked Questions (${modeData.h1})`} />
+  </div>
+</Layout>

@@ -7,6 +7,8 @@ import TypingSpeedCanvas from '../../components/diagnostics/TypingSpeedCanvas.as
 import KeyboardPollingRateCanvas from '../../components/diagnostics/KeyboardPollingRateCanvas.astro';
 import KeyDropCanvas from '../../components/diagnostics/KeyDropCanvas.astro';
 import FAQSection from '../../components/ui/FAQSection.astro';
+import StepWorkflowSection from '../../components/ui/StepWorkflowSection.astro';
+import PanelTypeBreakdownSection from '../../components/ui/PanelTypeBreakdownSection.astro';
 
 import StatusCard from '../../components/ui/sidebar/StatusCard.astro';
 import PaletteCard from '../../components/ui/sidebar/PaletteCard.astro';
@@ -284,21 +286,21 @@ export function getStaticPaths() {
     },
     {
       slug: 'spacebar-counter',
-      title: 'Spacebar Counter & Speed Test | High-Precision CPS Speedometer',
-      h1: 'Spacebar CPS Counter & Speed Test',
-      description: 'Test your spacebar press speed in CPS (clicks per second). Features 5s/10s/30s/60s time trials, live cadence graph, Web Audio acoustic feedback, and SHA-256 signed hardware passport certificates.',
-      badge: 'HIGH-PRECISION SPACEBAR SPEEDOMETER',
+      title: 'Spacebar Click Test & CPS Speedometer | Free Unblocked Spacebar Test',
+      h1: 'Spacebar Click Test & CPS Speed Counter',
+      description: 'Free online spacebar click test & cps spacebar test. Measure your spacebar click speed, 10 seconds spacebar click burst, practice 1v1 lol spacebar test unblocked, and play our spacebar click game.',
+      badge: 'UNBLOCKED SPACEBAR CLICK TEST & SPEEDOMETER',
       faqs: [
-        { question: "What is a spacebar counter speed test?", answer: "A spacebar counter measures how many times you can press your keyboard spacebar within a set time trial interval (e.g. 5s, 10s, 30s, 60s), calculating your peak CPS (clicks per second)." },
-        { question: "How is spacebar CPS (clicks per second) calculated?", answer: "CPS is calculated by dividing total spacebar keystrokes registered by elapsed duration in seconds, with microsecond event timestamp precision." },
-        { question: "What is a good spacebar CPS score?", answer: "The average person registers 6 to 7 CPS. Fast typists and gamers achieve 8 to 10 CPS, while butterfly or jitter technique practitioners can exceed 12 CPS." },
-        { question: "Does spacebar switch bounce or chatter affect CPS testing?", answer: "Faulty switches with contact chatter can inject erroneous extra clicks; our hardware engine applies microsecond debounce validation to ensure authentic scores." },
-        { question: "Can I use mouse clicks or touchscreen taps on the spacebar counter?", answer: "Yes, you can press the physical Spacebar key on your keyboard or tap/click the interactive keycap surface on screen." },
-        { question: "What are Hooda Math spacebar clicker time trial intervals?", answer: "Popular time trial intervals include 5 seconds (burst speed), 10 seconds, 30 seconds (endurance), and 60 seconds (marathon speed)." },
-        { question: "How do mechanical switch types affect spacebar tapping speed?", answer: "Linear light-actuation switches (e.g. Cherry MX Red or Speed Silver with 45g force) allow faster rapid cycling than heavy tactile switches." },
-        { question: "What is spacebar stabilizer chatter or rattle?", answer: "Loose spacebar stabilizers (wire rattle) can cause uneven key travel or stuck spacebar keys during rapid clicking." },
-        { question: "Does this spacebar test export hardware passport certificates?", answer: "Yes! Click 'Download Certificate' upon test completion to generate a cryptographically signed SHA-256 JSON report of your spacebar CPS score." },
-        { question: "Is this spacebar counter test 100% free and client-side?", answer: "Yes, 100% free, ad-free, and runs entirely in your web browser without sending any keystroke telemetry to remote servers." }
+        { question: "What is a spacebar click test?", answer: "A spacebar click test measures your spacebar click speed by tracking how many times you press the spacebar key per second (CPS) over 5, 10, 30, or 60 seconds." },
+        { question: "How does the CPS spacebar test measure clicks per second?", answer: "The cps spacebar test divides your total registered spacebar keystrokes by the trial duration in seconds, displaying microsecond-accurate CPS velocity." },
+        { question: "How do I practice for the 1v1 lol spacebar test?", answer: "Select the 5-second or 10-second trial interval to train rapid jump building and 90s movement mechanics for 1v1.LOL and Fortnite games." },
+        { question: "Is this spacebar test unblocked on Chromebooks?", answer: "Yes, this spacebar click test unblocked tool runs 100% in your web browser with no downloads, proxy requirements, or extension installs." },
+        { question: "How does the spacebar test 10 seconds mode work?", answer: "The 10 seconds spacebar click mode evaluates sustained speed over a standard 10-second interval, ideal for benchmarking jitter and butterfly tapping." },
+        { question: "What is the spacebar test clicker game?", answer: "Our spacebar clicker game rewards spacebar presses with score points to unlock mechanical switches, auto-clickers, and level achievement badges." },
+        { question: "What is a good spacebar click speed?", answer: "Casual typists achieve 6-7 CPS. Experienced gamers reach 8-10 CPS, while butterfly and jitter tappers exceed 12-15 spacebar clicks per second." },
+        { question: "Can I use the spacebar click counter on mobile touchscreens?", answer: "Yes, tap the interactive 3D mechanical keycap on mobile touchscreens or press the physical Spacebar on desktop keyboards." },
+        { question: "How do mechanical switches improve spacebar click speed?", answer: "Light linear switches like Cherry MX Speed Silver reduce actuation force (45g), allowing faster rapid cycling than heavy tactile switches." },
+        { question: "How do I share my spacebar click speed test rank with friends?", answer: "Click 'Share & Challenge' to generate a shareable link and performance badge with your CPS score, rank, and archetype badge." }
       ]
     },
     {
@@ -452,6 +454,147 @@ export function getStaticPaths() {
         { question: "Is this typing speed test free?", answer: "Yes, 100% free, browser-based, and private with zero keystroke data recorded." },
         { question: "How do I restart the typing speed test?", answer: "Click 'Restart Test' or press Escape at any point to reset text prompts and speedometer metrics." }
       ]
+    },
+    {
+      slug: 'wpm-calculator',
+      title: 'WPM Calculator & Typing Speedometer | Free Words Per Minute Test',
+      h1: 'WPM Calculator & Typing Speedometer Benchmark',
+      description: 'Calculate your typing speed in WPM (Words Per Minute) and CPM (Characters Per Minute). Includes 15s, 30s, 60s, 120s time trials and word count tests.',
+      badge: 'WPM CALCULATOR & TYPING SPEEDOMETER',
+      faqs: [
+        { question: "How is WPM calculated?", answer: "WPM is calculated as (Net Characters / 5) / Elapsed Minutes. Standard word length unit is 5 characters." },
+        { question: "What is a good WPM typing speed?", answer: "Average typing speed is 40 WPM; competitive typists average 70-90 WPM, and elite typists exceed 120 WPM." }
+      ]
+    },
+    {
+      slug: '15s-typing-test',
+      title: '15s Typing Test | Fast 15-Second WPM Speed Burst',
+      h1: '15-Second Typing Speed Burst Benchmark',
+      description: 'Test your 15-second typing speed burst. Benchmark peak WPM, CPM, and finger agility under microsecond timers.',
+      badge: '15S TYPING SPEED BURST',
+      faqs: [
+        { question: "What is a 15-second typing test?", answer: "A rapid 15-second typing burst benchmark designed to measure maximum peak WPM without finger fatigue." }
+      ]
+    },
+    {
+      slug: '30s-typing-test',
+      title: '30s Typing Test | 30-Second WPM Typing Speedometer',
+      h1: '30-Second Typing Speed Benchmark',
+      description: 'Standard 30-second WPM typing test. Measure typing velocity, accuracy %, and character error heatmaps.',
+      badge: '30S TYPING SPEEDOMETER',
+      faqs: [
+        { question: "What is a 30-second typing test?", answer: "A 30-second speed benchmark evaluating typing cadence and accuracy retention." }
+      ]
+    },
+    {
+      slug: '60s-typing-test',
+      title: '60s Typing Test | Official 1-Minute WPM Speedometer',
+      h1: '60-Second (1-Minute) Typing Speed Benchmark',
+      description: 'Official 1-minute WPM typing speed test. Benchmark sustained Words Per Minute, CPM, and accuracy.',
+      badge: 'OFFICIAL 60S TYPING BENCHMARK',
+      faqs: [
+        { question: "What is the official 60-second typing speed test?", answer: "The gold standard 1-minute typing test used by employers and esports leagues to certify official WPM scores." }
+      ]
+    },
+    {
+      slug: '120s-typing-test',
+      title: '120s Typing Test | 2-Minute WPM Endurance Benchmark',
+      h1: '120-Second (2-Minute) Typing Endurance Test',
+      description: 'Test your 2-minute typing stamina and endurance. Measure long-form WPM consistency and error rates.',
+      badge: '120S TYPING ENDURANCE',
+      faqs: [
+        { question: "What is a 120-second typing test?", answer: "A 2-minute typing endurance test evaluating muscle fatigue and sustained typing accuracy." }
+      ]
+    },
+    {
+      slug: '10-words-test',
+      title: '10 Words Typing Test | Ultra-Short Word Speedrun',
+      h1: '10 Words Typing Speedrun',
+      description: 'Speedrun typing 10 words as fast as possible. Measure microsecond key cycle timing.',
+      badge: '10 WORDS SPEEDRUN',
+      faqs: [
+        { question: "What is the 10 words typing test?", answer: "A word-count restricted speedrun measuring how many seconds it takes to accurately complete 10 words." }
+      ]
+    },
+    {
+      slug: '25-words-test',
+      title: '25 Words Typing Test | Short Word Sprint',
+      h1: '25 Words Typing Sprint',
+      description: 'Speedrun 25 words. Benchmark WPM, CPM, and key actuation speed.',
+      badge: '25 WORDS SPRINT',
+      faqs: [
+        { question: "What is the 25 words typing test?", answer: "A 25-word sprint testing rapid touch typing execution." }
+      ]
+    },
+    {
+      slug: '50-words-test',
+      title: '50 Words Typing Test | Medium Word Trial',
+      h1: '50 Words Typing Challenge',
+      description: 'Benchmark 50 words typing velocity and accuracy %.',
+      badge: '50 WORDS CHALLENGE',
+      faqs: [
+        { question: "What is the 50 words typing test?", answer: "A 50-word typing challenge evaluating rhythm and accuracy." }
+      ]
+    },
+    {
+      slug: '100-words-test',
+      title: '100 Words Typing Test | Long Word Benchmark',
+      h1: '100 Words Typing Benchmark',
+      description: 'Test 100 words typing accuracy and sustained WPM.',
+      badge: '100 WORDS BENCHMARK',
+      faqs: [
+        { question: "What is the 100 words typing test?", answer: "A 100-word benchmark evaluating touch typing stamina." }
+      ]
+    },
+    {
+      slug: 'spacebar-clicker',
+      title: 'Spacebar Clicker (Idle Game & 3D Keycap)',
+      h1: 'Spacebar Clicker & Idle 3D Speedometer',
+      description: 'Interactive 3D mechanical spacebar clicker game with zero-scroll keydown handling and CPS speedometers.',
+      badge: '3D SPACEBAR CLICKER',
+      faqs: [
+        { question: "What is Spacebar Clicker?", answer: "An interactive clicker game and speedometer featuring a 3D mechanical spacebar keycap." }
+      ]
+    },
+    {
+      slug: 'spacebar-5s-test',
+      title: 'Spacebar 5s Test | 5-Second Speed Burst',
+      h1: '5-Second Spacebar CPS Burst Test',
+      description: 'Test your 5-second spacebar tapping speed burst.',
+      badge: '5S SPACEBAR BURST',
+      faqs: [
+        { question: "What is the Spacebar 5s Test?", answer: "A 5-second burst test measuring peak clicks per second on your spacebar." }
+      ]
+    },
+    {
+      slug: 'spacebar-10s-test',
+      title: 'Spacebar 10s Test | 10-Second CPS Challenge',
+      h1: '10-Second Spacebar CPS Benchmark',
+      description: 'Benchmark 10-second spacebar click velocity.',
+      badge: '10S SPACEBAR BENCHMARK',
+      faqs: [
+        { question: "What is the Spacebar 10s Test?", answer: "A 10-second spacebar speed challenge." }
+      ]
+    },
+    {
+      slug: 'spacebar-30s-test',
+      title: 'Spacebar 30s Test | 30-Second CPS Endurance',
+      h1: '30-Second Spacebar Tapping Endurance',
+      description: 'Test 30-second spacebar tapping endurance and cadence.',
+      badge: '30S SPACEBAR ENDURANCE',
+      faqs: [
+        { question: "What is the Spacebar 30s Test?", answer: "A 30-second endurance trial measuring sustained CPS." }
+      ]
+    },
+    {
+      slug: 'spacebar-60s-test',
+      title: 'Spacebar 60s Test | 60-Second Marathon Tapping',
+      h1: '60-Second Spacebar Marathon Benchmark',
+      description: '60-second marathon spacebar speed trial.',
+      badge: '60S SPACEBAR MARATHON',
+      faqs: [
+        { question: "What is the Spacebar 60s Test?", answer: "A 60-second marathon spacebar tapping test." }
+      ]
     }
   ];
 
@@ -474,95 +617,40 @@ const canonicalUrl = `https://displaytestonline.com/keyboard-tester/${cat.slug}`
 ---
 
 <Layout title={cat.title} description={cat.description} faqs={cat.faqs} canonicalUrl={canonicalUrl}>
-  <div class="max-w-7xl mx-auto px-4 py-6 sm:py-8 min-w-0 w-full overflow-hidden font-sans">
+  <div class="max-w-7xl mx-auto px-4 py-6 sm:py-8 min-w-0 w-full overflow-hidden font-sans space-y-12">
     
-    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 mt-6">
-      
-      <!-- Left Primary Diagnostic Canvas (lg:col-span-8) -->
-      <div class="lg:col-span-8 space-y-8 min-w-0">
-        <section class="max-w-4xl mx-auto text-center space-y-4">
-          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-xs font-mono text-emerald-400 font-bold uppercase tracking-wider flex-wrap min-w-0 justify-center">
-            <span>{cat.badge}</span>
-          </div>
-          <h1 class="text-3xl sm:text-4xl font-extrabold font-mono tracking-tight text-white">
-            {cat.h1}
-          </h1>
-          <p class="text-sm sm:text-base text-zinc-400 leading-relaxed max-w-2xl mx-auto">
-            {cat.description}
-          </p>
-        </section>
-
-        <!-- Main Visual Diagnostic Engine Component -->
-        {cat.slug === 'spacebar-counter' || cat.slug === 'keyboard-cps-test' ? (
-          <KeyboardCpsCanvas />
-        ) : cat.slug === 'typing-speed-test' || cat.slug === 'keyboard-test-speed' ? (
-          <TypingSpeedCanvas />
-        ) : cat.slug === 'keyboard-polling-rate-test' ? (
-          <KeyboardPollingRateCanvas />
-        ) : cat.slug === 'key-drop-test' ? (
-          <KeyDropCanvas />
-        ) : (
-          <KeyboardTesterCanvas />
-        )}
-
-        <!-- 10-Item Technical FAQ Section -->
-        {cat.faqs && cat.faqs.length > 0 && (
-          <FAQSection faqs={cat.faqs} title={`Frequently Asked Questions (${cat.h1})`} />
-        )}
+    <section class="max-w-4xl mx-auto text-center space-y-4">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-xs font-mono text-emerald-400 font-bold uppercase tracking-wider flex-wrap min-w-0 justify-center">
+        <span>{cat.badge}</span>
       </div>
+      <h1 class="text-3xl sm:text-4xl font-extrabold font-mono tracking-tight text-white">
+        {cat.h1}
+      </h1>
+      <p class="text-sm sm:text-base text-zinc-400 leading-relaxed max-w-2xl mx-auto font-sans">
+        {cat.description}
+      </p>
+    </section>
 
-      <!-- Right Modular Control & Telemetry Sidebar (lg:col-span-4) -->
-      <div class="lg:col-span-4 space-y-6 sticky top-24 self-start min-w-0">
-        <StatusCard
-          status="pass"
-          label="KEY MATRIX ACTIVE"
-          subtitle="HID Keycode Telemetry"
-          score="100"
-          maxScore="%"
-          details={[
-            { label: 'Event Target', value: 'KeyboardEvent' },
-            { label: 'Chatter Guard', value: 'Active (35ms)' }
-          ]}
-        />
+    <!-- Main Visual Diagnostic Engine Component (Full Width 12 Columns) -->
+    {cat.slug === 'spacebar-counter' || cat.slug === 'keyboard-cps-test' || cat.slug.startsWith('spacebar') ? (
+      <SpacebarCounterCanvas />
+    ) : cat.slug === 'typing-speed-test' || cat.slug === 'keyboard-test-speed' || cat.slug === 'wpm-calculator' || cat.slug.includes('typing') || cat.slug.includes('words') ? (
+      <TypingSpeedCanvas />
+    ) : cat.slug === 'keyboard-polling-rate-test' ? (
+      <KeyboardPollingRateCanvas />
+    ) : cat.slug === 'key-drop-test' ? (
+      <KeyDropCanvas />
+    ) : (
+      <KeyboardTesterCanvas />
+    )}
 
-        <PaletteCard
-          title="Keyboard Geometry"
-          subtitle="Matrix Mapping Standard"
-          layoutPresets={[
-            { id: 'ansi-104', name: 'ANSI 104 Full', keyCount: 104 },
-            { id: 'macbook', name: 'Apple Mac Layout', keyCount: 78 },
-            { id: 'mini-60', name: '60% Compact', keyCount: 61 }
-          ]}
-          activePresetId="ansi-104"
-        />
+    <!-- Step Workflow Section & Panel Breakdown -->
+    <StepWorkflowSection />
+    <PanelTypeBreakdownSection />
 
-        <MetricCard
-          title="Keycode Readout"
-          subtitle="DOM Event Telemetry"
-          badgeText="W3C HID"
-          metrics={[
-            { id: 'keyCode', label: 'W3C Key Code', value: 'KeyA', status: 'pass' },
-            { id: 'hexCode', label: 'Virtual Scan Code', value: '0x1E', status: 'pass' },
-            { id: 'debounceMs', label: 'Debounce Delta', value: '0.0', unit: 'ms', status: 'pass' },
-            { id: 'eventFlags', label: 'Modifier State', value: 'Clean', status: 'pass' }
-          ]}
-        />
-
-        <TelemetryCard
-          title="Modifier & Event Flags"
-          subtitle="Shift / Ctrl / Alt / Meta Status"
-          type="event-log"
-          badgeText="DOM Flags"
-        />
-
-        <ShortcutCard
-          shortcuts={[
-            { keys: ['Esc'], label: 'Reset Diagnostic Matrix' },
-            { keys: ['Space'], label: 'Audit Spacebar Switch' }
-          ]}
-        />
-      </div>
-
-    </div>
+    <!-- 10-Item Technical FAQ Section -->
+    {cat.faqs && cat.faqs.length > 0 && (
+      <FAQSection faqs={cat.faqs} title={`Frequently Asked Questions (${cat.h1})`} />
+    )}
   </div>
 </Layout>

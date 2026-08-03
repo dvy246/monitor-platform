@@ -9,7 +9,7 @@
  */
 ---
 
-<div class="w-full max-w-5xl mx-auto space-y-6 font-sans select-none min-w-0" id="cps-test-root">
+<div class="w-full max-w-7xl mx-auto space-y-6 font-sans select-none min-w-0" id="cps-test-root">
   <div class="relative bg-[#0c0d12]/90 border border-zinc-800/90 rounded-2xl p-4 sm:p-6 backdrop-blur-2xl shadow-[0_25px_60px_rgba(0,0,0,0.8)] space-y-6 overflow-hidden">
     <!-- Ambient Radial Glows -->
     <div class="absolute -top-24 -right-24 w-96 h-96 bg-amber-500/10 rounded-full blur-3xl pointer-events-none"></div>
@@ -131,6 +131,12 @@
 
   function handleKeyPress(e: KeyboardEvent) {
     if (e.repeat) return;
+    if (e.code === 'Space' || e.key === ' ' || e.keyCode === 32) {
+      const activeTag = (document.activeElement?.tagName || '').toUpperCase();
+      if (!['INPUT', 'TEXTAREA'].includes(activeTag)) {
+        e.preventDefault();
+      }
+    }
 
     const now = performance.now();
     if (!isTesting) {

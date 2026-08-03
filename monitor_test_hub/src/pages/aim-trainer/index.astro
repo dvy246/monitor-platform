@@ -1,0 +1,68 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import AimTrainerCanvas from '../../components/diagnostics/AimTrainerCanvas.astro';
+import StepWorkflowSection from '../../components/ui/StepWorkflowSection.astro';
+import PanelTypeBreakdownSection from '../../components/ui/PanelTypeBreakdownSection.astro';
+import FAQSection from '../../components/ui/FAQSection.astro';
+
+const faqs = [
+  {
+    question: "What is an online 3D Aim Trainer?",
+    answer: "An online aim trainer measures and improves your mouse accuracy, target tracking, and reaction speed (in milliseconds) for competitive FPS games like Valorant, CS2, Fortnite, and Apex Legends."
+  },
+  {
+    question: "What are the 4 Aim Training modes?",
+    answer: "Classic 30s evaluates 30-second target speed, Precision Mode tests small 24px target accuracy, Reflex Mode tests rapid 700ms decaying targets, and Endless Practice offers continuous aim training."
+  },
+  {
+    question: "How does monitor refresh rate (144Hz vs 240Hz vs 540Hz) affect aim accuracy?",
+    answer: "Higher refresh rates display target movements sooner (e.g. 1.85ms frame period at 540Hz vs 16.67ms at 60Hz), improving human reflex response and crosshair tracking."
+  },
+  {
+    question: "What mouse DPI and eDPI are recommended for aim training?",
+    answer: "Most FPS pros use 800 or 1600 DPI with low in-game sensitivity (approx 250-350 eDPI in Valorant, 800-1000 eDPI in CS2) for optimal micro-adjustment control."
+  },
+  {
+    question: "Does mouse polling rate (1000Hz vs 8000Hz) improve aim score?",
+    answer: "Yes, 8000Hz polling rate updates cursor position every 0.125ms compared to 1.0ms at 1000Hz, delivering smoother crosshair tracking without micro-stutter."
+  },
+  {
+    question: "How long should I practice on the aim trainer daily?",
+    answer: "15 to 20 minutes of daily aim training before gaming sessions builds finger muscle memory without hand fatigue."
+  },
+  {
+    question: "Does this aim trainer export Hardware Passport certificates?",
+    answer: "Yes, click 'Export Certificate' upon completing any trial to download a cryptographically signed JSON report of your aim accuracy and reaction times."
+  }
+];
+
+const seoTitle = "Aim Trainer | Free 3D Online Aim & Reflex Speed Benchmark";
+const seoDescription = "Improve your mouse aim, target tracking, and reflex reaction speed. Modes for Classic 30s, Precision, Reflex, and Endless Practice. 100% free with zero downloads.";
+const canonicalUrl = "https://displaytestonline.com/aim-trainer";
+---
+
+<Layout title={seoTitle} description={seoDescription} faqs={faqs} canonicalUrl={canonicalUrl}>
+  <div class="max-w-7xl mx-auto px-4 py-6 sm:py-8 min-w-0 w-full overflow-hidden font-sans space-y-12">
+    <section class="max-w-4xl mx-auto text-center space-y-4">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-red-500/10 border border-red-500/30 text-xs font-mono text-red-400 font-bold uppercase tracking-wider">
+        <span>ESPORTS AIM & REFLEX BENCHMARK</span>
+      </div>
+      <h1 class="text-3xl sm:text-5xl font-extrabold font-mono tracking-tight text-white">
+        Aim Trainer &amp; Reflex Speed Test
+      </h1>
+      <p class="text-sm sm:text-base text-zinc-400 leading-relaxed max-w-2xl mx-auto font-sans">
+        Benchmark your mouse precision, target tracking, and reaction speed in milliseconds across Classic 30s, Precision, Reflex, and Endless Practice modes.
+      </p>
+    </section>
+
+    <!-- Aim Trainer Canvas Component -->
+    <AimTrainerCanvas />
+
+    <!-- Step Workflow & Panel Breakdown -->
+    <StepWorkflowSection />
+    <PanelTypeBreakdownSection />
+
+    <!-- FAQ Section -->
+    <FAQSection faqs={faqs} title="Aim Trainer FAQs" />
+  </div>
+</Layout>

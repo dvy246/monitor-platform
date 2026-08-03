@@ -1,66 +1,78 @@
 ---
 ---
 
-<div class="bg-[#121215] border border-white/10 rounded-2xl p-6 sm:p-8 space-y-6 shadow-2xl font-mono">
-  <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-white/10 pb-4">
-    <div>
-      <div class="text-xs font-bold text-amber-400 uppercase tracking-widest flex items-center gap-2">
-        <span class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
-        <span>NREL PVWATTS SOLAR INSOLATION ENGINE</span>
-      </div>
-      <h3 class="text-xl font-bold text-white mt-1">Solar PV Tilt Angle &amp; Energy Yield Calculator</h3>
-    </div>
-    <div id="solar-badge" class="px-3 py-1 rounded-full bg-amber-400/10 border border-amber-400/30 text-amber-400 text-xs font-bold">
-      OPTIMAL TILT: 34.2° (TRUE SOUTH 180°)
-    </div>
-  </div>
+<div class="w-full max-w-7xl mx-auto space-y-6 font-sans select-none min-w-0" id="solar-tilt-root">
+  <div class="relative bg-[#0c0d12]/95 border border-zinc-800/90 rounded-3xl p-4 sm:p-8 backdrop-blur-2xl shadow-[0_25px_60px_rgba(0,0,0,0.8)] space-y-6 overflow-hidden min-w-0 text-zinc-100 font-mono">
+    <!-- Ambient Glows -->
+    <div class="absolute -top-24 -right-24 w-96 h-96 bg-amber-500/10 rounded-full blur-3xl pointer-events-none"></div>
+    <div class="absolute -bottom-24 -left-24 w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none"></div>
 
-  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-    <!-- Controls Column -->
-    <div class="bg-[#08080a] p-5 rounded-xl border border-white/10 space-y-4 text-xs">
+    <!-- Header Controls -->
+    <div class="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 border-b border-zinc-800/70 pb-5">
       <div>
-        <label class="text-slate-400 font-bold block mb-1">Select US State &amp; Latitude:</label>
-        <select id="solar-state-select" class="w-full bg-[#18181b] border border-white/10 rounded p-2 text-white font-mono cursor-pointer">
-          <option value="33.4">Arizona (Phoenix - 33.4° N)</option>
-          <option value="36.7">California (Fresno - 36.7° N)</option>
-          <option value="39.7">Colorado (Denver - 39.7° N)</option>
-          <option value="27.9">Florida (Tampa - 27.9° N)</option>
-          <option value="33.7">Georgia (Atlanta - 33.7° N)</option>
-          <option value="41.8">Illinois (Chicago - 41.8° N)</option>
-          <option value="42.3">Massachusetts (Boston - 42.3° N)</option>
-          <option value="40.7">New York (NYC - 40.7° N)</option>
-          <option value="30.2" selected>Texas (Austin - 30.2° N)</option>
-          <option value="47.6">Washington (Seattle - 47.6° N)</option>
-        </select>
-      </div>
-
-      <div>
-        <div class="flex justify-between text-slate-400 font-bold mb-1">
-          <span>Array System Capacity (kW DC):</span>
-          <span id="capacity-val" class="text-amber-400">8.0 kW DC</span>
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-[11px] font-mono text-amber-400 font-bold uppercase tracking-wider mb-2">
+          <span class="w-2 h-2 rounded-full bg-amber-400 shadow-[0_0_8px_rgba(251,191,36,0.9)] animate-pulse"></span>
+          <span>NREL PVWATTS SOLAR INSOLATION ENGINE</span>
         </div>
-        <input id="capacity-slider" type="range" min="1" max="25" step="0.5" value="8" class="w-full accent-amber-400 cursor-pointer" />
+        <h2 class="text-xl sm:text-3xl font-extrabold font-mono text-white tracking-tight">Solar PV Tilt Angle &amp; Energy Yield Calculator</h2>
+        <p class="text-xs sm:text-sm text-zinc-400 mt-1 font-sans">Seasonal sun angle solver &amp; annual kilowatt-hour energy production estimator.</p>
+      </div>
+      <div id="solar-badge" class="px-3.5 py-2 rounded-xl bg-amber-500/20 border border-amber-500/40 text-amber-400 text-xs font-mono font-bold shadow-lg">
+        OPTIMAL TILT: 30.2° (TRUE SOUTH 180°)
       </div>
     </div>
 
-    <!-- Results Telemetry Column -->
-    <div class="bg-[#08080a] p-5 rounded-xl border border-white/10 space-y-4 text-xs">
-      <div class="grid grid-cols-2 gap-3">
-        <div class="bg-[#18181b] p-3 rounded-lg border border-white/5 space-y-1">
-          <div class="text-[10px] text-slate-400 font-bold">Annual Fixed Optimal Tilt:</div>
-          <div id="opt-tilt-disp" class="text-xl font-bold text-amber-400">26.1°</div>
+    <div class="relative z-10 grid grid-cols-1 md:grid-cols-2 gap-6">
+      <!-- Controls Column -->
+      <div class="bg-zinc-950/80 p-5 sm:p-6 rounded-2xl border border-zinc-800/80 space-y-5 text-xs shadow-inner">
+        <div>
+          <label class="text-zinc-400 font-bold uppercase block mb-2">Select US State &amp; Latitude:</label>
+          <select id="solar-state-select" class="w-full bg-zinc-900 border border-zinc-700/80 rounded-xl p-3 text-sm text-white font-mono focus:border-amber-500 focus:outline-none cursor-pointer">
+            <option value="33.4">Arizona (Phoenix - 33.4° N)</option>
+            <option value="36.7">California (Fresno - 36.7° N)</option>
+            <option value="39.7">Colorado (Denver - 39.7° N)</option>
+            <option value="27.9">Florida (Tampa - 27.9° N)</option>
+            <option value="33.7">Georgia (Atlanta - 33.7° N)</option>
+            <option value="41.8">Illinois (Chicago - 41.8° N)</option>
+            <option value="42.3">Massachusetts (Boston - 42.3° N)</option>
+            <option value="40.7">New York (NYC - 40.7° N)</option>
+            <option value="30.2" selected>Texas (Austin - 30.2° N)</option>
+            <option value="47.6">Washington (Seattle - 47.6° N)</option>
+          </select>
         </div>
-        <div class="bg-[#18181b] p-3 rounded-lg border border-white/5 space-y-1">
-          <div class="text-[10px] text-slate-400 font-bold">Winter Max Tilt (Adjusted):</div>
-          <div id="winter-tilt-disp" class="text-xl font-bold text-cyan-400">41.1°</div>
+
+        <div>
+          <div class="flex justify-between text-zinc-400 font-bold mb-2">
+            <span>Array System Capacity (kW DC):</span>
+            <span id="capacity-val" class="text-amber-400 text-sm">8.0 kW DC</span>
+          </div>
+          <input id="capacity-slider" type="range" min="1" max="25" step="0.5" value="8" class="w-full accent-amber-400 cursor-pointer h-2 bg-zinc-800 rounded-lg" />
         </div>
       </div>
 
-      <div class="bg-[#18181b] p-4 rounded-lg border border-white/5 space-y-2">
-        <div class="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Estimated Annual Solar Yield:</div>
-        <div id="annual-kwh-disp" class="text-2xl font-black text-emerald-400 font-mono">11,680 kWh / Year</div>
-        <div id="annual-savings-disp" class="text-xs text-slate-300 font-sans">
-          Est. Annual Electricity Savings: <span class="text-emerald-400 font-bold">$1,635 / Year</span> (US EIA Avg)
+      <!-- Telemetry Column -->
+      <div class="bg-zinc-950/80 p-5 sm:p-6 rounded-2xl border border-zinc-800/80 space-y-4 text-xs shadow-inner">
+        <div class="grid grid-cols-2 gap-3 text-center">
+          <div class="bg-zinc-900/90 p-4 rounded-xl border border-zinc-800 space-y-1">
+            <div class="text-[11px] text-zinc-400 font-bold">Annual Fixed Optimal Tilt</div>
+            <div id="tilt-annual-val" class="text-2xl font-extrabold text-amber-400 mt-1 tabular-nums">30.2°</div>
+          </div>
+          <div class="bg-zinc-900/90 p-4 rounded-xl border border-zinc-800 space-y-1">
+            <div class="text-[11px] text-zinc-400 font-bold">Est. Annual Generation</div>
+            <div id="gen-annual-val" class="text-2xl font-extrabold text-emerald-400 mt-1 tabular-nums">11,680 kWh</div>
+          </div>
+        </div>
+
+        <div class="bg-zinc-900/90 p-4 rounded-xl border border-zinc-800 space-y-2">
+          <div class="text-zinc-400 font-bold uppercase">Seasonal Tilt Angles:</div>
+          <div class="flex justify-between text-zinc-300">
+            <span>Summer Tilt (Latitude - 15°):</span>
+            <span id="tilt-summer-val" class="text-amber-400 font-bold">15.2°</span>
+          </div>
+          <div class="flex justify-between text-zinc-300">
+            <span>Winter Tilt (Latitude + 15°):</span>
+            <span id="tilt-winter-val" class="text-cyan-400 font-bold">45.2°</span>
+          </div>
         </div>
       </div>
     </div>
@@ -70,44 +82,36 @@
 <script>
   import { SolarTiltEngine } from '../../engine/SolarTiltEngine';
 
-  function initSolarInspector() {
-    const stateSelect = document.getElementById('solar-state-select') as HTMLSelectElement;
-    const capacitySlider = document.getElementById('capacity-slider') as HTMLInputElement;
+  document.addEventListener('DOMContentLoaded', () => {
+    const root = document.getElementById('solar-tilt-root');
+    if (!root) return;
 
+    const stateSelect = document.getElementById('solar-state-select') as HTMLSelectElement | null;
+    const capacitySlider = document.getElementById('capacity-slider') as HTMLInputElement | null;
     const capacityVal = document.getElementById('capacity-val');
-    const optTiltDisp = document.getElementById('opt-tilt-disp');
-    const winterTiltDisp = document.getElementById('winter-tilt-disp');
-    const annualKwhDisp = document.getElementById('annual-kwh-disp');
-    const annualSavingsDisp = document.getElementById('annual-savings-disp');
+    const badge = document.getElementById('solar-badge');
+    const tiltAnnualVal = document.getElementById('tilt-annual-val');
+    const genAnnualVal = document.getElementById('gen-annual-val');
+    const tiltSummerVal = document.getElementById('tilt-summer-val');
+    const tiltWinterVal = document.getElementById('tilt-winter-val');
 
-    if (!stateSelect || !capacitySlider) return;
+    function updateCalculations() {
+      const lat = parseFloat(stateSelect?.value || '30.2');
+      const cap = parseFloat(capacitySlider?.value || '8.0');
 
-    function update() {
-      const lat = parseFloat(stateSelect.value);
-      const kw = parseFloat(capacitySlider.value);
+      if (capacityVal) capacityVal.textContent = `${cap.toFixed(1)} kW DC`;
 
-      if (capacityVal) capacityVal.textContent = `${kw.toFixed(1)} kW DC`;
+      const result = SolarTiltEngine.calculateSolarTilt(lat, cap);
 
-      const tiltResult = SolarTiltEngine.calculateOptimalTilt(lat);
-      const yieldResult = SolarTiltEngine.estimateAnnualYield(lat, kw, tiltResult.yearRoundOptimal);
-
-      if (optTiltDisp) optTiltDisp.textContent = `${tiltResult.yearRoundOptimal.toFixed(1)}°`;
-      if (winterTiltDisp) winterTiltDisp.textContent = `${tiltResult.winterOptimal.toFixed(1)}°`;
-      if (annualKwhDisp) annualKwhDisp.textContent = `${Math.round(yieldResult.annualKwh).toLocaleString()} kWh / Year`;
-      if (annualSavingsDisp) {
-        annualSavingsDisp.innerHTML = `Est. Annual Savings: <span class="text-emerald-400 font-bold">$${Math.round(yieldResult.annualSavingsUsd).toLocaleString()} / Year</span> (US EIA Avg)`;
-      }
+      if (badge) badge.textContent = `OPTIMAL TILT: ${result.optimalAnnualTiltDegrees}° (TRUE SOUTH 180°)`;
+      if (tiltAnnualVal) tiltAnnualVal.textContent = `${result.optimalAnnualTiltDegrees}°`;
+      if (genAnnualVal) genAnnualVal.textContent = `${result.estimatedAnnualKwh.toLocaleString()} kWh`;
+      if (tiltSummerVal) tiltSummerVal.textContent = `${result.summerTiltDegrees}°`;
+      if (tiltWinterVal) tiltWinterVal.textContent = `${result.winterTiltDegrees}°`;
     }
 
-    stateSelect?.addEventListener('change', update);
-    capacitySlider?.addEventListener('input', update);
-
-    update();
-  }
-
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initSolarInspector);
-  } else {
-    initSolarInspector();
-  }
+    stateSelect?.addEventListener('change', updateCalculations);
+    capacitySlider?.addEventListener('input', updateCalculations);
+    updateCalculations();
+  });
 </script>

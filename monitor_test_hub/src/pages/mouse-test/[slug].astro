@@ -256,6 +256,65 @@ export function getStaticPaths() {
         { question: "How do I test my aim consistency over time?", answer: "Perform 30-second target rounds and review your average click deviation graph." },
         { question: "How do I export my precision aim benchmark report?", answer: "Click 'Export Passport' to download a JSON report certifying your micro-control accuracy score." }
       ]
+    },
+    {
+      slug: 'cps-test',
+      title: 'Mouse CPS Speed Test | Clicks Per Second & Speedometer',
+      h1: 'Mouse CPS Speed Test & Click Speedometer',
+      description: 'Test your mouse CPS (clicks per second). Features 1s, 5s, 10s, 30s, 60s time trials and 100 clicks speedrun.',
+      badge: 'MOUSE CPS SPEEDOMETER',
+      faqs: [
+        { question: "What is mouse CPS?", answer: "CPS measures how many times you can click your mouse per second." },
+        { question: "What is a good CPS score?", answer: "Average clicking is 6-7 CPS; fast clicking is 8-10 CPS; butterfly and drag clicking exceed 12+ CPS." }
+      ]
+    },
+    {
+      slug: '1s-cps-challenge',
+      title: '1s CPS Challenge | 1-Second Burst Click Test',
+      h1: '1-Second Burst Mouse CPS Test',
+      description: 'Test your 1-second maximum burst clicking speed.',
+      badge: '1S CPS BURST',
+      faqs: [{ question: "What is 1s CPS?", answer: "1-second burst clicking test." }]
+    },
+    {
+      slug: '5s-cps-challenge',
+      title: '5s CPS Challenge | 5-Second Click Speedometer',
+      h1: '5-Second Mouse CPS Speed Benchmark',
+      description: 'Standard 5-second mouse CPS speed test.',
+      badge: '5S CPS BENCHMARK',
+      faqs: [{ question: "What is 5s CPS?", answer: "5-second speed test." }]
+    },
+    {
+      slug: '10s-cps-challenge',
+      title: '10s CPS Challenge | 10-Second Speed Trial',
+      h1: '10-Second Mouse CPS Benchmark',
+      description: '10-second mouse clicking speed trial.',
+      badge: '10S CPS TRIAL',
+      faqs: [{ question: "What is 10s CPS?", answer: "10-second clicking test." }]
+    },
+    {
+      slug: '30s-cps-challenge',
+      title: '30s CPS Challenge | 30-Second Click Endurance',
+      h1: '30-Second Mouse CPS Endurance Test',
+      description: '30-second mouse clicking endurance test.',
+      badge: '30S CPS ENDURANCE',
+      faqs: [{ question: "What is 30s CPS?", answer: "30-second clicking trial." }]
+    },
+    {
+      slug: '60s-cps-challenge',
+      title: '60s CPS Challenge | 60-Second Marathon Tapping',
+      h1: '60-Second Mouse CPS Marathon Test',
+      description: '60-second marathon mouse click speed trial.',
+      badge: '60S CPS MARATHON',
+      faqs: [{ question: "What is 60s CPS?", answer: "60-second marathon clicking test." }]
+    },
+    {
+      slug: '100-clicks-speedrun',
+      title: '100 Clicks Speedrun | Time Trial to 100 Clicks',
+      h1: '100 Clicks Mouse Speedrun Benchmark',
+      description: 'Speedrun time trial measuring how fast you can click 100 times.',
+      badge: '100 CLICKS SPEEDRUN',
+      faqs: [{ question: "What is 100 Clicks Speedrun?", answer: "Time trial measuring exact milliseconds to reach 100 clicks." }]
     }
   ];
 
@@ -329,15 +388,10 @@ const structuredFaqs = [
     answer: "Each test provides a detailed breakdown; green indicates a pass while red suggests an issue."
   }
 ];
-
-
-
-
-
 ---
 
 <Layout title={cat.title} description={cat.description} faqs={cat.faqs} canonicalUrl={canonicalUrl}>
-  <div class="max-w-6xl mx-auto py-10 px-4 sm:px-6 lg:px-8 space-y-12 bg-bg-canvas font-sans">
+  <div class="max-w-7xl mx-auto py-10 px-4 sm:px-6 lg:px-8 space-y-12 bg-bg-canvas font-sans">
     <section class="max-w-4xl mx-auto text-center space-y-4">
       <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-status-pass/10 border border-status-pass/30 text-xs font-mono text-status-pass font-bold">
         <span>{cat.badge}</span>
@@ -363,10 +417,10 @@ const structuredFaqs = [
       <h2 class="text-2xl font-semibold text-white font-mono flex items-center gap-2">
         <svg class="w-5 h-5 text-status-pass inline-block shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" aria-hidden="true">
           <path stroke-linecap="round" stroke-linejoin="round" d="M9.75 3.104v5.714a2.25 2.25 0 01-.659 1.591L5 15.414A2.25 2.25 0 006.59 19.25h10.82a2.25 2.25 0 001.59-3.836l-4.09-4.596a2.25 2.25 0 01-.659-1.591V3.104M9.75 3.104h4.5M9.75 3.104H7.5m6.75 0h2.25"></path>
-        </svg> E-E-A-T Technical Hardware Analysis & Standards
+        </svg> Technical Hardware Analysis & Standards
       </h2>
       <p>
-        In accordance with strict Experience, Expertise, Authoritativeness, and Trustworthiness (E-E-A-T) guidelines, this diagnostic test utilizes direct hardware-level APIs. By bypassing software abstraction layers, we deliver clinical metrics that professionals rely on for hardware validation.
+        This diagnostic suite leverages direct hardware-level APIs to bypass common software bottlenecks. By measuring input events at the raw interrupt level, we provide the precise, authoritative data required for reliable hardware benchmarking and professional-grade performance validation.
       </p>
       
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6 my-6 text-xs font-mono">

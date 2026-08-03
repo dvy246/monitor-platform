@@ -11,7 +11,7 @@ export interface Props {
 const { initialPanel = 'qd-oled-v2', initialTier = 'moderate', initialHours, class: className = '' } = Astro.props;
 ---
 
-<div class:list={["bg-bg-surface border border-border-hairline rounded-xl p-6 font-mono shadow-specular-top text-text-primary", className]}>
+<div class:list={["relative bg-[#0c0d12]/95 border border-zinc-800/90 rounded-3xl p-4 sm:p-8 backdrop-blur-2xl shadow-[0_25px_60px_rgba(0,0,0,0.8)] font-mono text-text-primary min-w-0", className]}>
   <!-- Header Bar -->
   <div class="flex items-center justify-between border-b border-border-hairline pb-4 mb-6">
     <div class="flex items-center gap-3">
