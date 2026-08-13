@@ -133,7 +133,7 @@
           <div class="flex items-center gap-2">
             <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 shadow-[0_0_10px_rgba(52,211,153,0.9)] animate-pulse"></span>
             <span id="chassis-layout-label" class="font-mono font-extrabold text-[11px] sm:text-xs text-zinc-200 tracking-wider uppercase">
-              MONITOR TEST HUB // CNC PRO 3D CHASSIS [WINDOWS ANSI]
+              DISPLAY TEST ONLINE // CNC PRO 3D CHASSIS [WINDOWS ANSI]
             </span>
           </div>
 
@@ -556,7 +556,7 @@
     const activeLayout = getActiveLayout();
     const report = state.generateReport(activeLayout, Date.now());
     const certificate = {
-      title: `Monitor Test Hub — Keyboard Health Certificate [${currentLayout.toUpperCase()}]`,
+      title: `Display Test Online — Keyboard Health Certificate [${currentLayout.toUpperCase()}]`,
       timestamp: new Date().toISOString(),
       userAgent: navigator.userAgent,
       layout: currentLayout,
@@ -578,7 +578,7 @@
     currentLayout = 'win';
     if (layoutWin) layoutWin.className = 'layout-btn px-3 py-1.5 rounded-lg font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 cursor-pointer transition-all flex items-center gap-1.5 shadow-sm';
     if (layoutMac) layoutMac.className = 'layout-btn px-3 py-1.5 rounded-lg font-semibold text-zinc-400 hover:text-white cursor-pointer transition-all flex items-center gap-1.5';
-    if (chassisLabel) chassisLabel.textContent = 'MONITOR TEST HUB // CNC PRO 3D CHASSIS [WINDOWS ANSI]';
+    if (chassisLabel) chassisLabel.textContent = 'DISPLAY TEST ONLINE // CNC PRO 3D CHASSIS [WINDOWS ANSI]';
     initVisualGrid();
     updateTelemetry();
   });
@@ -587,7 +587,7 @@
     currentLayout = 'mac';
     if (layoutMac) layoutMac.className = 'layout-btn px-3 py-1.5 rounded-lg font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 cursor-pointer transition-all flex items-center gap-1.5 shadow-sm';
     if (layoutWin) layoutWin.className = 'layout-btn px-3 py-1.5 rounded-lg font-semibold text-zinc-400 hover:text-white cursor-pointer transition-all flex items-center gap-1.5';
-    if (chassisLabel) chassisLabel.textContent = 'MONITOR TEST HUB // CNC PRO 3D CHASSIS [MACOS LAYOUT]';
+    if (chassisLabel) chassisLabel.textContent = 'DISPLAY TEST ONLINE // CNC PRO 3D CHASSIS [MACOS LAYOUT]';
     initVisualGrid();
     updateTelemetry();
   });

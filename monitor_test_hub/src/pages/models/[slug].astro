@@ -106,7 +106,7 @@ const faqs = [
   },
   {
     question: `How do I generate a verified SHA-256 hardware passport for ${device.name}?`,
-    answer: `Run visual screen diagnostics on Monitor Test Hub while connected to your ${device.name} display and click 'Generate SHA-256 Passport' to create a cryptographically signed health receipt.`
+    answer: `Run visual screen diagnostics on Display Test Online while connected to your ${device.name} display and click 'Generate SHA-256 Passport' to create a cryptographically signed health receipt.`
   }
 ];
 
@@ -134,7 +134,7 @@ const schemaItems = [
 ---
 
 <Layout
-  title={`${device.name} Hardware Telemetry & Verified Defect Rate | Monitor Test Hub`}
+  title={`${device.name} Hardware Telemetry & Verified Defect Rate | Display Test Online`}
   description={`View ${device.verifiedReportsCount.toLocaleString()} verified SHA-256 hardware telemetry reports for ${device.name}. ${device.defectFreeRate}% defect-free rate, ISO 9241-307 class limits, and RMA advice.`}
   faqs={faqs}
   schemaItems={schemaItems}

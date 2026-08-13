@@ -29,7 +29,7 @@ export const guidesData: Guide[] = [
     category: 'Display Technology',
     readTime: '6 min read',
     date: '2026-07-20',
-    author: 'Monitor Test Hub Engineering Team',
+    author: 'Display Test Online Engineering Team',
     keywords: ['dead pixel test', 'stuck pixel fixer', 'dead pixel vs stuck pixel', 'ISO 9241-307', 'subpixel defects'],
     toolCta: {
       title: 'Run Dead Pixel Diagnostic Test',
@@ -61,7 +61,7 @@ export const guidesData: Guide[] = [
     category: 'OLED & Panel Health',
     readTime: '8 min read',
     date: '2026-07-19',
-    author: 'Monitor Test Hub Engineering Team',
+    author: 'Display Test Online Engineering Team',
     keywords: ['oled burn in test', 'qd-oled burn in', 'woled image retention', 'prevent oled burn in'],
     toolCta: {
       title: 'OLED Burn-In Risk Calculator',
@@ -93,7 +93,7 @@ export const guidesData: Guide[] = [
     category: 'Gaming & Latency',
     readTime: '7 min read',
     date: '2026-07-18',
-    author: 'Monitor Test Hub Engineering Team',
+    author: 'Display Test Online Engineering Team',
     keywords: ['vrr stutter test', 'freesync vs gsync', 'screen tearing fix', '540hz monitor test'],
     toolCta: {
       title: 'VRR Stutter & Tearing Sweep Engine',
@@ -120,7 +120,7 @@ export const guidesData: Guide[] = [
     category: 'Gaming & Latency',
     readTime: '6 min read',
     date: '2026-07-17',
-    author: 'Monitor Test Hub Engineering Team',
+    author: 'Display Test Online Engineering Team',
     keywords: ['60hz vs 144hz', '240hz vs 540hz', 'refresh rate comparison', 'frame interval ms'],
     toolCta: {
       title: 'High-Refresh Telemetry Inspector',
@@ -142,7 +142,7 @@ export const guidesData: Guide[] = [
     category: 'Display Technology',
     readTime: '9 min read',
     date: '2026-07-16',
-    author: 'Monitor Test Hub Engineering Team',
+    author: 'Display Test Online Engineering Team',
     keywords: ['hdr tone mapping', 'pq eotf test', 'abl window size', 'hdr10 vs dolby vision'],
     toolCta: {
       title: 'HDR 10-Bit Tone Mapping Evaluator',
@@ -164,7 +164,7 @@ export const guidesData: Guide[] = [
     category: 'Gaming & Latency',
     readTime: '7 min read',
     date: '2026-07-15',
-    author: 'Monitor Test Hub Engineering Team',
+    author: 'Display Test Online Engineering Team',
     keywords: ['input lag vs response time', 'mouse polling rate bottleneck', '8000hz mouse test', 'reflex latency'],
     toolCta: {
       title: 'Reflex Input Lag Sniper',
@@ -186,7 +186,7 @@ export const guidesData: Guide[] = [
     category: 'Display Technology',
     readTime: '8 min read',
     date: '2026-07-14',
-    author: 'Monitor Test Hub Engineering Team',
+    author: 'Display Test Online Engineering Team',
     keywords: ['subpixel layout inspector', 'rgb vs bgr text fringe', 'qd-oled text clarity', 'cleartype subpixel'],
     toolCta: {
       title: 'Sub-Pixel Geometry Inspector',
@@ -208,7 +208,7 @@ export const guidesData: Guide[] = [
     category: 'Touch & Mobile',
     readTime: '5 min read',
     date: '2026-07-13',
-    author: 'Monitor Test Hub Engineering Team',
+    author: 'Display Test Online Engineering Team',
     keywords: ['touchscreen test online', 'touchscreen dead zone', 'digitizer test mobile', 'multi touch counter'],
     toolCta: {
       title: 'Mobile Touch Matrix Suite',
@@ -230,7 +230,7 @@ export const guidesData: Guide[] = [
     category: 'Color & Calibration',
     readTime: '8 min read',
     date: '2026-07-12',
-    author: 'Monitor Test Hub Engineering Team',
+    author: 'Display Test Online Engineering Team',
     keywords: ['srgb vs dci-p3', 'color gamut calculator', 'cie 1931 chromaticity', 'rec 2020 coverage'],
     toolCta: {
       title: 'Color Gamut & CIE 1931 Map',
@@ -252,7 +252,7 @@ export const guidesData: Guide[] = [
     category: 'Color & Calibration',
     readTime: '10 min read',
     date: '2026-07-11',
-    author: 'Monitor Test Hub Engineering Team',
+    author: 'Display Test Online Engineering Team',
     keywords: ['calibrate monitor online', 'gamma 2.2 test', 'white balance 6500k', 'monitor contrast test'],
     toolCta: {
       title: 'Display Calibration & Pattern Deck',
@@ -274,7 +274,7 @@ export const guidesData: Guide[] = [
     category: 'Color & Calibration',
     readTime: '6 min read',
     date: '2026-07-10',
-    author: 'Monitor Test Hub Engineering Team',
+    author: 'Display Test Online Engineering Team',
     keywords: ['icc profile generator', 'install icc profile windows', 'icc v4.3 exporter', 'littlecms wasm'],
     toolCta: {
       title: 'WebAssembly Binary ICC Exporter',
@@ -296,7 +296,7 @@ export const guidesData: Guide[] = [
     category: 'Display Technology',
     readTime: '7 min read',
     date: '2026-07-09',
-    author: 'Monitor Test Hub Engineering Team',
+    author: 'Display Test Online Engineering Team',
     keywords: ['ips glow test', 'backlight bleed test', 'va black smearing', 'lcd panel defects'],
     toolCta: {
       title: 'Uniformity & Backlight Bleed Inspector',
@@ -318,7 +318,7 @@ export const guidesData: Guide[] = [
     category: 'Display Technology',
     readTime: '7 min read',
     date: '2026-07-08',
-    author: 'Monitor Test Hub Engineering Team',
+    author: 'Display Test Online Engineering Team',
     keywords: ['miniled local dimming test', 'fald blooming test', 'zone count monitor', 'mini-led vs oled'],
     toolCta: {
       title: 'Mini-LED Blooming & Zone Isolator',
@@ -340,7 +340,7 @@ export const guidesData: Guide[] = [
     category: 'Standards & Buyers Guide',
     readTime: '6 min read',
     date: '2026-07-07',
-    author: 'Monitor Test Hub Engineering Team',
+    author: 'Display Test Online Engineering Team',
     keywords: ['ppi calculator monitor', 'retina viewing distance', 'arcminute acuity calculator', '1440p vs 4k ppi'],
     toolCta: {
       title: 'PPI & Acuity Distance Calculator',
@@ -362,7 +362,7 @@ export const guidesData: Guide[] = [
     category: 'Gaming & Latency',
     readTime: '8 min read',
     date: '2026-07-06',
-    author: 'Monitor Test Hub Engineering Team',
+    author: 'Display Test Online Engineering Team',
     keywords: ['mprt vs gtg', 'backlight strobing bfi', 'ghosting test online', 'pursuit camera test'],
     toolCta: {
       title: 'Ghosting Invaders Arcade Game',
@@ -384,7 +384,7 @@ export const guidesData: Guide[] = [
     category: 'Color & Calibration',
     readTime: '6 min read',
     date: '2026-07-05',
-    author: 'Monitor Test Hub Engineering Team',
+    author: 'Display Test Online Engineering Team',
     keywords: ['dual monitor color match', 'broadcastchannel sync deck', 'multi display calibration'],
     toolCta: {
       title: 'Multi-Display Broadcast Sync Deck',
@@ -395,7 +395,7 @@ export const guidesData: Guide[] = [
       {
         id: 'sync-deck',
         title: 'Peer-to-Peer Browser Sync',
-        content: 'Using native HTML5 BroadcastChannel API, Monitor Test Hub locks test color cycles across multi-monitor browser windows without needing server relays or extensions.'
+        content: 'Using native HTML5 BroadcastChannel API, Display Test Online locks test color cycles across multi-monitor browser windows without needing server relays or extensions.'
       }
     ]
   },
@@ -406,7 +406,7 @@ export const guidesData: Guide[] = [
     category: 'Touch & Mobile',
     readTime: '7 min read',
     date: '2026-07-04',
-    author: 'Monitor Test Hub Engineering Team',
+    author: 'Display Test Online Engineering Team',
     keywords: ['mobile touch test', 'swipe velocity test', 'vector draw precision', 'multi touch point test'],
     toolCta: {
       title: 'Vector Precision & Touch Suite',
@@ -428,7 +428,7 @@ export const guidesData: Guide[] = [
     category: 'Standards & Buyers Guide',
     readTime: '8 min read',
     date: '2026-07-03',
-    author: 'Monitor Test Hub Engineering Team',
+    author: 'Display Test Online Engineering Team',
     keywords: ['hdmi 2.1 vs displayport 2.1', 'display stream compression dsc', '4k 240hz cable bandwidth'],
     toolCta: {
       title: 'Hardware Telemetry Inspector',
@@ -450,7 +450,7 @@ export const guidesData: Guide[] = [
     category: 'Standards & Buyers Guide',
     readTime: '6 min read',
     date: '2026-07-02',
-    author: 'Monitor Test Hub Engineering Team',
+    author: 'Display Test Online Engineering Team',
     keywords: ['pwm flicker test', 'eye strain monitor', '20 20 20 rule', 'flicker free display'],
     toolCta: {
       title: 'Ergonomics Notice & Safety Guide',
@@ -472,7 +472,7 @@ export const guidesData: Guide[] = [
     category: 'Standards & Buyers Guide',
     readTime: '7 min read',
     date: '2026-07-01',
-    author: 'Monitor Test Hub Engineering Team',
+    author: 'Display Test Online Engineering Team',
     keywords: ['used monitor checklist', 'used phone screen test', 'sha-256 hardware passport', 'screen health index'],
     toolCta: {
       title: 'Generate SHA-256 Hardware Passport',
@@ -494,7 +494,7 @@ export const guidesData: Guide[] = [
     category: 'Color & Calibration',
     readTime: '6 min read',
     date: '2026-06-30',
-    author: 'Monitor Test Hub Engineering Team',
+    author: 'Display Test Online Engineering Team',
     keywords: ['delta e color accuracy', 'delta e 00 formula', 'color match alchemist', 'ciede2000'],
     toolCta: {
       title: 'Color Match Alchemist Arcade Game',
@@ -516,7 +516,7 @@ export const guidesData: Guide[] = [
     category: 'Standards & Buyers Guide',
     readTime: '7 min read',
     date: '2026-06-29',
-    author: 'Monitor Test Hub Engineering Team',
+    author: 'Display Test Online Engineering Team',
     keywords: ['ultrawide vs 16 9', '32 9 super ultrawide', 'monitor aspect ratio comparison', 'field of view fov'],
     toolCta: {
       title: 'PPI & Aspect Ratio Calculator',

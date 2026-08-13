@@ -384,7 +384,7 @@ const displayTests = [
     const preset = gamutPresets[presetSel?.value || 'p3-90'];
     const gamma = parseFloat((document.getElementById('gamma-select') as HTMLSelectElement)?.value || '2.2');
     const profileBytes = IccExporter.generateIccProfile({
-      profileName: `Monitor Test Hub — ${presetSel?.value || 'display'}`,
+      profileName: `Display Test Online — ${presetSel?.value || 'display'}`,
       gamma,
       whitePoint: { x: 0.3127, y: 0.3290 },
       primaries: {
@@ -396,7 +396,7 @@ const displayTests = [
     const blob = new Blob([profileBytes], { type: 'application/vnd.iccprofile' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
-    a.href = url; a.download = `monitortesthub-${presetSel?.value || 'display'}.icc`; a.click();
+    a.href = url; a.download = `displaytestonline-${presetSel?.value || 'display'}.icc`; a.click();
     setTimeout(() => URL.revokeObjectURL(url), 3000);
   });
 

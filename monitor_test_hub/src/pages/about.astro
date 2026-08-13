@@ -2,13 +2,13 @@
 import Layout from '../layouts/Layout.astro';
 import Breadcrumbs from '../components/ui/Breadcrumbs.astro';
 
-const title = 'About Monitor Test Hub | Browser-Based Hardware Diagnostic Engineering';
-const description = 'Monitor Test Hub is a free, open-source browser-based engineering utility for display and touchscreen diagnostics. Built on ISO 9241-307, VESA DisplayHDR, and CIE 1931 colorimetry standards.';
+const title = 'About Display Test Online | Browser-Based Hardware Diagnostic Engineering';
+const description = 'Display Test Online is a free, open-source browser-based engineering utility for display and touchscreen diagnostics. Built on ISO 9241-307, VESA DisplayHDR, and CIE 1931 colorimetry standards.';
 
 const orgSchema = {
   "@context": "https://schema.org",
   "@type": "Organization",
-  "name": "Monitor Test Hub",
+  "name": "Display Test Online",
   "url": "https://displaytestonline.com",
   "description": description,
   "contactPoint": {
@@ -67,7 +67,7 @@ const orgSchema = {
           <h2 class="font-mono text-lg font-bold text-text-primary uppercase tracking-wider mb-3">
             Diagnostic Instrument Suite
           </h2>
-          <p class="mb-4">Monitor Test Hub ships twelve precision instruments across display diagnostics, touch analysis, and interactive latency benchmarking:</p>
+          <p class="mb-4">Display Test Online ships twelve precision instruments across display diagnostics, touch analysis, and interactive latency benchmarking:</p>
           <ul class="grid grid-cols-1 sm:grid-cols-2 gap-2">
             {[
               'Sub-Pixel Analyzer',
@@ -99,7 +99,7 @@ const orgSchema = {
             Engineering Standards Compliance
           </h2>
           <p>
-            Every instrument in Monitor Test Hub is designed in alignment with published international standards for display measurement and ergonomics. Our sub-pixel and pixel defect classifications follow <strong class="text-text-primary">ISO 9241-307</strong> (ergonomics of human-system interaction — optical laboratory methods for display quality). Luminance and HDR tier tests conform to <strong class="text-text-primary">VESA DisplayHDR 600, 1000, and 1400</strong> certification thresholds, ensuring your HDR results map directly to industry-recognized performance brackets. Color gamut measurements reference the <strong class="text-text-primary">CIE 1931 xy chromaticity</strong> diagram, the globally accepted model for quantifying color space coverage. Touchscreen ergonomics and dead-zone assessments align with <strong class="text-text-primary">ANSI/NIST ergonomics</strong> guidelines for human-device interaction tolerances.
+            Every instrument in Display Test Online is designed in alignment with published international standards for display measurement and ergonomics. Our sub-pixel and pixel defect classifications follow <strong class="text-text-primary">ISO 9241-307</strong> (ergonomics of human-system interaction — optical laboratory methods for display quality). Luminance and HDR tier tests conform to <strong class="text-text-primary">VESA DisplayHDR 600, 1000, and 1400</strong> certification thresholds, ensuring your HDR results map directly to industry-recognized performance brackets. Color gamut measurements reference the <strong class="text-text-primary">CIE 1931 xy chromaticity</strong> diagram, the globally accepted model for quantifying color space coverage. Touchscreen ergonomics and dead-zone assessments align with <strong class="text-text-primary">ANSI/NIST ergonomics</strong> guidelines for human-device interaction tolerances.
           </p>
         </section>
 
@@ -109,7 +109,7 @@ const orgSchema = {
             Technology Stack
           </h2>
           <p>
-            Monitor Test Hub is built on a modern, performance-first web stack chosen for accuracy and portability. The site framework is <strong class="text-text-primary">Astro.js v7</strong> with static output, delivering zero-JavaScript HTML shells for maximum rendering performance. Styling is powered by <strong class="text-text-primary">Tailwind CSS v4</strong> using CSS custom properties for the full design-token system. Graphics-intensive tests — including the Sub-Pixel Analyzer, OLED Uniformity Inspector, and Color Gamut visualizer — are rendered via <strong class="text-text-primary">WebGL GLSL ES 3.0</strong> shaders, enabling GPU-accelerated pixel-perfect output. Simpler 2D tests use the native <strong class="text-text-primary">Canvas 2D</strong> API. Latency benchmarks use <strong class="text-text-primary">performance.now()</strong> sub-millisecond timestamps for high-resolution timing. The ICC profile export pipeline uses the <strong class="text-text-primary">Web Crypto API SHA-256</strong> digest to compute profile checksums conforming to the ICC profile specification.
+            Display Test Online is built on a modern, performance-first web stack chosen for accuracy and portability. The site framework is <strong class="text-text-primary">Astro.js v7</strong> with static output, delivering zero-JavaScript HTML shells for maximum rendering performance. Styling is powered by <strong class="text-text-primary">Tailwind CSS v4</strong> using CSS custom properties for the full design-token system. Graphics-intensive tests — including the Sub-Pixel Analyzer, OLED Uniformity Inspector, and Color Gamut visualizer — are rendered via <strong class="text-text-primary">WebGL GLSL ES 3.0</strong> shaders, enabling GPU-accelerated pixel-perfect output. Simpler 2D tests use the native <strong class="text-text-primary">Canvas 2D</strong> API. Latency benchmarks use <strong class="text-text-primary">performance.now()</strong> sub-millisecond timestamps for high-resolution timing. The ICC profile export pipeline uses the <strong class="text-text-primary">Web Crypto API SHA-256</strong> digest to compute profile checksums conforming to the ICC profile specification.
           </p>
         </section>
 
@@ -119,7 +119,7 @@ const orgSchema = {
             Privacy by Design
           </h2>
           <p>
-            All diagnostic processing in Monitor Test Hub happens 100% client-side, entirely within your browser. We operate zero telemetry servers, store zero diagnostic data, and transmit zero measurement results to any external endpoint. Your display calibration parameters, touch coordinates, gesture metrics, HDR luminance readings, and ICC profile data never leave your device. The only browser storage we use is <code class="font-mono text-status-pass bg-bg-canvas px-1 rounded">localStorage</code> to persist your local theme preference.
+            All diagnostic processing in Display Test Online happens 100% client-side, entirely within your browser. We operate zero telemetry servers, store zero diagnostic data, and transmit zero measurement results to any external endpoint. Your display calibration parameters, touch coordinates, gesture metrics, HDR luminance readings, and ICC profile data never leave your device. The only browser storage we use is <code class="font-mono text-status-pass bg-bg-canvas px-1 rounded">localStorage</code> to persist your local theme preference.
           </p>
         </section>
 

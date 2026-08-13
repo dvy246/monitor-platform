@@ -1,6 +1,6 @@
 <div align="center">
 
-# 🖥️ MONITOR TEST HUB
+# 🖥️ DISPLAY TEST ONLINE (displaytestonline.com)
 
 ### High-Performance Web-Native Display, Touch Digitizer & Hardware Peripheral Diagnostic Suite
 
@@ -22,7 +22,7 @@
        \_|  |_/\____/ \_| |_/ \_/ \____/  \_/ \____/    \_| |_/\____/\____/ 
 ```
 
-**Monitor Test Hub** is an open-source, web-native diagnostic, calibration, and benchmarking platform engineered for gaming monitors, OLED displays, high-refresh-rate panels (540Hz+), capacitive touch digitizers, active stylus pens, and gaming peripherals.
+**Display Test Online** is an open-source, web-native diagnostic, calibration, and benchmarking platform engineered for gaming monitors, OLED displays, high-refresh-rate panels (540Hz+), capacitive touch digitizers, active stylus pens, and gaming peripherals.
 
 [🚀 Explore 34 Diagnostic Instruments](#-comprehensive-diagnostic-suite-34-instruments) • [📐 Engineering Specs](#-standards--citations-matrix) • [⚡ Quickstart](#-developer-quickstart)
 
@@ -83,7 +83,7 @@
 
 ## 🕹️ Interactive Diagnostic Micro-Arcade Suite
 
-Monitor Test Hub includes 4 gamified hardware diagnostic micro-games that combine human reflex testing with hardware performance measuring:
+Display Test Online includes 4 gamified hardware diagnostic micro-games that combine human reflex testing with hardware performance measuring:
 
 1. **Ghosting Invaders**: Benchmark motion blur, MPRT sample-and-hold time, and overdrive inverse ghosting.
 2. **Color Match Alchemist**: Test perceptual color discrimination using the **CIEDE2000 ($\Delta E_{00}$)** color difference formula.

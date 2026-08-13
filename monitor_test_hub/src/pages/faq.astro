@@ -4,22 +4,22 @@ import Layout from '../layouts/Layout.astro';
 import Breadcrumbs from '../components/ui/Breadcrumbs.astro';
 import FaqSchema from '../components/seo/FaqSchema.astro';
 
-const title = 'Frequently Asked Questions | Monitor Test Hub';
-const description = 'Get answers to common questions about Monitor Test Hub display testing tools, OLED burn-in, PPI calculator, ICC profiles, and more.';
+const title = 'Frequently Asked Questions | Display Test Online';
+const description = 'Get answers to common questions about Display Test Online display testing tools, OLED burn-in, PPI calculator, ICC profiles, and more.';
 
 
 const faqs = [
   {
-    q: 'What is Monitor Test Hub?',
-    a: 'Monitor Test Hub is a free, browser-based hardware diagnostic platform that provides professional-grade instruments for evaluating computer displays and touchscreen digitizers. It includes twelve specialized tools covering sub-pixel analysis, OLED uniformity, HDR luminance, color gamut profiling, multi-touch precision, and latency benchmarking. All tests execute entirely within your browser using WebGL, Canvas 2D, and Web APIs — no installation or account required. It is trusted by hardware reviewers, QA engineers, and display enthusiasts who need calibration-grade insight without proprietary software.',
+    q: 'What is Display Test Online?',
+    a: 'Display Test Online is a free, browser-based hardware diagnostic platform that provides professional-grade instruments for evaluating computer displays and touchscreen digitizers. It includes twelve specialized tools covering sub-pixel analysis, OLED uniformity, HDR luminance, color gamut profiling, multi-touch precision, and latency benchmarking. All tests execute entirely within your browser using WebGL, Canvas 2D, and Web APIs — no installation or account required. It is trusted by hardware reviewers, QA engineers, and display enthusiasts who need calibration-grade insight without proprietary software.',
   },
   {
-    q: 'Is Monitor Test Hub free to use?',
-    a: 'Yes, Monitor Test Hub is completely free to use with no paywalls, subscriptions, or hidden fees. Every diagnostic instrument in the suite is available to all users without registration. The project is open-source and community-driven, ensuring it remains accessible to everyone who needs professional display diagnostics.',
+    q: 'Is Display Test Online free to use?',
+    a: 'Yes, Display Test Online is completely free to use with no paywalls, subscriptions, or hidden fees. Every diagnostic instrument in the suite is available to all users without registration. The project is open-source and community-driven, ensuring it remains accessible to everyone who needs professional display diagnostics.',
   },
   {
     q: 'Does it require any download or browser plugin?',
-    a: 'No downloads, installations, or browser plugins are required to use Monitor Test Hub. All tools run natively in your browser using standard Web APIs including WebGL, Canvas 2D, the Pointer Events API, and performance.now(). Simply open the page and start testing immediately. Compatible with all modern evergreen browsers on desktop and mobile.',
+    a: 'No downloads, installations, or browser plugins are required to use Display Test Online. All tools run natively in your browser using standard Web APIs including WebGL, Canvas 2D, the Pointer Events API, and performance.now(). Simply open the page and start testing immediately. Compatible with all modern evergreen browsers on desktop and mobile.',
   },
   {
     q: 'How does the Sub-Pixel Analyzer work?',
@@ -27,31 +27,31 @@ const faqs = [
   },
   {
     q: 'What is PPI and why does it matter for monitors?',
-    a: "PPI (Pixels Per Inch) is a measure of pixel density — how many pixels are packed into each inch of a display panel. Higher PPI means sharper, more detailed imagery because individual pixels become too small to resolve with the naked eye at typical viewing distances. The commonly cited \"retina threshold\" of approximately 227 PPI at 12 inches viewing distance refers to Apple's definition, but the perceptual acuity limit varies by viewing distance and individual vision. Monitor Test Hub's PPI Calculator computes exact pixel density from your display's native resolution and panel size, helping you compare monitors and verify manufacturer specifications.",
+    a: "PPI (Pixels Per Inch) is a measure of pixel density — how many pixels are packed into each inch of a display panel. Higher PPI means sharper, more detailed imagery because individual pixels become too small to resolve with the naked eye at typical viewing distances. The commonly cited \"retina threshold\" of approximately 227 PPI at 12 inches viewing distance refers to Apple's definition, but the perceptual acuity limit varies by viewing distance and individual vision. Display Test Online's PPI Calculator computes exact pixel density from your display's native resolution and panel size, helping you compare monitors and verify manufacturer specifications.",
   },
   {
     q: 'What is OLED burn-in and how can I prevent it?',
-    a: "OLED burn-in (more precisely, permanent image retention) occurs when static UI elements — such as taskbars, HUD overlays, or navigation bars — are displayed at high brightness for extended periods. The organic compounds in OLED sub-pixels degrade at different rates depending on usage, causing those pixels to display differently even when showing new content. Modern OLED panels include pixel-shift, logo luminance limiting, and screen saver mitigations that significantly reduce risk. Monitor Test Hub's OLED Burn-In Risk tool evaluates your display's susceptibility using sustained static patterns and reports estimated long-term risk based on brightness level and exposure duration. Best practices include keeping brightness below 60%, enabling auto-brightness, and avoiding static overlays.",
+    a: "OLED burn-in (more precisely, permanent image retention) occurs when static UI elements — such as taskbars, HUD overlays, or navigation bars — are displayed at high brightness for extended periods. The organic compounds in OLED sub-pixels degrade at different rates depending on usage, causing those pixels to display differently even when showing new content. Modern OLED panels include pixel-shift, logo luminance limiting, and screen saver mitigations that significantly reduce risk. Display Test Online's OLED Burn-In Risk tool evaluates your display's susceptibility using sustained static patterns and reports estimated long-term risk based on brightness level and exposure duration. Best practices include keeping brightness below 60%, enabling auto-brightness, and avoiding static overlays.",
   },
   {
     q: 'What is VRR (Variable Refresh Rate) and how do I test it?',
-    a: "VRR (Variable Refresh Rate) allows a display to dynamically adjust its refresh rate in real-time to match the frame output of the connected GPU, eliminating screen tearing and reducing stutter without the input latency overhead of traditional V-Sync. It encompasses technologies such as AMD FreeSync, NVIDIA G-Sync, and VESA Adaptive-Sync. Monitor Test Hub's VRR Sync Engine generates a visual animation at a frame rate that ramps up and down across your display's supported VRR range, allowing you to visually verify VRR activation, identify the synchronization band, and spot any frame-pacing artifacts or flicker at the lower VRR threshold.",
+    a: "VRR (Variable Refresh Rate) allows a display to dynamically adjust its refresh rate in real-time to match the frame output of the connected GPU, eliminating screen tearing and reducing stutter without the input latency overhead of traditional V-Sync. It encompasses technologies such as AMD FreeSync, NVIDIA G-Sync, and VESA Adaptive-Sync. Display Test Online's VRR Sync Engine generates a visual animation at a frame rate that ramps up and down across your display's supported VRR range, allowing you to visually verify VRR activation, identify the synchronization band, and spot any frame-pacing artifacts or flicker at the lower VRR threshold.",
   },
   {
     q: 'What is the difference between QD-OLED and WOLED?',
-    a: "QD-OLED (Quantum Dot OLED) uses a blue OLED emitter layer combined with a quantum dot conversion film to produce red and green sub-pixels, resulting in extremely high color gamut coverage (typically >99% DCI-P3) and high peak brightness for a self-emissive display. WOLED (White OLED), used by LG in their consumer OLED panels, uses a white OLED stack with a color filter array to produce RGB output, offering excellent uniformity and deep blacks but generally lower peak brightness and slightly lower color gamut than QD-OLED. Both technologies exhibit pixel-level dimming and near-infinite contrast ratios, but differ in color volume, peak brightness, and sub-pixel structure, which Monitor Test Hub's Sub-Pixel Analyzer can help you characterize.",
+    a: "QD-OLED (Quantum Dot OLED) uses a blue OLED emitter layer combined with a quantum dot conversion film to produce red and green sub-pixels, resulting in extremely high color gamut coverage (typically >99% DCI-P3) and high peak brightness for a self-emissive display. WOLED (White OLED), used by LG in their consumer OLED panels, uses a white OLED stack with a color filter array to produce RGB output, offering excellent uniformity and deep blacks but generally lower peak brightness and slightly lower color gamut than QD-OLED. Both technologies exhibit pixel-level dimming and near-infinite contrast ratios, but differ in color volume, peak brightness, and sub-pixel structure, which Display Test Online's Sub-Pixel Analyzer can help you characterize.",
   },
   {
     q: 'How do I export an ICC profile?',
-    a: "Monitor Test Hub's Color Gamut & ICC Profile tool measures the color primaries and white point of your display using a series of full-screen color patches rendered via the Canvas 2D API with a calibrated color management pipeline. After completing the measurement sequence, the tool generates an ICC v2-compatible profile file with a SHA-256 checksum computed via the Web Crypto API. You can then download the .icc file and install it through your operating system's display color management settings (macOS Color Profiles or Windows Color Management) to apply hardware-level color correction. Note that software-generated ICC profiles are supplementary calibration aids and do not replace hardware colorimeter measurements.",
+    a: "Display Test Online's Color Gamut & ICC Profile tool measures the color primaries and white point of your display using a series of full-screen color patches rendered via the Canvas 2D API with a calibrated color management pipeline. After completing the measurement sequence, the tool generates an ICC v2-compatible profile file with a SHA-256 checksum computed via the Web Crypto API. You can then download the .icc file and install it through your operating system's display color management settings (macOS Color Profiles or Windows Color Management) to apply hardware-level color correction. Note that software-generated ICC profiles are supplementary calibration aids and do not replace hardware colorimeter measurements.",
   },
   {
     q: 'Is my data stored on any server?',
-    a: 'No. All processing in Monitor Test Hub happens 100% client-side within your browser. We operate zero telemetry servers and transmit zero diagnostic data to any external endpoint. Your display readings, touch coordinates, latency measurements, and ICC profile data never leave your device. The only data we persist locally is your theme preference in browser localStorage.',
+    a: 'No. All processing in Display Test Online happens 100% client-side within your browser. We operate zero telemetry servers and transmit zero diagnostic data to any external endpoint. Your display readings, touch coordinates, latency measurements, and ICC profile data never leave your device. The only data we persist locally is your theme preference in browser localStorage.',
   },
   {
     q: 'What browsers and devices are supported?',
-    a: 'Monitor Test Hub works on all modern evergreen browsers including Chrome 100+, Firefox 100+, Safari 16+, and Edge 100+ on desktop and mobile. Tests using WebGL GLSL ES 3.0 require a browser with WebGL 2.0 support, which is available in all major browsers since 2022. Touch tests are optimized for mobile devices and trackpad-equipped laptops supporting the W3C Pointer Events API. Some advanced tests may perform best on high-refresh-rate displays.',
+    a: 'Display Test Online works on all modern evergreen browsers including Chrome 100+, Firefox 100+, Safari 16+, and Edge 100+ on desktop and mobile. Tests using WebGL GLSL ES 3.0 require a browser with WebGL 2.0 support, which is available in all major browsers since 2022. Touch tests are optimized for mobile devices and trackpad-equipped laptops supporting the W3C Pointer Events API. Some advanced tests may perform best on high-refresh-rate displays.',
   },
   {
     q: 'How accurate are the tests?',
@@ -77,7 +77,7 @@ const faqs = [
         Frequently Asked Questions
       </h1>
       <p class="font-sans text-sm text-text-secondary mb-8">
-        Answers to the most common questions about Monitor Test Hub's diagnostic tools, standards, and technology.
+        Answers to the most common questions about Display Test Online's diagnostic tools, standards, and technology.
       </p>
 
       <FaqSchema faqs={faqs} emitSchema={true} />

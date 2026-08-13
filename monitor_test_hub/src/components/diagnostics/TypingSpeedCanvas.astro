@@ -780,8 +780,8 @@
       nativeShareBtn.addEventListener('click', () => {
         if (navigator.share && shareLinkInput) {
           navigator.share({
-            title: 'Monitor Test Hub WPM Challenge',
-            text: `I just scored ${modalScoreWpm?.textContent} with ${modalScoreAcc?.textContent} on Monitor Test Hub! Can you beat my score?`,
+            title: 'Display Test Online WPM Challenge',
+            text: `I just scored ${modalScoreWpm?.textContent} with ${modalScoreAcc?.textContent} on Display Test Online! Can you beat my score?`,
             url: shareLinkInput.value
           }).catch(() => {});
         } else {
@@ -805,7 +805,7 @@
         const accuracy = totalTyped > 0 ? Math.round(((totalTyped - errors) / totalTyped) * 100) : 100;
 
         const payload = {
-          instrument: 'Monitor Test Hub MonkeyType WPM Speedometer',
+          instrument: 'Display Test Online MonkeyType WPM Speedometer',
           timestamp: new Date().toISOString(),
           category: currentCategory,
           mode: mainMode,

@@ -19,7 +19,7 @@ export class MultiDisplaySync {
   private senderId: string;
   private listeners: Array<(payload: SyncMessagePayload) => void> = [];
 
-  constructor(channelName = 'monitortesthub_sync_bus') {
+  constructor(channelName = 'displaytestonline_sync_bus') {
     this.senderId = typeof window !== 'undefined' ? (window.name || `display-${Math.floor(Math.random() * 10000)}`) : 'node';
     if (this.isSupported) {
       try {

@@ -13,7 +13,7 @@ import sys
 from pathlib import Path
 
 # Target directory and files
-BASE_DIR = Path("/Users/divyyadav/newws/monitor_test_hub")
+BASE_DIR = Path(__file__).resolve().parent
 PRD_PATH = BASE_DIR / "prd.md"
 PLAN_PATH = BASE_DIR / "plan.md"
 REPORT_PATH = BASE_DIR / "competitor_analysis_report.md"

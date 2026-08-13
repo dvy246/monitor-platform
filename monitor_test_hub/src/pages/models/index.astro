@@ -21,7 +21,7 @@ const devices = DeviceDatabase.getAllDevices();
 const faqs = [
   {
     question: "What is the Crowdsourced Per-Model Verified Results Database?",
-    answer: "The Per-Model Verified Database aggregates cryptographically signed hardware receipts (SHA-256) from real users performing display, latency, and subpixel diagnostic runs on Monitor Test Hub. It provides prospective buyers with real-world lot-variance data, ISO 9241-307 defect rates, and measured VSync frame pacing statistics."
+    answer: "The Per-Model Verified Database aggregates cryptographically signed hardware receipts (SHA-256) from real users performing display, latency, and subpixel diagnostic runs on Display Test Online. It provides prospective buyers with real-world lot-variance data, ISO 9241-307 defect rates, and measured VSync frame pacing statistics."
   },
   {
     question: "How are display receipts cryptographically verified?",
@@ -53,7 +53,7 @@ const faqs = [
   },
   {
     question: "Can I contribute my device's hardware passport receipt?",
-    answer: "Yes, after completing any visual or input diagnostic test on Monitor Test Hub, click 'Generate Hardware Passport' and opt-in to contribute your anonymous SHA-256 signed receipt to the public model database."
+    answer: "Yes, after completing any visual or input diagnostic test on Display Test Online, click 'Generate Hardware Passport' and opt-in to contribute your anonymous SHA-256 signed receipt to the public model database."
   },
   {
     question: "Is any personal information collected in hardware telemetry?",
@@ -63,7 +63,7 @@ const faqs = [
 ---
 
 <Layout
-  title="Crowdsourced Display & Device Telemetry Database | Monitor Test Hub"
+  title="Crowdsourced Display & Device Telemetry Database | Display Test Online"
   description="Explore crowdsourced, cryptographically verified hardware telemetry and defect rates for 100+ top gaming monitors, OLED TVs, laptops, and handheld gaming PCs."
   faqs={faqs}
 >
@@ -139,7 +139,7 @@ const faqs = [
         <section class="bg-bg-surface border border-border-hairline rounded-3xl p-6 md:p-8 space-y-4 font-mono">
           <h2 class="text-xl font-bold text-text-primary font-sans">Crowdsourced Telemetry Methodology</h2>
           <p class="text-xs text-text-secondary leading-relaxed font-sans max-w-4xl">
-            Every record in the Monitor Test Hub model database is certified via client-side Web Crypto SHA-256 signatures generated during hardware diagnostic runs. Telemetry logs physical display resolution, measured VSync frame pacing delta (1/FPS), ISO 9241-307 pixel defect counts, and OLED sub-pixel degradation heuristics without transmitting any personal identifiable information (PII).
+            Every record in the Display Test Online model database is certified via client-side Web Crypto SHA-256 signatures generated during hardware diagnostic runs. Telemetry logs physical display resolution, measured VSync frame pacing delta (1/FPS), ISO 9241-307 pixel defect counts, and OLED sub-pixel degradation heuristics without transmitting any personal identifiable information (PII).
           </p>
         </section>
       </div>
