@@ -37,7 +37,10 @@ const cleanPath = rawPathSegments.length > 0 ? `/${rawPathSegments.join('/')}/` 
 
 // Normalize canonical URL to strictly enforce https://displaytestonline.com + cleanPath
 const normalizedCanonical = isLocalePrefix ? `${siteOrigin}/${currentLocale}${cleanPath}` : `${siteOrigin}${cleanPath}`;
-const canonicalUrl = customCanonical || normalizedCanonical;
+let canonicalUrl = customCanonical || normalizedCanonical;
+if (canonicalUrl && !canonicalUrl.endsWith('/')) {
+  canonicalUrl = `${canonicalUrl}/`;
+}
 
 const hreflangs = supportedLocales.map((locale) => ({
   lang: locale,

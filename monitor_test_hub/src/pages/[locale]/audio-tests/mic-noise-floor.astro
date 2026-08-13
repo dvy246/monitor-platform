@@ -1,0 +1,12 @@
+---
+import BasePage from '../../audio-tests/mic-noise-floor.astro';
+
+export function getStaticPaths() {
+  return [
+    { params: { locale: 'es' } },
+    { params: { locale: 'de' } },
+    { params: { locale: 'fr' } }
+  ];
+}
+---
+<BasePage />

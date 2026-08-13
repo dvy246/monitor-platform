@@ -10,7 +10,9 @@ export function getStaticPaths() {
     { amp: 15, volt: 120 },
     { amp: 20, volt: 120 },
     { amp: 30, volt: 240 },
-    { amp: 50, volt: 240 }
+    { amp: 50, volt: 240 },
+    { amp: 100, volt: 240 },
+    { amp: 200, volt: 240 }
   ];
 
   const paths = [];
@@ -35,7 +37,7 @@ const seoTitle = `Wire Size Calculator for ${amp}A ${volt}V Circuit (${locale.to
 const seoDescription = `Calculate recommended wire gauge for a ${amp}A ${volt}V circuit according to NEC standards.`;
 ---
 
-<Layout title={seoTitle} description={seoDescription} canonicalUrl={`https://displaytestonline.com/${locale}`}>
+<Layout title={seoTitle} description={seoDescription}>
 
   <div class="min-h-screen bg-[#08080a] text-slate-100 py-12 px-4">
     <div class="max-w-5xl mx-auto space-y-12">

@@ -1,0 +1,12 @@
+---
+import BasePage from '../../sound-test/spectrum-analyzer.astro';
+
+export function getStaticPaths() {
+  return [
+    { params: { locale: 'es' } },
+    { params: { locale: 'de' } },
+    { params: { locale: 'fr' } }
+  ];
+}
+---
+<BasePage />

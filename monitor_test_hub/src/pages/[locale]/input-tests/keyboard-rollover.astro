@@ -1,0 +1,12 @@
+---
+import BasePage from '../../input-tests/keyboard-rollover.astro';
+
+export function getStaticPaths() {
+  return [
+    { params: { locale: 'es' } },
+    { params: { locale: 'de' } },
+    { params: { locale: 'fr' } }
+  ];
+}
+---
+<BasePage />

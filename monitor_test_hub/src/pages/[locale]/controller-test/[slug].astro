@@ -1,0 +1,19 @@
+---
+import BasePage, { getStaticPaths as getBasePaths } from '../../controller-test/[slug].astro';
+
+export async function getStaticPaths() {
+  const locales = ['es', 'de', 'fr'];
+  const basePaths = await getBasePaths();
+  const paths = [];
+  for (const locale of locales) {
+    for (const p of basePaths) {
+      paths.push({
+        params: { ...p.params, locale },
+        props: p.props
+      });
+    }
+  }
+  return paths;
+}
+---
+<BasePage {...Astro.props} />

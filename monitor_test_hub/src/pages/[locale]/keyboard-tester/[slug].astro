@@ -1,48 +1,22 @@
 ---
-export function getStaticPaths() {
-  const locales = ['es', 'de', 'fr'];
-  const slugs = [
-    'online-keyboard-test',
-    'chromebook-keyboard-test',
-    'mac-keyboard-test',
-    'laptop-keyboard-test',
-    'keyboard-test-speed',
-    'blank-keyboard-test',
-    'keyboard-test-latency',
-    'keyboard-test-keys',
-    'mechanical-keyboard-test',
-    'gaming-keyboard-test',
-    '60-percent-keyboard-test',
-    'wireless-bluetooth-keyboard-test',
-    'key-chatter-test',
-    'nkro-rollover-test',
-    'spacebar-counter'
-  ];
+import BasePage, { getStaticPaths as getBasePaths } from '../../keyboard-tester/[slug].astro';
 
+export async function getStaticPaths() {
+  const locales = ['es', 'de', 'fr'];
+  const basePaths = await getBasePaths();
   const paths = [];
 
   for (const locale of locales) {
-    for (const slug of slugs) {
+    for (const p of basePaths) {
       paths.push({
-        params: { locale, slug },
-        props: {
-          cat: {
-            slug,
-            title: 'Keyboard Diagnostic Suite',
-            h1: 'Keyboard Diagnostic Tool',
-            description: 'Test your mechanical or membrane keyboard for key ghosting, N-Key Rollover (NKRO), and switch chatter.',
-            badge: 'KEYBOARD DIAGNOSTIC BENCHMARK',
-            faqs: []
-          }
-        }
+        params: { ...p.params, locale },
+        props: p.props
       });
     }
   }
 
   return paths;
 }
-
-import BasePage from '../../keyboard-tester/[slug].astro';
 ---
 
-<BasePage />
+<BasePage {...Astro.props} />
