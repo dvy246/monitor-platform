@@ -3,3 +3,7 @@ node_modules/
 dist/
 .astro/
 .agents/
+.tmp/
+.wrangler/
+test-results/
+playwright-report/
